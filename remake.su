@@ -23,7 +23,7 @@ dd if=/lib/grub/i386-pc/stage2 of=grub.img bs=512 seek=1
 dd if=/dev/zero of=floppy.img bs=1k count=1440
 
 # Prepare floppy
-yes|mkfs.ext2 floppy.img
+yes|/sbin/mkfs.ext2 floppy.img
 mkdir temp
 mount -o loop floppy.img temp
 mkdir temp/boot
