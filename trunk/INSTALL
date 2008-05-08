@@ -1,0 +1,27 @@
+Compiling ClearOS for the first time
+====================================
+Run make
+Bochs will open, click config(on the upper right)
+In the console(not in bochs window) type:
+	1
+	floppy.img
+	<3 times ENTER>
+Then, in bochs window type:
+	install (fd0)/boot/stage1 (fd0) (fd0)/boot/stage2 (fd0)/boot/menu.cfg
+Here you are.
+
+Compiling ClearOS if you have floppy.img
+========================================
+Simply run make again.
+
+Running ClearOS
+===============
+Run "./test" to run ClearOS
+
+Clean up
+========
+Run "make clean" to clean up all the object and intermediate files.
+
+Notes
+=====
+make clean does *not* delete floppy.img
