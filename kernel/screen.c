@@ -19,11 +19,8 @@
 
 #include "screen.h"
 
-char consoleColor=0x17;
+char consoleColor=0x07;
 char * pointer=(char *)consoleAddr;
-
-#define COLUMNS	80
-#define ROWS	25
 
 int pos(){
 	return ((int)pointer-consoleAddr)/2;

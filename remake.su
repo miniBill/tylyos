@@ -44,6 +44,7 @@ mount -o loop floppy.img temp
 echo "title   ClearOS">>temp/boot/menu.cfg
 echo "root    (fd0)">>temp/boot/menu.cfg
 echo "kernel  /boot/clearos">>temp/boot/menu.cfg
+echo "timeout=1"
 cp clearos temp/boot
 umount temp
 
