@@ -46,7 +46,9 @@ enum{
 	White		=0x0F
 };
 
-#define consoleAddr 0xb8000
+#define consoleAddr	0xb8000
+#define COLUMNS		80
+#define ROWS		25
 
 void clearScreen();
 

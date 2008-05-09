@@ -23,15 +23,74 @@
 #include "stdio.h"
 #include "../memory/memory.h"
 
+const char life='#';
+#define rows	18
+
+int X(int x){
+	if(x==-1)
+		return COLUMNS-1;
+	if(x==COLUMNS)
+		return 0;
+	return x;
+}
+
+int Y(int y){
+	if(y==-1)
+		return rows-1;
+	if(y==rows)
+		return 0;
+	return y;
+}
+
+void lifenext(char prev[]){
+	int x,y,n;
+	char new[rows*COLUMNS];
+	for(x=0;x<COLUMNS;x++){
+		for(y=0;y<rows;y++){
+			n=0;
+			n+=(prev[X(x-1)+Y(y-1)*COLUMNS]==life)+
+			   (prev[x+Y(y-1)*COLUMNS]==life)+
+			   (prev[X(x+1)+Y(y-1)*COLUMNS]==life)+
+			   (prev[X(x-1)+Y(y+1)*COLUMNS]==life)+
+			   (prev[x+Y(y+1)*COLUMNS]==life)+
+			   (prev[X(x+1)+Y(y+1)*COLUMNS]==life);
+			n+=(prev[X(x-1)+Y(y)*COLUMNS]==life)+
+			   (prev[X(x+1)+Y(y)*COLUMNS]==life);
+			if(prev[x+y*COLUMNS]==life){
+				if(n<2||n>3){
+					putxy(x,y+7,' ');
+					new[x+y*COLUMNS]=' ';
+				}
+				else{
+					putxy(x,y+7,life);
+					new[x+y*COLUMNS]=life;
+				}
+			}
+			else{
+				if(n==3){
+					putxy(x,y+7,life);
+					new[x+y*COLUMNS]=life;
+				}
+				else{
+					putxy(x,y+7,' ');
+					new[x+y*COLUMNS]=' ';
+				}
+			}
+		}
+	}
+	for(x=0;x<rows*COLUMNS;x++)
+		prev[x]=new[x];
+}
 void OK(int i){
-	putxy(78,i,'O');
-	putxy(79,i,'K');
-	cwritexy(78,i,0x10|Light_Green);
-	cwritexy(79,i,0x10|Light_Green);
+	putxy(COLUMNS-2,i,'O');
+	putxy(COLUMNS-1,i,'K');
+	cwritexy(COLUMNS-2,i,Light_Green);
+	cwritexy(COLUMNS-1,i,Light_Green);
 }
 short abs(short s){return s<0?-s:s;}
 
 void _kmain(multiboot_info_t* mbd, unsigned int magic){
+	char next[COLUMNS*rows];
 	char * parameters="Parametri: \0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0";
 	char * pointer="Prova puntatore";
 	char * conversion="\0\0\0\0\0\0\0\0\0";
@@ -63,33 +122,29 @@ void _kmain(multiboot_info_t* mbd, unsigned int magic){
 	writeline("Ed ora, diamo il via alle danze!");
 	OK(t++);
 	i=0;
+	/*next[0]=life;
+	next[3]=life;
+	next[COLUMNS+4]=life;
+	next[2*COLUMNS+0]=life;
+	next[2*COLUMNS+4]=life;
+	next[3*COLUMNS+1]=life;
+	next[3*COLUMNS+2]=life;
+	next[3*COLUMNS+3]=life;
+	next[3*COLUMNS+4]=life;*/
+	next[0*COLUMNS+6]=life;
+	next[1*COLUMNS+6]=life;
+	next[1*COLUMNS+7]=life;
+	next[2*COLUMNS+6]=life;
+	next[1*COLUMNS+4]=life;
+	next[2*COLUMNS+4]=life;
+	next[3*COLUMNS+4]=life;
+	next[4*COLUMNS+2]=life;
+	next[5*COLUMNS+0]=life;
+	next[5*COLUMNS+2]=life;
 	while(1){
-		for(d=0;d<10000;d++)
+		for(d=0;d<100000;d++)
 			;
-		putxy(abs(i),t,' ');
-		putxy(80-abs(i),t+1,' ');
-		putxy(abs(i),t+2,' ');
-		putxy(80-abs(i),t+3,' ');
-		putxy(abs(i),t+4,' ');
-		putxy(80-abs(i),t+5,' ');
-		putxy(abs(i),t+6,' ');
-		putxy(80-abs(i),t+7,' ');
-		putxy(abs(i),t+8,' ');
-		putxy(80-abs(i),t+9,' ');
-		if(i==79)
-			i=-78;
-		else
-			i++;
-		putxy(abs(i),t,'*');
-		putxy(80-abs(i),t+1,'*');
-		putxy(abs(i),t+2,'*');
-		putxy(80-abs(i),t+3,'*');
-		putxy(abs(i),t+4,'*');
-		putxy(80-abs(i),t+5,'*');
-		putxy(abs(i),t+6,'*');
-		putxy(80-abs(i),t+7,'*');
-		putxy(abs(i),t+8,'*');
-		putxy(80-abs(i),t+9,'*');
+		lifenext(next);
 	}
 }
 
