@@ -121,29 +121,23 @@ void _kmain(multiboot_info_t* mbd, unsigned int magic){
 	writeline("Ed ora, diamo il via alle danze!");
 	OK(t++);
 	i=0;
-	/*next[0]=life;
-	next[3]=life;
-	next[COLUMNS+4]=life;
+	/*LWSS*/
+	next[0*COLUMNS+0]=life;
+	next[0*COLUMNS+3]=life;
+	next[1*COLUMNS+4]=life;
 	next[2*COLUMNS+0]=life;
 	next[2*COLUMNS+4]=life;
 	next[3*COLUMNS+1]=life;
 	next[3*COLUMNS+2]=life;
 	next[3*COLUMNS+3]=life;
-	next[3*COLUMNS+4]=life;*/
-	next[0*COLUMNS+6]=life;
-	next[1*COLUMNS+6]=life;
-	next[1*COLUMNS+7]=life;
-	next[2*COLUMNS+6]=life;
-	next[1*COLUMNS+4]=life;
-	next[2*COLUMNS+4]=life;
 	next[3*COLUMNS+4]=life;
-	next[4*COLUMNS+2]=life;
-	next[5*COLUMNS+0]=life;
-	next[5*COLUMNS+2]=life;
-	while(1){
-	/*	for(d=0;d<1000;d++)
-			;*/
+	/*glider*/
+	next[6*COLUMNS+1]=life;
+	next[7*COLUMNS+2]=life;
+	next[8*COLUMNS+0]=life;
+	next[8*COLUMNS+1]=life;
+	next[8*COLUMNS+2]=life;
+	while(1)
 		lifenext(next);
-	}
 }
 
