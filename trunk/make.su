@@ -20,3 +20,4 @@ mount -o loop floppy.img temp
 cp clearos temp/boot
 umount temp
 rmdir temp
+touch floppy.img

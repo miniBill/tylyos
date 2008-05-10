@@ -19,10 +19,10 @@ CFLAGS= -march=i386 -ffreestanding -Wall -pedantic -Wextra -Werror
 OBJ= kernel/kernel.o kernel/stdio.o kernel/screen.o memory/memory.o interrupt/interrupt.o
 LDFLAGS= -T linker.ld
 
-all:clearos
+all:floppy.img
+
+floppy.img: clearos
 	sh make.sh
-.PHONY:prepare
-prepare:clearos
 
 kernel/kernel.o: kernel/kernel.h kernel/screen.h kernel/stdio.h memory/memory.h
 
