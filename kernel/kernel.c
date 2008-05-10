@@ -95,7 +95,6 @@ void _kmain(multiboot_info_t* mbd, unsigned int magic){
 	char * pointer="Prova puntatore";
 	char * conversion="\0\0\0\0\0\0\0\0\0";
 	short i;/*index*/
-	int d=0;/*for delay loop*/
 	int t=0;/*test number*/
 	clearScreen();
 	OK(t++);
@@ -142,8 +141,8 @@ void _kmain(multiboot_info_t* mbd, unsigned int magic){
 	next[5*COLUMNS+0]=life;
 	next[5*COLUMNS+2]=life;
 	while(1){
-		for(d=0;d<100000;d++)
-			;
+	/*	for(d=0;d<1000;d++)
+			;*/
 		lifenext(next);
 	}
 }
