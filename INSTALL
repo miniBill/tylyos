@@ -1,22 +1,10 @@
-Compiling ClearOS for the first time
-====================================
-Run make
-Bochs will open, click config(on the upper right)
-In the console(not in bochs window) type:
-	1
-	floppy.img
-	<3 times ENTER>
-Then, in bochs window type:
-	install (fd0)/boot/stage1 (fd0) (fd0)/boot/stage2 (fd0)/boot/menu.cfg
-Here you are.
-
-Compiling ClearOS if you have floppy.img
+Compiling ClearOS
 ========================================
-Simply run make again.
+Run "make" to compile ClearOS.
 
 Running ClearOS
 ===============
-Run "./test" to run ClearOS
+Run "sh test" to run ClearOS.
 
 Clean up
 ========

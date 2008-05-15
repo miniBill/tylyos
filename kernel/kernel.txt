@@ -1,6 +1,15 @@
-kernel.c		contiene il codice eseguito dal kernel all'avvio
-	kernel.h	header per kernel.c
-stidio.c		contiene una funzione per stampare stringhe e numeri a schermo
-	stdio.h		header per stdio.c
-screen.c		contiene funzioni per stampare stringhe e per pulire lo schermo
-	screen.h	header per screen.c
+kernel.c
+    contiene il codice eseguito dal kernel all'avvio
+    kernel.h
+        header per kernel.c
+stidio.c
+    contiene una funzione per stampare stringhe e numeri a schermo
+    stdio.h
+        header per stdio.c
+screen.c
+    contiene funzioni per stampare stringhe e per pulire lo schermo
+    screen.h
+        header per screen.c
+
+multiboot.h
+    contiene la descrizione della struttura passata al metodo main

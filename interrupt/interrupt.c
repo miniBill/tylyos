@@ -23,38 +23,38 @@
 int xtemp;
 
 void initIDT(){
-	/* inizializzazione */
-	int c;
-	xtemp=0;
-	for(c=0;c<256;c++)
-		addIDTseg(c,0,0,0);
+    /* inizializzazione */
+    int c;
+    xtemp=0;
+    for(c=0;c<256;c++)
+        addIDTseg(c,0,0,0);
 
-	addIDTseg( 0, isr_0,0x80,0x08);
-	addIDTseg( 1, isr_1,0x80,0x08);
-	addIDTseg( 2, isr_2,0x80,0x08);
-	addIDTseg( 3, isr_3,0x80,0x08);
-	addIDTseg( 4, isr_4,0x80,0x08);
-	addIDTseg( 5, isr_5,0x80,0x08);
-	addIDTseg( 6, isr_6,0x80,0x08);
-	addIDTseg( 7, isr_7,0x80,0x08);
-	addIDTseg( 8, isr_8,0x80,0x08);
-	addIDTseg( 9, isr_9,0x80,0x08);
-	addIDTseg(10,isr_10,0x80,0x08);
-	addIDTseg(11,isr_11,0x80,0x08);
-	addIDTseg(12,isr_12,0x80,0x08);
-	addIDTseg(13,isr_13,0x80,0x08);
-	addIDTseg(14,isr_14,0x80,0x08);
-	addIDTseg(15,isr_15,0x80,0x08);
-	addIDTseg(16,isr_16,0x80,0x08);
-	addIDTseg(17,isr_17,0x80,0x08);
-	addIDTseg(18,isr_18,0x80,0x08);
-	addIDTseg(34,isr_32,0x80,0x08);
+    addIDTseg( 0, isr_0,0x80,0x08);
+    addIDTseg( 1, isr_1,0x80,0x08);
+    addIDTseg( 2, isr_2,0x80,0x08);
+    addIDTseg( 3, isr_3,0x80,0x08);
+    addIDTseg( 4, isr_4,0x80,0x08);
+    addIDTseg( 5, isr_5,0x80,0x08);
+    addIDTseg( 6, isr_6,0x80,0x08);
+    addIDTseg( 7, isr_7,0x80,0x08);
+    addIDTseg( 8, isr_8,0x80,0x08);
+    addIDTseg( 9, isr_9,0x80,0x08);
+    addIDTseg(10,isr_10,0x80,0x08);
+    addIDTseg(11,isr_11,0x80,0x08);
+    addIDTseg(12,isr_12,0x80,0x08);
+    addIDTseg(13,isr_13,0x80,0x08);
+    addIDTseg(14,isr_14,0x80,0x08);
+    addIDTseg(15,isr_15,0x80,0x08);
+    addIDTseg(16,isr_16,0x80,0x08);
+    addIDTseg(17,isr_17,0x80,0x08);
+    addIDTseg(18,isr_18,0x80,0x08);
+    addIDTseg(34,isr_32,0x80,0x08);
 
-	idt_pointer.limit=0xFFFF;
-	idt_pointer.base=(unsigned int)&idt;
+    idt_pointer.limit=0xFFFF;
+    idt_pointer.base=(unsigned int)&idt;
 
-	idt_load();
-	irq_remap(33,50);
+    idt_load();
+    irq_remap(33,50);
 }
 
 void addIDTseg(short int i, void (*gestore)(), unsigned char options, unsigned int seg_sel){
@@ -120,16 +120,16 @@ void interrupt_handler(unsigned int eax, unsigned int ebx, unsigned int ecx,
                        unsigned int fs, unsigned int gs, unsigned int isr,
                        unsigned int error, unsigned int eip, unsigned int cs,
                        unsigned int eflags, ...){
-	/* codice che interpreta le interruzioni */
-	char * out;
-	memclear(out,36);
-	out="interruzione"
-		"\0\0\0\0\0\0\0\0"
-		"\0\0\0\0\0\0\0\0"
-		"\0\0\0\0\0\0\0\0"
-		"\0\0\0\0\0\0\0\0";
-	xtemp++;
-	/* strapp(out," %d",isr+1); */
-	strapp(out,", error: %d",isr);
-	writeline(out);
+    /* codice che interpreta le interruzioni */
+    char * out;
+    memclear(out,36);
+    out="interruzione"
+        "\0\0\0\0\0\0\0\0"
+        "\0\0\0\0\0\0\0\0"
+        "\0\0\0\0\0\0\0\0"
+        "\0\0\0\0\0\0\0\0";
+    xtemp++;
+    /* strapp(out," %d",isr+1); */
+    strapp(out,", error: %d",isr);
+    writeline(out);
 }
