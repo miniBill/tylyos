@@ -1,4 +1,5 @@
 /* Copyright (C) 2008 Luca Salmin
+ * Copyright (C) 2008 Leonardo Taglialegne <leonardotaglialegne+clearos@gmail.com>
  *
  * This file is part of ClearOS.
  *
@@ -18,7 +19,8 @@
 
 #include "interrupt.h"
 #include "../kernel/stdio.h"
-#include "../kernel/screen.h"
+#include "../drivers/screen/io.h"
+#include "../drivers/screen/screen.h"
 
 int xtemp;
 
@@ -114,22 +116,24 @@ void irq_remap(unsigned int offset_1, unsigned int offset_2){
     writeline("PIC remapped");
 }
 
-void interrupt_handler(unsigned int eax, unsigned int ebx, unsigned int ecx,
-                       unsigned int edx, unsigned int ebp, unsigned int esi,
-                       unsigned int edi, unsigned int ds, unsigned int es,
-                       unsigned int fs, unsigned int gs, unsigned int isr,
-                       unsigned int error, unsigned int eip, unsigned int cs,
-                       unsigned int eflags, ...){
+void interrupt_handler(
+    unsigned int eax, unsigned int ebx, unsigned int ecx,
+    unsigned int edx, unsigned int ebp, unsigned int esi,
+    unsigned int edi, unsigned int ds, unsigned int es,
+    unsigned int fs, unsigned int gs, unsigned int isr,
+    unsigned int error, unsigned int eip, unsigned int cs,
+    unsigned int eflags, ...){
     /* codice che interpreta le interruzioni */
-    char * out;
-    memclear(out,36);
-    out="interruzione"
+    int c=12;
+    char * out="interruzione"/*12 bytes*/
         "\0\0\0\0\0\0\0\0"
         "\0\0\0\0\0\0\0\0"
         "\0\0\0\0\0\0\0\0"
-        "\0\0\0\0\0\0\0\0";
+        "\0\0\0\0\0\0\0\0";/*32 bytes*/
     xtemp++;
-    /* strapp(out," %d",isr+1); */
-    strapp(out,", error: %d",isr);
+    for(;c<44;c++)
+        *(out+c)=0;
+    strapp(out,", interrupt: %d",(void *)isr);
+    strapp(out,", count: %d",(void *)xtemp);
     writeline(out);
 }

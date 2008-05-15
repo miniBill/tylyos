@@ -19,17 +19,9 @@
 
 #include "kernel.h"
 #include "multiboot.h"
-#include "screen.h"
-#include "stdio.h"
+#include "../drivers/screen/io.h"
 #include "../memory/memory.h"
 #include "../interrupt/interrupt.h"
-
-void OK(int i){
-    putxy(COLUMNS-2,i,'O');
-    putxy(COLUMNS-1,i,'K');
-    cwritexy(COLUMNS-2,i,Light_Green);
-    cwritexy(COLUMNS-1,i,Light_Green);
-}
 
 short abs(short s){return s<0?-s:s;}
 
@@ -41,6 +33,9 @@ void _kmain(multiboot_info_t* mbd, unsigned int magic){
     int t=0;/*test number*/
 
     clearScreen();
+    kwrite("Kernel caricato");
+    OK(t++);
+    writeline("");
     writeline("Prova writeline");
     OK(t++);
     writeline(pointer);
@@ -66,7 +61,12 @@ void _kmain(multiboot_info_t* mbd, unsigned int magic){
     OK(t++);
     initIDT();
     OK(t++);
-    asm("int $0x20");/* interrupt 32 per provare il funzionamento */
+    asm("int $0x0F");/* interrupt 15 per provare il funzionamento */
+    OK(t++);
+    asm("int $0x10");/* interrupt 16 per provare il funzionamento */
+    OK(t++);
+    asm("int $0x11");/* interrupt 17 per provare il funzionamento */
+    OK(t++);
     writeline("Ed ora, diamo il via alle danze!");
     OK(t++);
     while(1);

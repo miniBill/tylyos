@@ -1,5 +1,4 @@
-/* Copyright (C) 2008 Leonardo Taglialegne <leonardotaglialegne+clearos@gmail.com>
- * Copyright (C) 2008 Roberto Domenella
+/* Copyright (C) 2008 Luca Salmin
  *
  * This file is part of ClearOS.
  *
@@ -19,59 +18,12 @@
 
 #include "stdio.h"
 
-unsigned char inb(int portnum)
-{
-  unsigned char data=0;
-  asm("inb %%dx, %%al" : "=a" (data) : "d" (portnum));
-  return data;
+unsigned char inb(int portnum){
+    unsigned char data=0;
+    asm("inb %%dx, %%al" : "=a" (data) : "d" (portnum));
+    return data;
 }
 
-void outb(int data, int portnum)
-{
-  asm("outb %%al, %%dx" :: "a" (data),"d" (portnum));
-}
-
-int strapp(char* dest,char* format,void* p){
-	/*indice format string*/
-	int i=0;
-	/*indice output*/
-	int o=0;
-	while(dest[o]!=0) o++;
-	for(;format[i]!=0;i++){
-		if(format[i]=='%'){
-			int base=10;
-			int num=(int)p;
-			char buf[MAXN] = {0};
-			/*lunghezza del numero*/
-			int l;
-			/*indice per copiare*/
-			int b;
-			switch(format[i+1]){
-				case 'd':
-					break;
-				case 'x':
-					base=16;
-					break;
-				case 'b':
-					base=2;
-					break;
-				case 'o':
-					base=8;
-					break;
-				default:
-					/*NON DOVREBBE SUCCEDERE, E SE SUCCEDE LA FORMAT STRING E' SBAGLIATA*/
-					base=10;
-					break;
-			}
-			for(l=0;num && (l<MAXN) ; num /= base,l++)
-				buf[l] = "0123456789ABCDEF"[num % base];
-			for(b=(l-1);b>=0;b--)
-				dest[o++]=buf[b];
-			i++;
-		}
-		else
-			dest[o++]=format[i];
-	}
-	dest[o]=0;
-	return 0;
+void outb(int data, int portnum){
+    asm("outb %%al, %%dx" :: "a" (data),"d" (portnum));
 }
