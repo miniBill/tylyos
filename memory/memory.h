@@ -38,4 +38,6 @@ struct gdt_entry gdt[3];
 struct gdt_ptr gdt_pointer;
 
 extern void gdt_flush();
+
+void memclear(char * s,int length);
 #endif

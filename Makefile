@@ -32,7 +32,7 @@ kernel/screen.o: kernel/screen.h
 
 memory/memory.o: memory/memory.h
 
-interrupt/interrupt.o: interrupt/interrupt.h
+interrupt/interrupt.o: interrupt/interrupt.h interrupt/interrupt.c
 	cc -march=i386 -ffreestanding -Wall -pedantic -Wextra -c -o $@ interrupt/interrupt.c
 
 clearos: $(OBJ)

@@ -43,3 +43,9 @@ void init_gdt(){
 		MEM_PRESENT|MEM_CODE_DATA|MEM_RW);
 	gdt_flush();
 }
+
+void memclear(char * s,int length){
+	int i=0;
+	for(;i<length;i++)
+		*(s+i)=0;
+}
