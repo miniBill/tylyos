@@ -19,6 +19,18 @@
 
 #include "stdio.h"
 
+unsigned char inb(int portnum)
+{
+  unsigned char data=0;
+  asm("inb %%dx, %%al" : "=a" (data) : "d" (portnum));
+  return data;
+}
+
+void outb(int data, int portnum)
+{
+  asm("outb %%al, %%dx" :: "a" (data),"d" (portnum));
+}
+
 int strapp(char* dest,char* format,void* p){
 	/*indice format string*/
 	int i=0;

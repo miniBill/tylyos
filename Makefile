@@ -16,7 +16,7 @@
 # along with ClearOS.  If not, see <http://www.gnu.org/licenses/>.
 
 CFLAGS= -march=i386 -ffreestanding -Wall -pedantic -Wextra -Werror
-OBJ= kernel/kernel.o kernel/stdio.o kernel/screen.o memory/memory.o interrupt/interrupt.o
+OBJ= kernel/kernel.o kernel/stdio.o kernel/screen.o memory/memory.o interrupt/interrupt.o bootloader/loader.o memory/gdt.o interrupt/ldt.o interrupt/interruptHandler.o
 LDFLAGS= -T linker.ld
 
 all:floppy.img
@@ -33,8 +33,9 @@ kernel/screen.o: kernel/screen.h
 memory/memory.o: memory/memory.h
 
 interrupt/interrupt.o: interrupt/interrupt.h
+	cc -march=i386 -ffreestanding -Wall -pedantic -Wextra -c -o $@ interrupt/interrupt.c
 
-clearos: bootloader/loader.o memory/gdt.o interrupt/ldt.o $(OBJ)
+clearos: $(OBJ)
 	$(LD) $(LDFLAGS) $^ -o $@
 
 %.o: %.asm
@@ -42,4 +43,4 @@ clearos: bootloader/loader.o memory/gdt.o interrupt/ldt.o $(OBJ)
 
 .PHONY: clean
 clean:
-	rm -f *\~ */*\~ */*.bin */*.o log clearos grub.img
+	rm -f *\~ */*\~ */*.o log clearos grub.img

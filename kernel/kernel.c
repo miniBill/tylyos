@@ -22,6 +22,7 @@
 #include "screen.h"
 #include "stdio.h"
 #include "../memory/memory.h"
+#include "../interrupt/interrupt.h"
 
 const char life='#';
 #define rows	18
@@ -96,6 +97,7 @@ void _kmain(multiboot_info_t* mbd, unsigned int magic){
 	char * conversion="\0\0\0\0\0\0\0\0\0";
 	short i;/*index*/
 	int t=0;/*test number*/
+	
 	clearScreen();
 	OK(t++);
 	writeline("Prova writeline");
@@ -118,6 +120,10 @@ void _kmain(multiboot_info_t* mbd, unsigned int magic){
 	writeline("Prova GDT");
 	init_gdt();
 	OK(t++);
+	writeline("Prova IDT");
+	initIDT();
+	/* asm("int $0x20");*/ /* interrupt 32 per provare il funzionamento */
+	
 	writeline("Ed ora, diamo il via alle danze!");
 	OK(t++);
 	i=0;
@@ -137,7 +143,8 @@ void _kmain(multiboot_info_t* mbd, unsigned int magic){
 	next[8*COLUMNS+0]=life;
 	next[8*COLUMNS+1]=life;
 	next[8*COLUMNS+2]=life;
-	while(1)
-		lifenext(next);
+	/* while(1)
+		lifenext(next); */
+	while(1);
 }
 
