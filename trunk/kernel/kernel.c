@@ -24,82 +24,23 @@
 #include "../memory/memory.h"
 #include "../interrupt/interrupt.h"
 
-const char life='#';
-#define rows	18
-
-int X(int x){
-	if(x==-1)
-		return COLUMNS-1;
-	if(x==COLUMNS)
-		return 0;
-	return x;
-}
-
-int Y(int y){
-	if(y==-1)
-		return rows-1;
-	if(y==rows)
-		return 0;
-	return y;
-}
-
-void lifenext(char prev[]){
-	int x,y,n;
-	char new[rows*COLUMNS];
-	for(x=0;x<COLUMNS;x++){
-		for(y=0;y<rows;y++){
-			n=0;
-			n+=(prev[X(x-1)+Y(y-1)*COLUMNS]==life)+
-			   (prev[x+Y(y-1)*COLUMNS]==life)+
-			   (prev[X(x+1)+Y(y-1)*COLUMNS]==life)+
-			   (prev[X(x-1)+Y(y+1)*COLUMNS]==life)+
-			   (prev[x+Y(y+1)*COLUMNS]==life)+
-			   (prev[X(x+1)+Y(y+1)*COLUMNS]==life);
-			n+=(prev[X(x-1)+Y(y)*COLUMNS]==life)+
-			   (prev[X(x+1)+Y(y)*COLUMNS]==life);
-			if(prev[x+y*COLUMNS]==life){
-				if(n<2||n>3){
-					putxy(x,y+7,' ');
-					new[x+y*COLUMNS]=' ';
-				}
-				else{
-					putxy(x,y+7,life);
-					new[x+y*COLUMNS]=life;
-				}
-			}
-			else{
-				if(n==3){
-					putxy(x,y+7,life);
-					new[x+y*COLUMNS]=life;
-				}
-				else{
-					putxy(x,y+7,' ');
-					new[x+y*COLUMNS]=' ';
-				}
-			}
-		}
-	}
-	for(x=0;x<rows*COLUMNS;x++)
-		prev[x]=new[x];
-}
 void OK(int i){
 	putxy(COLUMNS-2,i,'O');
 	putxy(COLUMNS-1,i,'K');
 	cwritexy(COLUMNS-2,i,Light_Green);
 	cwritexy(COLUMNS-1,i,Light_Green);
 }
+
 short abs(short s){return s<0?-s:s;}
 
 void _kmain(multiboot_info_t* mbd, unsigned int magic){
-	char next[COLUMNS*rows];
 	char * parameters="Parametri: \0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0";
 	char * pointer="Prova puntatore";
 	char * conversion="\0\0\0\0\0\0\0\0\0";
 	short i;/*index*/
 	int t=0;/*test number*/
-	
+
 	clearScreen();
-	OK(t++);
 	writeline("Prova writeline");
 	OK(t++);
 	writeline(pointer);
@@ -111,8 +52,9 @@ void _kmain(multiboot_info_t* mbd, unsigned int magic){
 	writeline(conversion);
 	OK(t++);
 	strapp(parameters,"mbd.flags:%b|",(void *)mbd->flags);
-	strapp(parameters,"magic:%d",(void *)magic);
+	strapp(parameters,"magic:%x",(void *)magic);
 	writeline(parameters);
+	OK(t++);
 	for(i=0;i<6;i++)
 		put(read(i));
 	writeline("put/read");
@@ -121,30 +63,12 @@ void _kmain(multiboot_info_t* mbd, unsigned int magic){
 	init_gdt();
 	OK(t++);
 	writeline("Prova IDT");
+	OK(t++);
 	initIDT();
-	/* asm("int $0x20");*/ /* interrupt 32 per provare il funzionamento */
-	
+	OK(t++);
+	asm("int $0x20");/* interrupt 32 per provare il funzionamento */
 	writeline("Ed ora, diamo il via alle danze!");
 	OK(t++);
-	i=0;
-	/*LWSS*/
-	next[0*COLUMNS+0]=life;
-	next[0*COLUMNS+3]=life;
-	next[1*COLUMNS+4]=life;
-	next[2*COLUMNS+0]=life;
-	next[2*COLUMNS+4]=life;
-	next[3*COLUMNS+1]=life;
-	next[3*COLUMNS+2]=life;
-	next[3*COLUMNS+3]=life;
-	next[3*COLUMNS+4]=life;
-	/*glider*/
-	next[6*COLUMNS+1]=life;
-	next[7*COLUMNS+2]=life;
-	next[8*COLUMNS+0]=life;
-	next[8*COLUMNS+1]=life;
-	next[8*COLUMNS+2]=life;
-	/* while(1)
-		lifenext(next); */
 	while(1);
 }
 
