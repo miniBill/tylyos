@@ -41,7 +41,7 @@ enum{
 
                             /*V                             */
     MEM_NOT_PRESENT = 0x00, /*00|00|00|00 0=non presente    */
-    MEM_PRESENT     = 0x80, /*10|00|00|00 1=presente        */
+    MEM_PRESENT     = 0x80  /*10|00|00|00 1=presente        */
 };
 
 enum{
@@ -49,6 +49,6 @@ enum{
     MEM_32          = 0x40, /*01|00|00|00 segmento a 32bit  */
 
     MEM_FINE        = 0x00, /*00|00|00|00 0=1byte           */
-    MEM_GRANULAR    = 0x80, /*10|00|00|00 1=4Kbyte          */
+    MEM_GRANULAR    = 0x80  /*10|00|00|00 1=4Kbyte          */
 };
 #endif

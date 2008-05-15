@@ -18,7 +18,7 @@
 
 #include "memory.h"
 #include "gdtflags.h"
-#include "../kernel/screen.h"
+#include "../drivers/screen/screen.h"
 
 void gdt_set(int num, unsigned long base, unsigned long limit, unsigned char gran, unsigned char access){
     gdt[num].base_low = (base & 0xFFFF);

@@ -1,2 +1,0 @@
-boot.s
-    codice che viene chiamato da GRUB e che si occupa di chiamare il kernel
