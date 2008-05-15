@@ -16,7 +16,7 @@
 # along with ClearOS.  If not, see <http://www.gnu.org/licenses/>.
 
 CFLAGS= -march=i386 -ffreestanding -Wall -pedantic -Wextra -Werror
-OBJ= kernel/kernel.o kernel/stdio.o kernel/screen.o memory/memory.o interrupt/interrupt.o bootloader/loader.o memory/gdt.o interrupt/ldt.o interrupt/interruptHandler.o
+OBJ= kernel/kernel.o kernel/stdio.o kernel/screen.o memory/memory.o interrupt/interrupt.o bootloader/loader.o memory/gdt.o interrupt/interruptHandler.o interrupt/ldt.o
 LDFLAGS= -T linker.ld
 
 all:floppy.img

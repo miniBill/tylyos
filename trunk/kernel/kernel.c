@@ -25,50 +25,50 @@
 #include "../interrupt/interrupt.h"
 
 void OK(int i){
-	putxy(COLUMNS-2,i,'O');
-	putxy(COLUMNS-1,i,'K');
-	cwritexy(COLUMNS-2,i,Light_Green);
-	cwritexy(COLUMNS-1,i,Light_Green);
+    putxy(COLUMNS-2,i,'O');
+    putxy(COLUMNS-1,i,'K');
+    cwritexy(COLUMNS-2,i,Light_Green);
+    cwritexy(COLUMNS-1,i,Light_Green);
 }
 
 short abs(short s){return s<0?-s:s;}
 
 void _kmain(multiboot_info_t* mbd, unsigned int magic){
-	char * parameters="Parametri: \0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0";
-	char * pointer="Prova puntatore";
-	char * conversion="\0\0\0\0\0\0\0\0\0";
-	short i;/*index*/
-	int t=0;/*test number*/
+    char * parameters="Parametri: \0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0";
+    char * pointer="Prova puntatore";
+    char * conversion="\0\0\0\0\0\0\0\0\0";
+    short i;/*index*/
+    int t=0;/*test number*/
 
-	clearScreen();
-	writeline("Prova writeline");
-	OK(t++);
-	writeline(pointer);
-	OK(t++);
-	write("Prova strapp(output: 101|C|A0):");
-	strapp(conversion,"%b|",(void *)5);
-	strapp(conversion,"%x|",(void *)12);
-	strapp(conversion,"%x",(void *)160);
-	writeline(conversion);
-	OK(t++);
-	strapp(parameters,"mbd.flags:%b|",(void *)mbd->flags);
-	strapp(parameters,"magic:%x",(void *)magic);
-	writeline(parameters);
-	OK(t++);
-	for(i=0;i<6;i++)
-		put(read(i));
-	writeline("put/read");
-	OK(t++);
-	writeline("Prova GDT");
-	init_gdt();
-	OK(t++);
-	writeline("Prova IDT");
-	OK(t++);
-	initIDT();
-	OK(t++);
-	asm("int $0x20");/* interrupt 32 per provare il funzionamento */
-	writeline("Ed ora, diamo il via alle danze!");
-	OK(t++);
-	while(1);
+    clearScreen();
+    writeline("Prova writeline");
+    OK(t++);
+    writeline(pointer);
+    OK(t++);
+    write("Prova strapp(output: 101|C|A0):");
+    strapp(conversion,"%b|",(void *)5);
+    strapp(conversion,"%x|",(void *)12);
+    strapp(conversion,"%x",(void *)160);
+    writeline(conversion);
+    OK(t++);
+    strapp(parameters,"mbd.flags:%b|",(void *)mbd->flags);
+    strapp(parameters,"magic:%x",(void *)magic);
+    writeline(parameters);
+    OK(t++);
+    for(i=0;i<6;i++)
+        put(read(i));
+    writeline("put/read");
+    OK(t++);
+    writeline("Prova GDT");
+    init_gdt();
+    OK(t++);
+    writeline("Prova IDT");
+    OK(t++);
+    initIDT();
+    OK(t++);
+    asm("int $0x20");/* interrupt 32 per provare il funzionamento */
+    writeline("Ed ora, diamo il via alle danze!");
+    OK(t++);
+    while(1);
 }
 

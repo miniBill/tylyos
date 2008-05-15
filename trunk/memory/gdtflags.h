@@ -21,34 +21,34 @@
 #define GDTFLAGS_H_
 
 enum{
-				/*          V			*/
-	MEM_RO		=0x00,	/*00|00|00|00 0=read only	*/
-	MEM_RW		=0x02,	/*00|00|00|10 1=read and write	*/
+                            /*          V                   */
+    MEM_RO          = 0x00, /*00|00|00|00 0=read only       */
+    MEM_RW          = 0x02, /*00|00|00|10 1=read and write  */
 
-				/*    V				*/
-	MEM_SYS		=0x00,	/*00|00|00|00 0=sistema		*/
-	MEM_CODE_DATA	=0x10,	/*00|01|00|00 1=codice o dati	*/
+                            /*    V                         */
+    MEM_SYS         = 0x00, /*00|00|00|00 0=sistema         */
+    MEM_CODE_DATA   = 0x10, /*00|01|00|00 1=codice o dati   */
 
-				/*      V			*/
-	MEM_DATA	=0x00,	/*00|00|00|00 0=dati		*/
-	MEM_CODE	=0x08,	/*00|00|10|00 1=codice		*/
+                            /*      V                       */
+    MEM_DATA        = 0x00, /*00|00|00|00 0=dati            */
+    MEM_CODE        = 0x08, /*00|00|10|00 1=codice          */
 
-				/* V V				*/
-	MEM_KERNEL	=0x00,	/*00|00|00|00 00=ring0	(kernel)*/
-	MEM_RING1	=0x20,	/*00|10|00|00 01=ring1		*/
-	MEM_RING2	=0x40,	/*01|00|00|00 10=ring2		*/
-	MEM_USER	=0x60,	/*01|10|00|00 11=ring3 (user)	*/
+                            /* V V                          */
+    MEM_KERNEL      = 0x00, /*00|00|00|00 00=ring0 (kernel) */
+    MEM_RING1       = 0x20, /*00|10|00|00 01=ring1          */
+    MEM_RING2       = 0x40, /*01|00|00|00 10=ring2          */
+    MEM_USER        = 0x60, /*01|10|00|00 11=ring3 (user)   */
 
-				/*V				*/
-	MEM_NOT_PRESENT	=0x00,	/*00|00|00|00	0=non presente	*/
-	MEM_PRESENT	=0x80	/*10|00|00|00	1=presente	*/
+                            /*V                             */
+    MEM_NOT_PRESENT = 0x00, /*00|00|00|00 0=non presente    */
+    MEM_PRESENT     = 0x80, /*10|00|00|00 1=presente        */
 };
 
 enum{
-	MEM_16		=0x00,	/*00|00|00|00	segmento a 16bit*/
-	MEM_32		=0x40,	/*01|00|00|00	segmento a 32bit*/
+    MEM_16          = 0x00, /*00|00|00|00 segmento a 16bit  */
+    MEM_32          = 0x40, /*01|00|00|00 segmento a 32bit  */
 
-	MEM_FINE	=0x00,	/*00|00|00|00	0=1byte		*/
-	MEM_GRANULAR	=0x80	/*10|00|00|00	1=4Kbyte	*/
+    MEM_FINE        = 0x00, /*00|00|00|00 0=1byte           */
+    MEM_GRANULAR    = 0x80, /*10|00|00|00 1=4Kbyte          */
 };
 #endif
