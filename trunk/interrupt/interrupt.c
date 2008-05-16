@@ -27,6 +27,7 @@ int xtemp;
 void initIDT(){
     /* inizializzazione */
     int c;
+asm("cli");
     xtemp=0;
     for(c=0;c<256;c++)
         addIDTseg(c,0,0,0);
@@ -50,13 +51,16 @@ void initIDT(){
     addIDTseg(16,isr_16,0x80,0x08);
     addIDTseg(17,isr_17,0x80,0x08);
     addIDTseg(18,isr_18,0x80,0x08);
-    addIDTseg(34,isr_32,0x80,0x08);
+for(c=33;c<60;c++)
+    addIDTseg(c,isr_32,0x80,0x08);
+  
 
     idt_pointer.limit=0xFFFF;
     idt_pointer.base=(unsigned int)&idt;
 
     idt_load();
     irq_remap(33,50);
+ asm("sti");
 }
 
 void addIDTseg(short int i, void (*gestore)(), unsigned char options, unsigned int seg_sel){
