@@ -121,6 +121,15 @@ void irq_remap(unsigned int offset_1, unsigned int offset_2){
     writeline("PIC remapped");
 }
 
+void print(unsigned int reg,char * space){
+    int c=0;
+    while(*(space+c)!=':')
+        c++;
+    *(space+c+1)=0;
+    strapp(space,"%x ",(void*)reg);
+    write(space);
+}
+
 void interrupt_handler(
     unsigned int eax, unsigned int ebx, unsigned int ecx,
     unsigned int edx, unsigned int ebp, unsigned int esi,
@@ -139,10 +148,25 @@ void interrupt_handler(
     xtemp++;
     for(;c<44;c++)
         *(out+c)=0;
-    c=eax^ebx^ecx^edx^ebp^esi^edi^ds^es^fs^gs^eip^cs^eflags^error;/*HACK*/
     strapp(out,", interrupt: %d",(void *)isr);
     strapp(out,", count: %d",(void *)xtemp);
     writeline(out);
+    print(eax,"EAX:\0\0\0\0\0\0\0\0");
+    print(ebx,"EBX:\0\0\0\0\0\0\0\0");
+    print(ecx,"ECX:\0\0\0\0\0\0\0\0");
+    print(edx,"EDX:\0\0\0\0\0\0\0\0");
+    print(ebp,"EBP:\0\0\0\0\0\0\0\0");
+    print(esi,"ESI:\0\0\0\0\0\0\0\0");
+    print(edi,"EDI:\0\0\0\0\0\0\0\0");
+    print(ds,"DS:\0\0\0\0\0\0\0\0");
+    print(es,"ES:\0\0\0\0\0\0\0\0");
+    print(fs,"FS:\0\0\0\0\0\0\0\0");
+    print(gs,"GS:\0\0\0\0\0\0\0\0");
+    print(eip,"EIP:\0\0\0\0\0\0\0\0");
+    print(cs,"CS:\0\0\0\0\0\0\0\0");
+    print(eflags,"EFLAGS:\0\0\0\0\0\0\0\0");
+    print(error,"ERROR:\0\0\0\0\0\0\0\0");
+    writeline("");
     if(isr==9){
         c=inb(0x60);
         put(c);
