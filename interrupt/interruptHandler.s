@@ -74,6 +74,7 @@ isr_7:          # no coprocessor
 
 isr_8:          # double fault exception
     cli
+    push $0
     push $8     # Numero di procedura ISR.
     jmp isr_common
 

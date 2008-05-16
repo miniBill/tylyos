@@ -74,7 +74,7 @@ void _kmain(multiboot_info_t* mbd, unsigned int magic){
     i=0;
     asm("sti");
     while(on){
-        putxy(i%2,t,'.');
+        putxy(i%2,t,' ');
         putxy(1-i%2,t,'X');
         i=1-i;
     }
