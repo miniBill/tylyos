@@ -131,10 +131,10 @@ void interrupt_handler(
         "\0\0\0\0\0\0\0\0"
         "\0\0\0\0\0\0\0\0"
         "\0\0\0\0\0\0\0\0";/*32 bytes*/
-    /*if(isr!=13){*//*HACK*/
+    if(isr!=13){/*HACK*/
     xtemp++;
-    /*for(;c<44;c++)
-        *(out+c)=0;*/
+    for(;c<44;c++)
+        *(out+c)=0;
     c=eax^ebx^ecx^edx^ebp^esi^edi^ds^es^fs^gs^eip^cs^eflags^error;/*HACK*/
     strapp(out,", interrupt: %d",(void *)isr);
     strapp(out,", count: %d",(void *)xtemp);
@@ -143,7 +143,7 @@ void interrupt_handler(
         c=inb(0x60);
         put(c);
     }
-    /*}*//*HACK*/
+    }/*HACK*/
     /* Send End Of Interrupt to PIC */
     if(isr>7)outb(0xA0,0x20);
     outb(0x20,0x20);
