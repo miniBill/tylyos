@@ -24,9 +24,6 @@ all:floppy.img
 floppy.img: clearos
 	sh make.sh
 
-interrupt/interrupt.o: interrupt/interrupt.h interrupt/interrupt.c
-	cc -march=i386 -ffreestanding -Wall -pedantic -Wextra -c -o $@ interrupt/interrupt.c
-
 clearos: $(OBJ)
 	$(LD) $(LDFLAGS) $^ -o $@
 
