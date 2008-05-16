@@ -25,6 +25,12 @@
 
 short abs(short s){return s<0?-s:s;}
 
+int on=1;
+
+void halt(){
+    on=0;
+}
+
 void _kmain(multiboot_info_t* mbd, unsigned int magic){
     char * parameters="Parametri: \0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0";
     char * pointer="Prova puntatore";
@@ -63,12 +69,13 @@ void _kmain(multiboot_info_t* mbd, unsigned int magic){
     OK(t++);
     asm("int $0x0F");/* interrupt 15 per provare il funzionamento */
     OK(t++);
-    asm("int $0x10");/* interrupt 16 per provare il funzionamento */
-    OK(t++);
-    asm("int $0x11");/* interrupt 17 per provare il funzionamento */
-    OK(t++);
     writeline("Ed ora, diamo il via alle danze!");
     OK(t++);
-    while(1);
+    i=0;
+    asm("sti");
+    while(on){
+        putxy(i%2,t,' ');
+        putxy(1-i%2,t,'X');
+        i=1-i;
+    }
 }
-

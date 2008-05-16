@@ -61,16 +61,16 @@ void initIDT(){
 
 void addIDTseg(short int i, void (*gestore)(), unsigned char options, unsigned int seg_sel){
     unsigned int indirizzo = (unsigned int)gestore;
+    idt[i].base_hi = indirizzo >> 16;
     idt[i].base_lo= (indirizzo&0xFFFF);
     idt[i].always0=0x00;
     idt[i].sel = seg_sel;
     idt[i].flags = options|0xE; /* 1|11|0: valido|ring3|sistema  */
-    idt[i].base_hi = indirizzo >> 16;
 }
 
-void remapICW(int pic_p,int pic_s){
-    outb (0x21, pic_p);
-    outb (0xA1, pic_s);
+void remapICW(int pic_p,int pic_s ,int data){
+    outb (0x20+data, pic_p);/*master*/
+    outb (0xA0+data, pic_s);/*slave*/
 }
 
 /* rimappa i PIC (programmable input controller)
@@ -90,27 +90,28 @@ void irq_remap(unsigned int offset_1, unsigned int offset_2){
      */
     write("Kernel: PIC remap: ");
 
-    /* Inizializzazione */
-    outb (0x20, 0x10 + 0x01);   /* 0x10 significa che si tratta di ICW1            */
-    outb (0xA0, 0x10 + 0x01);   /* 0x01 significa che si deve arrivare fino a ICW4 */
+    /* Inizializzazione                                */
+    /* 0x10 significa che si tratta di ICW1            */
+    /* 0x01 significa che si deve arrivare fino a ICW4 */
+    remapICW(0x11,0x11,0);
     write("ICW1, ");
 
     /* ICW2: PIC_P a partire da "offset_1" */
     /*       PIC_S a partire da "offset_2" */
-    remapICW(offset_1,offset_2);
+    remapICW(offset_1,offset_2,1);
     write("ICW2, ");
 
     /* ICW3: PIC_P: IRQ2 pilotato da PIC_S */
     /*       PIC_S: pilota IRQ2 di PIC_P   */
-    remapICW(0x04,0x02);
+    remapICW(0x04,0x02,1);
     write("ICW3, ");
 
-    /* ICW4: si precisa solo la modalità del microprocessore; 0x01 = 8086 */
-    remapICW(0x01,0x01);
+    /* ICW4: si precisa la modalità del microprocessore; 0x01 = 8086 */
+    remapICW(0x01,0x01,1);
     write("ICW4, ");
 
     /* OCW1: azzera la maschera in modo da abilitare tutti i numeri IRQ */
-    remapICW(0x00,0x00);
+    remapICW(0x00,0x00,1);
     write("OCW1.");
 
     writeline("PIC remapped");
@@ -130,10 +131,20 @@ void interrupt_handler(
         "\0\0\0\0\0\0\0\0"
         "\0\0\0\0\0\0\0\0"
         "\0\0\0\0\0\0\0\0";/*32 bytes*/
+    /*if(isr!=13){*//*HACK*/
     xtemp++;
-    for(;c<44;c++)
-        *(out+c)=0;
+    /*for(;c<44;c++)
+        *(out+c)=0;*/
+    c=eax^ebx^ecx^edx^ebp^esi^edi^ds^es^fs^gs^eip^cs^eflags^error;/*HACK*/
     strapp(out,", interrupt: %d",(void *)isr);
     strapp(out,", count: %d",(void *)xtemp);
     writeline(out);
+    if(isr==9){
+        c=inb(0x60);
+        put(c);
+    }
+    /*}*//*HACK*/
+    /* Send End Of Interrupt to PIC */
+    if(isr>7)outb(0xA0,0x20);
+    outb(0x20,0x20);
 }

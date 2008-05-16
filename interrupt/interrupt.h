@@ -42,12 +42,10 @@ void initIDT();
 
 void addIDTseg(short int i, void (*gestore)(), unsigned char options, unsigned int seg_sel);
 
-
-
 /*
-	rimappa i PIC (programmable input controller)
-	offset_1: offset riferito alla IDT delle interruzioni per il primo PIC
-	offset_2: offset riferito alla IDT delle interruzioni per il PIC slave
+ * rimappa i PIC (programmable input controller)
+ * offset_1: offset riferito alla IDT delle interruzioni per il primo PIC
+ * offset_2: offset riferito alla IDT delle interruzioni per il PIC slave
 */
 void irq_remap (unsigned int offset_1, unsigned int offset_2);
 

@@ -4,6 +4,8 @@
 #include "multiboot.h"
 #include "../drivers/screen/screen.h"
 
+void halt();
+
 void _kmain(multiboot_info_t* mbd, unsigned int magic );
 
 char * kpointer=(char *)0xb8000;
@@ -26,4 +28,5 @@ void OK(int i){
     cwritexy(COLUMNS-3,i,Light_Green);
     cwritexy(COLUMNS-2,i,Light_Green);
 }
+
 #endif

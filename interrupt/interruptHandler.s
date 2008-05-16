@@ -163,9 +163,7 @@ isr_common:
     pushl %ecx
     pushl %ebx
     pushl %eax
-    #
     call interrupt_handler
-    #
     popl %eax
     popl %ebx
     popl %ecx

@@ -20,13 +20,6 @@
 #ifndef SCREEN_H_
 #define SCREEN_H_
 
-#include "stdio.h"
-
-/*typedef struct console_m{
-    unsigned char character;
-    unsigned char flags;
-}console_memory;*/
-
 enum{
 	Black		=0x00,
 	Blue		=0x01,
