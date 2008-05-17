@@ -17,7 +17,7 @@
  * along with ClearOS.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#define KBD_IT /* tastiera italiana */
+
 
 #include "interrupt.h"
 #include "keyboard.h"

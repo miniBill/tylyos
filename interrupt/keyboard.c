@@ -17,23 +17,27 @@
  * along with ClearOS.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+
+
+#include "keyboard.h"
+
 unsigned char kmode   = 0;
 
 char ScanCodeToChar(char scode)
 {
-	unsigned char ch;
+	char ch;
 
     	if (kmode & ALTGR)
 	{
-		ch=alt_map[sc];
+		ch=alt_map[(int)scode];
     	}
 	else if (kmode & (LSHIFT|RSHIFT|LCTRL|RCTRL))
 	{
-        	ch=shift_map[sc];
+        	ch=shift_map[(int)scode];
     	}
 	else
 	{
-        	ch=key_map[sc];
+        	ch=key_map[(int)scode];
     	}
 
 	if (ch == 0)
@@ -42,3 +46,4 @@ char ScanCodeToChar(char scode)
 	}
 	return ch;
 }
+
