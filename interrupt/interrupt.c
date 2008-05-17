@@ -22,6 +22,8 @@
 #include "../drivers/screen/io.h"
 #include "../drivers/screen/screen.h"
 
+#define PRINT_REGISTERS
+
 int xtemp;
 
 void initIDT(){
@@ -151,6 +153,7 @@ void interrupt_handler(
     strapp(out,", interrupt: %d",(void *)isr);
     strapp(out,", count: %d",(void *)xtemp);
     writeline(out);
+#ifdef PRINT_REGISTERS
     print(eax,"EAX:\0\0\0\0\0\0\0\0");
     print(ebx,"EBX:\0\0\0\0\0\0\0\0");
     print(ecx,"ECX:\0\0\0\0\0\0\0\0");
@@ -166,6 +169,7 @@ void interrupt_handler(
     print(cs,"CS:\0\0\0\0\0\0\0\0");
     print(eflags,"EFLAGS:\0\0\0\0\0\0\0\0");
     print(error,"ERROR:\0\0\0\0\0\0\0\0");
+#endif
     writeline("");
     if(isr==9){
         c=inb(0x60);
