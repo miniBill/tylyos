@@ -17,7 +17,28 @@
  * along with ClearOS.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+unsigned char kmode   = 0;
+
 char ScanCodeToChar(char scode)
 {
-	return scode&0x7F;
+	unsigned char ch;
+
+    	if (kmode & ALTGR)
+	{
+		ch=alt_map[sc];
+    	}
+	else if (kmode & (LSHIFT|RSHIFT|LCTRL|RCTRL))
+	{
+        	ch=shift_map[sc];
+    	}
+	else
+	{
+        	ch=key_map[sc];
+    	}
+
+	if (ch == 0)
+	{
+		return '\0';
+	}
+	return ch;
 }
