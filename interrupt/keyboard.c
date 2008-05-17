@@ -26,7 +26,7 @@ unsigned char kmode   = 0;
 char ScanCodeToChar(char scode)
 {
 	char ch;
-
+	scode=scode&0x7F;
     	if (kmode & ALTGR)
 	{
 		ch=alt_map[(int)scode];
