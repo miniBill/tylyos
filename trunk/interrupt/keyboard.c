@@ -23,28 +23,7 @@
 
 unsigned char kmode   = 0;
 
-char ScanCodeToChar(char scode){
-	char ch;
-	scode=scode&0x7F;
-    	if (kmode & ALTGR)
-	{
-		ch=alt_map[(int)scode];
-    	}
-	else if (kmode & (LSHIFT|RSHIFT|LCTRL|RCTRL))
-	{
-        	ch=shift_map[(int)scode];
-    	}
-	else
-	{
-        	ch=key_map[(int)scode];
-    	}
 
-	if (ch == 0)
-	{
-		return '\0';
-	}
-	return ch;
-}
 
 #ifdef KBD_US
 
@@ -155,3 +134,26 @@ static int  pad_map[] = { 7, 8, 9, 0, 4, 5, 6, 0, 1, 2, 3, 0, 0 };
  #error No keyboard defined
  #endif
 #endif
+
+char ScanCodeToChar(char scode){
+	char ch;
+	scode=scode&0x7F;
+    	if (kmode & ALTGR)
+	{
+		ch=alt_map[(int)scode];
+    	}
+	else if (kmode & (LSHIFT|RSHIFT|LCTRL|RCTRL))
+	{
+        	ch=shift_map[(int)scode];
+    	}
+	else
+	{
+        	ch=key_map[(int)scode];
+    	}
+
+	if (ch == 0)
+	{
+		return '\0';
+	}
+	return ch;
+}
