@@ -23,7 +23,7 @@
 char ScanCodeToChar(char scode);
 
 /* tastiera italiana */
-#define KBD_IT
+#define KBD_US
 
 #define LSHIFT   0x01
 #define RSHIFT   0x02
