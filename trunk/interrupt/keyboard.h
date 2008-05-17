@@ -17,6 +17,9 @@
  * along with ClearOS.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#ifndef KEYBOARD_H_
+#define KEYBOARD_H_
+
 char ScanCodeToChar(char scode);
 
 #define KBD_IT /* tastiera italiana */
@@ -32,7 +35,7 @@ char ScanCodeToChar(char scode);
 
 #ifdef KBD_US
 
-static char key_map[] = {
+char key_map[] = {
        0,   27,  '1',  '2',  '3',  '4',  '5',  '6',
      '7',  '8',  '9',  '0',  '-',  '=',  127,    9,
      'q',  'w',  'e',  'r',  't',  'y',  'u',  'i',
@@ -47,7 +50,7 @@ static char key_map[] = {
        0,    0,    0,    0,    0,    0,    0,    0,
 	   0 };
 
-static char shift_map[] = {
+char shift_map[] = {
        0,   27,  '!',  '@',  '#',  '$',  '%',  '^',
      '&',  '*',  '(',  ')',  '_',  '+',  127,    9,
 	 'Q',  'W',  'E',  'R',  'T',  'Y',  'U',  'I',
@@ -62,7 +65,7 @@ static char shift_map[] = {
        0,    0,    0,    0,    0,    0,    0,    0,
        0 };
 
-static char alt_map[] = {
+char alt_map[] = {
        0,    0,    0,  '@',    0,  '$',    0,    0,
      '{',   '[',  ']', '}', '\\',    0,    0,    0,
        0,    0,    0,    0,    0,    0,    0,    0,
@@ -84,7 +87,7 @@ static int  pad_map[] = { 7, 8, 9, 0, 4, 5, 6, 0, 1, 2, 3, 0, 0 };
 #else
     #ifdef KBD_IT
 
-static char key_map[] = {
+char key_map[] = {
        0,   27,  '1',  '2',  '3',  '4',  '5',  '6',
      '7',  '8',  '9',  '0', '\'',    0,  127,    9,
      'q',  'w',  'e',  'r',  't',  'y',  'u',  'i',
@@ -99,7 +102,7 @@ static char key_map[] = {
        0,    0,    0,    0,    0,    0,    0,    0,
        0 };
 
-static char shift_map[] = {
+char shift_map[] = {
        0,   27,  '!',  '"',    0,  '$',  '%',  '&',
      '/',  '(',  ')',  '=',  '?',  '^',  127,    9,
      'Q',  'W',  'E',  'R',  'T',  'Y',  'U',  'I',
@@ -114,7 +117,7 @@ static char shift_map[] = {
        0,    0,    0,    0,    0,    0,    0,    0,
        0 };
 
-static char alt_map[] = {
+char alt_map[] = {
        0,    0,    0,    0,    0,    0,    0,    0,
        0,    0,    0,    0,    0,    0,    0,    0,
        0,    0,    0,    0,    0,    0,    0,    0,
@@ -137,4 +140,6 @@ static int  pad_map[] = { 7, 8, 9, 0, 4, 5, 6, 0, 1, 2, 3, 0, 0 };
     #else
     #error "Keyboard-type not supported"
     #endif
+    #endif
 #endif
+
