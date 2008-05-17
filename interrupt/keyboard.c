@@ -27,7 +27,7 @@ unsigned char kmode   = 0;
 
 #ifdef KBD_US
 
-key_map[] = {
+char key_map[] = {
        0,   27,  '1',  '2',  '3',  '4',  '5',  '6',
      '7',  '8',  '9',  '0',  '-',  '=',  127,    9,
      'q',  'w',  'e',  'r',  't',  'y',  'u',  'i',
@@ -42,7 +42,7 @@ key_map[] = {
        0,    0,    0,    0,    0,    0,    0,    0,
 	   0 };
 
-shift_map[] = {
+char shift_map[] = {
        0,   27,  '!',  '@',  '#',  '$',  '%',  '^',
      '&',  '*',  '(',  ')',  '_',  '+',  127,    9,
 	 'Q',  'W',  'E',  'R',  'T',  'Y',  'U',  'I',
@@ -57,7 +57,7 @@ shift_map[] = {
        0,    0,    0,    0,    0,    0,    0,    0,
        0 };
 
-alt_map[] = {
+char alt_map[] = {
        0,    0,    0,  '@',    0,  '$',    0,    0,
      '{',   '[',  ']', '}', '\\',    0,    0,    0,
        0,    0,    0,    0,    0,    0,    0,    0,
@@ -155,5 +155,28 @@ char ScanCodeToChar(char scode){
 	{
 		return '\0';
 	}
+	
+	// If CTRL is active the character CTRL-A == 0x01, CTRL-B == 0x02,
+    	// CTRL-Z == 0x1A.
+    	if (kmode & (LCTRL|RCTRL|CAPS)) 
+	{
+        	if ((ch>='a' && ch <='z') || (ch>=224 && ch<=254)) 
+		{
+            		ch -= 32;
+        	}
+    	}
+
+    	if (kmode & (LCTRL|RCTRL))
+	{
+        	ch &= 0x1f;
+    	}
+
+    	// If the character has been pressed in combination with
+    	// ALT key, the bit 7 is activated. For LATIN-1 map the character is
+    	// prepended with 0x33 value (now not handled).
+    	if (kmode & ALT) 
+	{
+        	ch |= 0x80;
+    	}
 	return ch;
 }

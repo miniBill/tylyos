@@ -25,7 +25,7 @@
 #include "../drivers/screen/io.h"
 #include "../drivers/screen/screen.h"
 
-#define PRINT_REGISTERS
+/* #define PRINT_REGISTERS */
 
 
 int xtemp;
@@ -158,7 +158,7 @@ void interrupt_handler(
         *(out+c)=0;
     strapp(out,", interrupt: %d",(void *)isr);
     strapp(out,", count: %d",(void *)xtemp);
-    writeline(out);
+   /* writeline(out); */
 #ifdef PRINT_REGISTERS
     print(eax,"EAX:\0\0\0\0\0\0\0\0");
     print(ebx,"EBX:\0\0\0\0\0\0\0\0");
@@ -176,7 +176,7 @@ void interrupt_handler(
     print(eflags,"EFLAGS:\0\0\0\0\0\0\0\0");
     print(error,"ERROR:\0\0\0\0\0\0\0\0");
 #endif
-    writeline("");
+   /* writeline(""); */
     if(isr==9){
         c=inb(0x60);
         put(ScanCodeToChar(c));
