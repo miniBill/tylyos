@@ -29,7 +29,7 @@ int xtemp;
 void initIDT(){
     /* inizializzazione */
     int c;
-asm("cli");
+    asm("cli");
     xtemp=0;
     for(c=0;c<256;c++)
         addIDTseg(c,0,0,0);
@@ -53,16 +53,18 @@ asm("cli");
     addIDTseg(16,isr_16,0x80,0x08);
     addIDTseg(17,isr_17,0x80,0x08);
     addIDTseg(18,isr_18,0x80,0x08);
-for(c=33;c<60;c++)
-    addIDTseg(c,isr_32,0x80,0x08);
-  
+    for(c=33;c<60;c++)
+        addIDTseg(c,isr_32,0x80,0x08);
+    addIDTseg(32,isr_18,0x80,0x08);
+    addIDTseg(33,isr_18,0x80,0x08);
+    addIDTseg(47,isr_18,0x80,0x08);
 
     idt_pointer.limit=0xFFFF;
     idt_pointer.base=(unsigned int)&idt;
 
     idt_load();
     irq_remap(33,50);
- asm("sti");
+    asm("sti");
 }
 
 void addIDTseg(short int i, void (*gestore)(), unsigned char options, unsigned int seg_sel){
@@ -74,7 +76,7 @@ void addIDTseg(short int i, void (*gestore)(), unsigned char options, unsigned i
     idt[i].flags = options|0xE; /* 1|11|0: valido|ring3|sistema  */
 }
 
-void remapICW(int pic_p,int pic_s ,int data){
+void sendICW(int pic_p,int pic_s ,int data){
     outb (0x20+data, pic_p);/*master*/
     outb (0xA0+data, pic_s);/*slave*/
 }
@@ -85,8 +87,8 @@ void remapICW(int pic_p,int pic_s ,int data){
  */
 void irq_remap(unsigned int offset_1, unsigned int offset_2){
     /*
-     * PIC_P è il PIC primario o "master"
-     * PIC_S è il PIC secondario o "slave"
+     * PIC_P ï¿½ il PIC primario o "master"
+     * PIC_S ï¿½ il PIC secondario o "slave"
      *
      * Quando si manifesta un IRQ che riguarda il PIC secondario,
      * il PIC primario riceve IRQ 2
@@ -97,27 +99,27 @@ void irq_remap(unsigned int offset_1, unsigned int offset_2){
     write("Kernel: PIC remap: ");
 
     /* Inizializzazione                                */
-    /* 0x10 significa che si tratta di ICW1            */
+    /* 0x10 significa che si stï¿½ inizializzando        */
     /* 0x01 significa che si deve arrivare fino a ICW4 */
-    remapICW(0x11,0x11,0);
+    sendICW(0x11,0x11,0);
     write("ICW1, ");
 
     /* ICW2: PIC_P a partire da "offset_1" */
     /*       PIC_S a partire da "offset_2" */
-    remapICW(offset_1,offset_2,1);
+    sendICW(offset_1,offset_2,1);
     write("ICW2, ");
 
-    /* ICW3: PIC_P: IRQ2 pilotato da PIC_S */
-    /*       PIC_S: pilota IRQ2 di PIC_P   */
-    remapICW(0x04,0x02,1);
+    /* ICW3: PIC_P: IRQ2 per pilotare PIC_S    */
+    /*       PIC_S: pilotato con IRQ2 da PIC_P */
+    sendICW(0x04,0x02,1);
     write("ICW3, ");
 
-    /* ICW4: si precisa la modalità del microprocessore; 0x01 = 8086 */
-    remapICW(0x01,0x01,1);
+    /* ICW4: si precisa la modalitï¿½ del microprocessore; 0x01 = 8086 */
+    sendICW(0x01,0x01,1);
     write("ICW4, ");
 
     /* OCW1: azzera la maschera in modo da abilitare tutti i numeri IRQ */
-    remapICW(0x00,0x00,1);
+    sendICW(0x00,0x00,1);
     write("OCW1.");
 
     writeline("PIC remapped");
