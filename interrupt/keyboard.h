@@ -29,7 +29,7 @@ char ScanCodeToChar(char scode);
 #define CAPS     0x40
 #define CAPSDOWN 0x80
 
-#if defined KBD_US
+#ifdef KBD_US
 
 static unsigned char key_map[] = {
        0,   27,  '1',  '2',  '3',  '4',  '5',  '6',
@@ -80,7 +80,8 @@ static unsigned char num_map[] = "789-456+1230,";
 static unsigned int  pad_map[] = { 7, 8, 9, 0, 4, 5, 6, 0, 1, 2, 3, 0, 0 };
 
 
-#elif defined KBD_IT
+#else
+    #ifdef KBD_IT
 
 static unsigned char key_map[] = {
        0,   27,  '1',  '2',  '3',  '4',  '5',  '6',
@@ -132,6 +133,7 @@ static unsigned int  pad_map[] = { 7, 8, 9, 0, 4, 5, 6, 0, 1, 2, 3, 0, 0 };
 
 
 
-#else
-#error "Keyboard-type not supported"
+    #else
+    #error "Keyboard-type not supported"
+    #endif
 #endif
