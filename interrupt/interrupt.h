@@ -35,7 +35,6 @@ struct idt_ptr{
 struct idt_entry idt[256];
 struct idt_ptr idt_pointer;
 
-
 extern void idt_load();
 
 void initIDT();
@@ -49,22 +48,12 @@ void addIDTseg(short int i, void (*gestore)(), unsigned char options, unsigned i
 */
 void irq_remap (unsigned int offset_1, unsigned int offset_2);
 
-void interrupt_handler (unsigned int eax,
-                        unsigned int ecx,
-                        unsigned int edx,
-                        unsigned int ebx,
-                        unsigned int ebp,
-                        unsigned int esi,
-                        unsigned int edi,
-                        unsigned int ds,
-                        unsigned int es,
-                        unsigned int fs,
-                        unsigned int gs,
-                        unsigned int isr,
-                        unsigned int error,
-                        unsigned int eip,
-                        unsigned int cs,
+void interrupt_handler (unsigned int eax, unsigned int ebx, unsigned int ecx, unsigned int edx,
+                        unsigned int ebp, unsigned int esi, unsigned int edi, unsigned int ds,
+                        unsigned int es, unsigned int fs, unsigned int gs, unsigned int isr,
+                        unsigned int error, unsigned int eip, unsigned int cs,
                         unsigned int eflags, ...);
+
 /*############### funzioni interruzioni ################*/
 extern void isr_0();
 extern void isr_1();
@@ -86,5 +75,7 @@ extern void isr_16();
 extern void isr_17();
 extern void isr_18();
 extern void isr_32();
+extern void isr_33();
+extern void isr_47();
 
 #endif

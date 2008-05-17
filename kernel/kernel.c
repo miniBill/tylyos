@@ -67,9 +67,7 @@ void _kmain(multiboot_info_t* mbd, unsigned int magic){
     OK(t++);
     initIDT();
     OK(t++);
-    /*asm("int $0x0F");*//* interrupt 15 per provare il funzionamento */
-    /*OK(t++);
-    writeline("Ed ora, diamo il via alle danze!");
+    /*writeline("Ed ora, diamo il via alle danze!");
     OK(t++);
     i=0;
     asm("sti");
