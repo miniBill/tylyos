@@ -33,10 +33,10 @@ char ScanCodeToChar(char scode);
 #define ALTGR    0x20
 #define CAPS     0x40
 #define CAPSDOWN 0x80
-
+/*
 char * key_map;
 char * shift_map;
 char * alt_map;
-
+*/
 #endif
 
