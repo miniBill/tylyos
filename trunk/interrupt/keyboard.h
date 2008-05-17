@@ -19,6 +19,7 @@
 
 char ScanCodeToChar(char scode);
 
+#define KBD_IT /* tastiera italiana */
 
 #define LSHIFT   0x01
 #define RSHIFT   0x02
@@ -31,7 +32,7 @@ char ScanCodeToChar(char scode);
 
 #ifdef KBD_US
 
-static unsigned char key_map[] = {
+static char key_map[] = {
        0,   27,  '1',  '2',  '3',  '4',  '5',  '6',
      '7',  '8',  '9',  '0',  '-',  '=',  127,    9,
      'q',  'w',  'e',  'r',  't',  'y',  'u',  'i',
@@ -46,7 +47,7 @@ static unsigned char key_map[] = {
        0,    0,    0,    0,    0,    0,    0,    0,
 	   0 };
 
-static unsigned char shift_map[] = {
+static char shift_map[] = {
        0,   27,  '!',  '@',  '#',  '$',  '%',  '^',
      '&',  '*',  '(',  ')',  '_',  '+',  127,    9,
 	 'Q',  'W',  'E',  'R',  'T',  'Y',  'U',  'I',
@@ -61,7 +62,7 @@ static unsigned char shift_map[] = {
        0,    0,    0,    0,    0,    0,    0,    0,
        0 };
 
-static unsigned char alt_map[] = {
+static char alt_map[] = {
        0,    0,    0,  '@',    0,  '$',    0,    0,
      '{',   '[',  ']', '}', '\\',    0,    0,    0,
        0,    0,    0,    0,    0,    0,    0,    0,
@@ -75,15 +76,15 @@ static unsigned char alt_map[] = {
        0,    0,    0,    0,    0,    0,  '|',    0,
        0,    0,    0,    0,    0,    0,    0,    0,
        0 };
-
-static unsigned char num_map[] = "789-456+1230,";
-static unsigned int  pad_map[] = { 7, 8, 9, 0, 4, 5, 6, 0, 1, 2, 3, 0, 0 };
-
+/*
+static char num_map[] = "789-456+1230,";
+static int  pad_map[] = { 7, 8, 9, 0, 4, 5, 6, 0, 1, 2, 3, 0, 0 };
+*/
 
 #else
     #ifdef KBD_IT
 
-static unsigned char key_map[] = {
+static char key_map[] = {
        0,   27,  '1',  '2',  '3',  '4',  '5',  '6',
      '7',  '8',  '9',  '0', '\'',    0,  127,    9,
      'q',  'w',  'e',  'r',  't',  'y',  'u',  'i',
@@ -98,7 +99,7 @@ static unsigned char key_map[] = {
        0,    0,    0,    0,    0,    0,    0,    0,
        0 };
 
-static unsigned char shift_map[] = {
+static char shift_map[] = {
        0,   27,  '!',  '"',    0,  '$',  '%',  '&',
      '/',  '(',  ')',  '=',  '?',  '^',  127,    9,
      'Q',  'W',  'E',  'R',  'T',  'Y',  'U',  'I',
@@ -113,7 +114,7 @@ static unsigned char shift_map[] = {
        0,    0,    0,    0,    0,    0,    0,    0,
        0 };
 
-static unsigned char alt_map[] = {
+static char alt_map[] = {
        0,    0,    0,    0,    0,    0,    0,    0,
        0,    0,    0,    0,    0,    0,    0,    0,
        0,    0,    0,    0,    0,    0,    0,    0,
@@ -127,10 +128,10 @@ static unsigned char alt_map[] = {
        0,    0,    0,    0,    0,    0,    0,    0,
        0,    0,    0,    0,    0,    0,    0,    0,
        0 };
-
-static unsigned char num_map[] = "789-456+1230,";
-static unsigned int  pad_map[] = { 7, 8, 9, 0, 4, 5, 6, 0, 1, 2, 3, 0, 0 };
-
+/*
+static char num_map[] = "789-456+1230,";
+static int  pad_map[] = { 7, 8, 9, 0, 4, 5, 6, 0, 1, 2, 3, 0, 0 };
+*/
 
 
     #else
