@@ -17,12 +17,16 @@
  * along with ClearOS.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#define KBD_IT /* tastiera italiana */
+
 #include "interrupt.h"
+#include "keyboard.h"
 #include "../kernel/stdio.h"
 #include "../drivers/screen/io.h"
 #include "../drivers/screen/screen.h"
 
 #define PRINT_REGISTERS
+
 
 int xtemp;
 
@@ -175,7 +179,7 @@ void interrupt_handler(
     writeline("");
     if(isr==9){
         c=inb(0x60);
-        put(c);
+        put(ScanCodeToChar(c));
     }
     }/*HACK*/
     /* Send End Of Interrupt to PIC */
