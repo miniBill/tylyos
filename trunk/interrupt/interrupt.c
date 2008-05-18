@@ -20,7 +20,7 @@
 
 
 #include "interrupt.h"
-#include "keyboard.h"
+#include "../drivers/keyboard/keyboard.h"
 #include "../kernel/stdio.h"
 #include "../drivers/screen/io.h"
 #include "../drivers/screen/screen.h"
