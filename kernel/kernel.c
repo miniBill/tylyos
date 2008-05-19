@@ -56,12 +56,12 @@ void _kmain(multiboot_info_t* mbd, unsigned int magic){
     strapp(parameters,"magic:%x",(void *)magic);
     writeline(parameters);
     OK(t++);
-    for(i=0;i<6;i++)
+    for(i=80;i<86;i++)
         put(read(i));
     writeline("put/read");
     OK(t++);
     writeline("Prova GDT");
-    init_gdt();
+    initGdt();
     OK(t++);
     writeline("Prova IDT");
     OK(t++);

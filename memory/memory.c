@@ -20,32 +20,59 @@
 #include "gdtflags.h"
 #include "../drivers/screen/screen.h"
 
-void gdt_set(int num, unsigned long base, unsigned long limit, unsigned char gran, unsigned char access){
-    gdt[num].base_low = (base & 0xFFFF);
-    gdt[num].base_middle = (base >> 16) & 0xFF;
-    gdt[num].base_high = (base >> 24) & 0xFF;
+void gdtSet(int num, unsigned long base, unsigned long limit, unsigned char gran, unsigned char access){
+    gdt[num].baseLow = (base & 0xFFFF);
+    gdt[num].baseMiddle = (base >> 16) & 0xFF;
+    gdt[num].baseHigh = (base >> 24) & 0xFF;
 
-    gdt[num].limit_low = (limit & 0xFFFF);
+    gdt[num].limitLow = (limit & 0xFFFF);
     /*granularity.low is limit.high*/
     gdt[num].granularity = ((limit >> 16) & 0x0F);
     gdt[num].granularity |= gran & 0xC0;
     gdt[num].access = access;
 }
 
-void init_gdt(){
-    gdt_pointer.limit = (sizeof(struct gdt_entry) * 3) - 1;
-    gdt_pointer.base = (int)&gdt;
+void initGdt(){
+    gdtPointer.limit = (sizeof(struct gdtEntry) * 3) - 1;
+    gdtPointer.base = (int)&gdt;
 
-    gdt_set(0, 0, 0, 0, 0); /*Il puntatore NULL!*/
-    gdt_set(1, 0, 0xFFFFFFFF,MEM_GRANULAR|MEM_32,
+    gdtSet(0, 0, 0, 0, 0); /*Il puntatore NULL!*/
+    gdtSet(1, 0, 0xFFFFFFFF,MEM_GRANULAR|MEM_32,
         MEM_PRESENT|MEM_CODE_DATA|MEM_RW|MEM_CODE);
-    gdt_set(2, 0, 0xFFFFFFFF,MEM_GRANULAR|MEM_32,
+    gdtSet(2, 0, 0xFFFFFFFF,MEM_GRANULAR|MEM_32,
         MEM_PRESENT|MEM_CODE_DATA|MEM_RW);
-    gdt_flush();
+    gdtFlush();
 }
 
-void memclear(char * s,int length){
-    int i=0;
-    for(;i<length;i++)
-        *(s+i)=0;
+enum{
+    PAGE_NOTPRESENT = 0x0,
+    PAGE_PRESENT    = 0x1,
+
+    PAGE_READONLY   = 0x0,
+    PAGE_READWRITE  = 0x2,
+
+    PAGE_SUPERVISOR = 0x0,
+    PAGE_USER       = 0x4,
+
+    PAGE_4KPAGE    = 0x0
+};
+
+/* obj: indirizzo dell'area su cui scrivere il selettore
+ * TableAdress: indirizzo della tabella nella memoria (NB: una tabella occupa una pagina da 4K
+ * questo indirizzo indica i 20 bit più significativi dell indirizzo della tabella)
+ */
+void setPageTableSelector(unsigned int *obj,unsigned int tableAdress,unsigned int flags){
+    *obj=0;
+    *obj=flags;
+    *obj|=tableAdress<<12;
+}
+
+/* obj: indirizzo dell'area su cui scrivere il selettore
+ * TableAdress: indirizzo della pagina nella memoria (NB: una pagina occupa 4K
+ * questo indirizzo indica i 20 bit più significativi dell indirizzo)
+ */
+void setPageSelector(unsigned int *obj,unsigned int pageAdress,unsigned int flags){
+    *obj=0;
+    *obj=flags;
+    *obj|=pageAdress<<12;
 }

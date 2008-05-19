@@ -1,8 +1,8 @@
-global gdt_flush
-extern gdt_pointer
+global gdtFlush
+extern gdtPointer
 
-gdt_flush:
-    lgdt [gdt_pointer]
+gdtFlush:
+    lgdt [gdtPointer]
     mov ax, 0x10
     mov ds, ax
     mov es, ax
