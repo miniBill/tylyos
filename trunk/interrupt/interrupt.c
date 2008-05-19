@@ -25,9 +25,6 @@
 #include "../drivers/screen/io.h"
 #include "../drivers/screen/screen.h"
 
-/* #define PRINT_REGISTERS */
-
-
 int xtemp;
 
 void initIDT(){
@@ -100,7 +97,7 @@ void irq_remap(unsigned int offset_1, unsigned int offset_2){
      * ICW = initialization command word
      * OCW = operation command word
      */
-    write("Kernel: PIC remap: ");
+    write("PIC remap: ");
 
     /* Inizializzazione                                */
     /* 0x10 significa che si st� inizializzando        */
@@ -124,9 +121,9 @@ void irq_remap(unsigned int offset_1, unsigned int offset_2){
 
     /* OCW1: azzera la maschera in modo da abilitare tutti i numeri IRQ */
     sendICW(0x00,0x00,1);
-    write("OCW1.");
+    write("OCW1. ");
 
-    writeline("PIC remapped");
+    writeline("PIC remapped.");
 }
 
 void print(unsigned int reg,char * space){
@@ -175,11 +172,13 @@ void interrupt_handler(
     print(cs,"CS:\0\0\0\0\0\0\0\0");
     print(eflags,"EFLAGS:\0\0\0\0\0\0\0\0");
     print(error,"ERROR:\0\0\0\0\0\0\0\0");
+    writeline("");
 #endif
-   /* writeline(""); */
     if(isr==9){
         c=inb(0x60);
-        put(ScanCodeToChar(c));
+        c=ScanCodeToChar(c);
+        if(c!=0)
+            put(c);
     }
     }/*HACK*/
     /* Send End Of Interrupt to PIC */

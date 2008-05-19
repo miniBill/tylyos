@@ -32,4 +32,4 @@ clearos: $(OBJ)
 
 .PHONY: clean
 clean:
-	rm -f *\~ */*\~ */*.o */*/*\~ */*/*.o log clearos grub.img
+	rm -f *\~ */*\~ */*.o */*/*\~ */*/*.o log clearos grub.img floppy.img
