@@ -21,12 +21,9 @@ void kwrite(char * string){
 }
 
 void OK(int i){
-    putxy(COLUMNS-4,i,'[');
-    putxy(COLUMNS-3,i,'O');
-    putxy(COLUMNS-2,i,'K');
-    putxy(COLUMNS-1,i,']');
-    cwritexy(COLUMNS-3,i,Light_Green);
-    cwritexy(COLUMNS-2,i,Light_Green);
+    writexy(COLUMNS-4,i,"[OK]");
+    cputxy(COLUMNS-3,i,Light_Green);
+    cputxy(COLUMNS-2,i,Light_Green);
 }
 
 #endif

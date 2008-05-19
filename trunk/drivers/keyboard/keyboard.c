@@ -40,14 +40,14 @@ char key_map[] = {
        0,    0,  '-',    0,    0,    0,  '+',    0,
        0,    0,    0,    0,    0,    0,  '<',    0,
        0,    0,    0,    0,    0,    0,    0,    0,
-	   0 };
+       0 };
 
 char shift_map[] = {
        0,   27,  '!',  '@',  '#',  '$',  '%',  '^',
      '&',  '*',  '(',  ')',  '_',  '+',  127,    9,
-	 'Q',  'W',  'E',  'R',  'T',  'Y',  'U',  'I',
-	 'O',  'P',  '{',  '}',   13,    0,  'A',  'S',
-	 'D',  'F',  'G',  'H',  'J',  'K',  'L',  ':',
+     'Q',  'W',  'E',  'R',  'T',  'Y',  'U',  'I',
+     'O',  'P',  '{',  '}',   13,    0,  'A',  'S',
+     'D',  'F',  'G',  'H',  'J',  'K',  'L',  ':',
      '"',  '~',  '0',  '|',  'Z',  'X',  'C',  'V',
      'B',  'N',  'M',  '<',  '>',  '?',    0,  '*',
        0,   32,    0,    0,    0,    0,    0,    0,
@@ -131,52 +131,49 @@ static int  pad_map[] = { 7, 8, 9, 0, 4, 5, 6, 0, 1, 2, 3, 0, 0 };
 */
 
  #else
- #error No keyboard defined
+  #error No keyboard defined
  #endif
 #endif
 
 char ScanCodeToChar(char scode){
-	char ch;
-	scode=scode&0x7F;
-    	if (kmode & ALTGR)
-	{
-		ch=alt_map[(int)scode];
-    	}
-	else if (kmode & (LSHIFT|RSHIFT|LCTRL|RCTRL))
-	{
-        	ch=shift_map[(int)scode];
-    	}
-	else
-	{
-        	ch=key_map[(int)scode];
-    	}
+    char ch;
+    scode=scode&0x7F;
+    if(kmode & ALTGR)
+        ch=alt_map[(int)scode];
+    else
+        if(kmode & (LSHIFT|RSHIFT|LCTRL|RCTRL))
+            ch=shift_map[(int)scode];
+        else
+            ch=key_map[(int)scode];
 
-	if (ch == 0)
-	{
-		return '\0';
-	}
-	
-	// If CTRL is active the character CTRL-A == 0x01, CTRL-B == 0x02,
-    	// CTRL-Z == 0x1A.
-    	if (kmode & (LCTRL|RCTRL|CAPS)) 
-	{
-        	if ((ch>='a' && ch <='z') || (ch>=224 && ch<=254)) 
-		{
-            		ch -= 32;
-        	}
-    	}
+    if (ch == 0)
+        return '\0';
 
-    	if (kmode & (LCTRL|RCTRL))
-	{
-        	ch &= 0x1f;
-    	}
+    /* If CTRL is active the character CTRL-A == 0x01, CTRL-B == 0x02,
+     * CTRL-Z == 0x1A. */
+    if(kmode & (LCTRL|RCTRL|CAPS))
+        if(
+         (
+          (ch>='a')
+          &&
+          (ch <='z')
+         )
+         /*||
+         (
+          (ch>=224)
+          &&
+          (ch<=254)
+         )*/
+        )
+            ch -= 32;
 
-    	// If the character has been pressed in combination with
-    	// ALT key, the bit 7 is activated. For LATIN-1 map the character is
-    	// prepended with 0x33 value (now not handled).
-    	if (kmode & ALT) 
-	{
-        	ch |= 0x80;
-    	}
-	return ch;
+    if (kmode & (LCTRL|RCTRL))
+        ch &= 0x1f;
+
+    /* If the character has been pressed in combination with
+     * ALT key, the bit 7 is activated. For LATIN-1 map the character is
+     * prepended with 0x33 value (now not handled).*/
+    if (kmode & ALT) 
+        ch |= 0x80;
+    return ch;
 }
