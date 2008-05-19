@@ -43,26 +43,35 @@ enum{
 #define COLUMNS		80
 #define ROWS		25
 
-void clearScreen();
+int pos();
 
+void gotoi(int pos);
 void gotoxy(int x,int y);
 
-void put(char c);
-void putxy(int x,int y,char c);
-void write(char* string);
-void writeline(char* string);
-
-char read(int pos);
-char readcurr();
+char read();
+char readi(int pos);
 char readxy(int x,int y);
 
+void put(char c);
+void puti(int pos, char c);
+void putxy(int x,int y,char c);
+
+void nl();
+
+void write(char* string);
+void writei(int pos,char * string);
+void writexy(int x,int y,char * string);
+void writeline(char* string);
+
+void clearScreen();
+
 /*This three methods are equal to those without the c, but they read the color*/
-char cread(int index);
-char creadcurr();
+char cread();
+char creadi(int pos);
 char creadxy(int x,int y);
 
-void cwrite(int index,char color);
-void cwritecurr(char color);
-void cwritexy(int x,int y,char color);
+void cput(char color);
+void cputi(int pos,char color);
+void cputxy(int x,int y,char color);
 
 #endif

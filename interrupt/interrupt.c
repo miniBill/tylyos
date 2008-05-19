@@ -173,6 +173,8 @@ void interrupt_handler(
     print(eflags,"EFLAGS:\0\0\0\0\0\0\0\0");
     print(error,"ERROR:\0\0\0\0\0\0\0\0");
     writeline("");
+#else
+    c=eax^ebx^ecx^edx^ebp^esi^edi^ds^es^fs^gs^eip^cs^eflags^error;/*HACK*/
 #endif
     if(isr==9){
         c=inb(0x60);

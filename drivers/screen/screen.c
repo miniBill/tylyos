@@ -19,6 +19,10 @@
 
 #include "screen.h"
 
+#define addr	(consoleAddr+pos*2)
+#define xy	(COLUMNS*y+x)
+#define total	(COLUMNS*ROWS)
+
 char consoleColor=0x07;
 char * pointer=(char *)consoleAddr;
 
@@ -26,19 +30,24 @@ int pos(){
     return ((int)pointer-consoleAddr)/2;
 }
 
-void setpointer(int pos){
-    pointer=(char *)(consoleAddr+pos*2);
-}
-
-void clearScreen(){
-    setpointer(0);
-    for(;pos()<(COLUMNS*ROWS);)
-        put(' ');
-    setpointer(0);
+void gotoi(int pos){
+    pointer=(char *)addr;
 }
 
 void gotoxy(int x,int y){
-    setpointer(COLUMNS*y+x);
+    gotoi(xy);
+}
+
+char read(){
+    return *(pointer);
+}
+
+char readi(int pos){
+    return *(int* )addr;
+}
+
+char readxy(int x,int y){
+    return readi(xy);
 }
 
 void put(char c){
@@ -46,55 +55,72 @@ void put(char c){
     *(pointer++)=consoleColor;
 }
 
+void puti(int pos, char c){
+    *(char *)addr=c;
+    *(char *)(addr+1)=consoleColor;
+}
+
 void putxy(int x,int y,char c){
-    *(char *)(consoleAddr+(COLUMNS*y+x)*2)=c;
-    *(char *)(consoleAddr+(COLUMNS*y+x)*2+1)=consoleColor;
+    puti(xy,c);
+}
+
+void nl(){
+    gotoi(pos()+COLUMNS-pos()%COLUMNS);
 }
 
 void write(char* string){
     int k;
-    for(k=0;string[k]!=0 && pos()<(COLUMNS*ROWS);k++)
-        put(string[k]);
+    for(k=0;string[k]!=0 && pos()<total;k++)
+        if(string[k]!='\n')
+            put(string[k]);
+        else
+            nl();
 }
 
-char read(int index){
-    return *(int* )(consoleAddr+index*2);
+void writei(int i,char * string){
+    int s=pos();
+    gotoi(i);
+    write(string);
+    gotoi(s);
 }
 
-char readcurr(){
-    return *(pointer);
-}
-
-char readxy(int x,int y){
-    return read(COLUMNS*y+x);
-}
-
-/*This three methods are equal to those without the c, but they read the color*/
-char cread(int index){
-    return *(int* )(consoleAddr+index*2+1);
-}
-
-char creadcurr(){
-    return *(pointer+1);
-}
-
-char creadxy(int x,int y){
-    return cread(COLUMNS*y+x);
-}
-
-void cwrite(int index,char color){
-    *(char* )(consoleAddr+index*2+1)=color;
-}
-
-void cwritecurr(char color){
-    *(pointer+1)=color;
-}
-
-void cwritexy(int x,int y,char color){
-    cwrite(COLUMNS*y+x,color);
+void writexy(int x,int y,char * string){
+    writei(xy,string);
 }
 
 void writeline(char* string){
     write(string);
-    setpointer(pos()+COLUMNS-pos()%COLUMNS);
+    nl();
+}
+
+void clearScreen(){
+    gotoi(0);
+    for(;pos()<total;)
+        put(' ');
+    gotoi(0);
+}
+
+/*This three methods are equal to those without the c, but they read the color*/
+char cread(){
+    return *(pointer+1);
+}
+
+char creadi(int pos){
+    return *(int* )(addr+1);
+}
+
+char creadxy(int x,int y){
+    return creadi(xy);
+}
+
+void cput(char color){
+    *(pointer+1)=color;
+}
+
+void cputi(int pos,char color){
+    *(char* )(addr+1)=color;
+}
+
+void cputxy(int x,int y,char color){
+    cputi(xy,color);
 }
