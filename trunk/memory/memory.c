@@ -91,6 +91,8 @@ void setBit(int x,unsigned int value){
     off1=x/32;
     off2=x%32;
     value&=0x1;
-    memoryBitmap[off1]^=1<<off2;
-    memoryBitmap[off1]|=value<<off2;
+    if(value)
+        memoryBitmap[off1]|=1<<off2;
+    else
+        memoryBitmap[off1]&=~(1<<off2);
 }
