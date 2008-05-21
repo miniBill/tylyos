@@ -65,7 +65,7 @@ void writeline(char* string);
 
 void clearScreen();
 
-/*This three methods are equal to those without the c, but they read the color*/
+/*This six methods are equal to those without the c, but they read/write the color byte*/
 char cread();
 char creadi(int pos);
 char creadxy(int x,int y);

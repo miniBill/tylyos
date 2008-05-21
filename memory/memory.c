@@ -79,18 +79,18 @@ void setPageSelector(unsigned int *obj,unsigned int pageAdress,unsigned int flag
     *obj|=pageAdress<<12;
 }
 
-int GetBit(int x)
-{
-	int off1,off2;
-	off1=x/32;
-	off2=x%32;
-	return (MemoryBitMap[off1]>>off2)&0x1;
+int getBit(int x){
+    int off1,off2;
+    off1=x/32;
+    off2=x%32;
+    return (memoryBitmap[off1]>>off2)&0x1;
 }
-void SetBit(int x,unsigned int value)
-{
-	int off1,off2;
-	off1=x/32;
-	off2=x%32;
-	value&=0x1;
-	MemoryBitMap[off1]|=value<<off2;
+
+void setBit(int x,unsigned int value){
+    int off1,off2;
+    off1=x/32;
+    off2=x%32;
+    value&=0x1;
+    memoryBitmap[off1]^=1<<off2;
+    memoryBitmap[off1]|=value<<off2;
 }

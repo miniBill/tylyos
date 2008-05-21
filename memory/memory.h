@@ -48,9 +48,9 @@ extern void gdtFlush();
 
 #define MAX_PAGES_IN_MEMORY	100	/* numero massimo di pagine allocabili in memoria contemporaneamente */
 
-unsigned int MemoryBitMap[MAX_PAGES_IN_MEMORY/32+1];	/* flag per ogni blocco di 4k della memoria fisica */
+unsigned int memoryBitmap[MAX_PAGES_IN_MEMORY/32+1];	/* flag per ogni blocco di 4k della memoria fisica */
 
-int GetBit(int x);
-void SetBit(int x,unsigned int value);
+int getBit(int x);
+void setBit(int x,unsigned int value);
 
 #endif
