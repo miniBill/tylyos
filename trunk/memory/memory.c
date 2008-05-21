@@ -57,6 +57,8 @@ enum{
     PAGE_4KPAGE    = 0x0
 };
 
+/*######################### Paginazione ####################################*/
+
 /* obj: indirizzo dell'area su cui scrivere il selettore
  * TableAdress: indirizzo della tabella nella memoria (NB: una tabella occupa una pagina da 4K
  * questo indirizzo indica i 20 bit più significativi dell indirizzo della tabella)
@@ -75,4 +77,20 @@ void setPageSelector(unsigned int *obj,unsigned int pageAdress,unsigned int flag
     *obj=0;
     *obj=flags;
     *obj|=pageAdress<<12;
+}
+
+int GetBit(int x)
+{
+	int off1,off2;
+	off1=x/32;
+	off2=x%32;
+	return (MemoryBitMap[off1]>>off2)&0x1;
+}
+void SetBit(int x,unsigned int value)
+{
+	int off1,off2;
+	off1=x/32;
+	off2=x%32;
+	value&=0x1;
+	MemoryBitMap[off1]|=value<<off2;
 }

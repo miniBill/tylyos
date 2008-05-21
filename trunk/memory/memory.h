@@ -15,8 +15,8 @@
  * You should have received a copy of the GNU General Public License
  * along with ClearOS.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef GDT_H_
-#define GDT_H_
+#ifndef MEMORY_H_
+#define MEMORY_H_
 
 void initGdt();
 
@@ -38,5 +38,19 @@ struct gdtEntry gdt[3];
 struct gdtPtr gdtPointer;
 
 extern void gdtFlush();
+
+/*
+	1 pagina = 4096 byte = 0x1000
+*/
+
+#define KERNEL_START	0x00100000	/* 1.048.576 byte */
+#define MEMORY_START 0x00400000	/* 4.194.304 byte*/
+
+#define MAX_PAGES_IN_MEMORY	100	/* numero massimo di pagine allocabili in memoria contemporaneamente */
+
+unsigned int MemoryBitMap[MAX_PAGES_IN_MEMORY/32+1];	/* flag per ogni blocco di 4k della memoria fisica */
+
+int GetBit(int x);
+void SetBit(int x,unsigned int value);
 
 #endif
