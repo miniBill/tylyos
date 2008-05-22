@@ -48,9 +48,16 @@ extern void gdtFlush();
 
 #define MAX_PAGES_IN_MEMORY	100	/* numero massimo di pagine allocabili in memoria contemporaneamente */
 
+unsigned int PageDir[1024];		/* area da 4096byte che ospita la pagedir del kernel */
 unsigned int memoryBitmap[MAX_PAGES_IN_MEMORY/32+1];	/* flag per ogni blocco di 4k della memoria fisica */
+
+void InitPaging();
 
 int getBit(int x);
 void setBit(int x,unsigned int value);
 
+extern unsigned int read_cr0();
+extern void write_cr0(unsigned int data);
+extern unsigned int read_cr3();
+extern void write_cr3(unsigned int data);
 #endif

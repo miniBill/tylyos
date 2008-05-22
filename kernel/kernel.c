@@ -31,6 +31,15 @@ void halt(){
     on=0;
 }
 
+void logo(){
+    writeline("   ________                ____      ");
+    writeline("  / ____/ /__  ____  _____/ __ \\____");
+    writeline(" / /   / / _ \\/ __ `/ ___/ / / /  _/");
+    writeline("/ /___/ /  __/ /_/ / /  / /_/ /\\  \\ ");
+    writeline("\\____/_/\\___/\\__,_/_/   \\____//___/ ");
+}
+
+
 void _kmain(multiboot_info_t* mbd, unsigned int magic){
     char * parameters="Parametri: \0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0";
     char * pointer="Prova puntatore";
@@ -39,7 +48,10 @@ void _kmain(multiboot_info_t* mbd, unsigned int magic){
     int t=0;/*test number*/
 
     clearScreen();
-    kwrite("Kernel caricato");
+
+    logo();
+    t+=5;
+    write("Kernel caricato");
     OK(t++);
     writeline("");
     writeline("Prova writeline");
@@ -67,6 +79,7 @@ void _kmain(multiboot_info_t* mbd, unsigned int magic){
     OK(t++);
     initIDT();
     OK(t++);
+
     /*writeline("Ed ora, diamo il via alle danze!");
     OK(t++);
     i=0;
