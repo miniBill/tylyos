@@ -19,6 +19,7 @@
 #include "memory.h"
 #include "gdtflags.h"
 #include "../drivers/screen/screen.h"
+#include "../drivers/screen/io.h"
 
 void gdtSet(int num, unsigned long base, unsigned long limit, unsigned char gran, unsigned char access){
     gdt[num].baseLow = (base & 0xFFFF);
@@ -59,10 +60,35 @@ enum{
 
 /*######################### Paginazione ####################################*/
 
+/*
+	TODO: sistemare meglio e pulire codice
+*/
 void InitPaging()
 {
+    int c;
+    char *debug="\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0";
+    asm("cli");
+    PageDir=(unsigned int*)MEMORY_START;
+    setPageTableSelector(&PageDir[0],(MEMORY_START+4096)>>12,PAG_PRESENT|PAG_READWRITE|PAG_USER|PAG_4KPAGE);
+    for(c=1;c<1024;c++)/* azzera gli altri record della pagedir */
+    {
+        setPageTableSelector(&PageDir[0],0,0);
+    }
+    /* ultimo record punta alla pagina della pagedir */
+    setPageTableSelector(&PageDir[1023],(unsigned int)PageDir>>12,PAG_PRESENT|PAG_READWRITE|PAG_USER|PAG_4KPAGE);
+    for(c=0;c<1024;c++)/* inserisce 1024 pagine nella prima pagetable */
+    {
+        debug[0]='\0';
+        strapp(debug,"descrittore in: %x",(void *)((MEMORY_START+4096)+(c*4)));
+        strapp(debug,"indirizzo: %x",(void *)((c*4096)>>12));
+         writeline(debug); 
+        setPageSelector((unsigned int*)(MEMORY_START+4096)+(c*4),(c*4096)>>12,PAG_PRESENT|PAG_READWRITE|PAG_USER|PAG_4KPAGE);
+    }
+    /* ultimo record punta alla pagina della tabella */
+    setPageSelector((unsigned int*)MEMORY_START+4096+(1023*4),(MEMORY_START+4096)>>12,PAG_PRESENT|PAG_READWRITE|PAG_USER|PAG_4KPAGE);
     write_cr3((unsigned int)PageDir); /* put that page directory address into CR3 */
     write_cr0(read_cr0() | 0x80000000); /* set the paging bit in CR0 to 1 */
+    asm("sti");
 }
 
 /* obj: indirizzo dell'area su cui scrivere il selettore

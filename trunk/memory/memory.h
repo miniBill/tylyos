@@ -39,6 +39,19 @@ struct gdtPtr gdtPointer;
 
 extern void gdtFlush();
 
+
+#define PAG_PRESENT 	0x1
+#define PAG_NOTPRESENT 	0x0
+
+#define PAG_READONLY 	0x0
+#define PAG_READWRITE	0x2
+
+#define PAG_USER	0x4
+#define PAG_SUPERVISOR	0x0
+
+#define PAG_4KPAGE	0x0
+
+
 /*
 	1 pagina = 4096 byte = 0x1000
 */
@@ -48,10 +61,14 @@ extern void gdtFlush();
 
 #define MAX_PAGES_IN_MEMORY	100	/* numero massimo di pagine allocabili in memoria contemporaneamente */
 
-unsigned int PageDir[1024];		/* area da 4096byte che ospita la pagedir del kernel */
+unsigned int *PageDir;		/* area da 4096byte che ospita la pagedir del kernel */
+
 unsigned int memoryBitmap[MAX_PAGES_IN_MEMORY/32+1];	/* flag per ogni blocco di 4k della memoria fisica */
 
 void InitPaging();
+
+void setPageTableSelector(unsigned int *obj,unsigned int tableAdress,unsigned int flags);
+void setPageSelector(unsigned int *obj,unsigned int pageAdress,unsigned int flags);
 
 int getBit(int x);
 void setBit(int x,unsigned int value);
