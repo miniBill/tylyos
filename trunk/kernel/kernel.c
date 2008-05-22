@@ -23,7 +23,7 @@
 #include "../memory/memory.h"
 #include "../interrupt/interrupt.h"
 
-short abs(short s){return s<0?-s:s;}
+/*short abs(short s){return s<0?-s:s;}*/
 
 int on=1;
 
@@ -88,6 +88,6 @@ void _kmain(multiboot_info_t* mbd, unsigned int magic){
         putxy(i%2,t+1,' ');
         putxy(1-i%2,t+1,'X');
         i=1-i;
-    }*/
-    while(on);
+    }
+    while(on);*/
 }
