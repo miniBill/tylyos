@@ -23,8 +23,6 @@
 #include "../memory/memory.h"
 #include "../interrupt/interrupt.h"
 
-/*short abs(short s){return s<0?-s:s;}*/
-
 int on=1;
 
 void halt(){
@@ -80,7 +78,7 @@ void _kmain(multiboot_info_t* mbd, unsigned int magic){
     initIDT();
     OK(t++);
 
-    /*writeline("Ed ora, diamo il via alle danze!");
+    writeline("Ed ora, diamo il via alle danze!");
     OK(t++);
     i=0;
     asm("sti");
@@ -89,5 +87,4 @@ void _kmain(multiboot_info_t* mbd, unsigned int magic){
         putxy(1-i%2,t+1,'X');
         i=1-i;
     }
-    while(on);*/
 }
