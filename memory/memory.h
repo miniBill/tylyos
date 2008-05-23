@@ -59,7 +59,7 @@ extern void gdtFlush();
 #define KERNEL_START	0x00100000	/* 1.048.576 byte */
 #define MEMORY_START 0x00400000	/* 4.194.304 byte*/
 
-#define MAX_PAGES_IN_MEMORY	100	/* numero massimo di pagine allocabili in memoria contemporaneamente */
+#define MAX_PAGES_IN_MEMORY	100000 /* numero massimo di pagine allocabili in memoria contemporaneamente */
 
 unsigned int *PageDir;		/* area da 4096byte che ospita la pagedir del kernel */
 
@@ -72,6 +72,8 @@ void setPageSelector(unsigned int *obj,unsigned int pageAdress,unsigned int flag
 
 int getBit(int x);
 void setBit(int x,unsigned int value);
+
+unsigned int GetNewPage(int alloca);
 
 extern unsigned int read_cr0();
 extern void write_cr0(unsigned int data);
