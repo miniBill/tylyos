@@ -23,6 +23,8 @@
 #include "../memory/memory.h"
 #include "../interrupt/interrupt.h"
 
+/*#define BASIC_TESTS*/
+
 int on=1;
 
 void halt(){
@@ -30,58 +32,105 @@ void halt(){
 }
 
 void logo(){
+    int i;
+    for(i=0;i<22;i++)
+        put(' ');
     writeline("   ________                ____      ");
+    for(i=0;i<22;i++)
+        put(' ');
     writeline("  / ____/ /__  ____  _____/ __ \\____");
-    writeline(" / /   / / _ \\/ __ `/ ___/ / / /  _/");
+    for(i=0;i<22;i++)
+        put(' ');
+    writeline(" / /   / / _ \\/ __ \\/ ___/ / / /  _/");
+    for(i=0;i<22;i++)
+        put(' ');
     writeline("/ /___/ /  __/ /_/ / /  / /_/ /\\  \\ ");
-    writeline("\\____/_/\\___/\\__,_/_/   \\____//___/ ");
+    for(i=0;i<22;i++)
+        put(' ');
+    writeline("\\____/_/\\___/\\____/_/   \\____//___/ ");
 }
 
 
 void _kmain(multiboot_info_t* mbd, unsigned int magic){
     char * parameters="Parametri: \0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0";
+#ifdef BASIC_TESTS
     char * pointer="Prova puntatore";
     char * conversion="\0\0\0\0\0\0\0\0\0";
+#endif
     short i;/*index*/
     int t=0;/*test number*/
 
     clearScreen();
 
-    logo();
-    t+=5;
-    write("Kernel caricato");
+    NO(t);
+    kwrite("Kernel caricato");
     OK(t++);
     writeline("");
+
+    logo();
+    t+=5;
+
+#ifdef BASIC_TESTS
+    NO(t);
     writeline("Prova writeline");
     OK(t++);
+
+    NO(t++);
+    for(i=80;i<86;i++)
+        put(read(i));
+    writeline("put/read");
+    OK(t++);
+
+    NO(t);
     writeline(pointer);
     OK(t++);
+
+    NO(t);
     write("Prova strapp(output: 101|C|A0):");
     strapp(conversion,"%b|",(void *)5);
     strapp(conversion,"%x|",(void *)12);
     strapp(conversion,"%x",(void *)160);
     writeline(conversion);
     OK(t++);
+
+#endif
+
+    NO(t);
     strapp(parameters,"mbd.flags:%b|",(void *)mbd->flags);
     strapp(parameters,"magic:%x",(void *)magic);
     writeline(parameters);
     OK(t++);
-    for(i=80;i<86;i++)
-        put(read(i));
-    writeline("put/read");
-    OK(t++);
+
+#ifdef BASIC_TESTS
+    NO(t);
     writeline("Prova GDT");
+#endif
     initGdt();
+#ifdef BASIC_TESTS
     OK(t++);
+#endif
+
+#ifdef BASIC_TESTS
+    NO(t);
     writeline("Prova IDT");
+#endif
+    initIdt();
+#ifdef BASIC_TESTS
     OK(t++);
-    initIDT();
+#endif
+
+    NO(t);
+    writeline("Prova Paging");
+    /*InitPaging();*//*Non va*/
+    /*OK(t++);*/
+    t++;
+
+    NO(t);
+    writeline("Ed ora, diamo il via alle danze!");
     OK(t++);
-     InitPaging(); 
-    writeline("__________________");
-    OK(t++);
-    i=0;
+
     asm("sti");
+    i=0;
     while(on){
         putxy(i%2,t+1,' ');
         putxy(1-i%2,t+1,'X');
