@@ -37,9 +37,9 @@ struct idt_ptr idt_pointer;
 
 extern void idt_load();
 
-void initIDT();
+void initIdt();
 
-void addIDTseg(short int i, void (*gestore)(), unsigned char options, unsigned int seg_sel);
+void addIdtSeg(short int i, void (*gestore)(), unsigned char options, unsigned int seg_sel);
 
 /*
  * rimappa i PIC (programmable input controller)

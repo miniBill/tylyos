@@ -27,38 +27,38 @@
 
 int xtemp;
 
-void initIDT(){
+void initIdt(){
     /* inizializzazione */
     int c;
     asm("cli");
     xtemp=0;
     for(c=0;c<256;c++)
-        addIDTseg(c,0,0,0);
+        addIdtSeg(c,0,0,0);
 
-    addIDTseg( 0, isr_0,0x80,0x08);
-    addIDTseg( 1, isr_1,0x80,0x08);
-    addIDTseg( 2, isr_2,0x80,0x08);
-    addIDTseg( 3, isr_3,0x80,0x08);
-    addIDTseg( 4, isr_4,0x80,0x08);
-    addIDTseg( 5, isr_5,0x80,0x08);
-    addIDTseg( 6, isr_6,0x80,0x08);
-    addIDTseg( 7, isr_7,0x80,0x08);
-    addIDTseg( 8, isr_8,0x80,0x08);
-    addIDTseg( 9, isr_9,0x80,0x08);
-    addIDTseg(10,isr_10,0x80,0x08);
-    addIDTseg(11,isr_11,0x80,0x08);
-    addIDTseg(12,isr_12,0x80,0x08);
-    addIDTseg(13,isr_13,0x80,0x08);
-    addIDTseg(14,isr_14,0x80,0x08);
-    addIDTseg(15,isr_15,0x80,0x08);
-    addIDTseg(16,isr_16,0x80,0x08);
-    addIDTseg(17,isr_17,0x80,0x08);
-    addIDTseg(18,isr_18,0x80,0x08);
+    addIdtSeg( 0, isr_0,0x80,0x08);
+    addIdtSeg( 1, isr_1,0x80,0x08);
+    addIdtSeg( 2, isr_2,0x80,0x08);
+    addIdtSeg( 3, isr_3,0x80,0x08);
+    addIdtSeg( 4, isr_4,0x80,0x08);
+    addIdtSeg( 5, isr_5,0x80,0x08);
+    addIdtSeg( 6, isr_6,0x80,0x08);
+    addIdtSeg( 7, isr_7,0x80,0x08);
+    addIdtSeg( 8, isr_8,0x80,0x08);
+    addIdtSeg( 9, isr_9,0x80,0x08);
+    addIdtSeg(10,isr_10,0x80,0x08);
+    addIdtSeg(11,isr_11,0x80,0x08);
+    addIdtSeg(12,isr_12,0x80,0x08);
+    addIdtSeg(13,isr_13,0x80,0x08);
+    addIdtSeg(14,isr_14,0x80,0x08);
+    addIdtSeg(15,isr_15,0x80,0x08);
+    addIdtSeg(16,isr_16,0x80,0x08);
+    addIdtSeg(17,isr_17,0x80,0x08);
+    addIdtSeg(18,isr_18,0x80,0x08);
     for(c=33;c<60;c++)
-        addIDTseg(c,isr_32,0x80,0x08);
-    addIDTseg(32,isr_18,0x80,0x08);
-    addIDTseg(33,isr_18,0x80,0x08);
-    addIDTseg(47,isr_18,0x80,0x08);
+        addIdtSeg(c,isr_32,0x80,0x08);
+    addIdtSeg(32,isr_18,0x80,0x08);
+    addIdtSeg(33,isr_18,0x80,0x08);
+    addIdtSeg(47,isr_18,0x80,0x08);
 
     idt_pointer.limit=0xFFFF;
     idt_pointer.base=(unsigned int)&idt;
@@ -68,7 +68,7 @@ void initIDT(){
     asm("sti");
 }
 
-void addIDTseg(short int i, void (*gestore)(), unsigned char options, unsigned int seg_sel){
+void addIdtSeg(short int i, void (*gestore)(), unsigned char options, unsigned int seg_sel){
     unsigned int indirizzo = (unsigned int)gestore;
     idt[i].base_hi = indirizzo >> 16;
     idt[i].base_lo= (indirizzo&0xFFFF);
@@ -97,33 +97,33 @@ void irq_remap(unsigned int offset_1, unsigned int offset_2){
      * ICW = initialization command word
      * OCW = operation command word
      */
-    write("PIC remap: ");
+    /*write("PIC remap: ");*/
 
     /* Inizializzazione                                */
     /* 0x10 significa che si st� inizializzando        */
     /* 0x01 significa che si deve arrivare fino a ICW4 */
     sendICW(0x11,0x11,0);
-    write("ICW1, ");
+    /*write("ICW1, ");*/
 
     /* ICW2: PIC_P a partire da "offset_1" */
     /*       PIC_S a partire da "offset_2" */
     sendICW(offset_1,offset_2,1);
-    write("ICW2, ");
+    /*write("ICW2, ");*/
 
     /* ICW3: PIC_P: IRQ2 per pilotare PIC_S    */
     /*       PIC_S: pilotato con IRQ2 da PIC_P */
     sendICW(0x04,0x02,1);
-    write("ICW3, ");
+    /*write("ICW3, ");*/
 
     /* ICW4: si precisa la modalit� del microprocessore; 0x01 = 8086 */
     sendICW(0x01,0x01,1);
-    write("ICW4, ");
+    /*write("ICW4, ");*/
 
     /* OCW1: azzera la maschera in modo da abilitare tutti i numeri IRQ */
     sendICW(0x00,0x00,1);
-    write("OCW1. ");
+    /*write("OCW1. ");*/
 
-    writeline("PIC remapped.");
+    /*writeline("PIC remapped.");*/
 }
 
 void print(unsigned int reg,char * space){
