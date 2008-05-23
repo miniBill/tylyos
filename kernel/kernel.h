@@ -26,4 +26,10 @@ void OK(int i){
     cputxy(COLUMNS-2,i,Light_Green);
 }
 
+void NO(int i){
+    writexy(COLUMNS-4,i,"[NO]");
+    cputxy(COLUMNS-3,i,Light_Red);
+    cputxy(COLUMNS-2,i,Light_Red);
+}
+
 #endif
