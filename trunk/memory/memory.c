@@ -84,6 +84,9 @@ void InitPaging()
     unsigned int PageTab;
     char *debug="\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0";
     asm("cli");
+    /* azzera mappa */
+    for(c=0;c<MAX_PAGES_IN_MEMORY/32+1;c++)
+        memoryBitmap[c]=0;
     PageDir=(unsigned int*)GetNewPage(1);
     PageTab=GetNewPage(1);
     /* setta la prima pagetable nella pagedir */
@@ -99,7 +102,7 @@ void InitPaging()
         debug[0]='\0';
         strapp(debug,"descrittore in: %x",(void *)(PageTab+(c*4)));
         strapp(debug,"indirizzo: %x",(void *)((c*0x1000)>>12));
-        /* writeline(debug); */
+         writeline(debug); 
         setPageSelector((unsigned int*)((PageTab)+(c*4)),(c*0x1000)>>12,PAG_PRESENT|PAG_READWRITE|PAG_USER|PAG_4KPAGE);
     }
     /* ultimo record punta alla pagina della tabella */
