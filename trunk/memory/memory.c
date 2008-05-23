@@ -60,32 +60,51 @@ enum{
 
 /*######################### Paginazione ####################################*/
 
+unsigned int GetNewPage(int alloca)
+{
+    int c;
+    for(c=0;c<MAX_PAGES_IN_MEMORY;c++)
+    {
+        if(getBit(c)==0)
+        {
+            if(alloca==1)
+                setBit(c,1);
+            return MEMORY_START+(c*0x1000);
+        }
+    }
+	return 0x0;
+}
+
 /*
 	TODO: sistemare meglio e pulire codice
 */
 void InitPaging()
 {
-    int c;
+    int c,c2;
+    unsigned int PageTab;
     char *debug="\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0";
     asm("cli");
-    PageDir=(unsigned int*)MEMORY_START;
-    setPageTableSelector(&PageDir[0],(MEMORY_START+4096)>>12,PAG_PRESENT|PAG_READWRITE|PAG_USER|PAG_4KPAGE);
+    PageDir=(unsigned int*)GetNewPage(1);
+    PageTab=GetNewPage(1);
+    /* setta la prima pagetable nella pagedir */
+    setPageTableSelector(&PageDir[0],PageTab>>12,PAG_PRESENT|PAG_READWRITE|PAG_USER|PAG_4KPAGE);
     for(c=1;c<1024;c++)/* azzera gli altri record della pagedir */
     {
-        setPageTableSelector(&PageDir[0],0,0);
+        setPageTableSelector(&PageDir[c],0,0);
     }
     /* ultimo record punta alla pagina della pagedir */
     setPageTableSelector(&PageDir[1023],(unsigned int)PageDir>>12,PAG_PRESENT|PAG_READWRITE|PAG_USER|PAG_4KPAGE);
-    for(c=0;c<1024;c++)/* inserisce 1024 pagine nella prima pagetable */
+    for(c2=0,c=KERNEL_START/0x1000;c<0x1000;c++,c2++)/* inserisce pagine nella prima pagetable */
     {
         debug[0]='\0';
-        strapp(debug,"descrittore in: %x",(void *)((MEMORY_START+4096)+(c*4)));
-        strapp(debug,"indirizzo: %x",(void *)((c*4096)>>12));
-         writeline(debug); 
-        setPageSelector((unsigned int*)(MEMORY_START+4096)+(c*4),(c*4096)>>12,PAG_PRESENT|PAG_READWRITE|PAG_USER|PAG_4KPAGE);
+        strapp(debug,"descrittore in: %x",(void *)(PageTab+(c*4)));
+        strapp(debug,"indirizzo: %x",(void *)((c*0x1000)>>12));
+        /* writeline(debug); */
+        setPageSelector((unsigned int*)((PageTab)+(c*4)),(c*0x1000)>>12,PAG_PRESENT|PAG_READWRITE|PAG_USER|PAG_4KPAGE);
     }
     /* ultimo record punta alla pagina della tabella */
-    setPageSelector((unsigned int*)MEMORY_START+4096+(1023*4),(MEMORY_START+4096)>>12,PAG_PRESENT|PAG_READWRITE|PAG_USER|PAG_4KPAGE);
+    setPageSelector((unsigned int*)(PageTab+(1023*4)),PageTab>>12,PAG_PRESENT|PAG_READWRITE|PAG_USER|PAG_4KPAGE);
+    
     write_cr3((unsigned int)PageDir); /* put that page directory address into CR3 */
     write_cr0(read_cr0() | 0x80000000); /* set the paging bit in CR0 to 1 */
     asm("sti");
