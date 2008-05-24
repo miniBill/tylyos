@@ -23,7 +23,7 @@
 #include "../memory/memory.h"
 #include "../interrupt/interrupt.h"
 
-/*#define BASIC_TESTS*/
+#define BASIC_TESTS
 
 int on=1;
 
@@ -52,10 +52,10 @@ void logo(){
 
 
 void _kmain(multiboot_info_t* mbd, unsigned int magic){
-    char * parameters="Parametri: \0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0";
+    char parameters[40]="Parametri: \0";
 #ifdef BASIC_TESTS
-    char * pointer="Prova puntatore";
-    char * conversion="\0\0\0\0\0\0\0\0\0";
+    char pointer[16]="Prova puntatore";
+    char conversion[9]={0};
 #endif
     short i;/*index*/
     int t=0;/*test number*/
@@ -75,8 +75,9 @@ void _kmain(multiboot_info_t* mbd, unsigned int magic){
     writeline("Prova writeline");
     OK(t++);
 
-    NO(t++);
-    for(i=80;i<86;i++)
+    NO(t);
+    put('P');
+    for(i=COLUMNS*(t-1)+1;i<COLUMNS*(t-1)+6;i++)
         put(read(i));
     writeline("put/read");
     OK(t++);
@@ -95,11 +96,12 @@ void _kmain(multiboot_info_t* mbd, unsigned int magic){
 
 #endif
 
-    NO(t);
-    strapp(parameters,"mbd.flags:%b|",(void *)mbd->flags);
-    strapp(parameters,"magic:%x",(void *)magic);
+    /*FIXME*/
+    /*NO(t);
+    strapp(parameters,"mbd.flags:%b,",(void *)mbd->flags);
+    strapp(parameters,"magic:%x.%0",(void *)magic);
     writeline(parameters);
-    OK(t++);
+    OK(t++);*/
 
 #ifdef BASIC_TESTS
     NO(t);
@@ -121,7 +123,7 @@ void _kmain(multiboot_info_t* mbd, unsigned int magic){
 
     NO(t);
     writeline("Prova Paging");
-    /*InitPaging();*//*Non va*/
+    /*InitPaging();*//*FIXME*/
     /*OK(t++);*/
     t++;
 
@@ -132,8 +134,8 @@ void _kmain(multiboot_info_t* mbd, unsigned int magic){
     asm("sti");
     i=0;
     while(on){
-        putxy(i%2,t+1,' ');
-        putxy(1-i%2,t+1,'X');
+        putxy(i%2,t,' ');
+        putxy(1-i%2,t,'X');
         i=1-i;
     }
 }
