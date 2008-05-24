@@ -19,9 +19,9 @@
 
 #include "screen.h"
 
-#define addr	(consoleAddr+pos*2)
-#define xy	(COLUMNS*y+x)
-#define total	(COLUMNS*ROWS)
+#define addr(pos)   (consoleAddr+pos*2)
+#define xy          (COLUMNS*y+x)
+#define total       (COLUMNS*ROWS)
 
 char consoleColor=0x07;
 char * pointer=(char *)consoleAddr;
@@ -31,7 +31,7 @@ int pos(){
 }
 
 void gotoi(int pos){
-    pointer=(char *)addr;
+    pointer=(char *)addr(pos);
 }
 
 void gotoxy(int x,int y){
@@ -43,7 +43,7 @@ char read(){
 }
 
 char readi(int pos){
-    return *(int* )addr;
+    return *(int* )addr(pos);
 }
 
 char readxy(int x,int y){
@@ -56,8 +56,8 @@ void put(char c){
 }
 
 void puti(int pos, char c){
-    *(char *)addr=c;
-    *(char *)(addr+1)=consoleColor;
+    *(char *)addr(pos)=c;
+    *(char *)(addr(pos)+1)=consoleColor;
 }
 
 void putxy(int x,int y,char c){
@@ -106,7 +106,7 @@ char cread(){
 }
 
 char creadi(int pos){
-    return *(int* )(addr+1);
+    return *(int* )(addr(pos)+1);
 }
 
 char creadxy(int x,int y){
@@ -118,7 +118,7 @@ void cput(char color){
 }
 
 void cputi(int pos,char color){
-    *(char* )(addr+1)=color;
+    *(char* )(addr(pos)+1)=color;
 }
 
 void cputxy(int x,int y,char color){

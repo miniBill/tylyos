@@ -126,13 +126,15 @@ void irq_remap(unsigned int offset_1, unsigned int offset_2){
     /*writeline("PIC remapped.");*/
 }
 
-void print(unsigned int reg,char * space){
-    int c=0;
-    while(*(space+c)!=':')
+void regAppend(char * string,unsigned int reg,char * name){
+    int c=0,i=0;
+    while(string[c]!=',')
         c++;
-    *(space+c+1)=0;
-    strapp(space,"%x ",(void*)reg);
-    write(space);
+    for(i=0;name[i];i++,c++)
+        string[c]=name[i];
+    string[c+1]=':';
+    string[c+2]=0;
+    strapp(string,"%x,",(void*)reg);
 }
 
 void interrupt_handler(
@@ -143,36 +145,33 @@ void interrupt_handler(
     unsigned int error, unsigned int eip, unsigned int cs,
     unsigned int eflags, ...){
     /* codice che interpreta le interruzioni */
-    int c=12;
-    char * out="interruzione"/*12 bytes*/
-        "\0\0\0\0\0\0\0\0"
-        "\0\0\0\0\0\0\0\0"
-        "\0\0\0\0\0\0\0\0"
-        "\0\0\0\0\0\0\0\0";/*32 bytes*/
+    int c=0;
+    char out[44]="interruzione";
     if(isr!=13){/*HACK*/
     xtemp++;
-    for(;c<44;c++)
+    for(c=12;c<44;c++)
         *(out+c)=0;
     strapp(out,", interrupt: %d",(void *)isr);
     strapp(out,", count: %d",(void *)xtemp);
    /* writeline(out); */
 #ifdef PRINT_REGISTERS
-    print(eax,"EAX:\0\0\0\0\0\0\0\0");
-    print(ebx,"EBX:\0\0\0\0\0\0\0\0");
-    print(ecx,"ECX:\0\0\0\0\0\0\0\0");
-    print(edx,"EDX:\0\0\0\0\0\0\0\0");
-    print(ebp,"EBP:\0\0\0\0\0\0\0\0");
-    print(esi,"ESI:\0\0\0\0\0\0\0\0");
-    print(edi,"EDI:\0\0\0\0\0\0\0\0");
-    print(ds,"DS:\0\0\0\0\0\0\0\0");
-    print(es,"ES:\0\0\0\0\0\0\0\0");
-    print(fs,"FS:\0\0\0\0\0\0\0\0");
-    print(gs,"GS:\0\0\0\0\0\0\0\0");
-    print(eip,"EIP:\0\0\0\0\0\0\0\0");
-    print(cs,"CS:\0\0\0\0\0\0\0\0");
-    print(eflags,"EFLAGS:\0\0\0\0\0\0\0\0");
-    print(error,"ERROR:\0\0\0\0\0\0\0\0");
-    writeline("");
+    char registers[180];
+    regAppend(registers,eax,"EAX");
+    regAppend(registers,ebx,"EBX");
+    regAppend(registers,ecx,"ECX");
+    regAppend(registers,edx,"EDX");
+    regAppend(registers,ebp,"EBP");
+    regAppend(registers,esi,"ESI");
+    regAppend(registers,edi,"EDI");
+    regAppend(registers,ds,"DS");
+    regAppend(registers,es,"ES");
+    regAppend(registers,fs,"FS");
+    regAppend(registers,gs,"GS");
+    regAppend(registers,eip,"EIP");
+    regAppend(registers,cs,"CS");
+    regAppend(registers,eflags,"EFLAGS");
+    regAppend(registers,error,"ERROR");
+    writeline(registers);
 #else
     c=eax^ebx^ecx^edx^ebp^esi^edi^ds^es^fs^gs^eip^cs^eflags^error;/*HACK*/
 #endif

@@ -82,7 +82,7 @@ void InitPaging()
 {
     int c,c2;
     unsigned int PageTab;
-    char *debug="\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0";
+    char debug[36]={0};
     asm("cli");
     /* azzera mappa */
     for(c=0;c<MAX_PAGES_IN_MEMORY/32+1;c++)

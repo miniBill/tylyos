@@ -34,6 +34,11 @@ int strapp(char* dest,char* format,void* p){
             int l;
             /*indice per copiare*/
             int b;
+            if(format[i+1]=='0'){
+                dest[o++]=0;
+                i++;
+                break;
+            }
             switch(format[i+1]){
                 case 'd':
                     break;
@@ -62,4 +67,4 @@ int strapp(char* dest,char* format,void* p){
     }
     dest[o]=0;
     return 0;
-} 
+}
