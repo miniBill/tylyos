@@ -134,7 +134,7 @@ void _kmain(/*multiboot_info_t* mbd, unsigned int magic*/){
 #endif
     DrawRectangleExt(5,17,10,5,(char)(Yellow|Back_Blue));
     asm("sti");
-
+    SetCursorPos(0,0);
     i=0;
     on=1;
     while(on){
