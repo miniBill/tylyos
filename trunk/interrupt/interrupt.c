@@ -84,6 +84,12 @@ void sendICW(int pic_p,int pic_s ,int data){
     outb (0xA0+data, pic_s);/*slave*/
 }
 
+void io_wait(){
+    int i=0;
+    volatile int c=10;
+    for(i=0;i<400;i++)
+        c*=2;
+}
 /* rimappa i PIC (programmable input controller)
  * offset_1: offset riferito alla IDT delle interruzioni per il primo PIC
  * offset_2: offset riferito alla IDT delle interruzioni per il PIC slave
@@ -102,27 +108,32 @@ void irq_remap(unsigned int offset_1, unsigned int offset_2){
     /*write("PIC remap: ");*/
 
     /* Inizializzazione                                */
-    /* 0x10 significa che si sta' inizializzando        */
+    /* 0x10 significa che si sta' inizializzando       */
     /* 0x01 significa che si deve arrivare fino a ICW4 */
     sendICW(0x11,0x11,0);
+    io_wait();
     /*write("ICW1, ");*/
 
     /* ICW2: PIC_P a partire da "offset_1" */
     /*       PIC_S a partire da "offset_2" */
     sendICW(offset_1,offset_2,1);
+    io_wait();
     /*write("ICW2, ");*/
 
     /* ICW3: PIC_P: IRQ2 per pilotare PIC_S    */
     /*       PIC_S: pilotato con IRQ2 da PIC_P */
     sendICW(0x04,0x02,1);
+    io_wait();
     /*write("ICW3, ");*/
 
     /* ICW4: si precisa la modalita' del microprocessore; 0x01 = 8086 */
     sendICW(0x01,0x01,1);
+    io_wait();
     /*write("ICW4, ");*/
 
     /* OCW1: azzera la maschera in modo da abilitare tutti i numeri IRQ */
     sendICW(0x00,0x00,1);
+    io_wait();
     /*write("OCW1. ");*/
 
     /*writeline("PIC remapped.");*/
