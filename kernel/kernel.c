@@ -85,7 +85,7 @@ void _kmain(/*multiboot_info_t* mbd, unsigned int magic*/){
     NO(t);
     put('P');
     for(i=COLUMNS*2+1;i<COLUMNS*2+6;i++)
-        put(read(i));
+        put(readi(i));
     writeline("put/read.");
     OK(t++);
 
@@ -135,7 +135,7 @@ void _kmain(/*multiboot_info_t* mbd, unsigned int magic*/){
     writeline("Ed ora, diamo il via alle danze!");
     OK(t++);
 #endif
-DrawRectangleExt(1,17,10,5,(char)(Yellow|Back_Blue));
+DrawRectangleExt(5,17,10,5,(char)(Yellow|Back_Blue));
     asm("sti");
 
     i=0;

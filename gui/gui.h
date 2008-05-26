@@ -17,8 +17,6 @@
  * along with ClearOS.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "../drivers/screen/screen.h"
-
 #define BORDER_ORIZONTAL 205
 #define BORDER_VERTICAL 186
 #define BORDER_CORNER_HI_LEFT 201

@@ -17,9 +17,11 @@
  * along with ClearOS.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "../drivers/screen/screen.h"
+
 #include "gui.h"
-void DrawRectangleExt(int x,int y,int width,int height,char color)
-{
+
+void DrawRectangleExt(int x,int y,int width,int height,char color){
     int c,i;
     DrawRectangle(x,y,width,height);
     for(c=0;c<=width;c++)
@@ -27,25 +29,18 @@ void DrawRectangleExt(int x,int y,int width,int height,char color)
             cputxy(x+c,y+i,color);
 }
 
-void DrawRectangle(int x,int y,int width,int height)
-{
+void DrawRectangle(int x,int y,int width,int height){
     int c;
     for(c=0;c<width;c++)
-    {
         putxy(x+c,y,(char)BORDER_ORIZONTAL);
-    }
     putxy(x,y,(char)BORDER_CORNER_HI_LEFT);
     putxy(x+width,y,(char)BORDER_CORNER_HI_RIGHT);
-    for(c=1;c<height;c++)
-    {
+    for(c=1;c<height;c++){
         putxy(x,y+c,(char)BORDER_VERTICAL);
         putxy(x+width,y+c,(char)BORDER_VERTICAL);
     }
     for(c=0;c<width;c++)
-    {
         putxy(x+c,y+height,(char)BORDER_ORIZONTAL);
-    }
     putxy(x,y+height,(char)BORDER_CORNER_LOW_LEFT);
     putxy(x+width,y+height,(char)BORDER_CORNER_LOW_RIGHT);
 }
-
