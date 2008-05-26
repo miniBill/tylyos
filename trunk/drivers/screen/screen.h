@@ -62,6 +62,8 @@ enum{
 #define COLUMNS		80
 #define ROWS		25
 
+void SetCursorPos(unsigned int x, unsigned int y);
+
 int pos(void);
 
 void gotoi(int pos);
