@@ -19,7 +19,8 @@
 
 #include "io.h"
 
-int strapp(char* dest,char* format,void* p){
+int strapp(char* dest,char* format,int num){/*HACK, to have compile-time checks*/
+/*int strapp(char* dest,char* format,void* p){*/
     /*indice format string*/
     int i=0;
     /*indice output*/
@@ -28,18 +29,16 @@ int strapp(char* dest,char* format,void* p){
     for(;format[i]!=0;i++){
         if(format[i]=='%'){
             int base=10;
-            int num=(int)p;
+            /*int num=(int)p;*/
             char buf[MAXN] = {0};
             /*lunghezza del numero*/
-            int l;
+            int l=0;
             /*indice per copiare*/
-            int b;
-            if(format[i+1]=='0'){
-                dest[o++]=0;
-                i++;
-                break;
-            }
+            int b=0;
             switch(format[i+1]){
+                case '0':
+                    dest[o++]=0;
+                    break;
                 case 'd':
                     break;
                 case 'x':
@@ -56,10 +55,12 @@ int strapp(char* dest,char* format,void* p){
                     base=10;
                     break;
             }
-            for(l=0;num && (l<MAXN) ; num /= base,l++)
-                buf[l] = "0123456789ABCDEF"[num % base];
-            for(b=(l-1);b>=0;b--)
-                dest[o++]=buf[b];
+            if(format[i+1]!='0'){
+                for(l=0;num && (l<MAXN) ; num /= base,l++)
+                    buf[l] = "0123456789ABCDEF"[num % base];
+                for(b=(l-1);b>=0;b--)
+                    dest[o++]=buf[b];
+            }
             i++;
         }
         else
