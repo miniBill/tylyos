@@ -131,6 +131,8 @@ void _kmain(/*multiboot_info_t* mbd, unsigned int magic*/){
     OK(t++);
 #endif
 
+    asm("sti");
+
     i=0;
     on=1;
     while(on){
