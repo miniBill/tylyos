@@ -15,11 +15,9 @@
 # You should have received a copy of the GNU General Public License
 # along with ClearOS.  If not, see <http://www.gnu.org/licenses/>.
 
-export GRUBIMAGESDIR=/lib/grub/i386-pc
-
 mkdir iso
 mkdir -p iso/boot/grub
-cp $GRUBIMAGESDIR/stage2_eltorito iso/boot/grub
+cp stage2_eltorito iso/boot/grub
 
 echo "timeout 1">>iso/boot/grub/menu.lst
 echo "title   ClearOS">>iso/boot/grub/menu.lst
