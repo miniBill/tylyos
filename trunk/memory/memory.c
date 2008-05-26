@@ -103,9 +103,9 @@ void InitPaging(){
 
     write_cr3((unsigned int)PageDir); /* put that page directory address into CR3 */
     write_cr0(read_cr0() | 0x80000000); /* set the paging bit in CR0 to 1 */
-    /*write("1?");
-    asm("sti");FIXME
-    write("2?");*/
+    
+    asm("sti");
+    
 }
 
 /* obj: indirizzo dell'area su cui scrivere il selettore
