@@ -1,2 +1,2 @@
 #!/bin/sh
-bochs -qf bochs.conf.iso
+bochs -qf bochs.conf
