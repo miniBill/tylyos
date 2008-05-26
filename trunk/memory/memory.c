@@ -89,24 +89,24 @@ void InitPaging()
         memoryBitmap[c]=0;
     PageDir=(unsigned int*)GetNewPage(1);
     PageTab=GetNewPage(1);
-    /* setta la prima pagetable nella pagedir */
-    setPageTableSelector(&PageDir[0],PageTab>>12,PAG_PRESENT|PAG_READWRITE|PAG_USER|PAG_4KPAGE);
-    for(c=1;c<1024;c++)/* azzera gli altri record della pagedir */
+    for(c=0;c<1024;c++)/* azzera gli altri record della pagedir */
     {
         setPageTableSelector(&PageDir[c],0,0);
     }
+    /* setta la prima pagetable nella pagedir */
+    setPageTableSelector(&PageDir[0],PageTab>>12,PAG_PRESENT|PAG_READWRITE|PAG_SUPERVISOR|PAG_4KPAGE);
     /* ultimo record punta alla pagina della pagedir */
-    setPageTableSelector(&PageDir[1023],(unsigned int)PageDir>>12,PAG_PRESENT|PAG_READWRITE|PAG_USER|PAG_4KPAGE);
+    setPageTableSelector(&PageDir[1023],(unsigned int)PageDir>>12,PAG_PRESENT|PAG_READWRITE|PAG_SUPERVISOR|PAG_4KPAGE);
     for(c2=0,c=KERNEL_START/0x1000;c<0x1000;c++,c2++)/* inserisce pagine nella prima pagetable */
     {
         debug[0]='\0';
-        strapp(debug,"descrittore in: %x",(void *)(PageTab+(c*4)));
+        /* strapp(debug,"descrittore in: %x",(void *)(PageTab+(c*4)));
         strapp(debug,"indirizzo: %x",(void *)((c*0x1000)>>12));
-         writeline(debug); 
-        setPageSelector((unsigned int*)((PageTab)+(c*4)),(c*0x1000)>>12,PAG_PRESENT|PAG_READWRITE|PAG_USER|PAG_4KPAGE);
+         writeline(debug); */
+        setPageSelector((unsigned int*)((PageTab)+(c2*4)),(c*0x1000)>>12,PAG_PRESENT|PAG_READWRITE|PAG_SUPERVISOR|PAG_4KPAGE);
     }
     /* ultimo record punta alla pagina della tabella */
-    setPageSelector((unsigned int*)(PageTab+(1023*4)),PageTab>>12,PAG_PRESENT|PAG_READWRITE|PAG_USER|PAG_4KPAGE);
+    setPageSelector((unsigned int*)(PageTab+(1023*4)),PageTab>>12,PAG_PRESENT|PAG_READWRITE|PAG_SUPERVISOR|PAG_4KPAGE);
     
     write_cr3((unsigned int)PageDir); /* put that page directory address into CR3 */
     write_cr0(read_cr0() | 0x80000000); /* set the paging bit in CR0 to 1 */
@@ -130,7 +130,7 @@ void setPageTableSelector(unsigned int *obj,unsigned int tableAdress,unsigned in
 void setPageSelector(unsigned int *obj,unsigned int pageAdress,unsigned int flags){
     *obj=0;
     *obj=flags;
-    *obj|=pageAdress<<12;
+    *obj|=(pageAdress<<12)&0xFFFFF000;
 }
 
 int getBit(int x){

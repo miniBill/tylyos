@@ -153,7 +153,7 @@ void interrupt_handler(
         *(out+c)=0;
     strapp(out,", interrupt: %d",(void *)isr);
     strapp(out,", count: %d",(void *)xtemp);
-   /* writeline(out); */
+    writeline(out); 
 #ifdef PRINT_REGISTERS
     char registers[180];
     regAppend(registers,eax,"EAX");
