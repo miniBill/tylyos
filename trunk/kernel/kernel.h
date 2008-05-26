@@ -21,15 +21,19 @@ void kwrite(char * string){
 }
 
 void OK(int i){
-    writexy(COLUMNS-4,i,"[OK]");
+    writexy(COLUMNS-6,i,"[ ok ]");
+    cputxy(COLUMNS-6,i,Blue);
+    cputxy(COLUMNS-4,i,Light_Green);
     cputxy(COLUMNS-3,i,Light_Green);
-    cputxy(COLUMNS-2,i,Light_Green);
+    cputxy(COLUMNS-1,i,Blue);
 }
 
 void NO(int i){
-    writexy(COLUMNS-4,i,"[NO]");
+    writexy(COLUMNS-6,i,"[ NO ]");
+    cputxy(COLUMNS-6,i,Blue);
+    cputxy(COLUMNS-4,i,Light_Red);
     cputxy(COLUMNS-3,i,Light_Red);
-    cputxy(COLUMNS-2,i,Light_Red);
+    cputxy(COLUMNS-1,i,Blue);
 }
 
 #endif
