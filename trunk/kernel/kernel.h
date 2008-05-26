@@ -6,7 +6,7 @@
 
 void halt();
 
-void _kmain(multiboot_info_t* mbd, unsigned int magic );
+void _kmain(/*multiboot_info_t* mbd, unsigned int magic */);
 
 char * kpointer=(char *)0xb8000;
 

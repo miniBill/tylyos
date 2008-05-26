@@ -19,7 +19,7 @@
 
 #include "io.h"
 
-int strapp(char* dest,char* format,int num){/*HACK, to have compile-time checks*/
+int strapp(char* dest,char* format,unsigned int num){/*HACK, to have compile-time checks*/
 /*int strapp(char* dest,char* format,void* p){*/
     /*indice format string*/
     int i=0;

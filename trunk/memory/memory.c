@@ -60,26 +60,20 @@ enum{
 
 /*######################### Paginazione ####################################*/
 
-unsigned int GetNewPage(int alloca)
-{
+unsigned int GetNewPage(int alloca){
     int c;
-    for(c=0;c<MAX_PAGES_IN_MEMORY;c++)
-    {
-        if(getBit(c)==0)
-        {
+    for(c=0;c<MAX_PAGES_IN_MEMORY;c++){
+        if(getBit(c)==0){
             if(alloca==1)
                 setBit(c,1);
             return MEMORY_START+(c*0x1000);
         }
     }
-	return 0x0;
+    return 0x0;
 }
 
-/*
-	TODO: sistemare meglio e pulire codice
-*/
-void InitPaging()
-{
+/* TODO: sistemare meglio e pulire codice */
+void InitPaging(){
     int c,c2;
     unsigned int PageTab;
     char debug[36]={0};
@@ -89,16 +83,15 @@ void InitPaging()
         memoryBitmap[c]=0;
     PageDir=(unsigned int*)GetNewPage(1);
     PageTab=GetNewPage(1);
-    for(c=0;c<1024;c++)/* azzera gli altri record della pagedir */
-    {
+    /* azzera gli altri record della pagedir */
+    for(c=0;c<1024;c++)
         setPageTableSelector(&PageDir[c],0,0);
-    }
     /* setta la prima pagetable nella pagedir */
     setPageTableSelector(&PageDir[0],PageTab>>12,PAG_PRESENT|PAG_READWRITE|PAG_SUPERVISOR|PAG_4KPAGE);
     /* ultimo record punta alla pagina della pagedir */
     setPageTableSelector(&PageDir[1023],(unsigned int)PageDir>>12,PAG_PRESENT|PAG_READWRITE|PAG_SUPERVISOR|PAG_4KPAGE);
-    for(c2=0,c=KERNEL_START/0x1000;c<0x1000;c++,c2++)/* inserisce pagine nella prima pagetable */
-    {
+    /* inserisce pagine nella prima pagetable */
+    for(c2=0,c=KERNEL_START/0x1000;c<0x1000;c++,c2++){
         debug[0]='\0';
         /* strapp(debug,"descrittore in: %x",(void *)(PageTab+(c*4)));
         strapp(debug,"indirizzo: %x",(void *)((c*0x1000)>>12));
@@ -107,10 +100,12 @@ void InitPaging()
     }
     /* ultimo record punta alla pagina della tabella */
     setPageSelector((unsigned int*)(PageTab+(1023*4)),PageTab>>12,PAG_PRESENT|PAG_READWRITE|PAG_SUPERVISOR|PAG_4KPAGE);
-    
+
     write_cr3((unsigned int)PageDir); /* put that page directory address into CR3 */
     write_cr0(read_cr0() | 0x80000000); /* set the paging bit in CR0 to 1 */
-    asm("sti");
+    /*write("1?");
+    asm("sti");FIXME
+    write("2?");*/
 }
 
 /* obj: indirizzo dell'area su cui scrivere il selettore
@@ -137,7 +132,7 @@ int getBit(int x){
     int off1,off2;
     off1=x/32;
     off2=x%32;
-    return (memoryBitmap[off1]>>off2)&0x1;
+    return (memoryBitmap[off1]>>off2)&1;
 }
 
 void setBit(int x,unsigned int value){

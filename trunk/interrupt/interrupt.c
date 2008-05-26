@@ -65,7 +65,9 @@ void initIdt(){
 
     idt_load();
     irq_remap(33,50);
+    /*write("1?");
     asm("sti");
+    write("2?");*/
 }
 
 void addIdtSeg(short int i, void (*gestore)(), unsigned char options, unsigned int seg_sel){
@@ -151,9 +153,11 @@ void interrupt_handler(
     xtemp++;
     for(c=12;c<44;c++)
         *(out+c)=0;
-    strapp(out,", interrupt: %d",isr);
-    strapp(out,", count: %d.",xtemp);
-    writeline(out);
+    if(isr!=9){
+        strapp(out,", interrupt: %d",isr);
+        strapp(out,", count: %d.",xtemp);
+        writeline(out);
+    }
 #ifdef PRINT_REGISTERS
     char registers[180];
     regAppend(registers,eax,"EAX");
