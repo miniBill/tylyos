@@ -15,11 +15,11 @@
 # You should have received a copy of the GNU General Public License
 # along with ClearOS.  If not, see <http://www.gnu.org/licenses/>.
 
-CFLAGS:= -march=i386 -ffreestanding -Wall -pedantic -Wextra \
-         -Wshadow -Wpointer-arith -Wcast-align -Wwrite-strings \
-         -Wmissing-prototypes -Wmissing-declarations -Wredundant-decls \
-         -Wnested-externs -Winline -Wno-long-long -Wconversion \
-         -Wstrict-prototypes # -Werror
+CFLAGS:= -march=i386 -ffreestanding -Wall -pedantic -Wextra
+#         -Wshadow -Wpointer-arith -Wcast-align -Wwrite-strings \
+#         -Wmissing-prototypes -Wmissing-declarations -Wredundant-decls \
+#         -Wnested-externs -Winline -Wno-long-long -Wconversion \
+#         -Wstrict-prototypes # -Werror
 OBJ= gui/gui.o bootloader/loader.o kernel/kernel.o drivers/screen/io.o drivers/screen/screen.o memory/memory.o drivers/keyboard/keyboard.o interrupt/interrupt.o memory/gdt.o memory/paging.o interrupt/interruptHandler.o interrupt/ldt.o kernel/stdio.o
 LDFLAGS= -T linker.ld
 
