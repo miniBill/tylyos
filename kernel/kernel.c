@@ -23,7 +23,7 @@
 #include "../memory/memory.h"
 #include "../interrupt/interrupt.h"
 
-#define BASIC_TESTS
+/*#define BASIC_TESTS*/
 
 int on=1;
 
@@ -33,19 +33,20 @@ void halt(){
 
 void logo(){
     int i;
-    for(i=0;i<22;i++)
+    const int left=22;
+    for(i=0;i<left;i++)
         put(' ');
     writeline("   ________                ____      ");
-    for(i=0;i<22;i++)
+    for(i=0;i<left;i++)
         put(' ');
     writeline("  / ____/ /__  ____  _____/ __ \\____");
-    for(i=0;i<22;i++)
+    for(i=0;i<left;i++)
         put(' ');
     writeline(" / /   / / _ \\/ __ \\/ ___/ / / /  _/");
-    for(i=0;i<22;i++)
+    for(i=0;i<left;i++)
         put(' ');
     writeline("/ /___/ /  __/ /_/ / /  / /_/ /\\  \\ ");
-    for(i=0;i<22;i++)
+    for(i=0;i<left;i++)
         put(' ');
     writeline("\\____/_/\\___/\\____/_/   \\____//___/ ");
 }
@@ -54,7 +55,7 @@ void logo(){
 void _kmain(multiboot_info_t* mbd, unsigned int magic){
     char parameters[40]="Parametri: \0";
 #ifdef BASIC_TESTS
-    char pointer[16]="Prova puntatore";
+    char pointer[17]="Prova puntatore.";
     char conversion[9]={0};
 #endif
     short i;/*index*/
@@ -63,7 +64,7 @@ void _kmain(multiboot_info_t* mbd, unsigned int magic){
     clearScreen();
 
     NO(t);
-    kwrite("Kernel caricato");
+    kwrite("Kernel caricato.");
     OK(t++);
     writeline("");
 
@@ -72,14 +73,14 @@ void _kmain(multiboot_info_t* mbd, unsigned int magic){
 
 #ifdef BASIC_TESTS
     NO(t);
-    writeline("Prova writeline");
+    writeline("Prova writeline.");
     OK(t++);
 
     NO(t);
     put('P');
     for(i=COLUMNS*(t-1)+1;i<COLUMNS*(t-1)+6;i++)
         put(read(i));
-    writeline("put/read");
+    writeline("put/read.");
     OK(t++);
 
     NO(t);
@@ -87,21 +88,31 @@ void _kmain(multiboot_info_t* mbd, unsigned int magic){
     OK(t++);
 
     NO(t);
-    write("Prova strapp(output: 101|C|A0):");
-    strapp(conversion,"%b|",(void *)5);
-    strapp(conversion,"%x|",(void *)12);
-    strapp(conversion,"%x",(void *)160);
+    write("Prova strapp(output: 101,C,A0):");
+    strapp(conversion,"%b,",/*(void *)*/5);
+    strapp(conversion,"%x,",/*(void *)*/12);
+    strapp(conversion,"%x.",/*(void *)*/160);
     writeline(conversion);
     OK(t++);
 
 #endif
 
     /*FIXME*/
-    /*NO(t);
-    strapp(parameters,"mbd.flags:%b,",(void *)mbd->flags);
-    strapp(parameters,"magic:%x.%0",(void *)magic);
+    NO(t);
     writeline(parameters);
-    OK(t++);*/
+    OK(t++);NO(t);
+    strapp(parameters,"mbd.flags:%b,",/*(void *)*/mbd->flags);
+    writeline("1st strapp");
+    OK(t++);NO(t);
+    writeline(parameters);
+    OK(t++);NO(t);
+    strapp(parameters,"magic:%x.%0",/*(void *)*/magic);
+    writeline("2nd strapp");
+    OK(t++);NO(t);
+    writeline(parameters);
+    /*OK(t++);NO(t);*/
+    OK(t++);
+    i=(mbd->flags)^magic;/*HACK*/
 
 #ifdef BASIC_TESTS
     NO(t);
@@ -125,13 +136,12 @@ void _kmain(multiboot_info_t* mbd, unsigned int magic){
     writeline("Prova Paging");
     InitPaging();
     OK(t++);
-    t++;
 
     NO(t);
     writeline("Ed ora, diamo il via alle danze!");
     OK(t++);
 
-    asm("sti");
+    /*asm("sti");*/
     i=0;
     while(on){
         putxy(i%2,t,' ');

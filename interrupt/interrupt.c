@@ -134,7 +134,7 @@ void regAppend(char * string,unsigned int reg,char * name){
         string[c]=name[i];
     string[c+1]=':';
     string[c+2]=0;
-    strapp(string,"%x,",(void*)reg);
+    strapp(string,"%x,",/*(void*)*/reg);
 }
 
 void interrupt_handler(
@@ -151,9 +151,9 @@ void interrupt_handler(
     xtemp++;
     for(c=12;c<44;c++)
         *(out+c)=0;
-    strapp(out,", interrupt: %d",(void *)isr);
+    /*strapp(out,", interrupt: %d",(void *)isr);
     strapp(out,", count: %d",(void *)xtemp);
-    writeline(out); 
+    writeline(out);*/
 #ifdef PRINT_REGISTERS
     char registers[180];
     regAppend(registers,eax,"EAX");
