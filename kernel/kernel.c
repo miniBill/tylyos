@@ -56,7 +56,7 @@ void _kmain(multiboot_info_t* mbd, unsigned int magic){
     char parameters[40]="Parametri: \0";
 #ifdef BASIC_TESTS
     char pointer[17]="Prova puntatore.";
-    char conversion[9]={0};
+    char conversion[10]={0};
 #endif
     short i;/*index*/
     int t=0;/*test number*/
@@ -68,14 +68,16 @@ void _kmain(multiboot_info_t* mbd, unsigned int magic){
     OK(t++);
     writeline("");
 
-    logo();
-    t+=5;
-
 #ifdef BASIC_TESTS
     NO(t);
     writeline("Prova writeline.");
     OK(t++);
+#endif
 
+    logo();
+    t+=5;
+
+#ifdef BASIC_TESTS
     NO(t);
     put('P');
     for(i=COLUMNS*(t-1)+1;i<COLUMNS*(t-1)+6;i++)
@@ -88,7 +90,7 @@ void _kmain(multiboot_info_t* mbd, unsigned int magic){
     OK(t++);
 
     NO(t);
-    write("Prova strapp(output: 101,C,A0):");
+    write("Prova strapp(output: 101,C,A0.):");
     strapp(conversion,"%b,",/*(void *)*/5);
     strapp(conversion,"%x,",/*(void *)*/12);
     strapp(conversion,"%x.",/*(void *)*/160);
@@ -96,23 +98,6 @@ void _kmain(multiboot_info_t* mbd, unsigned int magic){
     OK(t++);
 
 #endif
-
-    /*FIXME*/
-    NO(t);
-    writeline(parameters);
-    OK(t++);NO(t);
-    strapp(parameters,"mbd.flags:%b,",/*(void *)*/mbd->flags);
-    writeline("1st strapp");
-    OK(t++);NO(t);
-    writeline(parameters);
-    OK(t++);NO(t);
-    strapp(parameters,"magic:%x.%0",/*(void *)*/magic);
-    writeline("2nd strapp");
-    OK(t++);NO(t);
-    writeline(parameters);
-    /*OK(t++);NO(t);*/
-    OK(t++);
-    i=(mbd->flags)^magic;/*HACK*/
 
 #ifdef BASIC_TESTS
     NO(t);
@@ -132,14 +117,37 @@ void _kmain(multiboot_info_t* mbd, unsigned int magic){
     OK(t++);
 #endif
 
+#ifdef BASIC_TESTS
     NO(t);
     writeline("Prova Paging");
+#endif
     InitPaging();
+#ifdef BASIC_TESTS
     OK(t++);
+#endif
 
+    /*FIXME*/
+    NO(t);
+    writeline(parameters);
+    OK(t++);NO(t);
+    strapp(parameters,"mbd.flags:%b,",/*(void *)*/mbd->flags);
+    writeline("1st strapp");
+    OK(t++);NO(t);
+    writeline(parameters);
+    OK(t++);NO(t);
+    strapp(parameters,"magic:%x.",/*(void *)*/magic);
+    writeline("2nd strapp");
+    OK(t++);NO(t);
+    writeline(parameters);
+    /*OK(t++);NO(t);*/
+    OK(t++);
+    i=(mbd->flags)^magic;/*HACK*/
+
+#ifdef BASIC_TESTS
     NO(t);
     writeline("Ed ora, diamo il via alle danze!");
     OK(t++);
+#endif
 
     /*asm("sti");*/
     i=0;
