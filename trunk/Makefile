@@ -23,12 +23,9 @@ CFLAGS:= -march=i386 -ffreestanding -Wall -pedantic -Wextra \
 OBJ= gui/gui.o bootloader/loader.o kernel/kernel.o drivers/screen/io.o drivers/screen/screen.o memory/memory.o drivers/keyboard/keyboard.o interrupt/interrupt.o memory/gdt.o memory/paging.o interrupt/interruptHandler.o interrupt/ldt.o kernel/stdio.o
 LDFLAGS= -T linker.ld
 
-all:floppy.img
+all:iso.img
 
-iso.img:clearos
-	sh iso.sh
-
-floppy.img: clearos
+iso.img: clearos
 	sh make.sh
 
 clearos: $(OBJ)
@@ -39,4 +36,4 @@ clearos: $(OBJ)
 
 .PHONY: clean
 clean:
-	rm -f *\~ */*\~ */*.o */*/*\~ */*/*.o log clearos grub.img floppy.img iso.img
+	rm -f *\~ */*\~ */*.o */*/*\~ */*/*.o log clearos iso.img
