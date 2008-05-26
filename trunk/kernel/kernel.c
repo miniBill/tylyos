@@ -23,6 +23,8 @@
 #include "../memory/memory.h"
 #include "../interrupt/interrupt.h"
 
+#include "../gui/gui.h"
+
 #define BASIC_TESTS
 
 int on=1;
@@ -36,6 +38,9 @@ void logo(){
     const int left=22;
     for(i=0;i<left;i++)
         put(' ');
+
+
+
     writeline("   ________                ____      ");
     for(i=0;i<left;i++)
         put(' ');
@@ -130,7 +135,7 @@ void _kmain(/*multiboot_info_t* mbd, unsigned int magic*/){
     writeline("Ed ora, diamo il via alle danze!");
     OK(t++);
 #endif
-
+DrawRectangleExt(1,17,10,5,(char)(Yellow|Back_Blue));
     asm("sti");
 
     i=0;
