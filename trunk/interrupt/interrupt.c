@@ -65,9 +65,9 @@ void initIdt(){
 
     idt_load();
     irq_remap(33,50);
-    
+
     asm("sti");
-    
+
 }
 
 void addIdtSeg(short int i, void (*gestore)(), unsigned char options, unsigned int seg_sel){
@@ -90,8 +90,8 @@ void sendICW(int pic_p,int pic_s ,int data){
  */
 void irq_remap(unsigned int offset_1, unsigned int offset_2){
     /*
-     * PIC_P � il PIC primario o "master"
-     * PIC_S � il PIC secondario o "slave"
+     * PIC_P e' il PIC primario o "master"
+     * PIC_S e' il PIC secondario o "slave"
      *
      * Quando si manifesta un IRQ che riguarda il PIC secondario,
      * il PIC primario riceve IRQ 2
@@ -102,7 +102,7 @@ void irq_remap(unsigned int offset_1, unsigned int offset_2){
     /*write("PIC remap: ");*/
 
     /* Inizializzazione                                */
-    /* 0x10 significa che si st� inizializzando        */
+    /* 0x10 significa che si sta' inizializzando        */
     /* 0x01 significa che si deve arrivare fino a ICW4 */
     sendICW(0x11,0x11,0);
     /*write("ICW1, ");*/
@@ -117,7 +117,7 @@ void irq_remap(unsigned int offset_1, unsigned int offset_2){
     sendICW(0x04,0x02,1);
     /*write("ICW3, ");*/
 
-    /* ICW4: si precisa la modalit� del microprocessore; 0x01 = 8086 */
+    /* ICW4: si precisa la modalita' del microprocessore; 0x01 = 8086 */
     sendICW(0x01,0x01,1);
     /*write("ICW4, ");*/
 
@@ -149,42 +149,31 @@ void interrupt_handler(
     /* codice che interpreta le interruzioni */
     int c=0;
     char out[44]="interruzione";
-    if(isr!=13){/*HACK*/
-    xtemp++;
-    for(c=12;c<44;c++)
-        *(out+c)=0;
-    if(isr!=9){
-        strapp(out,", interrupt: %d",isr);
-        strapp(out,", count: %d.",xtemp);
-        writeline(out);
-    }
+    if(isr!=13&&isr!=8){/*HACK*/
+        xtemp++;
+        if(isr!=9){
+            for(c=12;c<44;c++)
+                *(out+c)=0;
+            strapp(out,", interrupt: %d",isr);
+            strapp(out,", count: %d.",xtemp);
+            writeline(out);
 #ifdef PRINT_REGISTERS
-    char registers[180];
-    regAppend(registers,eax,"EAX");
-    regAppend(registers,ebx,"EBX");
-    regAppend(registers,ecx,"ECX");
-    regAppend(registers,edx,"EDX");
-    regAppend(registers,ebp,"EBP");
-    regAppend(registers,esi,"ESI");
-    regAppend(registers,edi,"EDI");
-    regAppend(registers,ds,"DS");
-    regAppend(registers,es,"ES");
-    regAppend(registers,fs,"FS");
-    regAppend(registers,gs,"GS");
-    regAppend(registers,eip,"EIP");
-    regAppend(registers,cs,"CS");
-    regAppend(registers,eflags,"EFLAGS");
-    regAppend(registers,error,"ERROR");
-    writeline(registers);
+            char registers[180];
+            regAppend(registers,eax,"EAX");regAppend(registers,ebx,"EBX");regAppend(registers,ecx,"ECX");regAppend(registers,edx,"EDX");
+            regAppend(registers,ebp,"EBP");regAppend(registers,esi,"ESI");regAppend(registers,edi,"EDI");regAppend(registers,ds,"DS");
+            regAppend(registers,es,"ES");regAppend(registers,fs,"FS");regAppend(registers,gs,"GS");regAppend(registers,eip,"EIP");
+            regAppend(registers,cs,"CS");regAppend(registers,eflags,"EFLAGS");regAppend(registers,error,"ERROR");
+            writeline(registers);
 #else
-    c=eax^ebx^ecx^edx^ebp^esi^edi^ds^es^fs^gs^eip^cs^eflags^error;/*HACK*/
+            c=eax^ebx^ecx^edx^ebp^esi^edi^ds^es^fs^gs^eip^cs^eflags^error;/*HACK*/
 #endif
-    if(isr==9){
-        c=inb(0x60);
-        c=ScanCodeToChar(c);
-        if(c!=0)
-            put(c);
-    }
+        }
+        else{
+            c=inb(0x60);
+            c=ScanCodeToChar(c);
+            if(c!=0)
+                put(c);
+        }
     }/*HACK*/
     /* Send End Of Interrupt to PIC */
     if(isr>7)outb(0xA0,0x20);
