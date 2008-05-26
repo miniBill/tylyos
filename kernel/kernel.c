@@ -123,8 +123,8 @@ void _kmain(multiboot_info_t* mbd, unsigned int magic){
 
     NO(t);
     writeline("Prova Paging");
-    /*InitPaging();*//*FIXME*/
-    /*OK(t++);*/
+    InitPaging();
+    OK(t++);
     t++;
 
     NO(t);

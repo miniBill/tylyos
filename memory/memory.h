@@ -56,7 +56,7 @@ extern void gdtFlush();
 	1 pagina = 4096 byte = 0x1000
 */
 
-#define KERNEL_START	0x00100000	/* 1.048.576 byte */
+#define KERNEL_START	0x0	/* 1.048.576 byte */
 #define MEMORY_START 0x00400000	/* 4.194.304 byte*/
 
 #define MAX_PAGES_IN_MEMORY	100000 /* numero massimo di pagine allocabili in memoria contemporaneamente */
