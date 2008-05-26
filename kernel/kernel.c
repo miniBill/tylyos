@@ -116,12 +116,13 @@ void _kmain(multiboot_info_t* mbd, unsigned int magic){
 #ifdef BASIC_TESTS
     OK(t++);
 #endif
+    asm("sti");
 
 #ifdef BASIC_TESTS
     NO(t);
     writeline("Prova Paging");
 #endif
-    InitPaging();
+    /*InitPaging();*/
 #ifdef BASIC_TESTS
     OK(t++);
 #endif
@@ -139,9 +140,7 @@ void _kmain(multiboot_info_t* mbd, unsigned int magic){
     writeline("2nd strapp");
     OK(t++);NO(t);
     writeline(parameters);
-    /*OK(t++);NO(t);*/
     OK(t++);
-    i=(mbd->flags)^magic;/*HACK*/
 
 #ifdef BASIC_TESTS
     NO(t);
@@ -149,7 +148,6 @@ void _kmain(multiboot_info_t* mbd, unsigned int magic){
     OK(t++);
 #endif
 
-    /*asm("sti");*/
     i=0;
     while(on){
         putxy(i%2,t,' ');

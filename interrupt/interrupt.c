@@ -151,9 +151,9 @@ void interrupt_handler(
     xtemp++;
     for(c=12;c<44;c++)
         *(out+c)=0;
-    /*strapp(out,", interrupt: %d",(void *)isr);
-    strapp(out,", count: %d",(void *)xtemp);
-    writeline(out);*/
+    strapp(out,", interrupt: %d",isr);
+    strapp(out,", count: %d.",xtemp);
+    writeline(out);
 #ifdef PRINT_REGISTERS
     char registers[180];
     regAppend(registers,eax,"EAX");
