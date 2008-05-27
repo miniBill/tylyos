@@ -26,7 +26,7 @@ void DrawRectangleExt(int x,int y,int width,int height,char color){
     DrawRectangle(x,y,width,height);
     for(c=0;c<=width;c++)
         for(i=0;i<=height;i++)
-            cputxy((int)(x+c),(int)(y+i),(char)color);
+            cputxy(x+c,y+i,color);
 }
 
 void DrawRectangle(int x,int y,int width,int height){
