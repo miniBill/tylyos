@@ -143,13 +143,13 @@ isr_32:         # IRQ 0: timer
 isr_33:         # IRQ 1: tastiera
     cli
     push $0     # Codice di errore fittizio.
-    push $1     # Numero di procedura ISR.
+    push $33     # Numero di procedura ISR.
     jmp isr_common
 
 isr_47:         # IRQ 15: canale IDE secondario
     cli
     push $0     # Codice di errore fittizio.
-    push $15    # Numero di procedura ISR.
+    push $47    # Numero di procedura ISR.
     jmp isr_common
 
 isr_common:
