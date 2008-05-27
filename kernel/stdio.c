@@ -25,5 +25,9 @@ unsigned char inb(int portnum){
 }
 
 void outb(int data, int portnum){
-    asm("outb %%al, %%dx" :: "a" (data),"d" (portnum));
+    asm("outb %%al, %%dx" :: "d" (data),"a" (portnum));
+}
+
+void io_wait(void){
+    asm("jmp 1f;1:jmp 1f;1:");
 }

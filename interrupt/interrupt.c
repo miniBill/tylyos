@@ -21,7 +21,7 @@
 
 #include "interrupt.h"
 #include "../drivers/keyboard/keyboard.h"
-#include "../kernel/stdio.h"
+#include <kernel/stdio.h>
 #include "../drivers/screen/io.h"
 #include "../drivers/screen/screen.h"
 
@@ -54,17 +54,17 @@ void initIdt(){
     addIdtSeg(16,isr_16,0x80,0x08);
     addIdtSeg(17,isr_17,0x80,0x08);
     addIdtSeg(18,isr_18,0x80,0x08);
-    for(c=33;c<60;c++)
+    for(c=32;c<50;c++)
         addIdtSeg(c,isr_32,0x80,0x08);
-    addIdtSeg(32,isr_18,0x80,0x08);
-    addIdtSeg(33,isr_18,0x80,0x08);
-    addIdtSeg(47,isr_18,0x80,0x08);
+    addIdtSeg(32,isr_32,0x80,0x08);
+    addIdtSeg(33,isr_33,0x80,0x08);
+    addIdtSeg(47,isr_47,0x80,0x08);
 
     idt_pointer.limit=0xFFFF;
     idt_pointer.base=(unsigned int)&idt;
 
     idt_load();
-    irq_remap(33,50);
+    irq_remap(0x20,0x28);
 
     asm("sti");
 
@@ -80,16 +80,10 @@ void addIdtSeg(short int i, void (*gestore)(), unsigned char options, unsigned i
 }
 
 void sendICW(int pic_p,int pic_s ,int data){
-    outb (0x20+data, pic_p);/*master*/
-    outb (0xA0+data, pic_s);/*slave*/
+    outb(0x20+data, pic_p);/*master*/
+    outb(0xA0+data, pic_s);/*slave*/
 }
 
-void io_wait(){
-    int i=0;
-    volatile int c=10;
-    for(i=0;i<400;i++)
-        c*=2;
-}
 /* rimappa i PIC (programmable input controller)
  * offset_1: offset riferito alla IDT delle interruzioni per il primo PIC
  * offset_2: offset riferito alla IDT delle interruzioni per il PIC slave
@@ -105,38 +99,30 @@ void irq_remap(unsigned int offset_1, unsigned int offset_2){
      * ICW = initialization command word
      * OCW = operation command word
      */
-    /*write("PIC remap: ");*/
 
     /* Inizializzazione                                */
     /* 0x10 significa che si sta' inizializzando       */
     /* 0x01 significa che si deve arrivare fino a ICW4 */
     sendICW(0x11,0x11,0);
     io_wait();
-    /*write("ICW1, ");*/
 
     /* ICW2: PIC_P a partire da "offset_1" */
     /*       PIC_S a partire da "offset_2" */
     sendICW(offset_1,offset_2,1);
     io_wait();
-    /*write("ICW2, ");*/
 
     /* ICW3: PIC_P: IRQ2 per pilotare PIC_S    */
     /*       PIC_S: pilotato con IRQ2 da PIC_P */
     sendICW(0x04,0x02,1);
     io_wait();
-    /*write("ICW3, ");*/
 
     /* ICW4: si precisa la modalita' del microprocessore; 0x01 = 8086 */
     sendICW(0x01,0x01,1);
     io_wait();
-    /*write("ICW4, ");*/
 
     /* OCW1: azzera la maschera in modo da abilitare tutti i numeri IRQ */
     sendICW(0x00,0x00,1);
     io_wait();
-    /*write("OCW1. ");*/
-
-    /*writeline("PIC remapped.");*/
 }
 
 void regAppend(char * string,unsigned int reg,char * name){
@@ -160,9 +146,9 @@ void interrupt_handler(
     /* codice che interpreta le interruzioni */
     int c=0;
     char out[44]="interruzione";
-    if(isr!=13&&isr!=8){/*HACK*/
+    if(isr!=32){/*HACK*/
         xtemp++;
-        if(isr!=9){
+        if(isr!=33){
             for(c=12;c<44;c++)
                 *(out+c)=0;
             strapp(out,", interrupt: %d",isr);
