@@ -26,7 +26,8 @@
 #include "../drivers/screen/screen.h"
 
 int xtemp;
-short int time=0;
+int time=0;
+short tick=0;
 
 void initIdt(){
     /* inizializzazione */
@@ -146,12 +147,15 @@ void interrupt_handler(
     unsigned int eflags, ...){
     if(isr==32){
         /*timer*/
-        char timestring[6]={0};
-        int print=COLUMNS;
-        time++;
-        time&=0xFFFF;
-        if(time==(time&~0x1F)){
-            strapp(timestring,"%i",time>>5);
+        tick++;
+        if(tick==0x40){
+            char timestring[9]={0};
+            int print=COLUMNS;
+            tick=0;
+            time++;
+            if(time==3600)
+                time=0;
+            strapp(timestring,"%d",time);
             while(timestring[COLUMNS-print]!=0)
                 print--;
             writexy(print,24,timestring);
