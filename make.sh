@@ -26,6 +26,7 @@ echo "kernel  /boot/clearos">>iso/boot/grub/menu.lst
 
 cp clearos iso/boot/clearos
 
-mkisofs -R -b boot/grub/stage2_eltorito -no-emul-boot -boot-load-size 4 -boot-info-table -o iso.img iso
+mkisofs -quiet -R -b boot/grub/stage2_eltorito -no-emul-boot -boot-load-size 4 -boot-info-table -o iso.img iso
+echo "Iso created"
 
 rm -R iso

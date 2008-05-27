@@ -25,7 +25,7 @@ iso.img: clearos
 	sh make.sh
 
 clearos: $(OBJ)
-	$(LD) $(LDFLAGS) $^ -o $@ && mbchk $@
+	$(LD) $(LDFLAGS) $^ -o $@
 
 %.o: %.asm
 	nasm -f elf -o $@ $^
