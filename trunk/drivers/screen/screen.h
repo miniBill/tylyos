@@ -62,7 +62,7 @@ enum{
 #define COLUMNS		80
 #define ROWS		25
 
-void SetCursorPos(unsigned int x, unsigned int y);
+void setCursorPos(unsigned int x, unsigned int y);
 
 int pos(void);
 
