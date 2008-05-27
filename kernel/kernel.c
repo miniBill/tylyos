@@ -82,7 +82,7 @@ void _kmain(/*multiboot_info_t* mbd, unsigned int magic*/){
 #ifdef BASIC_TESTS
     NO(t);
     put('P');
-    for(i=COLUMNS*2+1;i<COLUMNS*2+6;i++)
+    for(i=(COLUMNS*2+1);i<(COLUMNS*2+6);i++)
         put(readi(i));
     writeline("put/read.");
     OK(t++);
@@ -138,20 +138,9 @@ void _kmain(/*multiboot_info_t* mbd, unsigned int magic*/){
     writeline(DinamicTest);
     OK(t++);
 #endif
-
-#ifdef BASIC_TESTS
-    NO(t);
-    writeline("Ed ora, diamo il via alle danze!");
-    OK(t++);
-#endif
     DrawRectangleExt(5,17,10,5,(char)(Yellow|Back_Blue));
     asm("sti");
-    SetCursorPos(0,0);
-    i=0;
+    setCursorPos(0,0);
     on=1;
-    while(on){
-        putxy(i%2,t,' ');
-        putxy(1-i%2,t,'X');
-        i=1-i;
-    }
+    while(on);
 }

@@ -26,8 +26,7 @@
 char consoleColor=0x07;
 char * pointer=(char *)consoleAddr;
 
-void SetCursorPos(unsigned int x, unsigned int y)
-{
+void setCursorPos(unsigned int x, unsigned int y){
    asm(
        "movl  %0, %%eax   \n"
        "movl  %1, %%ebx   \n"

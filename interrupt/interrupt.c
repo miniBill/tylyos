@@ -26,6 +26,7 @@
 #include "../drivers/screen/screen.h"
 
 int xtemp;
+short int time=0;
 
 void initIdt(){
     /* inizializzazione */
@@ -143,10 +144,23 @@ void interrupt_handler(
     unsigned int fs, unsigned int gs, unsigned int isr,
     unsigned int error, unsigned int eip, unsigned int cs,
     unsigned int eflags, ...){
-    /* codice che interpreta le interruzioni */
-    int c=0;
-    char out[44]="interruzione";
-    if(isr!=32){/*HACK*/
+    if(isr==32){
+        /*timer*/
+        char timestring[6]={0};
+        int print=COLUMNS;
+        time++;
+        time&=0xFFFF;
+        if(time==(time&~0x1F)){
+            strapp(timestring,"%i",time>>5);
+            while(timestring[COLUMNS-print]!=0)
+                print--;
+            writexy(print,24,timestring);
+        }
+    }
+    else{
+        /* codice che interpreta le interruzioni */
+        int c=0;
+        char out[44]="interruzione";
         xtemp++;
         if(isr!=33){
             for(c=12;c<44;c++)
@@ -171,7 +185,7 @@ void interrupt_handler(
             if(c!=0)
                 put(c);
         }
-    }/*HACK*/
+    }
     /* Send End Of Interrupt to PIC */
     if(isr>7)outb(0xA0,0x20);
     outb(0x20,0x20);
