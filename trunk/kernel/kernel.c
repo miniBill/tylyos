@@ -130,11 +130,12 @@ void _kmain(/*multiboot_info_t* mbd, unsigned int magic*/){
 
 #ifdef BASIC_TESTS
     NO(t);
-    writeline("test allocazione dinamica: ");
+    write("test allocazione dinamica: ");
     DinamicTest=(char*)AddNewPage(PAG_PRESENT|PAG_READWRITE|PAG_SUPERVISOR|PAG_4KPAGE);
     DinamicTest[0]='X';
-    DinamicTest[0]='\0';
-    write(DinamicTest);
+    DinamicTest[1]='\0';
+    strapp(DinamicTest," allocato all indirizzo: 0x%x",(unsigned int)DinamicTest);
+    writeline(DinamicTest);
     OK(t++);
 #endif
 
