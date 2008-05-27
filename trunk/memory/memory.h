@@ -73,7 +73,27 @@ void setPageSelector(unsigned int *obj,unsigned int pageAdress,unsigned int flag
 int getBit(int x);
 void setBit(int x,unsigned int value);
 
+/* 
+ ritorna un indirizzo fisico per l'allocazione di una nuova pagina
+ alloca: indica se segnare questo indirizzo come utilizzato
+*/
 unsigned int GetNewPage(int alloca);
+
+/*
+ alloca una nuova pagetable e la inserisce nella pagedir
+ ritorna l'indice in cui è inserito il selettore
+*/
+unsigned int AddNewPageTable(unsigned int flags);
+
+/* alloca una nuova pagina e ritorna l'indirizzo logico */
+unsigned int AddNewPage(unsigned int flags);
+
+
+/* ritorna l'indirizzo logico prendendo come parametri pagetable pagina e offset */
+unsigned int VirtualAdress(unsigned int table,unsigned int page,unsigned int offset);
+
+/* ritorna l'indirizzo che indica un selettore di pagetable o pagina */
+unsigned int GetFisicAdressFromSelector(unsigned int sel);
 
 extern unsigned int read_cr0();
 extern void write_cr0(unsigned int data);
