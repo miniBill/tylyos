@@ -60,6 +60,11 @@ enum{
 
 /*######################### Paginazione ####################################*/
 
+
+/* 
+ ritorna un indirizzo fisico per l'allocazione di una nuova pagina
+ alloca: indica se segnare questo indirizzo come utilizzato
+*/
 unsigned int GetNewPage(int alloca){
     int c;
     for(c=0;c<MAX_PAGES_IN_MEMORY;c++){
@@ -72,20 +77,82 @@ unsigned int GetNewPage(int alloca){
     return 0x0;
 }
 
-/* TODO: sistemare meglio e pulire codice */
+/* ritorna l'indirizzo che indica un selettore di pagetable o pagina */
+unsigned int GetFisicAdressFromSelector(unsigned int sel)
+{
+    return sel&0xFFFFF000;
+}   
+
+/* ritorna l'indirizzo logico prendendo come parametri pagetable pagina e offset */
+unsigned int VirtualAdress(unsigned int table,unsigned int page,unsigned int offset)
+{
+    unsigned int temp;
+    temp=offset&0xFFF;
+    temp|=(page&0x3FF)<<12;
+    temp|=table<<22;
+    return temp;
+}
+
+/*
+ alloca una nuova pagetable e la inserisce nella pagedir
+ ritorna l'indice in cui è inserito il selettore
+*/
+unsigned int AddNewPageTable(unsigned int flags)
+{
+    unsigned int c=0;
+    /* scorre fino a trovare dove inserire il nuovo selettore */
+    while(GetFisicAdressFromSelector(PageDir[c])!=0x0)
+        c++;
+    /* setta il selettore */
+    setPageTableSelector(&PageDir[c], GetNewPage(1)>>12 ,flags);
+    return c;
+}
+
+/* alloca una nuova pagina e ritorna l'indirizzo logico */
+unsigned int AddNewPage(unsigned int flags)
+{
+    unsigned int c=1,i;/* la prima pagetable mappa il kernel quindi è inutile leggerla */
+    unsigned int *pointer;
+    /* scorre fino a trovare dove inserire il nuovo selettore */
+    while(GetFisicAdressFromSelector(PageDir[c])!=0x0)
+    {
+        pointer=(unsigned int*)VirtualAdress(c,0,0);/* indirizzo pagetable */
+        for(i=0;i<0x1000;i++)
+        {
+            if(GetFisicAdressFromSelector(pointer[i])==0x0)/* se è un selettore di pagina vuoto */
+            {
+                setPageSelector(&pointer[i], GetNewPage(1)>>12 ,flags);
+                return VirtualAdress(c,i,0);
+            }
+        }
+        c++;
+    }
+    /* se si arriva quì vuol dire che in nessuna pagetable c'è spazio per una nuova pagina */
+    /* crea nuova pagetable */
+    /*c=AddNewPageTable(PAG_PRESENT|PAG_READWRITE|PAG_SUPERVISOR|PAG_4KPAGE);*/
+    /* crea nuova pagina */
+   /* pointer=(unsigned int*)VirtualAdress(c,0,0);
+    setPageSelector(&pointer[0], GetNewPage(1)>>12 ,flags);*/
+    return (unsigned int)pointer;
+}
+
 void InitPaging(){
     int c,c2;
-    unsigned int PageTab;
+    unsigned int PageTab,PageTab2;
     char debug[36]={0};
     asm("cli");
     /* azzera mappa */
     for(c=0;c<MAX_PAGES_IN_MEMORY/32+1;c++)
         memoryBitmap[c]=0;
-    PageDir=(unsigned int*)GetNewPage(1);
-    PageTab=GetNewPage(1);
-    /* azzera gli altri record della pagedir */
+    
+    /* azzera i record della pagedir */
     for(c=0;c<1024;c++)
         setPageTableSelector(&PageDir[c],0,0);
+
+    PageDir=(unsigned int*)GetNewPage(1);
+    PageTab=GetNewPage(1);
+    PageTab2=GetNewPage(1);
+
     /* setta la prima pagetable nella pagedir */
     setPageTableSelector(&PageDir[0],PageTab>>12,PAG_PRESENT|PAG_READWRITE|PAG_SUPERVISOR|PAG_4KPAGE);
     /* ultimo record punta alla pagina della pagedir */
@@ -101,9 +168,24 @@ void InitPaging(){
     /* ultimo record punta alla pagina della tabella */
     setPageSelector((unsigned int*)(PageTab+(1023*4)),PageTab>>12,PAG_PRESENT|PAG_READWRITE|PAG_SUPERVISOR|PAG_4KPAGE);
 
+
+    /* mappa altre tre pagine che sono state usate per la pagedir e le pagetable */
+    /* setta la seconda pagetable nella pagedir */
+    setPageTableSelector(&PageDir[1],PageTab2>>12,PAG_PRESENT|PAG_READWRITE|PAG_SUPERVISOR|PAG_4KPAGE);
+    for(c=0;c<0x1000;c++)/* azzera */
+    {
+        setPageSelector((unsigned int*)((PageTab2)+(c*4)),0,0);
+    }
+    /* ultimo record punta alla pagina della tabella */
+    setPageSelector((unsigned int*)(PageTab2+(1023*4)),PageTab2>>12,PAG_PRESENT|PAG_READWRITE|PAG_SUPERVISOR|PAG_4KPAGE);
+    /* setta i tre selettori */
+    setPageSelector((unsigned int*)((PageTab2)+(0*4)),(unsigned int)PageDir>>12,PAG_PRESENT|PAG_READWRITE|PAG_SUPERVISOR|PAG_4KPAGE);
+    setPageSelector((unsigned int*)((PageTab2)+(1*4)),PageTab>>12,PAG_PRESENT|PAG_READWRITE|PAG_SUPERVISOR|PAG_4KPAGE);
+    setPageSelector((unsigned int*)((PageTab2)+(2*4)),PageTab2>>12,PAG_PRESENT|PAG_READWRITE|PAG_SUPERVISOR|PAG_4KPAGE);
+
     write_cr3((unsigned int)PageDir); /* put that page directory address into CR3 */
     write_cr0(read_cr0() | 0x80000000); /* set the paging bit in CR0 to 1 */
-    
+
     asm("sti");
     
 }

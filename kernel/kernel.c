@@ -58,6 +58,7 @@ void _kmain(/*multiboot_info_t* mbd, unsigned int magic*/){
 #ifdef BASIC_TESTS
     char pointer[17]="Prova puntatore.";
     char conversion[10]={0};
+    char *DinamicTest;
 #endif
     short i;/*index*/
     int t=0;/*test number*/
@@ -124,6 +125,16 @@ void _kmain(/*multiboot_info_t* mbd, unsigned int magic*/){
 #endif
     InitPaging();
 #ifdef BASIC_TESTS
+    OK(t++);
+#endif
+
+#ifdef BASIC_TESTS
+    NO(t);
+    writeline("test allocazione dinamica: ");
+    DinamicTest=(char*)AddNewPage(PAG_PRESENT|PAG_READWRITE|PAG_SUPERVISOR|PAG_4KPAGE);
+    DinamicTest[0]='X';
+    DinamicTest[0]='\0';
+    write(DinamicTest);
     OK(t++);
 #endif
 
