@@ -61,7 +61,7 @@ extern void gdtFlush();
 
 #define MAX_PAGES_IN_MEMORY	100000 /* numero massimo di pagine allocabili in memoria contemporaneamente */
 
-unsigned int *PageDir;		/* area da 4096byte che ospita la pagedir del kernel */
+unsigned int *PageDir,TempPageSelector,*TempPage;		/* area da 4096byte che ospita la pagedir del kernel */
 
 unsigned int memoryBitmap[MAX_PAGES_IN_MEMORY/32+1];	/* flag per ogni blocco di 4k della memoria fisica */
 
@@ -91,6 +91,11 @@ unsigned int AddNewPage(unsigned int flags);
 
 /* ritorna l'indirizzo logico prendendo come parametri pagetable pagina e offset */
 unsigned int VirtualAdress(unsigned int table,unsigned int page,unsigned int offset);
+
+/* ritornano le componenti dell indirizzo logico */
+unsigned int GetTableFromVirtualAdress(unsigned int adress);
+unsigned int GetPageFromVirtualAdress(unsigned int adress);
+unsigned int GetOffsetFromVirtualAdress(unsigned int adress);
 
 /* ritorna l'indirizzo che indica un selettore di pagetable o pagina */
 unsigned int GetFisicAdressFromSelector(unsigned int sel);
