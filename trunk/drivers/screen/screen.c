@@ -20,34 +20,34 @@
 #include "screen.h"
 
 #define addr(pos)   (consoleAddr+pos*2)
-#define xy          (COLUMNS*y+x)
-#define total       (COLUMNS*ROWS)
+#define xy(x,y)     (COLUMNS*y+x)
+#define total()     (COLUMNS*ROWS)
 
 char consoleColor=0x07;
 char * pointer=(char *)consoleAddr;
 
 void setCursorPos(unsigned int x, unsigned int y){
    asm(
-       "movl  %0, %%eax   \n"
-       "movl  %1, %%ebx   \n"
-       "movl  $0x50, %%ecx   \n"
+       "movl  %0, %%eax     \n"
+       "movl  %1, %%ebx     \n"
+       "movl  $0x50, %%ecx  \n"
        "mul   %%ecx         \n"
-       "addl  %%ebx, %%eax   \n"
-       "movw  $0x03d4, %%dx  \n"
+       "addl  %%ebx, %%eax  \n"
+       "movw  $0x03d4, %%dx \n"
        "pushl %%eax         \n"
-       "movb  $0x0f, %%al    \n"
-       "out   %%al, %%dx     \n"
+       "movb  $0x0f, %%al   \n"
+       "out   %%al, %%dx    \n"
        "popl  %%eax         \n"
-       "movw  $0x03d5, %%dx  \n"
-       "out   %%al, %%dx     \n"
-       "shr   $0x08,%%eax      \n"
+       "movw  $0x03d5, %%dx \n"
+       "out   %%al, %%dx    \n"
+       "shr   $0x08,%%eax   \n"
        "pushl %%eax         \n"
-       "movw  $0x03d4, %%dx  \n"
-       "movb  $0x0e, %%al    \n"
-       "out   %%al, %%dx     \n"
+       "movw  $0x03d4, %%dx \n"
+       "movb  $0x0e, %%al   \n"
+       "out   %%al, %%dx    \n"
        "pop   %%eax         \n"
-       "movw  $0x03d5, %%dx  \n"
-       "out   %%al, %%dx     \n"
+       "movw  $0x03d5, %%dx \n"
+       "out   %%al, %%dx    \n"
       :
       : "g" (x), "g" (y)
       );
@@ -62,7 +62,7 @@ void gotoi(int pos){
 }
 
 void gotoxy(int x,int y){
-    gotoi(xy);
+    gotoi(xy(x,y));
 }
 
 char read(){
@@ -74,7 +74,7 @@ char readi(int pos){
 }
 
 char readxy(int x,int y){
-    return readi(xy);
+    return readi(xy(x,y));
 }
 
 void put(char c){
@@ -88,7 +88,7 @@ void puti(int pos, char c){
 }
 
 void putxy(int x,int y,char c){
-    puti(xy,c);
+    puti(xy(x,y),c);
 }
 
 void nl(){
@@ -97,7 +97,7 @@ void nl(){
 
 void write(char* string){
     int k;
-    for(k=0;string[k]!=0 && pos()<total;k++)
+    for(k=0;string[k]!=0 && pos()<total();k++)
         if(string[k]!='\n')
             put(string[k]);
         else
@@ -112,7 +112,7 @@ void writei(int i,char * string){
 }
 
 void writexy(int x,int y,char * string){
-    writei(xy,string);
+    writei(xy(x,y),string);
 }
 
 void writeline(char* string){
@@ -122,7 +122,7 @@ void writeline(char* string){
 
 void clearScreen(){
     gotoi(0);
-    for(;pos()<total;)
+    for(;pos()<total();)
         put(' ');
     gotoi(0);
 }
@@ -137,7 +137,7 @@ char creadi(int pos){
 }
 
 char creadxy(int x,int y){
-    return creadi(xy);
+    return creadi(xy(x,y));
 }
 
 void cput(char color){
@@ -149,5 +149,5 @@ void cputi(int pos,char color){
 }
 
 void cputxy(int x,int y,char color){
-    cputi(xy,color);
+    cputi(xy(x,y),color);
 }

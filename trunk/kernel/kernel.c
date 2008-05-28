@@ -19,11 +19,11 @@
 
 #include "kernel.h"
 #include "multiboot.h"
-#include "../drivers/screen/io.h"
-#include "../memory/memory.h"
-#include "../interrupt/interrupt.h"
+#include <lib/string.h>
+#include <memory/memory.h>
+#include <interrupt/interrupt.h>
 
-#include "../gui/gui.h"
+#include <gui/gui.h>
 
 #define BASIC_TESTS
 
@@ -140,7 +140,7 @@ void _kmain(/*multiboot_info_t* mbd, unsigned int magic*/){
 #endif
     DrawRectangleExt(5,17,10,5,(char)(Yellow|Back_Blue));
     asm("sti");
-    setCursorPos(0,0);
+    setCursorPos(79,24);
     on=1;
     while(on);
 }
