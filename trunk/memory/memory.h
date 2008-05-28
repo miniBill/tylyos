@@ -88,6 +88,8 @@ unsigned int AddNewPageTable(unsigned int flags);
 /* alloca una nuova pagina e ritorna l'indirizzo logico */
 unsigned int AddNewPage(unsigned int flags);
 
+/* dealloca una pagina */
+void DeletePage(unsigned int VirtualAdress);
 
 /* ritorna l'indirizzo logico prendendo come parametri pagetable pagina e offset */
 unsigned int VirtualAdress(unsigned int table,unsigned int page,unsigned int offset);

@@ -157,14 +157,23 @@ unsigned int AddNewPage(unsigned int flags)
     return (unsigned int)pointer;
 }
 
-/* dealloca una pagina */
-void DeletePage(unsigned int VirtualAdress)
+/* 
+ dealloca una pagina
+ BaseAdress: indirizzo logico di inizio pagina
+*/
+void DeletePage(unsigned int BaseAdress)
 {
-    unsigned int table,page;
-    
-    table=GetTableFromVirtualAdress(VirtualAdress);
-    page=GetPageFromVirtualAdress(VirtualAdress);
-    
+    unsigned int table,page,FisicAdress,*SelectorAdress,*temp;
+    table=GetTableFromVirtualAdress(BaseAdress);
+    page=GetPageFromVirtualAdress(BaseAdress);
+    /* prendo l'indirizzo fisico contenuto nel selettore */
+    temp=(unsigned int*)VirtualAdress(table,1023,page*4);
+    FisicAdress=GetFisicAdressFromSelector(*temp);
+    /* setto a 0 il bit nella bitmap */
+    setBit( (FisicAdress-MEMORY_START)/0x1000 ,0);
+    /* cancello il selettore della pagina */
+    SelectorAdress=(unsigned int*)VirtualAdress(table,1023,page*4);
+    setPageSelector(SelectorAdress,0,0);
 }
 
 
