@@ -17,7 +17,7 @@
 
 CFLAGS:= -march=i386 -ffreestanding -Wall -pedantic -Wextra -I. -Werror
 OBJ= bootloader/loader.o \
-     kernel/stdio.o kernel/kernel.o kernel/test.o \
+     kernel/stdio.o kernel/kernel.o \
      lib/string.o \
      memory/memory.o memory/gdt.o memory/paging.o \
        drivers/screen/screen.o \
