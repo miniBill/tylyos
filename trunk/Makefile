@@ -16,16 +16,31 @@
 # along with ClearOS.  If not, see <http://www.gnu.org/licenses/>.
 
 CFLAGS:= -march=i386 -ffreestanding -Wall -pedantic -Wextra -I. -Werror
-OBJ= kernel/stdio.o gui/gui.o bootloader/loader.o kernel/kernel.o \
-     lib/string.o drivers/screen/screen.o memory/memory.o \
-     drivers/keyboard/keyboard.o interrupt/interrupt.o memory/gdt.o \
-     memory/paging.o interrupt/interruptHandler.o interrupt/ldt.o
+OBJ= bootloader/loader.o \
+     kernel/stdio.o kernel/kernel.o \
+     lib/string.o \
+     memory/memory.o memory/gdt.o memory/paging.o \
+       drivers/screen/screen.o \
+       drivers/keyboard/keyboard.o \
+       drivers/timer/timer.o \
+     interrupt/interrupt.o interrupt/interruptHandler.o interrupt/ldt.o \
+     gui/gui.o
 LDFLAGS= -T linker.ld
 
 all:iso.img
 
 iso.img: clearos
-	sh make.sh
+	mkdir iso && \
+mkdir -p iso/boot/grub && \
+cp stage2_eltorito iso/boot/grub && \
+echo "timeout 1">>iso/boot/grub/menu.lst && \
+echo "title   ClearOS">>iso/boot/grub/menu.lst && \
+echo "kernel  /boot/clearos">>iso/boot/grub/menu.lst && \
+cp clearos iso/boot/clearos && \
+mkisofs -quiet -R -b boot/grub/stage2_eltorito -no-emul-boot \
+-boot-load-size 4 -boot-info-table -o iso.img iso && \
+echo "Iso created" && \
+rm -R iso
 
 clearos: $(OBJ)
 	$(LD) $(LDFLAGS) $^ -o $@

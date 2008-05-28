@@ -15,18 +15,4 @@
 # You should have received a copy of the GNU General Public License
 # along with ClearOS.  If not, see <http://www.gnu.org/licenses/>.
 
-mkdir iso
-mkdir -p iso/boot/grub
-cp stage2_eltorito iso/boot/grub
 
-echo "timeout 1">>iso/boot/grub/menu.lst
-echo "title   ClearOS">>iso/boot/grub/menu.lst
-#echo "root    (hd0,0)">>iso/boot/grub/menu.lst
-echo "kernel  /boot/clearos">>iso/boot/grub/menu.lst
-
-cp clearos iso/boot/clearos
-
-mkisofs -quiet -R -b boot/grub/stage2_eltorito -no-emul-boot -boot-load-size 4 -boot-info-table -o iso.img iso
-echo "Iso created"
-
-rm -R iso

@@ -52,20 +52,18 @@ extern void gdtFlush();
 #define PAG_4KPAGE	0x0
 
 
-/*
-	1 pagina = 4096 byte = 0x1000
-*/
+/* 1 pagina = 4096 byte = 0x1000 */
 
-#define KERNEL_START	0x0	/* 1.048.576 byte */
-#define MEMORY_START 0x00400000	/* 4.194.304 byte*/
+#define KERNEL_START        0x0 /* 1.048.576 byte */
+#define MEMORY_START 0x00400000 /* 4.194.304 byte*/
 
-#define MAX_PAGES_IN_MEMORY	100000 /* numero massimo di pagine allocabili in memoria contemporaneamente */
+#define MAX_PAGES_IN_MEMORY 100000 /* numero massimo di pagine allocabili in memoria contemporaneamente */
 
-unsigned int *PageDir,TempPageSelector,*TempPage;		/* area da 4096byte che ospita la pagedir del kernel */
+unsigned int *pageDir,tempPageSelector,tempPage; /* area da 4096byte che ospita la pagedir del kernel */
 
 unsigned int memoryBitmap[MAX_PAGES_IN_MEMORY/32+1];	/* flag per ogni blocco di 4k della memoria fisica */
 
-void InitPaging();
+void initPaging();
 
 void setPageTableSelector(unsigned int *obj,unsigned int tableAdress,unsigned int flags);
 void setPageSelector(unsigned int *obj,unsigned int pageAdress,unsigned int flags);
@@ -73,43 +71,43 @@ void setPageSelector(unsigned int *obj,unsigned int pageAdress,unsigned int flag
 int getBit(int x);
 void setBit(int x,unsigned int value);
 
-/* 
+/*
  ritorna un indirizzo fisico per l'allocazione di una nuova pagina
  alloca: indica se segnare questo indirizzo come utilizzato
 */
-unsigned int GetNewPage(int alloca);
+unsigned int getNewPage(int alloca);
 
 /*
  alloca una nuova pagetable e la inserisce nella pagedir
- ritorna l'indice in cui è inserito il selettore
+ ritorna l'indice in cui e' inserito il selettore
 */
-unsigned int AddNewPageTable(unsigned int flags);
+unsigned int addNewPageTable(unsigned int flags);
 
 /* alloca una nuova pagina e ritorna l'indirizzo logico */
-unsigned int AddNewPage(unsigned int flags);
+unsigned int addNewPage(unsigned int flags);
 
-/* 
+/*
  dealloca una pagina
  BaseAdress: indirizzo logico di inizio pagina
 */
-void DeletePage(unsigned int VirtualAdress);
+void deletePage(unsigned int virtualAdress);
 
 /*
  dealloca una pagetable
  num: indice della pagetable nella pagedir
 */
-void DeletePageTable(unsigned int num);
-
-/* ritorna l'indirizzo logico prendendo come parametri pagetable pagina e offset */
-unsigned int VirtualAdress(unsigned int table,unsigned int page,unsigned int offset);
+void deletePageTable(unsigned int num);
 
 /* ritornano le componenti dell indirizzo logico */
-unsigned int GetTableFromVirtualAdress(unsigned int adress);
-unsigned int GetPageFromVirtualAdress(unsigned int adress);
-unsigned int GetOffsetFromVirtualAdress(unsigned int adress);
+unsigned int getTableFromVirtualAdress(unsigned int adress);
+unsigned int getPageFromVirtualAdress(unsigned int adress);
+unsigned int getOffsetFromVirtualAdress(unsigned int adress);
+
+/* ritorna l'indirizzo logico prendendo come parametri pagetable pagina e offset */
+unsigned int virtualAdress(unsigned int table,unsigned int page,unsigned int offset);
 
 /* ritorna l'indirizzo che indica un selettore di pagetable o pagina */
-unsigned int GetFisicAdressFromSelector(unsigned int sel);
+unsigned int fisicAdressFromSelector(unsigned int sel);
 
 extern unsigned int read_cr0();
 extern void write_cr0(unsigned int data);

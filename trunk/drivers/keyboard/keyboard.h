@@ -20,7 +20,8 @@
 #ifndef KEYBOARD_H_
 #define KEYBOARD_H_
 
-char ScanCodeToChar(char scode);
+void keypress(void);
+char scanCodeToChar(char scode);
 
 /* tastiera italiana */
 #define KBD_US

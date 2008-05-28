@@ -23,11 +23,10 @@
 #include <lib/string.h>
 #include <kernel/stdio.h>
 #include <drivers/screen/screen.h>
+#include <drivers/timer/timer.h>
 #include <drivers/keyboard/keyboard.h>
 
 int xtemp;
-int time=0;
-short tick=0;
 
 void initIdt(){
     /* inizializzazione */
@@ -147,26 +146,16 @@ void interrupt_handler(
     unsigned int eflags, ...){
     if(isr==32){
         /*timer*/
-        tick++;
-        if(tick==0x40){
-            char timestring[9]={0};
-            int print=COLUMNS;
-            tick=0;
-            time++;
-            if(time==3600)
-                time=0;
-            strapp(timestring,"%d",time);
-            while(timestring[COLUMNS-print]!=0)
-                print--;
-            writexy(print,24,timestring);
-        }
+        tick();
     }
     else{
         /* codice che interpreta le interruzioni */
         int c=0;
         char out[44]="interruzione";
         xtemp++;
-        if(isr!=33){
+        if(isr==33)
+            keypress();
+        else{
             for(c=12;c<44;c++)
                 *(out+c)=0;
             strapp(out,", interrupt: %d",isr);
@@ -182,12 +171,6 @@ void interrupt_handler(
 #else
             c=eax^ebx^ecx^edx^ebp^esi^edi^ds^es^fs^gs^eip^cs^eflags^error;/*HACK*/
 #endif
-        }
-        else{
-            c=inb(0x60);
-            c=ScanCodeToChar(c);
-            if(c!=0)
-                put(c);
         }
     }
     /* Send End Of Interrupt to PIC */
