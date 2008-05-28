@@ -6,4 +6,6 @@
 int strapp(char* dest,char* format,unsigned int p);/*HACK*/
 /*int strapp(char* dest,char* format,void* p);*/
 
+int strlen(char * string);
+
 #endif

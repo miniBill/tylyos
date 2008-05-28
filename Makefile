@@ -16,7 +16,10 @@
 # along with ClearOS.  If not, see <http://www.gnu.org/licenses/>.
 
 CFLAGS:= -march=i386 -ffreestanding -Wall -pedantic -Wextra -I. -Werror
-OBJ= kernel/stdio.o gui/gui.o bootloader/loader.o kernel/kernel.o drivers/screen/io.o drivers/screen/screen.o memory/memory.o drivers/keyboard/keyboard.o interrupt/interrupt.o memory/gdt.o memory/paging.o interrupt/interruptHandler.o interrupt/ldt.o
+OBJ= kernel/stdio.o gui/gui.o bootloader/loader.o kernel/kernel.o \
+     lib/string.o drivers/screen/screen.o memory/memory.o \
+     drivers/keyboard/keyboard.o interrupt/interrupt.o memory/gdt.o \
+     memory/paging.o interrupt/interruptHandler.o interrupt/ldt.o
 LDFLAGS= -T linker.ld
 
 all:iso.img

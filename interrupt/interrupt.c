@@ -20,10 +20,10 @@
 
 
 #include "interrupt.h"
-#include "../drivers/keyboard/keyboard.h"
+#include <lib/string.h>
 #include <kernel/stdio.h>
-#include "../drivers/screen/io.h"
-#include "../drivers/screen/screen.h"
+#include <drivers/screen/screen.h>
+#include <drivers/keyboard/keyboard.h>
 
 int xtemp;
 int time=0;

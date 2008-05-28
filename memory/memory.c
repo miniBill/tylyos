@@ -18,8 +18,8 @@
 
 #include "memory.h"
 #include "gdtflags.h"
-#include "../drivers/screen/screen.h"
-#include "../drivers/screen/io.h"
+#include <drivers/screen/screen.h>
+#include <lib/string.h>
 
 void gdtSet(int num, unsigned long base, unsigned long limit, unsigned char gran, unsigned char access){
     gdt[num].baseLow = (base & 0xFFFF);

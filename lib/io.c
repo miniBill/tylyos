@@ -17,16 +17,16 @@
  * along with ClearOS.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "io.h"
+#include "string.h"
 
 int strapp(char* dest,char* format,unsigned int num){/*HACK, to have compile-time checks*/
 /*int strapp(char* dest,char* format,void* p){*/
     /*indice format string*/
-    int i=0;
+    int i;
     /*indice output*/
-    int o=0;
-    while(dest[o]!=0) o++;
-    for(;format[i]!=0;i++){
+    int o;
+    o=strlen(dest);
+    for(i=0;i<strlen(format);i++){
         if(format[i]=='%'){
             int base=10;
             /*int num=(int)p;*/
@@ -68,4 +68,11 @@ int strapp(char* dest,char* format,unsigned int num){/*HACK, to have compile-tim
     }
     dest[o]=0;
     return 0;
+}
+
+int strlen(char * string){
+    int ret=0;
+    while(string[ret]!=0)
+        ret++;
+    return ret;
 }
