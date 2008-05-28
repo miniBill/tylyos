@@ -33,7 +33,7 @@ void gdtSet(int num, unsigned long base, unsigned long limit, unsigned char gran
     gdt[num].access = access;
 }
 
-void initGdt(void){
+void initGdt(){
     gdtPointer.limit = (sizeof(struct gdtEntry) * 3) - 1;
     gdtPointer.base = (int)&gdt;
 
@@ -67,17 +67,18 @@ enum{
 */
 unsigned int getNewPage(int alloca){
     int c;
-    for(c=0;c<MAX_PAGES_IN_MEMORY;c++)
+    for(c=0;c<MAX_PAGES_IN_MEMORY;c++){
         if(getBit(c)==0){
             if(alloca==1)
                 setBit(c,1);
             return MEMORY_START+(c*0x1000);
         }
+    }
     return 0x0;
 }
 
 /* ritorna l'indirizzo che indica un selettore di pagetable o pagina */
-unsigned int fisicAdressFromSelector(unsigned int sel){
+inline unsigned int getFisicAdressFromSelector(unsigned int sel){
     return sel&0xFFFFF000;
 }
 
@@ -92,24 +93,24 @@ unsigned int virtualAdress(unsigned int table,unsigned int page,unsigned int off
 
 /* ritornano le componenti dell indirizzo logico */
 unsigned int getTableFromVirtualAdress(unsigned int adress){
-    return (adress>>22)&0x3FF;    
+    return (adress>>22)&0x3FF;
 }
 unsigned int getPageFromVirtualAdress(unsigned int adress){
-    return (adress>>12)&0x3FF;    
+    return (adress>>12)&0x3FF;
 }
 unsigned int getOffsetFromVirtualAdress(unsigned int adress){
-    return adress&0xFFF;    
+    return adress&0xFFF;
 }
 
 /*
  alloca una nuova pagetable e la inserisce nella pagedir
  ritorna l'indice in cui è inserito il selettore
 */
-    unsigned int addNewPageTable(unsigned int flags){/* TODO: provare se funziona */
+unsigned int addNewPageTable(unsigned int flags){/* TODO: provare se funziona */
     unsigned int c=0;
     unsigned int *pointer;
     /* scorre fino a trovare dove inserire il nuovo selettore */
-    while(fisicAdressFromSelector(pageDir[c])!=0x0)
+    while(getFisicAdressFromSelector(pageDir[c])!=0x0)
         c++;
     /* alloca spazio */
     pointer=(unsigned int*)getNewPage(1);
@@ -127,21 +128,19 @@ unsigned int addNewPage(unsigned int flags){
     unsigned int c=1,i;/* la prima pagetable mappa il kernel quindi è inutile leggerla */
     unsigned int *pointer;
     /* scorre fino a trovare dove inserire il nuovo selettore */
-    while(fisicAdressFromSelector(pageDir[c])!=0x0){
+    while(getFisicAdressFromSelector(pageDir[c])!=0x0){
         pointer=(unsigned int*)virtualAdress(c,1023,0);/* indirizzo pagetable */
-        for(i=0;i<0x1000;i++){
-            /* se è un selettore di pagina vuoto */
-            if(fisicAdressFromSelector(pointer[i])==0x0){/* se è un selettore di pagina vuoto */
-                /* alloca spazio e setta il selettore */    
+        for(i=0;i<0x1000;i++)
+            if(getFisicAdressFromSelector(pointer[i])==0x0){/* se è un selettore di pagina vuoto */
+                /* alloca spazio e setta il selettore */
                 setPageSelector(&pointer[i], getNewPage(1)>>12 ,flags);
                 return virtualAdress(c,i,0);
             }
-        }
         c++;
     }
     /* se si arriva quì vuol dire che in nessuna pagetable c'è spazio per una nuova pagina */
     /* crea nuova pagetable */
-    c=addNewPageTable(PAG_PRESENT|PAG_READWRITE|PAG_SUPERVISOR|PAG_4KPAGE);
+    c=addNewPageTable(flags);
     /* crea nuova pagina */
     pointer=(unsigned int*)virtualAdress(c,0,0);
     setPageSelector(&pointer[0], getNewPage(1)>>12 ,flags);
@@ -152,14 +151,14 @@ unsigned int addNewPage(unsigned int flags){
  dealloca una pagina
  BaseAdress: indirizzo logico di inizio pagina
 */
-void deletePage(unsigned int baseAdress){
+void deletePage(unsigned int BaseAdress){
     unsigned int table,page,fisicAdress,*selectorAdress,*temp;
     /* scompongo l'indirizzo */
-    table=getTableFromVirtualAdress(baseAdress);
-    page=getPageFromVirtualAdress(baseAdress);
+    table=getTableFromVirtualAdress(BaseAdress);
+    page=getPageFromVirtualAdress(BaseAdress);
     /* prendo l'indirizzo fisico contenuto nel selettore */
     temp=(unsigned int*)virtualAdress(table,1023,page*4);
-    fisicAdress=fisicAdressFromSelector(*temp);
+    fisicAdress=getFisicAdressFromSelector(*temp);
     /* setto a 0 il bit corrispondente a quell indirizzo nella bitmap */
     setBit( (fisicAdress-MEMORY_START)/0x1000 ,0);
     /* cancello il selettore della pagina */
@@ -178,27 +177,29 @@ void deletePageTable(unsigned int num){/* TODO: provare se funziona */
     selector=(unsigned int*)&pageDir[num];
     /* passo tutti i descrittori che contiene e se sono allocate pagine le dealloco */
     for(c=0;c<1023;c++)
-        if(fisicAdressFromSelector(page[c])!=0x0)/* se è una pagina allocata */
+        if(getFisicAdressFromSelector(page[c])!=0x0)/* se è una pagina allocata */
             deletePage(virtualAdress(num,c,0));
     /* dealloco lo spazio per la tabella */
     /* prendo l'indirizzo fisico contenuto nel selettore */
     temp=(unsigned int*)virtualAdress(num,1023,4*1023);
-    fisicAdress=fisicAdressFromSelector(*temp);
+    fisicAdress=getFisicAdressFromSelector(*temp);
     /* setto a 0 il bit corrispondente a quell indirizzo nella bitmap */
     setBit( (fisicAdress-MEMORY_START)/0x1000 ,0);
     /* cancello il selettore */
     setPageTableSelector(selector,0,0);
 }
 
-void initPaging(){
+
+void initPaging(void){
     int c,c2;
     unsigned int pageTab,pageTab2;
-    int flags=PAG_PRESENT|PAG_READWRITE|PAG_SUPERVISOR|PAG_4KPAGE;
     char debug[36]={0};
+    char flags=PAG_PRESENT|PAG_READWRITE|PAG_SUPERVISOR|PAG_4KPAGE;
     asm("cli");
     /* azzera mappa */
     for(c=0;c<MAX_PAGES_IN_MEMORY/32+1;c++)
         memoryBitmap[c]=0;
+
     /* azzera i record della pagedir */
     for(c=0;c<1024;c++)
         setPageTableSelector(&pageDir[c],0,0);
@@ -216,17 +217,19 @@ void initPaging(){
         debug[0]='\0';
         /* strapp(debug,"descrittore in: %x",(void *)(pageTab+(c*4)));
         strapp(debug,"indirizzo: %x",(void *)((c*0x1000)>>12));
-        writeline(debug); */
+         writeline(debug); */
         setPageSelector((unsigned int*)((pageTab)+(c2*4)),(c*0x1000)>>12,flags);
     }
     /* ultimo record punta alla pagina della tabella */
     setPageSelector((unsigned int*)(pageTab+(1023*4)),pageTab>>12,flags);
+
 
     /* mappa altre tre pagine che sono state usate per la pagedir e le pagetable */
     /* setta la seconda pagetable nella pagedir */
     setPageTableSelector(&pageDir[1],pageTab2>>12,flags);
     for(c=0;c<0x1000;c++)/* azzera */
         setPageSelector((unsigned int*)((pageTab2)+(c*4)),0,0);
+
     /* ultimo record punta alla pagina della tabella */
     setPageSelector((unsigned int*)(pageTab2+(1023*4)),pageTab2>>12,flags);
     /* setta i tre selettori */
