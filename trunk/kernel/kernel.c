@@ -58,7 +58,7 @@ void _kmain(/*multiboot_info_t* mbd, unsigned int magic*/){
 #ifdef BASIC_TESTS
     char pointer[17]="Prova puntatore.";
     char conversion[10]={0};
-    char *DinamicTest;
+    char *DinamicTest,*DinamicTemp;
 #endif
     short i;/*index*/
     int t=0;/*test number*/
@@ -132,6 +132,7 @@ void _kmain(/*multiboot_info_t* mbd, unsigned int magic*/){
     NO(t);
     write("test allocazione dinamica: ");
     DinamicTest=(char*)AddNewPage(PAG_PRESENT|PAG_READWRITE|PAG_SUPERVISOR|PAG_4KPAGE);
+    DinamicTemp=DinamicTest;
     DinamicTest[0]='X';
     DinamicTest[1]='\0';
     strapp(DinamicTest," allocato all indirizzo: 0x%x",(unsigned int)DinamicTest);
@@ -146,7 +147,8 @@ void _kmain(/*multiboot_info_t* mbd, unsigned int magic*/){
     DinamicTest[1]='\0';
     strapp(DinamicTest," deallocato e reallocato all indirizzo: 0x%x",(unsigned int)DinamicTest);
     writeline(DinamicTest);
-    OK(t++);
+    if(DinamicTemp==DinamicTest)
+        OK(t++); 
 
 #endif
     DrawRectangleExt(5,17,10,5,(char)(Yellow|Back_Blue));
