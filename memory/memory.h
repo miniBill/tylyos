@@ -59,7 +59,7 @@ extern void gdtFlush();
 
 #define MAX_PAGES_IN_MEMORY 100000 /* numero massimo di pagine allocabili in memoria contemporaneamente */
 
-unsigned int *pageDir,tempPageSelector,tempPage; /* area da 4096byte che ospita la pagedir del kernel */
+unsigned int *pageDir,tempPageSelector,*tempPage; /* area da 4096byte che ospita la pagedir del kernel */
 
 unsigned int memoryBitmap[MAX_PAGES_IN_MEMORY/32+1];	/* flag per ogni blocco di 4k della memoria fisica */
 
