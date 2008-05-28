@@ -19,6 +19,7 @@
 
 #include "kernel.h"
 #include "multiboot.h"
+#include "test.h"
 #include <lib/string.h>
 #include <memory/memory.h>
 #include <interrupt/interrupt.h>
@@ -152,6 +153,7 @@ void _kmain(/*multiboot_info_t* mbd, unsigned int magic*/){
 
 #endif
     drawRectangle(5,17,10,5,(char)(Yellow|Back_Blue));
+    A a(10);
     asm("sti");
     setCursorPos(79,24);
     on=1;
