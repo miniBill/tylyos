@@ -58,7 +58,7 @@ void _kmain(/*multiboot_info_t* mbd, unsigned int magic*/){
 #ifdef BASIC_TESTS
     char pointer[17]="Prova puntatore.";
     char conversion[10]={0};
-    char *DinamicTest,*DinamicTemp;
+    char *dinamicTest,*dinamicTemp;
 #endif
     short i;/*index*/
     int t=0;/*test number*/
@@ -123,7 +123,7 @@ void _kmain(/*multiboot_info_t* mbd, unsigned int magic*/){
     NO(t);
     writeline("Prova Paging");
 #endif
-    InitPaging();
+    initPaging();
 #ifdef BASIC_TESTS
     OK(t++);
 #endif
@@ -131,27 +131,27 @@ void _kmain(/*multiboot_info_t* mbd, unsigned int magic*/){
 #ifdef BASIC_TESTS
     NO(t);
     write("test allocazione dinamica: ");
-    DinamicTest=(char*)AddNewPage(PAG_PRESENT|PAG_READWRITE|PAG_SUPERVISOR|PAG_4KPAGE);
-    DinamicTemp=DinamicTest;
-    DinamicTest[0]='X';
-    DinamicTest[1]='\0';
-    strapp(DinamicTest," allocato all indirizzo: 0x%x",(unsigned int)DinamicTest);
-    writeline(DinamicTest);
+    dinamicTest=(char*)addNewPage(PAG_PRESENT|PAG_READWRITE|PAG_SUPERVISOR|PAG_4KPAGE);
+    dinamicTemp=dinamicTest;
+    dinamicTest[0]='X';
+    dinamicTest[1]='\0';
+    strapp(dinamicTest," allocato all indirizzo: 0x%x",(unsigned int)dinamicTest);
+    writeline(dinamicTest);
     OK(t++);
 
     NO(t);
     write("test deallocazione: ");
-    DeletePage((unsigned int)DinamicTest);
-    DinamicTest=(char*)AddNewPage(PAG_PRESENT|PAG_READWRITE|PAG_SUPERVISOR|PAG_4KPAGE);
-    DinamicTest[0]='X';
-    DinamicTest[1]='\0';
-    strapp(DinamicTest," deallocato e reallocato all indirizzo: 0x%x",(unsigned int)DinamicTest);
-    writeline(DinamicTest);
-    if(DinamicTemp==DinamicTest)
+    deletePage((unsigned int)dinamicTest);
+    dinamicTest=(char*)addNewPage(PAG_PRESENT|PAG_READWRITE|PAG_SUPERVISOR|PAG_4KPAGE);
+    dinamicTest[0]='X';
+    dinamicTest[1]='\0';
+    strapp(dinamicTest," deallocato e reallocato all indirizzo: 0x%x",(unsigned int)dinamicTest);
+    writeline(dinamicTest);
+    if(dinamicTemp==dinamicTest)
         OK(t++); 
 
 #endif
-    DrawRectangleExt(5,17,10,5,(char)(Yellow|Back_Blue));
+    drawRectangle(5,17,10,5,(char)(Yellow|Back_Blue));
     asm("sti");
     setCursorPos(79,24);
     on=1;

@@ -20,6 +20,8 @@
 
 
 #include "keyboard.h"
+#include <drivers/screen/screen.h>
+#include <kernel/stdio.h>
 
 unsigned char kmode   = 0;
 
@@ -135,7 +137,14 @@ static int  pad_map[] = { 7, 8, 9, 0, 4, 5, 6, 0, 1, 2, 3, 0, 0 };
  #endif
 #endif
 
-char ScanCodeToChar(char scode){
+void keypress(void){
+    char c=inb(0x60);
+    c=scanCodeToChar(c);
+    if(c!=0)
+        put(c);
+}
+
+char scanCodeToChar(char scode){
     char ch;
     scode=scode&0x7F;
     if(kmode & ALTGR)
@@ -173,7 +182,7 @@ char ScanCodeToChar(char scode){
     /* If the character has been pressed in combination with
      * ALT key, the bit 7 is activated. For LATIN-1 map the character is
      * prepended with 0x33 value (now not handled).*/
-    if (kmode & ALT) 
+    if (kmode & ALT)
         ch |= 0x80;
     return ch;
 }
