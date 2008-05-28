@@ -111,7 +111,7 @@ unsigned int GetOffsetFromVirtualAdress(unsigned int adress)
  alloca una nuova pagetable e la inserisce nella pagedir
  ritorna l'indice in cui è inserito il selettore
 */
-unsigned int AddNewPageTable(unsigned int flags)
+unsigned int AddNewPageTable(unsigned int flags)/* TODO: provare se funziona */
 {
     unsigned int c=0;
     unsigned int *pointer;
@@ -142,6 +142,7 @@ unsigned int AddNewPage(unsigned int flags)
         {
             if(GetFisicAdressFromSelector(pointer[i])==0x0)/* se è un selettore di pagina vuoto */
             {
+                /* alloca spazio e setta il selettore */
                 setPageSelector(&pointer[i], GetNewPage(1)>>12 ,flags);
                 return VirtualAdress(c,i,0);
             }
@@ -164,16 +165,45 @@ unsigned int AddNewPage(unsigned int flags)
 void DeletePage(unsigned int BaseAdress)
 {
     unsigned int table,page,FisicAdress,*SelectorAdress,*temp;
+    /* scompongo l'indirizzo */
     table=GetTableFromVirtualAdress(BaseAdress);
     page=GetPageFromVirtualAdress(BaseAdress);
     /* prendo l'indirizzo fisico contenuto nel selettore */
     temp=(unsigned int*)VirtualAdress(table,1023,page*4);
     FisicAdress=GetFisicAdressFromSelector(*temp);
-    /* setto a 0 il bit nella bitmap */
+    /* setto a 0 il bit corrispondente a quell indirizzo nella bitmap */
     setBit( (FisicAdress-MEMORY_START)/0x1000 ,0);
     /* cancello il selettore della pagina */
     SelectorAdress=(unsigned int*)VirtualAdress(table,1023,page*4);
     setPageSelector(SelectorAdress,0,0);
+}
+
+/*
+ dealloca una pagetable
+ num: indice della pagetable nella pagedir
+*/
+void DeletePageTable(unsigned int num)/* TODO: provare se funziona */
+{
+    unsigned int *Selector,*page,FisicAdress,*temp,c;
+    /* trovo gli indirizzi del selettore e della pagina che la contiene */
+    page=(unsigned int*)VirtualAdress(num,1023,0);
+    Selector=(unsigned int*)&PageDir[num];
+    /* passo tutti i descrittori che contiene e se sono allocate pagine le dealloco */
+    for(c=0;c<1023;c++)
+    {
+        if(GetFisicAdressFromSelector(page[c])!=0x0)/* se è una pagina allocata */
+        {
+            DeletePage(VirtualAdress(num,c,0));
+        }
+    }
+    /* dealloco lo spazio per la tabella */
+      /* prendo l'indirizzo fisico contenuto nel selettore */
+      temp=(unsigned int*)VirtualAdress(num,1023,4*1023);
+      FisicAdress=GetFisicAdressFromSelector(*temp);
+      /* setto a 0 il bit corrispondente a quell indirizzo nella bitmap */
+      setBit( (FisicAdress-MEMORY_START)/0x1000 ,0);
+    /* cancello il selettore */
+    setPageTableSelector(Selector,0,0);
 }
 
 
