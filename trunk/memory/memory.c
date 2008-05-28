@@ -93,6 +93,20 @@ unsigned int VirtualAdress(unsigned int table,unsigned int page,unsigned int off
     return temp;
 }
 
+/* ritornano le componenti dell indirizzo logico */
+unsigned int GetTableFromVirtualAdress(unsigned int adress)
+{
+    return (adress>>22)&0x3FF;    
+}
+unsigned int GetPageFromVirtualAdress(unsigned int adress)
+{
+    return (adress>>12)&0x3FF;    
+}
+unsigned int GetOffsetFromVirtualAdress(unsigned int adress)
+{
+    return adress&0xFFF;    
+}
+
 /*
  alloca una nuova pagetable e la inserisce nella pagedir
  ritorna l'indice in cui è inserito il selettore
@@ -100,11 +114,18 @@ unsigned int VirtualAdress(unsigned int table,unsigned int page,unsigned int off
 unsigned int AddNewPageTable(unsigned int flags)
 {
     unsigned int c=0;
+    unsigned int *pointer;
     /* scorre fino a trovare dove inserire il nuovo selettore */
     while(GetFisicAdressFromSelector(PageDir[c])!=0x0)
         c++;
-    /* setta il selettore */
-    setPageTableSelector(&PageDir[c], GetNewPage(1)>>12 ,flags);
+    /* alloca spazio */
+    pointer=(unsigned int*)GetNewPage(1);
+    setPageTableSelector(&PageDir[c], (unsigned int)pointer>>12 ,flags);
+    /* mi serve scrivere il 1023 record per mappare se stessa altrimenti non sarebbe indirizabile  */
+    /* quindi setto il selettore di pagina temporaneo in modo che punti ai dati appena allocati per la tabella */
+    setPageSelector((unsigned int*)TempPageSelector, (unsigned int)pointer>>12 ,flags);
+    /* in questi dati poi modifico il 1024 record in modo che sia utilizzabile per indirizzarsi */
+    setPageSelector(&TempPage[1023], (unsigned int)pointer>>12 ,flags);
     return c;
 }
 
@@ -116,7 +137,7 @@ unsigned int AddNewPage(unsigned int flags)
     /* scorre fino a trovare dove inserire il nuovo selettore */
     while(GetFisicAdressFromSelector(PageDir[c])!=0x0)
     {
-        pointer=(unsigned int*)VirtualAdress(c,0,0);/* indirizzo pagetable */
+        pointer=(unsigned int*)VirtualAdress(c,1023,0);/* indirizzo pagetable */
         for(i=0;i<0x1000;i++)
         {
             if(GetFisicAdressFromSelector(pointer[i])==0x0)/* se è un selettore di pagina vuoto */
@@ -129,12 +150,23 @@ unsigned int AddNewPage(unsigned int flags)
     }
     /* se si arriva quì vuol dire che in nessuna pagetable c'è spazio per una nuova pagina */
     /* crea nuova pagetable */
-    /*c=AddNewPageTable(PAG_PRESENT|PAG_READWRITE|PAG_SUPERVISOR|PAG_4KPAGE);*/
+    c=AddNewPageTable(PAG_PRESENT|PAG_READWRITE|PAG_SUPERVISOR|PAG_4KPAGE);
     /* crea nuova pagina */
-   /* pointer=(unsigned int*)VirtualAdress(c,0,0);
-    setPageSelector(&pointer[0], GetNewPage(1)>>12 ,flags);*/
+    pointer=(unsigned int*)VirtualAdress(c,0,0);
+    setPageSelector(&pointer[0], GetNewPage(1)>>12 ,flags);
     return (unsigned int)pointer;
 }
+
+/* dealloca una pagina */
+void DeletePage(unsigned int VirtualAdress)
+{
+    unsigned int table,page;
+    
+    table=GetTableFromVirtualAdress(VirtualAdress);
+    page=GetPageFromVirtualAdress(VirtualAdress);
+    
+}
+
 
 void InitPaging(){
     int c,c2;
@@ -144,7 +176,8 @@ void InitPaging(){
     /* azzera mappa */
     for(c=0;c<MAX_PAGES_IN_MEMORY/32+1;c++)
         memoryBitmap[c]=0;
-    
+   
+
     /* azzera i record della pagedir */
     for(c=0;c<1024;c++)
         setPageTableSelector(&PageDir[c],0,0);
@@ -182,6 +215,14 @@ void InitPaging(){
     setPageSelector((unsigned int*)((PageTab2)+(0*4)),(unsigned int)PageDir>>12,PAG_PRESENT|PAG_READWRITE|PAG_SUPERVISOR|PAG_4KPAGE);
     setPageSelector((unsigned int*)((PageTab2)+(1*4)),PageTab>>12,PAG_PRESENT|PAG_READWRITE|PAG_SUPERVISOR|PAG_4KPAGE);
     setPageSelector((unsigned int*)((PageTab2)+(2*4)),PageTab2>>12,PAG_PRESENT|PAG_READWRITE|PAG_SUPERVISOR|PAG_4KPAGE);
+
+     /*setta un selettore utile per un indirizzamento temporaneo (da modificare al volo per modificare specifici indirizzi fisici)*/
+    TempPageSelector=GetNewPage(1);
+    setPageSelector((unsigned int*)((PageTab2)+(3*4)),TempPageSelector>>12,PAG_PRESENT|PAG_READWRITE|PAG_SUPERVISOR|PAG_4KPAGE);
+    /* quindi il rispettivo indirizzo dopo l'attivazione della paginazione sarà */
+    TempPageSelector=VirtualAdress(1,1023,3*4);
+    /* l'indirizzo che prenderà l'area del selettore temporaneo */
+    TempPage=(unsigned int*)VirtualAdress(1,3,0);
 
     write_cr3((unsigned int)PageDir); /* put that page directory address into CR3 */
     write_cr0(read_cr0() | 0x80000000); /* set the paging bit in CR0 to 1 */
