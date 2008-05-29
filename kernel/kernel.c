@@ -92,7 +92,20 @@ void _kmain(/*multiboot_info_t* mbd, unsigned int magic*/){
     OK(t++);
 
     NO(t);
+    write("Prova itoa(output: 123,A0.):");
+    for(i=0;i<5;i++)
+        conversion[i]=0;
+    itoa(123,conversion);
+    write(conversion);
+    write(",");
+    itobase(160,16,conversion);
+    write(conversion);
+    writeline(".");
+    OK(t++);
+
+    NO(t);
     write("Prova strapp(output: 101,C,A0.):");
+    conversion[0]=0;
     strapp(conversion,"%b,",/*(void *)*/5);
     strapp(conversion,"%x,",/*(void *)*/12);
     strapp(conversion,"%x.",/*(void *)*/160);
@@ -148,13 +161,12 @@ void _kmain(/*multiboot_info_t* mbd, unsigned int magic*/){
     strapp(conversion,"Seconda allocazione: indirizzo: 0x%x",
            (unsigned int)dinamicSecond);
     writeline(conversion);
-    if(dinamicFirst+40==dinamicSecond){
-        OK(t++);
+    OK(t++);
+    if(dinamicFirst+40==dinamicSecond)
         OK(t-3);
-    }
 
 #endif
-    drawRectangle(5,17,10,5,(char)(Yellow|Back_Blue));
+    drawRectangle(1,18,10,5,(char)(Yellow|Back_Blue));
     asm("sti");
     setCursorPos(79,24);
     on=1;
