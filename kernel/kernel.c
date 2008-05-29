@@ -58,7 +58,7 @@ void _kmain(/*multiboot_info_t* mbd, unsigned int magic*/){
 #ifdef BASIC_TESTS
     char pointer[17]="Prova puntatore.";
     char conversion[60]={0};
-    char *dinamicTest,*dinamicTemp;
+    char *dinamicFirst,*dinamicSecond;
 #endif
     short i;/*index*/
     int t=0;/*test number*/
@@ -129,29 +129,25 @@ void _kmain(/*multiboot_info_t* mbd, unsigned int magic*/){
 #endif
 
 #ifdef BASIC_TESTS
-    NO(t);
-   
     addNewPage(PAG_PRESENT|PAG_READWRITE|PAG_SUPERVISOR|PAG_4KPAGE);
-    write("test allocazione dinamica: ");
-    dinamicTest=(char*)malloc(40);
-    dinamicTemp=dinamicTest;
-    /*dinamicTest[0]='X';
-    dinamicTest[1]='\0';*/
+    writeline("Test allocazione dinamica: ");
+    t++;
+    NO(t);
+    dinamicFirst=malloc(40);
     conversion[0]='\0';
-    strapp(conversion," allocato all indirizzo: 0x%x",(unsigned int)dinamicTest);
+    strapp(conversion,"Prima allocazione: indirizzo: 0x%x",
+           (unsigned int)dinamicFirst);
     writeline(conversion);
     OK(t++);
 
     NO(t);
-    write("seconda allocazione: ");
     /*deletePage((unsigned int)dinamicTest);*/
-    dinamicTest=(char*)malloc(40);
-    /*dinamicTest[0]='X';
-    dinamicTest[1]='\0';*/
+    dinamicSecond=malloc(40);
     conversion[0]='\0';
-    strapp(conversion," indirizzo: 0x%x",(unsigned int)dinamicTest);
+    strapp(conversion,"Seconda allocazione: indirizzo: 0x%x",
+           (unsigned int)dinamicSecond);
     writeline(conversion);
-    if(dinamicTemp+40==dinamicTest)
+    if(dinamicFirst+40==dinamicSecond)
         OK(t++); 
 
 #endif
