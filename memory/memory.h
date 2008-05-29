@@ -98,6 +98,11 @@ void deletePage(unsigned int virtualAdress);
 */
 void deletePageTable(unsigned int num);
 
+
+void* malloc(unsigned int byte);
+void free(void *pointer);
+
+
 /* ritornano le componenti dell indirizzo logico */
 unsigned int getTableFromVirtualAdress(unsigned int adress);
 unsigned int getPageFromVirtualAdress(unsigned int adress);
