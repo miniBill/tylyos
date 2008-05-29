@@ -57,7 +57,7 @@ void logo(){
 void _kmain(/*multiboot_info_t* mbd, unsigned int magic*/){
 #ifdef BASIC_TESTS
     char pointer[17]="Prova puntatore.";
-    char conversion[10]={0};
+    char conversion[60]={0};
     char *dinamicTest,*dinamicTemp;
 #endif
     short i;/*index*/
@@ -130,24 +130,28 @@ void _kmain(/*multiboot_info_t* mbd, unsigned int magic*/){
 
 #ifdef BASIC_TESTS
     NO(t);
+   
+    addNewPage(PAG_PRESENT|PAG_READWRITE|PAG_SUPERVISOR|PAG_4KPAGE);
     write("test allocazione dinamica: ");
-    dinamicTest=(char*)addNewPage(PAG_PRESENT|PAG_READWRITE|PAG_SUPERVISOR|PAG_4KPAGE);
+    dinamicTest=(char*)malloc(40);
     dinamicTemp=dinamicTest;
-    dinamicTest[0]='X';
-    dinamicTest[1]='\0';
-    strapp(dinamicTest," allocato all indirizzo: 0x%x",(unsigned int)dinamicTest);
-    writeline(dinamicTest);
+    /*dinamicTest[0]='X';
+    dinamicTest[1]='\0';*/
+    conversion[0]='\0';
+    strapp(conversion," allocato all indirizzo: 0x%x",(unsigned int)dinamicTest);
+    writeline(conversion);
     OK(t++);
 
     NO(t);
-    write("test deallocazione: ");
-    deletePage((unsigned int)dinamicTest);
-    dinamicTest=(char*)addNewPage(PAG_PRESENT|PAG_READWRITE|PAG_SUPERVISOR|PAG_4KPAGE);
-    dinamicTest[0]='X';
-    dinamicTest[1]='\0';
-    strapp(dinamicTest," deallocato e reallocato all indirizzo: 0x%x",(unsigned int)dinamicTest);
-    writeline(dinamicTest);
-    if(dinamicTemp==dinamicTest)
+    write("seconda allocazione: ");
+    /*deletePage((unsigned int)dinamicTest);*/
+    dinamicTest=(char*)malloc(40);
+    /*dinamicTest[0]='X';
+    dinamicTest[1]='\0';*/
+    conversion[0]='\0';
+    strapp(conversion," indirizzo: 0x%x",(unsigned int)dinamicTest);
+    writeline(conversion);
+    if(dinamicTemp+40==dinamicTest)
         OK(t++); 
 
 #endif
