@@ -59,6 +59,7 @@ void _kmain(/*multiboot_info_t* mbd, unsigned int magic*/){
     char pointer[17]="Prova puntatore.";
     char conversion[60]={0};
     char *dinamicFirst,*dinamicSecond;
+    int ceck;
 #endif
     short i;/*index*/
     int t=0;/*test number*/
@@ -142,28 +143,36 @@ void _kmain(/*multiboot_info_t* mbd, unsigned int magic*/){
 #endif
 
 #ifdef BASIC_TESTS
-    addNewPage(PAG_PRESENT|PAG_READWRITE|PAG_SUPERVISOR|PAG_4KPAGE);
-    NO(t);
-    writeline("Test allocazione dinamica: ");
-    t++;
-    NO(t);
-    dinamicFirst=malloc(40);
-    conversion[0]='\0';
-    strapp(conversion,"Prima allocazione: indirizzo: 0x%x",
-           (unsigned int)dinamicFirst);
-    writeline(conversion);
-    OK(t++);
+    
 
-    NO(t);
-    /*deletePage((unsigned int)dinamicTest);*/
-    dinamicSecond=malloc(40);
-    conversion[0]='\0';
-    strapp(conversion,"Seconda allocazione: indirizzo: 0x%x",
-           (unsigned int)dinamicSecond);
-    writeline(conversion);
-    OK(t++);
-    if(dinamicFirst+40==dinamicSecond)
-        OK(t-3);
+   
+   
+    write("Test allocazione dinamica: ");
+
+    
+   
+    ceck=1;
+    for(i=0;i<4000;i++)
+    {
+        if( i== 4000/2 )
+            write(".");
+        dinamicSecond=dinamicFirst;
+        dinamicFirst=(char*)malloc(4);
+    
+        if(dinamicSecond+4!=dinamicFirst && getPageFromVirtualAdress((unsigned int)dinamicFirst)==getPageFromVirtualAdress((unsigned int)dinamicSecond)){
+            ceck=0;
+            conversion[0]='\0';
+            strapp(conversion,"%d:",(unsigned int)i);
+            strapp(conversion,"0x%x >> ",(unsigned int)dinamicSecond);
+            strapp(conversion,"0x%x ",(unsigned int)dinamicFirst);
+            write(conversion);
+        }
+    }
+    if(ceck==1)
+        OK(t++);
+    else
+        NO(t++); 
+
 
 #endif
     drawRectangle(1,18,10,5,(char)(Yellow|Back_Blue));

@@ -101,7 +101,15 @@ unsigned int getPageFromVirtualAdress(unsigned int adress){
 unsigned int getOffsetFromVirtualAdress(unsigned int adress){
     return adress&0xFFF;
 }
-
+/* FIXME: non compila
+void *calloc(size_t num, size_t size){
+    char *retval=malloc(num*size);
+    int i;
+    for(i=0;i<(num*size)/sizeof(char);i++)
+        retval[i]=0;
+    return retval;
+}
+*/
 /*
  alloca una nuova pagetable e la inserisce nella pagedir
  ritorna l'indice in cui è inserito il selettore
@@ -131,19 +139,19 @@ unsigned int addNewPageTable(unsigned int flags){/* TODO: provare se funziona */
 unsigned int addNewPage(unsigned int flags){
     unsigned int c=1,i;/* la prima pagetable mappa il kernel quindi è inutile leggerla */
     unsigned int *pointer;
-    /* scorre le pagetable finche sono allocate */
-    while(getFisicAdressFromSelector(pageDir[c])!=0x0){
-        pointer=(unsigned int*)virtualAdress(c,1023,0);/* indirizzo pagetable */
-        for(i=0;i<1023;i++)
-            if(getFisicAdressFromSelector(pointer[i])==0x0){/* se è un selettore di pagina vuoto */
-                /* alloca spazio e setta il selettore */
-                setPageSelector(&pointer[i], getNewPage(1)>>12 ,flags);
-                /* azzera la bitmap che indica le allocazioni nella pagina */
-                writeBitmapOnPage((unsigned int*)virtualAdress(c,i,0));
-                return virtualAdress(c,i,0);
-            }
-        c++;
-    }
+    /* scorre le pagetable */
+    for(c=1;c<1023;c++)
+        if(getFisicAdressFromSelector(pageDir[c])!=0x0){
+            pointer=(unsigned int*)virtualAdress(c,1023,0);/* indirizzo pagetable */
+            for(i=0;i<1023;i++)
+                if(getFisicAdressFromSelector(pointer[i])==0x0){/* se è un selettore di pagina vuoto */
+                    /* alloca spazio e setta il selettore */
+                    setPageSelector(&pointer[i], getNewPage(1)>>12 ,flags);
+                    /* azzera la bitmap che indica le allocazioni nella pagina */
+                    writeBitmapOnPage((unsigned int*)virtualAdress(c,i,0));
+                    return virtualAdress(c,i,0);
+                }
+        }
     /* se si arriva quì vuol dire che in nessuna pagetable c'è spazio per una nuova pagina */
     /* crea nuova pagetable */
     c=addNewPageTable(flags);
@@ -202,44 +210,47 @@ void* malloc(unsigned int byte){
     unsigned int c=1,i,i2,i3;/* la prima pagetable mappa il kernel quindi è inutile leggerla */
     unsigned int *pointer,*pointer2;
     unsigned int flag,ret,bitCounter;
+
      /* ricavo la dimensione in byte della bitmap */
-    bitmapSize=0x1000/8/MIN_SIZE_ALLOCABLE;
+    bitmapSize=(0x1000-128)/8/MIN_SIZE_ALLOCABLE;
 
     if(byte<0x1000-bitmapSize){/* se il numero di byte da allocare stanno in una pagina */
         /* passa le pagetable */
-        while(getFisicAdressFromSelector(pageDir[c])!=0x0){
-            /* indirizzo pagetable */
-            pointer=(unsigned int*)virtualAdress(c,1023,0);
-            /* passa le pagine */
-            for(i=0;i<1023;i++)
-                if(getFisicAdressFromSelector(pointer[i])!=0x0 && !(c==1 && i==0)){/* se non è una pagina vuota */
-                    pointer2=(unsigned int*)virtualAdress(c,i,0);
-                    flag=0;
-                    bitCounter=0;
-                    /* passa la bitmap cercando una sequenza di bit pari a zero abbastanza lunga */
-                    for(i2=0;i2<bitmapSize*8;i2++){
-                        if(getBitExt(pointer2,i2)==0){/* se il bit è 0 sett il flag e incrementa il bitCounter */
-                            if(flag==0){
-                                flag=1;
-                                ret=i2;
-                            }
-                            bitCounter++;
-                            if(byte<=bitCounter*4){/* se lo spazio è abbastanza grosso */
-                                /* alloca */
-                                for(i3=0;i3<bitCounter;i3++){
-                                    setBitExt(pointer2,ret+i3,1);
+        for(c=1;c<1023;c++)
+            if(getFisicAdressFromSelector(pageDir[c])!=0x0){
+                /* indirizzo pagetable */
+                pointer=(unsigned int*)virtualAdress(c,1023,0);
+                /* passa le pagine */
+                for(i=0;i<1023;i++)
+                    if(getFisicAdressFromSelector(pointer[i])!=0x0 && !(c==1 && (i==0 || i==1))){/* se non è una pagina vuota */
+                        pointer2=(unsigned int*)virtualAdress(c,i,0);
+                        flag=0;
+                        bitCounter=0;
+                        /* passa la bitmap cercando una sequenza di bit pari a zero abbastanza lunga */
+                        for(i2=0;i2<bitmapSize*8;i2++){
+                            if(getBitExt(pointer2,i2)==0){/* se il bit è 0 sett il flag e incrementa il bitCounter */
+                                if(flag==0){
+                                    flag=1;
+                                    ret=i2;
                                 }
-                                /* ritorna l'indirizzo appena allocato */
-                                return (void*)virtualAdress(c,i,(ret*MIN_SIZE_ALLOCABLE)+bitmapSize);
+                                bitCounter++;
+                                if(byte<=bitCounter*4){/* se lo spazio è abbastanza grosso */
+                                    /* alloca */
+                                    for(i3=0;i3<bitCounter;i3++){
+                                        setBitExt(pointer2,ret+i3,1);
+                                    }
+
+                                    /* ritorna l'indirizzo appena allocato */
+                                    return (void*)virtualAdress(c,i,(unsigned int)(ret*MIN_SIZE_ALLOCABLE)+bitmapSize);
+                                }
+                            }else{/* se è a 1 resetta il flag e il bitCounter */
+                                flag=0;
+                                bitCounter=0;
+                                ret=0;
                             }
-                        }else{/* se è a 1 resetta il flag e il bitCounter */
-                            flag=0;
-                            bitCounter=0;
-                            ret=0;
                         }
                     }
-                }
-            c++;
+                c++;
         }
         /* se arriva quì non c'è spazio in nessuna pagina allocata */
         /* alloca nuova pagina */
@@ -317,16 +328,15 @@ void initPaging(void){
     setPageSelector((unsigned int*)(pageTab2+(1023*4)),pageTab2>>12,flags);
     /* setta i tre selettori */
     setPageSelector((unsigned int*)((pageTab2)+(0*4)),(unsigned int)pageDir>>12,flags);
-    /*setPageSelector((unsigned int*)((pageTab2)+(1*4)),pageTab>>12,flags);
-    setPageSelector((unsigned int*)((pageTab2)+(2*4)),pageTab2>>12,flags);*/
+    
 
      /*setta un selettore utile per un indirizzamento temporaneo (da modificare al volo per modificare specifici indirizzi fisici)*/
     tempPageSelector=getNewPage(1);
-    setPageSelector((unsigned int*)((pageTab2)+(3*4)),tempPageSelector>>12,flags);
+    setPageSelector((unsigned int*)((pageTab2)+(1*4)),tempPageSelector>>12,flags);
     /* quindi il rispettivo indirizzo dopo l'attivazione della paginazione sarà */
-    tempPageSelector=virtualAdress(1,1023,3*4);
+    tempPageSelector=virtualAdress(1,1023,1*4);
     /* l'indirizzo che prenderà l'area del selettore temporaneo */
-    tempPage=(unsigned int*)virtualAdress(1,3,0);
+    tempPage=(unsigned int*)virtualAdress(1,1,0);
 
     write_cr3((unsigned int)pageDir); /* put that page directory address into CR3 */
     write_cr0(read_cr0() | 0x80000000); /* set the paging bit in CR0 to 1 */
