@@ -30,11 +30,11 @@ int strapp(char* dest,char* format,unsigned int num){/*HACK, to have compile-tim
         if(format[i]=='%'){
             int base=10;
             /*int num=(int)p;*/
-            char buf[MAXN] = {0};
+            /*char buf[MAXN] = {0};*/
             /*lunghezza del numero*/
-            int l=0;
+            /*int l=0;*/
             /*indice per copiare*/
-            int b=0;
+            /*int b=0;*/
             switch(format[i+1]){
                 case '0':
                     dest[o++]=0;
@@ -56,10 +56,13 @@ int strapp(char* dest,char* format,unsigned int num){/*HACK, to have compile-tim
                     break;
             }
             if(format[i+1]!='0'){
-                for(l=0;num && (l<MAXN) ; num /= base,l++)
+                itobase(num,base,dest+o);
+                while(dest[o]!=0)
+                    o++;
+                /*for(l=0;num && (l<MAXN) ; num /= base,l++)
                     buf[l] = "0123456789ABCDEF"[num % base];
                 for(b=(l-1);b>=0;b--)
-                    dest[o++]=buf[b];
+                    dest[o++]=buf[b];*/
             }
             i++;
         }
@@ -75,4 +78,26 @@ int strlen(char * string){
     while(string[ret]!=0)
         ret++;
     return ret;
+}
+
+void itoa(int a,char buff[12]){
+    itobase(a,10,buff);
+}
+
+void itobase(int a,int base,char buff[12]){
+    char temp[MAXN]={0};
+    if(a==0)
+        buff[0]='0';
+    else{
+        int i,l;
+        if(a<0){
+            a=-a;
+            buff[0]='-';
+        }
+        for(l=0;a && (l<MAXN) ; a /= base,l++)
+            temp[l] = "0123456789ABCDEF"[a % base];
+        for(i=(l-1),l=0;i>=0;i--)
+            buff[l++]=temp[i];
+        buff[l]=0;
+    }
 }
