@@ -189,6 +189,15 @@ void deletePageTable(unsigned int num){/* TODO: provare se funziona */
     setPageTableSelector(selector,0,0);
 }
 
+void* malloc(unsigned int byte){/* TODO: implementare */
+    unsigned int hack;
+    hack=byte;
+    return (void*)addNewPage(PAG_PRESENT|PAG_READWRITE|PAG_SUPERVISOR|PAG_4KPAGE);
+}
+
+void free(void *pointer){/* TODO: implementare */
+    deletePage((unsigned int)pointer);
+}
 
 void initPaging(void){
     int c,c2;
