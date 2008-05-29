@@ -127,13 +127,15 @@ unsigned int addNewPageTable(unsigned int flags){/* TODO: provare se funziona */
 unsigned int addNewPage(unsigned int flags){
     unsigned int c=1,i;/* la prima pagetable mappa il kernel quindi è inutile leggerla */
     unsigned int *pointer;
-    /* scorre fino a trovare dove inserire il nuovo selettore */
+    /* scorre le pagetable finche sono allocate */
     while(getFisicAdressFromSelector(pageDir[c])!=0x0){
         pointer=(unsigned int*)virtualAdress(c,1023,0);/* indirizzo pagetable */
-        for(i=0;i<0x1000;i++)
+        for(i=0;i<1023;i++)
             if(getFisicAdressFromSelector(pointer[i])==0x0){/* se è un selettore di pagina vuoto */
                 /* alloca spazio e setta il selettore */
                 setPageSelector(&pointer[i], getNewPage(1)>>12 ,flags);
+                /* azzera la bitmap che indica le allocazioni nella pagina */
+                writeBitmapOnPage((unsigned int*)virtualAdress(c,i,0));
                 return virtualAdress(c,i,0);
             }
         c++;
@@ -142,9 +144,11 @@ unsigned int addNewPage(unsigned int flags){
     /* crea nuova pagetable */
     c=addNewPageTable(flags);
     /* crea nuova pagina */
-    pointer=(unsigned int*)virtualAdress(c,0,0);
+    pointer=(unsigned int*)virtualAdress(c,0,1023);
     setPageSelector(&pointer[0], getNewPage(1)>>12 ,flags);
-    return (unsigned int)pointer;
+    /* azzera la bitmap che indica le allocazioni nella pagina */
+    writeBitmapOnPage((unsigned int*)virtualAdress(c,0,0));
+    return virtualAdress(c,0,0);
 }
 
 /* 
@@ -190,13 +194,65 @@ void deletePageTable(unsigned int num){/* TODO: provare se funziona */
 }
 
 void* malloc(unsigned int byte){/* TODO: implementare */
-    unsigned int hack;
-    hack=byte;
-    return (void*)addNewPage(PAG_PRESENT|PAG_READWRITE|PAG_SUPERVISOR|PAG_4KPAGE);
+    unsigned int bitmapSize;
+    unsigned int c=1,i,i2,i3;/* la prima pagetable mappa il kernel quindi è inutile leggerla */
+    unsigned int *pointer,*pointer2;
+    int flag,bitCounter;
+     /* ricavo la dimensione in byte della bitmap */
+    bitmapSize=0x1000/8/MIN_SIZE_ALLOCABLE;
+
+    if(byte<0x1000-bitmapSize){/* se il numero di byte da allocare stanno in una pagina */
+        /* passa le pagetable */
+        while(getFisicAdressFromSelector(pageDir[c])!=0x0){
+            /* indirizzo pagetable */
+            pointer=(unsigned int*)virtualAdress(c,1023,0);
+            /* passa le pagine */
+            for(i=0;i<1023;i++)
+                if(getFisicAdressFromSelector(pointer[i])!=0x0){/* se non è una pagina vuota */
+                    pointer2=(unsigned int*)virtualAdress(c,i,0);
+                    flag=0;
+                    bitCounter=0;
+                    /* passa la bitmap cercando una sequenza di bit pari a zero abbastanza lunga */
+                    for(i2=0;i2<bitmapSize*8;i2++){
+                        if(getBitExt(pointer2,i2)==0){/* se il bit è 0 sett il flag e incrementa il bitCounter */
+                            flag=1;
+                            bitCounter++;
+                            if(byte<=bitCounter*4){/* se lo spazio è abbastanza grosso */
+                                /* alloca */
+                                for(i3=0;i3<bitCounter;i3++){
+                                    setBitExt(pointer2,i2-i3,1);
+                                }
+                                /* ritorna l'indirizzo appena allocato */
+                                return (void*)(i2-bitCounter-1);
+                            }
+                        }else{/* se è a 1 resetta il flag e il bitCounter */
+                            flag=0;
+                            bitCounter=0;
+                        }
+                    }
+                }
+            c++;
+        }
+        
+    }else{/* non è possibile allocare un numero di byte contigui di questa dimensione, forse da sistemare in futuro */}
+    return (void*)0;
 }
 
 void free(void *pointer){/* TODO: implementare */
     deletePage((unsigned int)pointer);
+}
+
+/*
+ scrive la bitmap in una pagina e inizializza tutti i bit a zero
+*/
+void writeBitmapOnPage(unsigned int* adress){
+    unsigned int bitmapSize,c;
+    /* ricavo la dimensione in byte della bitmap */
+    bitmapSize=0x1000/8/MIN_SIZE_ALLOCABLE;
+    /* azzera tutti i bit */
+    for(c=0;c<bitmapSize/4;c++){
+        adress[c]=0;
+    }
 }
 
 void initPaging(void){
@@ -297,3 +353,21 @@ void setBit(int x,unsigned int value){
     else
         memoryBitmap[off1]&=~(1<<off2);
 }
+
+int getBitExt(unsigned int *bitmap,int x){
+    int off1,off2;
+    off1=x/32;
+    off2=x%32;
+    return (bitmap[off1]>>off2)&1;
+}
+void setBitExt(unsigned int *bitmap,int x,unsigned int value){
+    int off1,off2;
+    off1=x/32;
+    off2=x%32;
+    value&=0x1;
+    if(value)
+        bitmap[off1]|=1<<off2;
+    else
+        bitmap[off1]&=~(1<<off2);
+}
+
