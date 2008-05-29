@@ -82,7 +82,7 @@ void _kmain(/*multiboot_info_t* mbd, unsigned int magic*/){
 #ifdef BASIC_TESTS
     NO(t);
     put('P');
-    for(i=(COLUMNS*2+1);i<(COLUMNS*2+6);i++)
+    for(i=COLUMNS+1;i<COLUMNS+6;i++)
         put(readi(i));
     writeline("put/read.");
     OK(t++);
@@ -130,6 +130,7 @@ void _kmain(/*multiboot_info_t* mbd, unsigned int magic*/){
 
 #ifdef BASIC_TESTS
     addNewPage(PAG_PRESENT|PAG_READWRITE|PAG_SUPERVISOR|PAG_4KPAGE);
+    NO(t);
     writeline("Test allocazione dinamica: ");
     t++;
     NO(t);
@@ -147,8 +148,10 @@ void _kmain(/*multiboot_info_t* mbd, unsigned int magic*/){
     strapp(conversion,"Seconda allocazione: indirizzo: 0x%x",
            (unsigned int)dinamicSecond);
     writeline(conversion);
-    if(dinamicFirst+40==dinamicSecond)
-        OK(t++); 
+    if(dinamicFirst+40==dinamicSecond){
+        OK(t++);
+        OK(t-3);
+    }
 
 #endif
     drawRectangle(5,17,10,5,(char)(Yellow|Back_Blue));
