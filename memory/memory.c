@@ -101,15 +101,15 @@ unsigned int getPageFromVirtualAdress(unsigned int adress){
 unsigned int getOffsetFromVirtualAdress(unsigned int adress){
     return adress&0xFFF;
 }
-/* FIXME: non compila
-void *calloc(size_t num, size_t size){
+
+void *calloc(unsigned int num, unsigned int size){
     char *retval=malloc(num*size);
-    int i;
+    unsigned int i;
     for(i=0;i<(num*size)/sizeof(char);i++)
         retval[i]=0;
     return retval;
 }
-*/
+
 /*
  alloca una nuova pagetable e la inserisce nella pagedir
  ritorna l'indice in cui è inserito il selettore
