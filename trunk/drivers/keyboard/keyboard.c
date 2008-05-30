@@ -17,15 +17,12 @@
  * along with ClearOS.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
-
 #include "keyboard.h"
-#include <drivers/screen/screen.h>
 #include <kernel/stdio.h>
+#include <kernel/kernel.h>
+#include <drivers/screen/screen.h>
 
-unsigned char kmode   = 0;
-
-
+unsigned char kmode = 0;
 
 #ifdef KBD_US
 
@@ -147,11 +144,19 @@ void keypress(void){
 char scanCodeToChar(char scode){
     char ch;
     scode=scode&0x7F;
+
+    if(kmode & (LCTRL|RCTRL))
+        if(scode==16){
+            writexy(0,0,"trying halt");
+            halt();
+        }
+
     if(kmode & ALTGR)
         ch=alt_map[(int)scode];
     else
-        if(kmode & (LSHIFT|RSHIFT|LCTRL|RCTRL))
+        if(kmode & (LSHIFT|RSHIFT|LCTRL|RCTRL)){
             ch=shift_map[(int)scode];
+        }
         else
             ch=key_map[(int)scode];
 
@@ -184,5 +189,6 @@ char scanCodeToChar(char scode){
      * prepended with 0x33 value (now not handled).*/
     if (kmode & ALT)
         ch |= 0x80;
+
     return ch;
 }

@@ -54,11 +54,134 @@ void logo(){
     writeline("\\____/_/\\___/\\____/_/   \\____//___/ ");
 }
 
+void putreadtest(int t){
+    char output[16]="Prova put/read.";
+    int i,check=1;
+    NO(t);
+    put('P');
+    for(i=COLUMNS+1;i<COLUMNS+6;i++)
+        put(readi(i));
+    writeline("put/read.");
+    for(i=0;i<15;i++)
+        if(readxy(i,t)!=output[i]){
+        check=0;
+        cputxy(i,t,Light_Red);
+        }
+    if(check)
+        OK(t);
+}
 
-void _kmain(/*multiboot_info_t* mbd, unsigned int magic*/){
-    short i;/*index*/
+void pointertest(int t){
+    char pointer[17]="Prova puntatore.";
+    int i,check=1;
+    NO(t);
+    writeline(pointer);
+    for(i=0;i<16;i++)
+        if(readxy(i,t)!=pointer[i]){
+            check=0;
+            cputxy(i,t,Light_Red);
+        }
+    if(check)
+        OK(t);
+}
+
+void itoatest(int t){
+    char conversion[4]={0};
+    char output[7]="123,A0";
+    int i,check=1;
+    NO(t);
+    write("Prova itoa:");
+    for(i=0;i<4;i++)
+        conversion[i]=0;
+    itoa(123,conversion);
+    write(conversion);
+    write(",");
+    itobase(160,16,conversion);
+    write(conversion);
+    writeline(".");
+    for(i=0;i<6;i++)
+        if(readxy(i+11,t)!=output[i]){
+            check=0;
+            cputxy(i+11,t,Light_Red);
+        }
+    if(check)
+        OK(t);
+}
+
+void strapptest(int t){
+    char conversion[10]={0};
+    char output[9]="101,C,A0";
+    int i,check=1;
+    NO(t);
+    write("Prova strapp:");
+    strapp(conversion,"%b,",/*(void *)*/5);
+    strapp(conversion,"%x,",/*(void *)*/12);
+    strapp(conversion,"%x.",/*(void *)*/160);
+    writeline(conversion);
+    for(i=0;i<8;i++)
+        if(readxy(i+13,t)!=output[i]){
+            check=0;
+            cputxy(i+13,t,Light_Red);
+        }
+    if(check)
+        OK(t);
+}
+
+void magictest(int t,int magic,multiboot_info_t * mbd){
+    char magicString[13]={0};
+    NO(t);
+    write("Test magic number:");
+    itobase(magic,16,magicString);
+    writeline(magicString);
+    if(magic==0x2BADB002)
+        OK(t);
+    itobase(mbd->flags,16,magicString);
+}
+
+void dinamictest(int t){
+    char *dinamicFirst,*dinamicSecond;
+    char conversion[60]={0};
+    char number[3]={0};
+    int c=0,i,check=1;
+    char buff[5]="-/|\\";
+    NO(t);
+    write("Test allocazione dinamica:");
+
+    putxy(29,t,'%');
+
+#ifdef FAST_TESTS
+    for(i=0;i<1500;i++){
+        if(!(i%15)){
+#else
+    for(i=0;i<4000;i++){
+        if(!(i%40)){
+#endif
+            itoa(c,number);
+            writexy(27+(c<10),t,number);
+            putxy(31,t,buff[c%4]);
+            c++;
+        }
+        dinamicSecond=dinamicFirst;
+        dinamicFirst=(char*)malloc(4);
+
+        if((dinamicSecond+4)!=dinamicFirst &&
+            getPageFromVirtualAdress((unsigned int)dinamicFirst)==
+            getPageFromVirtualAdress((unsigned int)dinamicSecond)){
+            check=0;
+            conversion[0]='\0';
+            strapp(conversion,"%d:",(unsigned int)i);
+            strapp(conversion,"0x%x >> ",(unsigned int)dinamicSecond);
+            strapp(conversion,"0x%x ",(unsigned int)dinamicFirst);
+            write(conversion);
+        }
+    }
+    writeline(" finito.");
+    if(check)
+        OK(t);
+}
+
+void _kmain(multiboot_info_t* mbd, unsigned int magic){
     int t=0;/*test number*/
-    int check=1;
 
     clearScreen();
 
@@ -77,169 +200,68 @@ void _kmain(/*multiboot_info_t* mbd, unsigned int magic*/){
     t+=5;
 
     /*here start the true tests*/
+
 #ifdef BASIC_TESTS
-    {
-        char output[16]="Prova put/read.";
-        check=1;
-        NO(t);
-        put('P');
-        for(i=COLUMNS+1;i<COLUMNS+6;i++)
-            put(readi(i));
-        writeline("put/read.");
-        for(i=0;i<15;i++)
-            if(readxy(i,t)!=output[i]){
-                check=0;
-                cputxy(i,t,Light_Red);
-            }
-            if(check)
-                OK(t++);
-            else
-                t++;
-    }
-
-    {
-        char pointer[17]="Prova puntatore.";
-        check=1;
-        NO(t);
-        writeline(pointer);
-        for(i=0;i<16;i++)
-            if(readxy(i,t)!=pointer[i]){
-                check=0;
-                cputxy(i,t,Light_Red);
-            }
-        if(check)
-            OK(t++);
-        else
-            t++;
-    }
-
-    {
-        char conversion[4]={0};
-        char output[7]="123,A0";
-        NO(t);
-        write("Prova itoa:");
-        for(i=0;i<4;i++)
-            conversion[i]=0;
-        itoa(123,conversion);
-        write(conversion);
-        write(",");
-        itobase(160,16,conversion);
-        write(conversion);
-        writeline(".");
-        for(i=0;i<6;i++)
-            if(readxy(i+11,t)!=output[i]){
-                check=0;
-                cputxy(i+11,t,Light_Red);
-            }
-            if(check)
-                OK(t++);
-            else
-                t++;
-    }
-    {
-        char conversion[10]={0};
-        char output[9]="101,C,A0";
-        NO(t);
-        write("Prova strapp:");
-        strapp(conversion,"%b,",/*(void *)*/5);
-        strapp(conversion,"%x,",/*(void *)*/12);
-        strapp(conversion,"%x.",/*(void *)*/160);
-        writeline(conversion);
-        for(i=0;i<8;i++)
-            if(readxy(i+13,t)!=output[i]){
-                check=0;
-                cputxy(i+13,t,Light_Red);
-            }
-            if(check)
-                OK(t++);
-            else
-                t++;
-    }
-
+    putreadtest(t++);
+    pointertest(t++);
+    itoatest(t++);
+    strapptest(t++);
+    magictest(t++,magic,mbd);
 #endif
 
-#ifdef BASIC_TESTS
     NO(t);
     writeline("Inizializzazione GDT");
-#endif
     initGdt();
-#ifdef BASIC_TESTS
     OK(t++);
-#endif
 
-#ifdef BASIC_TESTS
     NO(t);
     writeline("Inizializzazione IDT");
-#endif
     initIdt();
-#ifdef BASIC_TESTS
     OK(t++);
-#endif
 
-#ifdef BASIC_TESTS
     NO(t);
     writeline("Inizializzazione Paging");
-#endif
     initPaging();
-#ifdef BASIC_TESTS
     OK(t++);
-#endif
 
 #ifdef BASIC_TESTS
-    {
-        char *dinamicFirst,*dinamicSecond;
-        char conversion[60]={0};
-        char number[3]={0};
-        int c=0;
-        char buff[5]="-/|\\";
-        check=1;
-        NO(t);
-        write("Test allocazione dinamica:");
-
-        putxy(29,t,'%');
-
-#ifdef FAST_TESTS
-        for(i=0;i<1000;i++){
-            if(!(i%10)){
-#else
-        for(i=0;i<4000;i++){
-            if(!(i%40)){
-#endif
-                itoa(c,number);
-                writexy(27+(c<10),t,number);
-                putxy(31,t,buff[c%4]);
-                c++;
-            }
-            dinamicSecond=dinamicFirst;
-            dinamicFirst=(char*)malloc(4);
-
-            if((dinamicSecond+4)!=dinamicFirst &&
-                getPageFromVirtualAdress((unsigned int)dinamicFirst)==
-                getPageFromVirtualAdress((unsigned int)dinamicSecond)){
-                check=0;
-                conversion[0]='\0';
-                strapp(conversion,"%d:",(unsigned int)i);
-                strapp(conversion,"0x%x >> ",(unsigned int)dinamicSecond);
-                strapp(conversion,"0x%x ",(unsigned int)dinamicFirst);
-                write(conversion);
-            }
-        }
-        writeline(" finito.");
-        if(check)
-            OK(t++);
-        else
-            t++;
-    }
-
+    dinamictest(t++);
 #endif
 
     writeline("Kernel pronto!!!");
     OK(t);
 
-    drawRectangle(0,16,COLUMNS-1,7,(char)(Yellow|Back_Blue));
+    drawRectangle(0,18,COLUMNS-1,5,(char)(Yellow|Back_Blue));
     asm("sti");
     setCursorPos(79,24);
-    on=1;
     writexy(0,ROWS-1,"Time:");
+    on=1;
     while(on);
+}
+
+void OK(int i){
+    writexy(COLUMNS-6,i,"[ ok ]");
+    cputxy(COLUMNS-6,i,Blue);
+    cputxy(COLUMNS-4,i,Light_Green);
+    cputxy(COLUMNS-3,i,Light_Green);
+    cputxy(COLUMNS-1,i,Blue);
+}
+
+void NO(int i){
+    writexy(COLUMNS-6,i,"[ NO ]");
+    cputxy(COLUMNS-6,i,Blue);
+    cputxy(COLUMNS-4,i,Light_Red);
+    cputxy(COLUMNS-3,i,Light_Red);
+    cputxy(COLUMNS-1,i,Blue);
+}
+
+void kwrite(char * string){
+    static char * kpointer=(char *)0xb8000;
+    int k;
+    for(k=0;
+        string[k]!=0 && (((int)kpointer-0xb8000)/2)<(COLUMNS*ROWS);
+        k++){
+            *(kpointer++)=string[k];
+            *(kpointer++)=7;
+        }
 }
