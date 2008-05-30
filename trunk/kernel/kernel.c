@@ -55,12 +55,6 @@ void logo(){
 
 
 void _kmain(/*multiboot_info_t* mbd, unsigned int magic*/){
-#ifdef BASIC_TESTS
-    char pointer[17]="Prova puntatore.";
-    char conversion[60]={0};
-    char *dinamicFirst,*dinamicSecond;
-    int ceck;
-#endif
     short i;/*index*/
     int t=0;/*test number*/
 
@@ -88,30 +82,36 @@ void _kmain(/*multiboot_info_t* mbd, unsigned int magic*/){
     writeline("put/read.");
     OK(t++);
 
-    NO(t);
-    writeline(pointer);
-    OK(t++);
+    {
+        char pointer[17]="Prova puntatore.";
+        NO(t);
+        writeline(pointer);
+        OK(t++);
+    }
 
-    NO(t);
-    write("Prova itoa(output: 123,A0.):");
-    for(i=0;i<5;i++)
-        conversion[i]=0;
-    itoa(123,conversion);
-    write(conversion);
-    write(",");
-    itobase(160,16,conversion);
-    write(conversion);
-    writeline(".");
-    OK(t++);
+    {
+        char conversion[60]={0};
+        NO(t);
+        write("Prova itoa(output: 123,A0.):");
+        for(i=0;i<5;i++)
+            conversion[i]=0;
+        itoa(123,conversion);
+        write(conversion);
+        write(",");
+        itobase(160,16,conversion);
+        write(conversion);
+        writeline(".");
+        OK(t++);
 
-    NO(t);
-    write("Prova strapp(output: 101,C,A0.):");
-    conversion[0]=0;
-    strapp(conversion,"%b,",/*(void *)*/5);
-    strapp(conversion,"%x,",/*(void *)*/12);
-    strapp(conversion,"%x.",/*(void *)*/160);
-    writeline(conversion);
-    OK(t++);
+        NO(t);
+        write("Prova strapp(output: 101,C,A0.):");
+        conversion[0]=0;
+        strapp(conversion,"%b,",/*(void *)*/5);
+        strapp(conversion,"%x,",/*(void *)*/12);
+        strapp(conversion,"%x.",/*(void *)*/160);
+        writeline(conversion);
+        OK(t++);
+    }
 
 #endif
 
@@ -143,38 +143,41 @@ void _kmain(/*multiboot_info_t* mbd, unsigned int magic*/){
 #endif
 
 #ifdef BASIC_TESTS
-    
-
-   
-   
-    write("Test allocazione dinamica: ");
-
-    
-   
-    ceck=1;
-    for(i=0;i<4000;i++)
     {
-        if( i== 4000/2 )
-            write(".");
-        dinamicSecond=dinamicFirst;
-        dinamicFirst=(char*)malloc(4);
-    
-        if(dinamicSecond+4!=dinamicFirst && getPageFromVirtualAdress((unsigned int)dinamicFirst)==getPageFromVirtualAdress((unsigned int)dinamicSecond)){
-            ceck=0;
-            conversion[0]='\0';
-            strapp(conversion,"%d:",(unsigned int)i);
-            strapp(conversion,"0x%x >> ",(unsigned int)dinamicSecond);
-            strapp(conversion,"0x%x ",(unsigned int)dinamicFirst);
-            write(conversion);
-        }
-    }
-    if(ceck==1)
-        OK(t++);
-    else
-        NO(t++); 
+        char *dinamicFirst,*dinamicSecond;
+        int check=1;
+        char conversion[60]={0};
+        write("Test allocazione dinamica");
 
+        for(i=0;i<3000;i++){
+            if(!(i%1000))
+                write(".");
+            dinamicSecond=dinamicFirst;
+            dinamicFirst=(char*)malloc(4);
+
+            if((dinamicSecond+4)!=dinamicFirst &&
+                getPageFromVirtualAdress((unsigned int)dinamicFirst)==
+                getPageFromVirtualAdress((unsigned int)dinamicSecond)){
+                check=0;
+                conversion[0]='\0';
+                strapp(conversion,"%d:",(unsigned int)i);
+                strapp(conversion,"0x%x >> ",(unsigned int)dinamicSecond);
+                strapp(conversion,"0x%x ",(unsigned int)dinamicFirst);
+                write(conversion);
+            }
+        }
+        writeline(" fatto.");
+        if(check)
+            OK(t++);
+        else
+            NO(t++);
+    }
 
 #endif
+
+    writeline("Kernel pronto!!!");
+    OK(t);
+
     drawRectangle(1,18,10,5,(char)(Yellow|Back_Blue));
     asm("sti");
     setCursorPos(79,24);
