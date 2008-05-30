@@ -26,6 +26,7 @@
 #include <gui/gui.h>
 
 #define BASIC_TESTS
+#define FAST_TESTS
 
 int on=1;
 
@@ -57,6 +58,7 @@ void logo(){
 void _kmain(/*multiboot_info_t* mbd, unsigned int magic*/){
     short i;/*index*/
     int t=0;/*test number*/
+    int check=1;
 
     clearScreen();
 
@@ -74,26 +76,49 @@ void _kmain(/*multiboot_info_t* mbd, unsigned int magic*/){
     logo();
     t+=5;
 
+    /*here start the true tests*/
 #ifdef BASIC_TESTS
-    NO(t);
-    put('P');
-    for(i=COLUMNS+1;i<COLUMNS+6;i++)
-        put(readi(i));
-    writeline("put/read.");
-    OK(t++);
-
     {
-        char pointer[17]="Prova puntatore.";
+        char output[16]="Prova put/read.";
+        check=1;
         NO(t);
-        writeline(pointer);
-        OK(t++);
+        put('P');
+        for(i=COLUMNS+1;i<COLUMNS+6;i++)
+            put(readi(i));
+        writeline("put/read.");
+        for(i=0;i<15;i++)
+            if(readxy(i,t)!=output[i]){
+                check=0;
+                cputxy(i,t,Light_Red);
+            }
+            if(check)
+                OK(t++);
+            else
+                t++;
     }
 
     {
-        char conversion[60]={0};
+        char pointer[17]="Prova puntatore.";
+        check=1;
         NO(t);
-        write("Prova itoa(output: 123,A0.):");
-        for(i=0;i<5;i++)
+        writeline(pointer);
+        for(i=0;i<16;i++)
+            if(readxy(i,t)!=pointer[i]){
+                check=0;
+                cputxy(i,t,Light_Red);
+            }
+        if(check)
+            OK(t++);
+        else
+            t++;
+    }
+
+    {
+        char conversion[4]={0};
+        char output[7]="123,A0";
+        NO(t);
+        write("Prova itoa:");
+        for(i=0;i<4;i++)
             conversion[i]=0;
         itoa(123,conversion);
         write(conversion);
@@ -101,23 +126,41 @@ void _kmain(/*multiboot_info_t* mbd, unsigned int magic*/){
         itobase(160,16,conversion);
         write(conversion);
         writeline(".");
-        OK(t++);
-
+        for(i=0;i<6;i++)
+            if(readxy(i+11,t)!=output[i]){
+                check=0;
+                cputxy(i+11,t,Light_Red);
+            }
+            if(check)
+                OK(t++);
+            else
+                t++;
+    }
+    {
+        char conversion[10]={0};
+        char output[9]="101,C,A0";
         NO(t);
-        write("Prova strapp(output: 101,C,A0.):");
-        conversion[0]=0;
+        write("Prova strapp:");
         strapp(conversion,"%b,",/*(void *)*/5);
         strapp(conversion,"%x,",/*(void *)*/12);
         strapp(conversion,"%x.",/*(void *)*/160);
         writeline(conversion);
-        OK(t++);
+        for(i=0;i<8;i++)
+            if(readxy(i+13,t)!=output[i]){
+                check=0;
+                cputxy(i+13,t,Light_Red);
+            }
+            if(check)
+                OK(t++);
+            else
+                t++;
     }
 
 #endif
 
 #ifdef BASIC_TESTS
     NO(t);
-    writeline("Prova GDT");
+    writeline("Inizializzazione GDT");
 #endif
     initGdt();
 #ifdef BASIC_TESTS
@@ -126,7 +169,7 @@ void _kmain(/*multiboot_info_t* mbd, unsigned int magic*/){
 
 #ifdef BASIC_TESTS
     NO(t);
-    writeline("Prova IDT");
+    writeline("Inizializzazione IDT");
 #endif
     initIdt();
 #ifdef BASIC_TESTS
@@ -135,7 +178,7 @@ void _kmain(/*multiboot_info_t* mbd, unsigned int magic*/){
 
 #ifdef BASIC_TESTS
     NO(t);
-    writeline("Prova Paging");
+    writeline("Inizializzazione Paging");
 #endif
     initPaging();
 #ifdef BASIC_TESTS
@@ -145,13 +188,28 @@ void _kmain(/*multiboot_info_t* mbd, unsigned int magic*/){
 #ifdef BASIC_TESTS
     {
         char *dinamicFirst,*dinamicSecond;
-        int check=1;
         char conversion[60]={0};
-        write("Test allocazione dinamica");
+        char number[3]={0};
+        int c=0;
+        char buff[5]="-/|\\";
+        check=1;
+        NO(t);
+        write("Test allocazione dinamica:");
 
-        for(i=0;i<3000;i++){
-            if(!(i%1000))
-                write(".");
+        putxy(29,t,'%');
+
+#ifdef FAST_TESTS
+        for(i=0;i<1000;i++){
+            if(!(i%10)){
+#else
+        for(i=0;i<4000;i++){
+            if(!(i%40)){
+#endif
+                itoa(c,number);
+                writexy(27+(c<10),t,number);
+                putxy(31,t,buff[c%4]);
+                c++;
+            }
             dinamicSecond=dinamicFirst;
             dinamicFirst=(char*)malloc(4);
 
@@ -166,11 +224,11 @@ void _kmain(/*multiboot_info_t* mbd, unsigned int magic*/){
                 write(conversion);
             }
         }
-        writeline(" fatto.");
+        writeline(" finito.");
         if(check)
             OK(t++);
         else
-            NO(t++);
+            t++;
     }
 
 #endif
@@ -178,9 +236,10 @@ void _kmain(/*multiboot_info_t* mbd, unsigned int magic*/){
     writeline("Kernel pronto!!!");
     OK(t);
 
-    drawRectangle(1,18,10,5,(char)(Yellow|Back_Blue));
+    drawRectangle(0,16,COLUMNS-1,7,(char)(Yellow|Back_Blue));
     asm("sti");
     setCursorPos(79,24);
     on=1;
+    writexy(0,ROWS-1,"Time:");
     while(on);
 }
