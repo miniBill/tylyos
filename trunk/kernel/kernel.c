@@ -229,9 +229,9 @@ void _kmain(multiboot_info_t* mbd, unsigned int magic){
 #endif
 
     writeline("Kernel pronto!!!");
-    OK(t);
+    OK(t++);
 
-    drawRectangle(0,18,COLUMNS-1,5,(char)(Yellow|Back_Blue));
+    drawRectangle(0,t,COLUMNS-1,ROWS-t-2,(char)(Yellow|Back_Blue));
     asm("sti");
     setCursorPos(79,24);
     writexy(0,ROWS-1,"Time:");
