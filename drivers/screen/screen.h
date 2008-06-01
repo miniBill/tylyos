@@ -65,6 +65,7 @@ enum{
 void setCursorPos(unsigned int x, unsigned int y);
 
 int pos(void);
+int row(void);
 
 void gotoi(int pos);
 void gotoxy(int x,int y);
