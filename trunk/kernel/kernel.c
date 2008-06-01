@@ -138,16 +138,16 @@ void magictest(int t,int magic,multiboot_info_t * mbd){
     itobase(mbd->flags,16,magicString);
 }
 
-void dinamictest(int t){
+void dinamictest(int *t){
     char *dinamicFirst,*dinamicSecond;
     char conversion[60]={0};
     char number[3]={0};
     int c=0,i,check=1;
     char buff[5]="-/|\\";
-    NO(t);
-    write("Test allocazione dinamica:");
+    NO(*t);
+    write("Test allocazione dinamica: fase1 ");
 
-    putxy(29,t,'%');
+    putxy(33,*t,'%');
 
 #ifdef FAST_TESTS
     for(i=0;i<1500;i++){
@@ -157,12 +157,15 @@ void dinamictest(int t){
         if(!(i%40)){
 #endif
             itoa(c,number);
-            writexy(27+(c<10),t,number);
-            putxy(31,t,buff[c%4]);
+            writexy(34+(c<10),*t,number);
+            putxy(37,*t,buff[c%4]);
             c++;
         }
+        
         dinamicSecond=dinamicFirst;
         dinamicFirst=(char*)malloc(4);
+
+        *dinamicFirst=0;
 
         if((dinamicSecond+4)!=dinamicFirst &&
             getPageFromVirtualAdress((unsigned int)dinamicFirst)==
@@ -175,9 +178,29 @@ void dinamictest(int t){
             write(conversion);
         }
     }
-    writeline(" finito.");
+    writexy(34+(c<10),*t,"100");
     if(check)
-        OK(t);
+        OK(*t);
+    *t+=1;
+    NO(*t);
+    writeline("");
+    write("                           fase2 ");
+    dinamicFirst=(char*)malloc(4);
+    conversion[0]='\0';
+    strapp(conversion,"0x%x ",(unsigned int)dinamicFirst);
+   
+    dinamicSecond=dinamicFirst;
+    free(dinamicFirst,4);
+   
+    dinamicFirst=(char*)malloc(4);
+   
+    strapp(conversion,"0x%x ",(unsigned int)dinamicFirst);
+    writeline(conversion);
+
+     if(dinamicFirst==dinamicSecond)
+        OK(*t);
+
+    
 }
 
 void _kmain(multiboot_info_t* mbd, unsigned int magic){
@@ -225,7 +248,9 @@ void _kmain(multiboot_info_t* mbd, unsigned int magic){
     OK(t++);
 
 #ifdef BASIC_TESTS
-    dinamictest(t++);
+    
+    dinamictest(&t);
+t++;
 #endif
 
     writeline("Kernel pronto!!!");
