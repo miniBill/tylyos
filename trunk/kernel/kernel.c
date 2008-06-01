@@ -127,7 +127,7 @@ void strapptest(int t){
         OK(t);
 }
 
-void magictest(int t,int magic,multiboot_info_t * mbd){
+void magictest(int t,int magic){
     char magicString[13]={0};
     NO(t);
     write("Test magic number:");
@@ -135,19 +135,43 @@ void magictest(int t,int magic,multiboot_info_t * mbd){
     writeline(magicString);
     if(magic==0x2BADB002)
         OK(t);
-    itobase(mbd->flags,16,magicString);
 }
 
-void dinamictest(int *t){
+void mbdtest(int t,multiboot_info_t * mbd){
+    char lower[13]={0};
+    char upper[10]={0};
+    char totalM[10]={0};
+    char totalK[5]={0};
+    NO(t);
+    if (mbd->flags & 1){
+        itoa(mbd->mem_lower,lower);
+        itoa(mbd->mem_upper/1024,upper);
+        itoa((mbd->mem_lower+mbd->mem_upper)/1024,totalM);
+        itoa((mbd->mem_lower+mbd->mem_upper)%1024,totalK);
+        write("Lower memory:");
+        write(lower);
+        write("Kb, Upper memory:");
+        write(upper);
+        write("Mb, Total memory:");
+        write(totalM);
+        write("Mb and ");
+        write(totalK);
+        writeline("Kb.");
+    }
+    if(mbd->mem_lower>0)
+        OK(t);
+}
+
+void dinamictestOne(int t){
     char *dinamicFirst,*dinamicSecond;
     char conversion[60]={0};
     char number[3]={0};
     int c=0,i,check=1;
     char buff[5]="-/|\\";
-    NO(*t);
+    NO(t);
     write("Test allocazione dinamica: fase1 ");
 
-    putxy(33,*t,'%');
+    putxy(36,t,'%');
 
 #ifdef FAST_TESTS
     for(i=0;i<1500;i++){
@@ -157,11 +181,11 @@ void dinamictest(int *t){
         if(!(i%40)){
 #endif
             itoa(c,number);
-            writexy(34+(c<10),*t,number);
-            putxy(37,*t,buff[c%4]);
+            writexy(34+(c<10),t,number);
+            putxy(37,t,buff[c%4]);
             c++;
         }
-        
+
         dinamicSecond=dinamicFirst;
         dinamicFirst=(char*)malloc(4);
 
@@ -178,29 +202,31 @@ void dinamictest(int *t){
             write(conversion);
         }
     }
-    writexy(34+(c<10),*t,"100");
-    if(check)
-        OK(*t);
-    *t+=1;
-    NO(*t);
+    writexy(33,t,"100");
     writeline("");
-    write("                           fase2 ");
+    if(check)
+        OK(t);
+}
+
+void dinamictestTwo(int t){
+    char conversion[60]={0};
+    char *dinamicFirst,*dinamicSecond;
+    NO(t);
+    writexy(27,t,"fase2 ");
     dinamicFirst=(char*)malloc(4);
     conversion[0]='\0';
     strapp(conversion,"0x%x ",(unsigned int)dinamicFirst);
-   
+
     dinamicSecond=dinamicFirst;
     free(dinamicFirst,4);
-   
+
     dinamicFirst=(char*)malloc(4);
-   
+
     strapp(conversion,"0x%x ",(unsigned int)dinamicFirst);
     writeline(conversion);
 
-     if(dinamicFirst==dinamicSecond)
-        OK(*t);
-
-    
+    if(dinamicFirst==dinamicSecond)
+        OK(t);
 }
 
 void _kmain(multiboot_info_t* mbd, unsigned int magic){
@@ -229,7 +255,8 @@ void _kmain(multiboot_info_t* mbd, unsigned int magic){
     pointertest(t++);
     itoatest(t++);
     strapptest(t++);
-    magictest(t++,magic,mbd);
+    magictest(t++,magic);
+    mbdtest(t++,mbd);
 #endif
 
     NO(t);
@@ -248,9 +275,8 @@ void _kmain(multiboot_info_t* mbd, unsigned int magic){
     OK(t++);
 
 #ifdef BASIC_TESTS
-    
-    dinamictest(&t);
-t++;
+    dinamictestOne(t++);
+    dinamictestTwo(t++);
 #endif
 
     writeline("Kernel pronto!!!");
