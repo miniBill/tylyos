@@ -109,7 +109,7 @@ void deletePageTable(unsigned int num);
 
 
 void* malloc(unsigned int byte);
-void free(void *pointer);
+void free(void *pointer,unsigned int size);
 
 
 /* ritornano le componenti dell indirizzo logico */

@@ -267,8 +267,20 @@ void* malloc(unsigned int byte){
     return (void*)0;
 }
 
-void free(void *pointer){/* TODO: implementare */
-    deletePage((unsigned int)pointer);
+void free(void *pointer,unsigned int size){/* TODO: implementare */
+    unsigned int bitmapSize,table,page,offset,c;
+
+    /* ricavo la dimensione in byte della bitmap */
+    bitmapSize=(0x1000-128)/8/MIN_SIZE_ALLOCABLE;
+
+    /* scompongo l'indirizzo */
+    table=getTableFromVirtualAdress((unsigned int)pointer);
+    page=getPageFromVirtualAdress((unsigned int)pointer);
+    offset=getOffsetFromVirtualAdress((unsigned int)pointer);
+
+    /* dealloco */
+    for(c=0;c<size;c++)
+        setBitExt((unsigned int*)virtualAdress(table,page,0),c + (offset-bitmapSize)/MIN_SIZE_ALLOCABLE ,0);
 }
 
 /*
