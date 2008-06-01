@@ -54,42 +54,44 @@ void logo(){
     writeline("\\____/_/\\___/\\____/_/   \\____//___/ ");
 }
 
-void putreadtest(int t){
+int putreadtest(){
     char output[16]="Prova put/read.";
     int i,check=1;
-    NO(t);
     put('P');
     for(i=COLUMNS+1;i<COLUMNS+6;i++)
         put(readi(i));
     writeline("put/read.");
     for(i=0;i<15;i++)
-        if(readxy(i,t)!=output[i]){
+        if(readxy(i,row())!=output[i]){
         check=0;
-        cputxy(i,t,Light_Red);
+        {
+            char number[13]={0};
+            itoa(row(),number);
+            write("|");
+            write(number);
+            write("|");
         }
-    if(check)
-        OK(t);
+        cputxy(i,row(),Light_Red);
+        }
+    return check;
 }
 
-void pointertest(int t){
+int pointertest(){
     char pointer[17]="Prova puntatore.";
     int i,check=1;
-    NO(t);
     writeline(pointer);
     for(i=0;i<16;i++)
-        if(readxy(i,t)!=pointer[i]){
+        if(readxy(i,row())!=pointer[i]){
             check=0;
-            cputxy(i,t,Light_Red);
+            cputxy(i,row(),Light_Red);
         }
-    if(check)
-        OK(t);
+    return check;
 }
 
-void itoatest(int t){
+int itoatest(){
     char conversion[4]={0};
     char output[7]="123,A0";
     int i,check=1;
-    NO(t);
     write("Prova itoa:");
     for(i=0;i<4;i++)
         conversion[i]=0;
@@ -100,49 +102,43 @@ void itoatest(int t){
     write(conversion);
     writeline(".");
     for(i=0;i<6;i++)
-        if(readxy(i+11,t)!=output[i]){
+        if(readxy(i+11,row())!=output[i]){
             check=0;
-            cputxy(i+11,t,Light_Red);
+            cputxy(i+11,row(),Light_Red);
         }
-    if(check)
-        OK(t);
+    return check;
 }
 
-void strapptest(int t){
+int strapptest(){
     char conversion[10]={0};
     char output[9]="101,C,A0";
     int i,check=1;
-    NO(t);
     write("Prova strapp:");
     strapp(conversion,"%b,",/*(void *)*/5);
     strapp(conversion,"%x,",/*(void *)*/12);
     strapp(conversion,"%x.",/*(void *)*/160);
     writeline(conversion);
     for(i=0;i<8;i++)
-        if(readxy(i+13,t)!=output[i]){
+        if(readxy(i+13,row())!=output[i]){
             check=0;
-            cputxy(i+13,t,Light_Red);
+            cputxy(i+13,row(),Light_Red);
         }
-    if(check)
-        OK(t);
+    return check;
 }
 
-void magictest(int t,int magic){
+int magictest(int magic){
     char magicString[13]={0};
-    NO(t);
     write("Test magic number:");
     itobase(magic,16,magicString);
     writeline(magicString);
-    if(magic==0x2BADB002)
-        OK(t);
+    return magic==0x2BADB002;
 }
 
-void mbdtest(int t,multiboot_info_t * mbd){
+int mbdtest(multiboot_info_t * mbd){
     char lower[13]={0};
     char upper[10]={0};
     char totalM[10]={0};
     char totalK[5]={0};
-    NO(t);
     if (mbd->flags & 1){
         itoa(mbd->mem_lower,lower);
         itoa(mbd->mem_upper/1024,upper);
@@ -158,20 +154,18 @@ void mbdtest(int t,multiboot_info_t * mbd){
         write(totalK);
         writeline("Kb.");
     }
-    if(mbd->mem_lower>0)
-        OK(t);
+    return mbd->mem_lower>0;
 }
 
-void dinamictestOne(int t){
+int dinamictestOne(){
     char *dinamicFirst,*dinamicSecond;
     char conversion[60]={0};
     char number[3]={0};
     int c=0,i,check=1;
     char buff[5]="-/|\\";
-    NO(t);
     write("Test allocazione dinamica: fase1 ");
 
-    putxy(36,t,'%');
+    putxy(36,row(),'%');
 
 #ifdef FAST_TESTS
     for(i=0;i<1500;i++){
@@ -181,8 +175,8 @@ void dinamictestOne(int t){
         if(!(i%40)){
 #endif
             itoa(c,number);
-            writexy(34+(c<10),t,number);
-            putxy(37,t,buff[c%4]);
+            writexy(34+(c<10),row(),number);
+            putxy(37,row(),buff[c%4]);
             c++;
         }
 
@@ -202,31 +196,31 @@ void dinamictestOne(int t){
             write(conversion);
         }
     }
-    writexy(33,t,"100");
+    writexy(33,row(),"100");
+    putxy(37,row(),' ');
     writeline("");
-    if(check)
-        OK(t);
+    return check;
 }
 
-void dinamictestTwo(int t){
-    char conversion[60]={0};
+int dinamictestTwo(){
+    char conversion[33]={0};
     char *dinamicFirst,*dinamicSecond;
-    NO(t);
-    writexy(27,t,"fase2 ");
+    put(' ');/*HACK*/
+    writexy(27,row(),"fase2 ");
     dinamicFirst=(char*)malloc(4);
     conversion[0]='\0';
-    strapp(conversion,"0x%x ",(unsigned int)dinamicFirst);
+    strapp(conversion,"0x%x=",(unsigned int)dinamicFirst);
 
     dinamicSecond=dinamicFirst;
     free(dinamicFirst,4);
 
     dinamicFirst=(char*)malloc(4);
 
-    strapp(conversion,"0x%x ",(unsigned int)dinamicFirst);
-    writeline(conversion);
+    strapp(conversion,"=0x%x.",(unsigned int)dinamicFirst);
+    writexy(33,row(),conversion);
+    writeline("");
 
-    if(dinamicFirst==dinamicSecond)
-        OK(t);
+    return dinamicFirst==dinamicSecond;
 }
 
 void _kmain(multiboot_info_t* mbd, unsigned int magic){
@@ -251,12 +245,36 @@ void _kmain(multiboot_info_t* mbd, unsigned int magic){
     /*here start the true tests*/
 
 #ifdef BASIC_TESTS
-    putreadtest(t++);
-    pointertest(t++);
-    itoatest(t++);
-    strapptest(t++);
-    magictest(t++,magic);
-    mbdtest(t++,mbd);
+    NO(t);
+    if(putreadtest())
+        OK(t++);
+    else
+        t++;
+    NO(t);
+    if(pointertest())
+        OK(t++);
+    else
+        t++;
+    NO(t);
+    if(itoatest())
+        OK(t++);
+    else
+        t++;
+    NO(t);
+    if(strapptest())
+        OK(t++);
+    else
+        t++;
+    NO(t);
+    if(magictest(magic))
+        OK(t++);
+    else
+        t++;
+    NO(t);
+    if(mbdtest(mbd))
+        OK(t++);
+    else
+        t++;
 #endif
 
     NO(t);
@@ -275,8 +293,16 @@ void _kmain(multiboot_info_t* mbd, unsigned int magic){
     OK(t++);
 
 #ifdef BASIC_TESTS
-    dinamictestOne(t++);
-    dinamictestTwo(t++);
+    NO(t);
+    if(dinamictestOne())
+        OK(t++);
+    else
+        t++;
+    NO(t);
+    if(dinamictestTwo())
+        OK(t++);
+    else
+        t++;
 #endif
 
     writeline("Kernel pronto!!!");

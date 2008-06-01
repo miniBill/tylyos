@@ -57,6 +57,10 @@ int pos(){
     return ((int)pointer-consoleAddr)/2;
 }
 
+int row(){
+    return (pos()-1)/COLUMNS;
+}
+
 void gotoi(int pos){
     pointer=(char *)addr(pos);
 }
