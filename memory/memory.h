@@ -1,4 +1,5 @@
 /* Copyright (C) 2008 Leonardo Taglialegne <leonardotaglialegne+clearos@gmail.com>
+ * Copyright (C) 2008 Luca Salmin 
  *
  * This file is part of ClearOS.
  *
@@ -17,6 +18,8 @@
  */
 #ifndef MEMORY_H_
 #define MEMORY_H_
+
+/* #define NUOVA_GESTIONE_MEMORIA */
 
 void initGdt();
 
@@ -62,6 +65,11 @@ extern void gdtFlush();
 #define MIN_SIZE_ALLOCABLE 4 /* minima unità allocabile = 4byte */
 
 unsigned int *pageDir,tempPageSelector,*tempPage; /* area da 4096byte che ospita la pagedir del kernel */
+#ifdef NUOVA_GESTIONE_MEMORIA
+unsigned int *allocationBitmapStart; /* indirizzo di partenza della bitmap per le allocazioni */
+unsigned int allocationBitmapSize;
+unsigned int ramSize;
+#endif
 
 unsigned int memoryBitmap[MAX_PAGES_IN_MEMORY/32+1];	/* flag per ogni blocco di 4k della memoria fisica */
 
@@ -72,14 +80,24 @@ void setPageSelector(unsigned int *obj,unsigned int pageAdress,unsigned int flag
 
 int getBit(int x);
 void setBit(int x,unsigned int value);
+#ifndef NUOVA_GESTIONE_MEMORIA
 int getBitExt(unsigned int *bitmap,int x);
 void setBitExt(unsigned int *bitmap,int x,unsigned int value);
+#else
+int getBitFromAllocationBitmap(int x);
+#endif
 
+#ifndef NUOVA_GESTIONE_MEMORIA
 /*
  scrive la bitmap in una pagina e inizializza tutti i bit a zero
 */
 void writeBitmapOnPage(unsigned int* adress);
-
+#else
+/*
+ scrive la bitmap per le allocazioni e la azzera
+*/
+void setupAllocationBitmap();
+#endif
 /*
  ritorna un indirizzo fisico per l'allocazione di una nuova pagina
  alloca: indica se segnare questo indirizzo come utilizzato
