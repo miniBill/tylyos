@@ -28,10 +28,41 @@
 #define BASIC_TESTS
 #define FAST_TESTS
 
-int on=1;
+static int on=1;
+
+static int magicNumber=0;
+
+static multiboot_info_t * multiBootInfo;
 
 void halt(){
     on=0;
+}
+
+void OK(int i){
+    writexy(COLUMNS-6,i,"[ ok ]");
+    cputxy(COLUMNS-6,i,Blue);
+    cputxy(COLUMNS-4,i,Light_Green);
+    cputxy(COLUMNS-3,i,Light_Green);
+    cputxy(COLUMNS-1,i,Blue);
+}
+
+void NO(int i){
+    writexy(COLUMNS-6,i,"[ NO ]");
+    cputxy(COLUMNS-6,i,Blue);
+    cputxy(COLUMNS-4,i,Light_Red);
+    cputxy(COLUMNS-3,i,Light_Red);
+    cputxy(COLUMNS-1,i,Blue);
+}
+
+void kwrite(char * string){
+    static char * kpointer=(char *)0xb8000;
+    int k;
+    for(k=0;
+        string[k]!=0 && (((int)kpointer-0xb8000)/2)<(COLUMNS*ROWS);
+        k++){
+            *(kpointer++)=string[k];
+            *(kpointer++)=7;
+        }
 }
 
 void logo(){
@@ -126,24 +157,26 @@ int strapptest(){
     return check;
 }
 
-int magictest(int magic){
+int magictest(){
     char magicString[13]={0};
     write("Test magic number:");
-    itobase(magic,16,magicString);
+    itobase(magicNumber,16,magicString);
     writeline(magicString);
-    return magic==0x2BADB002;
+    return magicNumber==0x2BADB002;
 }
 
-int mbdtest(multiboot_info_t * mbd){
+int mbdtest(){
     char lower[13]={0};
     char upper[10]={0};
     char totalM[10]={0};
     char totalK[5]={0};
-    if (mbd->flags & 1){
-        itoa(mbd->mem_lower,lower);
-        itoa(mbd->mem_upper/1024,upper);
-        itoa((mbd->mem_lower+mbd->mem_upper)/1024,totalM);
-        itoa((mbd->mem_lower+mbd->mem_upper)%1024,totalK);
+    int l=multiBootInfo->mem_lower;
+    int u=multiBootInfo->mem_upper;
+    if (multiBootInfo->flags & 1){
+        itoa(l,lower);
+        itoa(u/1024,upper);
+        itoa((l+u)/1024,totalM);
+        itoa((l+u)%1024,totalK);
         write("Lower memory:");
         write(lower);
         write("Kb, Upper memory:");
@@ -154,7 +187,7 @@ int mbdtest(multiboot_info_t * mbd){
         write(totalK);
         writeline("Kb.");
     }
-    return mbd->mem_lower>0;
+    return l>0;
 }
 
 int dinamictestOne(){
@@ -196,6 +229,9 @@ int dinamictestOne(){
             write(conversion);
         }
     }
+#ifdef DONTDEFINETHIS
+    }}
+#endif
     writexy(33,row(),"100");
     putxy(37,row(),' ');
     writeline("");
@@ -223,6 +259,21 @@ int dinamictestTwo(){
     return dinamicFirst==dinamicSecond;
 }
 
+typedef int (*test)(void);
+
+int doTests(test tests[]){
+    int i;
+    int t=row()+1;
+    for(i=0;tests[i]!=0;i++){
+        NO(t);
+        if((*tests[i])())
+            OK(t++);
+        else
+            t++;
+    }
+    return i;
+}
+
 void _kmain(multiboot_info_t* mbd, unsigned int magic){
     int t=0;/*test number*/
 
@@ -245,36 +296,21 @@ void _kmain(multiboot_info_t* mbd, unsigned int magic){
     /*here start the true tests*/
 
 #ifdef BASIC_TESTS
-    NO(t);
-    if(putreadtest())
-        OK(t++);
-    else
-        t++;
-    NO(t);
-    if(pointertest())
-        OK(t++);
-    else
-        t++;
-    NO(t);
-    if(itoatest())
-        OK(t++);
-    else
-        t++;
-    NO(t);
-    if(strapptest())
-        OK(t++);
-    else
-        t++;
-    NO(t);
-    if(magictest(magic))
-        OK(t++);
-    else
-        t++;
-    NO(t);
-    if(mbdtest(mbd))
-        OK(t++);
-    else
-        t++;
+    magicNumber=magic;
+    multiBootInfo=mbd;
+
+    {
+        /*REMEMBER TO KEEP SIZE=ITEMS+1!!!*/
+        test tests[7]={
+            putreadtest,
+            pointertest,
+            itoatest,
+            strapptest,
+            magictest,
+            mbdtest
+        };
+        t+=doTests(tests);
+    }
 #endif
 
     NO(t);
@@ -293,18 +329,17 @@ void _kmain(multiboot_info_t* mbd, unsigned int magic){
     OK(t++);
 
 #ifdef BASIC_TESTS
-    NO(t);
-    if(dinamictestOne())
-        OK(t++);
-    else
-        t++;
-    NO(t);
-    if(dinamictestTwo())
-        OK(t++);
-    else
-        t++;
+    {
+        /*REMEMBER TO KEEP SIZE=ITEMS+1!!!*/
+        test tests[3]={
+            dinamictestOne,
+            dinamictestTwo
+        };
+        t+=doTests(tests);
+    }
 #endif
 
+    NO(t);
     writeline("Kernel pronto!!!");
     OK(t++);
 
@@ -314,31 +349,4 @@ void _kmain(multiboot_info_t* mbd, unsigned int magic){
     writexy(0,ROWS-1,"Time:");
     on=1;
     while(on);
-}
-
-void OK(int i){
-    writexy(COLUMNS-6,i,"[ ok ]");
-    cputxy(COLUMNS-6,i,Blue);
-    cputxy(COLUMNS-4,i,Light_Green);
-    cputxy(COLUMNS-3,i,Light_Green);
-    cputxy(COLUMNS-1,i,Blue);
-}
-
-void NO(int i){
-    writexy(COLUMNS-6,i,"[ NO ]");
-    cputxy(COLUMNS-6,i,Blue);
-    cputxy(COLUMNS-4,i,Light_Red);
-    cputxy(COLUMNS-3,i,Light_Red);
-    cputxy(COLUMNS-1,i,Blue);
-}
-
-void kwrite(char * string){
-    static char * kpointer=(char *)0xb8000;
-    int k;
-    for(k=0;
-        string[k]!=0 && (((int)kpointer-0xb8000)/2)<(COLUMNS*ROWS);
-        k++){
-            *(kpointer++)=string[k];
-            *(kpointer++)=7;
-        }
 }
