@@ -468,7 +468,66 @@ void setBitExt(unsigned int *bitmap,int x,unsigned int value){
  
 */
 int getBitFromAllocationBitmap(int x){
-    unsigned int c;
-    while(c)
+    unsigned int c,a=0x3FF000,j=0x1000,counter,offset;
+    unsigned int off1,off2;
+    int x2;
+    offset=a-j;/* i byte utilizzabili fra un buco e l'altro */
+    if((unsigned int)allocationBitmapStart%a<j)
+    {/*siamo in un buco*/
+        allocationBitmapStart+=j-((unsigned int)allocationBitmapStart%a);/*sposta l'inizio dopo il 1024 selettore*/
+    }
+    /* buchi prima della bitmap */
+    c=(unsigned int)allocationBitmapStart/a;
+    counter=0;
+    x2=x;
+    /* togliamo i bit del primo pezzo (inizio bitmap fino al primo buco) */
+    x2-=(((c+1)*a)-(unsigned int)allocationBitmapStart)*8;
+    c=1;
+    while(x2>0)/* scorro finche mi rimangono bit */
+    {
+        x2-=offset*8;
+        c++;
+    }
+    c--;
+    /* ora c vale il numero di buchi dentro la bitmap */
+    x+=c*j;
+
+    off1=x/32;
+    off2=x%32;
+    return (allocationBitmapStart[off1]>>off2)&1;
+}
+
+void setBitFromAllocationBitmap(int x,int value){
+    unsigned int c,a=0x3FF000,j=0x1000,counter,offset;
+    unsigned int off1,off2;
+    int x2;
+    offset=a-j;/* i byte utilizzabili fra un buco e l'altro */
+    if((unsigned int)allocationBitmapStart%a<j)
+    {/*siamo in un buco*/
+        allocationBitmapStart+=j-((unsigned int)allocationBitmapStart%a);/*sposta l'inizio dopo il 1024 selettore*/
+    }
+    /* buchi prima della bitmap */
+    c=(unsigned int)allocationBitmapStart/a;
+    counter=0;
+    x2=x;
+    /* togliamo i bit del primo pezzo (inizio bitmap fino al primo buco) */
+    x2-=(((c+1)*a)-(unsigned int)allocationBitmapStart)*8;
+    c=1;
+    while(x2>0)/* scorro finche mi rimangono bit */
+    {
+        x2-=offset*8;
+        c++;
+    }
+    c--;
+    /* ora c vale il numero di buchi dentro la bitmap */
+    x+=c*j;
+
+    off1=x/32;
+    off2=x%32;
+    value&=0x1;
+    if(value)
+        allocationBitmapStart[off1]|=1<<off2;
+    else
+        allocationBitmapStart[off1]&=~(1<<off2);
 }
 #endif
