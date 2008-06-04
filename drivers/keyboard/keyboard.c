@@ -21,6 +21,7 @@
 #include <kernel/stdio.h>
 #include <kernel/kernel.h>
 #include <drivers/screen/screen.h>
+#include <lib/string.h>
 
 unsigned char kmode = 0;
 
@@ -28,7 +29,7 @@ unsigned char kmode = 0;
 
 char key_map[] = {
        0,   27,  '1',  '2',  '3',  '4',  '5',  '6',
-     '7',  '8',  '9',  '0',  '-',  '=',  127,    9,
+     '7',  '8',  '9',8  '0',  '-',  '=',  127,    9,
      'q',  'w',  'e',  'r',  't',  'y',  'u',  'i',
      'o',  'p',  '[',  ']', '\n',    0,  'a',  's',
      'd',  'f',  'g',  'h',  'j',  'k',  'l',  ';',
@@ -56,7 +57,7 @@ char shift_map[] = {
        0,    0,    0,    0,    0,    0,    0,    0,
        0 };
 
-char alt_map[] = {
+char altgr_map[] = {
        0,    0,    0,  '@',    0,  '$',    0,    0,
      '{',   '[',  ']', '}', '\\',    0,    0,    0,
        0,    0,    0,    0,    0,    0,    0,    0,
@@ -80,40 +81,40 @@ static int  pad_map[] = { 7, 8, 9, 0, 4, 5, 6, 0, 1, 2, 3, 0, 0 };
  #ifdef KBD_IT
 
 char key_map[] = {
-       0,   27,  '1',  '2',  '3',  '4',  '5',  '6',
-     '7',  '8',  '9',  '0', '\'',    0,  127,    9,
+       0,    0,  '1',  '2',  '3',  '4',  '5',  '6',
+     '7',  '8',  '9',  '0',  '-',  '+',    0,    0,
      'q',  'w',  'e',  'r',  't',  'y',  'u',  'i',
      'o',  'p',    0,  '+', '\n',    0,  'a',  's',
      'd',  'f',  'g',  'h',  'j',  'k',  'l',    0,
        0, '\\',    0,    0,  'z',  'x',  'c',  'v',
-     'b',  'n',  'm',  ',',  '.',  '-',    0,  '*',
-       0,   32,    0,    0,    0,    0,    0,    0,
+     'b',  'n',  'm',  '§',    0,    0,    0,  '*',
        0,    0,    0,    0,    0,    0,    0,    0,
-       0,    0,  '-',    0,    0,    0,  '+',    0,
-       0,    0,    0,    0,    0,    0,  '<',    0,
+       0,    0,    0,    0,    0,    0,    0,    0,
+       0,    0,    0,    0,    0,    0,    0,    0,
+       0,    0,    0,    0,    0,    0,    0,    0,
        0,    0,    0,    0,    0,    0,    0,    0,
        0 };
 
 char shift_map[] = {
-       0,   27,  '!',  '"',    0,  '$',  '%',  '&',
-     '/',  '(',  ')',  '=',  '?',  '^',  127,    9,
+       0,    0,  '!',    0,    0,  '$',  '%',  '^',
+     '&',  '*',  '(',  ')',  '_',  '=',    0,    0,
      'Q',  'W',  'E',  'R',  'T',  'Y',  'U',  'I',
-     'O',  'P',    0,  '*',   13,    0,  'A',  'S',
-     'D',  'F',  'G',  'H',  'J',  'K',  'L',    0,
-       0,  '|',  '0',    0,  'Z',  'X',  'C',  'V',
-     'B',  'N',  'M',  ';',  ':',  '_',    0,    0,
-       0,   32,    0,    0,    0,    0,    0,    0,
+     'O',  'P',    0,  '*',    0,    0,  'A',  'S',
+     'D',  'F',  'G',  'H',  'J',  'K',  'L',  '§',
+     '"',  '|',  '0',    0,  'Z',  'X',  'C',  'V',
+     'B',  'N',  'M',    0,  '>',  '§',    0,    0,
        0,    0,    0,    0,    0,    0,    0,    0,
        0,    0,    0,    0,    0,    0,    0,    0,
-       0,    0,    0,    0,    0,    0,  '>',    0,
+       0,    0,    0,    0,    0,    0,    0,    0,
+       0,    0,    0,    0,    0,    0,    0,    0,
        0,    0,    0,    0,    0,    0,    0,    0,
        0 };
 
-char alt_map[] = {
+char altgr_map[] = {
        0,    0,    0,    0,    0,    0,    0,    0,
        0,    0,    0,    0,    0,    0,    0,    0,
        0,    0,    0,    0,    0,    0,    0,    0,
-       0,    0,  '[',  ']',   13,    0,    0,    0,
+       0,    0,  '[',  ']',   0/*13*/,    0,    0,    0,
        0,    0,    0,    0,    0,    0,    0,  '@',
      '#',    0,    0,    0,    0,    0,    0,    0,
        0,    0,    0,    0,    0,    0,    0,    0,
@@ -134,61 +135,82 @@ static int  pad_map[] = { 7, 8, 9, 0, 4, 5, 6, 0, 1, 2, 3, 0, 0 };
  #endif
 #endif
 
+unsigned escape=0;
+unsigned shift=0;
+unsigned ctrl=0;
+unsigned alt=0;
+unsigned clock=0;
+
 void keypress(void){
-    char c=inb(0x60);
-    c=scanCodeToChar(c);
-    if(c!=0)
-        put(c);
-}
-
-char scanCodeToChar(char scode){
-    char ch;
-    scode=scode&0x7F;
-
-    if(kmode & (LCTRL|RCTRL))
-        if(scode==16){
-            writexy(0,0,"trying halt");
+    unsigned char c=inb(0x60);
+    unsigned char ch=0;
+    unsigned char released=0;
+    if(c==0xE0){
+        escape=1;
+        return;
+    }
+    if(c&0x80){
+        c&=~0x80;
+        released=1;
+        ch=0;
+    }
+    if(c>0x80){
+        char test[13]={0};
+        test[0]=0;
+        write("(!)");
+        itoa(c,test);
+        put('|');
+        write(test);
+        put('|');
+    }
+    if(c==0x36||c==0x2A){
+        shift=1-shift;
+        putxy(1,ROWS-1,(shift^clock)?'S':'s');
+        return;
+    }
+    if(c==0x1D){
+        ctrl=1-ctrl;
+        putxy(4,ROWS-1,ctrl?'C':'c');
+        return;
+    }
+    if(c==0x38){
+        alt=1-alt;
+        putxy(7,ROWS-1,alt?'A':'a');
+        return;
+    }
+    if(c==0x3A){
+        if(released)
+            return;
+        clock=1-clock;
+        putxy(1,ROWS-1,(shift^clock)?'S':'s');
+        return;
+    }
+    if(ctrl&&alt){
+        ch=altgr_map[c];
+        if(c==16){
+            writexy(0,0,"Trying halt...");
             halt();
         }
-
-    if(kmode & ALTGR)
-        ch=alt_map[(int)scode];
-    else
-        if(kmode & (LSHIFT|RSHIFT|LCTRL|RCTRL)){
-            ch=shift_map[(int)scode];
-        }
+    }
+    else{
+        if(shift^clock)
+            ch=shift_map[c];
         else
-            ch=key_map[(int)scode];
-
-    if (ch == 0)
-        return '\0';
-
-    /* If CTRL is active the character CTRL-A == 0x01, CTRL-B == 0x02,
-     * CTRL-Z == 0x1A. */
-    if(kmode & (LCTRL|RCTRL|CAPS))
-        if(
-         (
-          (ch>='a')
-          &&
-          (ch <='z')
-         )
-         /*||
-         (
-          (ch>=224)
-          &&
-          (ch<=254)
-         )*/
-        )
-            ch -= 32;
-
-    if (kmode & (LCTRL|RCTRL))
-        ch &= 0x1f;
-
-    /* If the character has been pressed in combination with
-     * ALT key, the bit 7 is activated. For LATIN-1 map the character is
-     * prepended with 0x33 value (now not handled).*/
-    if (kmode & ALT)
-        ch |= 0x80;
-
-    return ch;
+            ch=key_map[c];
+    }
+    if(ch!=0){
+        if(released)
+            write("(R");
+        put(ch);
+        if(released)
+           put(')');
+    }
+    else{
+        char number[13]={0};
+        number[0]=0;
+        put('(');
+        itobase(c,16,number);
+        write(number);
+        put(')');
+    }
 }
