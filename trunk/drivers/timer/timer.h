@@ -3,4 +3,6 @@
 
 void tick(void);
 
+int time(void);
+
 #endif

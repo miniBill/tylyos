@@ -21,23 +21,10 @@
 #define KEYBOARD_H_
 
 void keypress(void);
-char scanCodeToChar(char scode);
+/*char scanCodeToChar(int scode);*/
 
 /* tastiera italiana */
-#define KBD_US
+#define KBD_IT
 
-#define LSHIFT   0x01
-#define RSHIFT   0x02
-#define LCTRL    0x04
-#define RCTRL    0x08
-#define ALT      0x10
-#define ALTGR    0x20
-#define CAPS     0x40
-#define CAPSDOWN 0x80
-/*
-char * key_map;
-char * shift_map;
-char * alt_map;
-*/
 #endif
 

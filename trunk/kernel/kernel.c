@@ -22,10 +22,11 @@
 #include <lib/string.h>
 #include <memory/memory.h>
 #include <interrupt/interrupt.h>
+#include <drivers/timer/timer.h>
 
 #include <gui/gui.h>
 
-#define BASIC_TESTS
+/*#define BASIC_TESTS*/
 #define FAST_TESTS
 
 static int on=1;
@@ -274,7 +275,14 @@ int doTests(test tests[]){
     return i;
 }
 
+#ifdef BASIC_TESTS
 void _kmain(multiboot_info_t* mbd, unsigned int magic){
+#ifdef DONTDEFINETHIS
+}
+#endif
+#else
+void _kmain(void){
+#endif
     int t=0;/*test number*/
 
     clearScreen();
@@ -344,9 +352,14 @@ void _kmain(multiboot_info_t* mbd, unsigned int magic){
     OK(t++);
 
     drawRectangle(0,t,COLUMNS-1,ROWS-t-2,(char)(Yellow|Back_Blue));
+    gotoxy(1,t+1);
     asm("sti");
     setCursorPos(79,24);
-    writexy(0,ROWS-1,"Time:");
+    writexy(0,ROWS-1,"[s][c][a] Time:");
     on=1;
     while(on);
+    {
+        int now=time();
+        while((time()-now)<3);
+    }
 }
