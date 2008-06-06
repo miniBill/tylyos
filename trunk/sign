@@ -1,0 +1,3 @@
+#!/bin/bash
+cp iso.img clearos.iso
+gpg --detach clearos.iso
