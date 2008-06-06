@@ -402,7 +402,11 @@ void initPaging(void){
     write_cr3((unsigned int)pageDir); /* put that page directory address into CR3 */
     write_cr0(read_cr0() | 0x80000000); /* set the paging bit in CR0 to 1 */
 #ifdef NUOVA_GESTIONE_MEMORIA
+    /* inizializza la bitmap */
     setupAllocationBitmap();
+    /* inizializza l'array */
+    for(c=0;c<ARRAY_SIZE;c++)
+        allocationArray[c]=0;
 #endif
     asm("sti");
 }
@@ -467,7 +471,7 @@ void setBitExt(unsigned int *bitmap,int x,unsigned int value){
  restituisce il bit x della bitmap tenendo conto che ogni fine pagetable contiene una pagina non utilizabile
  
 */
-int getBitFromAllocationBitmap(int x){
+int getBitFromAllocationBitmap(int x){/*TODO: verificare funzionamento */
     unsigned int c,a=0x3FF000,j=0x1000,counter,offset;
     unsigned int off1,off2;
     int x2;
@@ -497,7 +501,7 @@ int getBitFromAllocationBitmap(int x){
     return (allocationBitmapStart[off1]>>off2)&1;
 }
 
-void setBitFromAllocationBitmap(int x,int value){
+void setBitFromAllocationBitmap(int x,int value){/*TODO: verificare funzionamento */
     unsigned int c,a=0x3FF000,j=0x1000,counter,offset;
     unsigned int off1,off2;
     int x2;

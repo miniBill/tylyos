@@ -19,7 +19,7 @@
 #ifndef MEMORY_H_
 #define MEMORY_H_
 
-/*#define NUOVA_GESTIONE_MEMORIA*/
+#define NUOVA_GESTIONE_MEMORIA
 
 void initGdt();
 
@@ -66,6 +66,8 @@ extern void gdtFlush();
 
 unsigned int *pageDir,tempPageSelector,*tempPage; /* area da 4096byte che ospita la pagedir del kernel */
 #ifdef NUOVA_GESTIONE_MEMORIA
+#define ARRAY_SIZE 50
+unsigned int allocationArray[ARRAY_SIZE];
 unsigned int *allocationBitmapStart; /* indirizzo di partenza della bitmap per le allocazioni */
 unsigned int allocationBitmapSize;
 unsigned int ramSize;
