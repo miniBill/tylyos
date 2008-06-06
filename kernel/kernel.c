@@ -26,7 +26,7 @@
 
 #include <gui/gui.h>
 
-/*#define BASIC_TESTS*/
+#define BASIC_TESTS
 #define FAST_TESTS
 
 static int on=1;
