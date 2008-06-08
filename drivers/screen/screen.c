@@ -24,7 +24,7 @@
 #define total()     (COLUMNS*ROWS)
 
 char consoleColor=0x07;
-char * pointer=(char *)consoleAddr;
+static char * pointer=(char *)consoleAddr;
 
 void setCursorPos(unsigned int x, unsigned int y){
    asm(

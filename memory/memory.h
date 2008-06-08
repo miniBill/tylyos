@@ -19,7 +19,7 @@
 #ifndef MEMORY_H_
 #define MEMORY_H_
 
-#define NUOVA_GESTIONE_MEMORIA
+/*#define NUOVA_GESTIONE_MEMORIA*/
 
 void initGdt();
 

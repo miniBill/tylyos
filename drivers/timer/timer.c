@@ -1,6 +1,7 @@
 #include "timer.h"
 #include <lib/string.h>
 #include <drivers/screen/screen.h>
+#include <drivers/keyboard/keyboard.h>
 
 static int timeS=0;
 void tick(void){
@@ -16,7 +17,8 @@ void tick(void){
         strapp(timestring,"%d",timeS);
         while(timestring[COLUMNS-print]!=0)
             print--;
-        writexy(print,24,timestring);
+        writexy(print-1,ROWS-1,timestring);
+        putxy(COLUMNS-1,ROWS-1,fetchch());
     }
 }
 
