@@ -23,6 +23,9 @@
 void keypress(void);
 /*char scanCodeToChar(int scode);*/
 
+char getch();
+char fetchch();
+
 /* tastiera italiana */
 #define KBD_IT
 

@@ -18,6 +18,7 @@
  */
 
 #include "keyboard.h"
+#include <memory/memory.h>
 #include <kernel/stdio.h>
 #include <kernel/kernel.h>
 #include <drivers/screen/screen.h>
@@ -29,7 +30,7 @@ unsigned char kmode = 0;
 
 char key_map[] = {
        0,   27,  '1',  '2',  '3',  '4',  '5',  '6',
-     '7',  '8',  '9',8  '0',  '-',  '=',  127,    9,
+     '7',  '8',  '9',  '0',  '-',  '=',  127,    9,
      'q',  'w',  'e',  'r',  't',  'y',  'u',  'i',
      'o',  'p',  '[',  ']', '\n',    0,  'a',  's',
      'd',  'f',  'g',  'h',  'j',  'k',  'l',  ';',
@@ -114,7 +115,7 @@ char altgr_map[] = {
        0,    0,    0,    0,    0,    0,    0,    0,
        0,    0,    0,    0,    0,    0,    0,    0,
        0,    0,    0,    0,    0,    0,    0,    0,
-       0,    0,  '[',  ']',   0/*13*/,    0,    0,    0,
+       0,    0,  '[',  ']',    0,    0,    0,    0,
        0,    0,    0,    0,    0,    0,    0,  '@',
      '#',    0,    0,    0,    0,    0,    0,    0,
        0,    0,    0,    0,    0,    0,    0,    0,
@@ -141,10 +142,21 @@ unsigned ctrl=0;
 unsigned alt=0;
 unsigned clock=0;
 
+static char * buffer;
+static int pointer=0;
+
+#define KEYBUFSIZE 100
+
 void keypress(void){
     unsigned char c=inb(0x60);
     unsigned char ch=0;
     unsigned char released=0;
+    static int init=0;
+    if(!init){
+        buffer=(char *)malloc(KEYBUFSIZE*sizeof(buffer));
+        for(init=0;init<KEYBUFSIZE;init++)
+            buffer[init]=0;
+    }
     if(c==0xE0){
         escape=1;
         return;
@@ -202,6 +214,10 @@ void keypress(void){
         if(released)
             write("(R");
         put(ch);
+        if(!released){
+            buffer[pointer++]=ch;
+            pointer%=KEYBUFSIZE;
+        }
         if(released)
            put(')');
     }
@@ -213,4 +229,13 @@ void keypress(void){
         write(number);
         put(')');
     }
+}
+
+char getch(){
+    pointer--;
+    return buffer[pointer];
+}
+
+char fetchch(){
+    return buffer[pointer-1];
 }
