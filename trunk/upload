@@ -1,0 +1,2 @@
+#!/bin/bash
+scp clearos.iso* `cat user`@download.gna.org:/upload/clearos/
