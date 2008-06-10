@@ -325,7 +325,7 @@ void* malloc(unsigned int byte){/*TODO: implementare */
 
 #ifndef NUOVA_GESTIONE_MEMORIA
 void free(void *pointer,unsigned int size){
-    unsigned int bitmapSize,table,page,offset,c,end;
+    unsigned int bitmapSize,table,page,offset,c;/*,end;*/
 
     /* ricavo la dimensione in byte della bitmap */
     bitmapSize=(0x1000-128)/8/MIN_SIZE_ALLOCABLE;
