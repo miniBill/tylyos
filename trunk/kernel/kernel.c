@@ -26,7 +26,6 @@
 
 #include <gui/gui.h>
 
-#define BASIC_TESTS
 #define FAST_TESTS
 
 static int on=1;
@@ -269,14 +268,7 @@ int doTests(test tests[]){
     return i;
 }
 
-#ifdef BASIC_TESTS
 void _kmain(multiboot_info_t* mbd, unsigned int magic){
-#ifdef DONTDEFINETHIS
-}
-#endif
-#else
-void _kmain(void){
-#endif
     int t=0;/*test number*/
 
     clearScreen();
@@ -286,18 +278,14 @@ void _kmain(void){
     OK(t++);
     writeline("");
 
-#ifdef BASIC_TESTS
     NO(t);
     writeline("Prova writeline.");
     OK(t++);
-#endif
 
     logo();
     t+=5;
 
     /*here start the true tests*/
-
-#ifdef BASIC_TESTS
     magicNumber=magic;
     multiBootInfo=mbd;
 
@@ -313,7 +301,6 @@ void _kmain(void){
         };
         t+=doTests(tests);
     }
-#endif
 
     NO(t);
     greendot();
@@ -333,7 +320,6 @@ void _kmain(void){
     initPaging();
     OK(t++);
 
-#ifdef BASIC_TESTS
     {
         /*REMEMBER TO KEEP SIZE=ITEMS+1!!!*/
         test tests[3]={
@@ -342,7 +328,6 @@ void _kmain(void){
         };
         t+=doTests(tests);
     }
-#endif
 
     NO(t);
     greendot();
@@ -357,6 +342,7 @@ void _kmain(void){
     on=1;
     while(on);
     {
+        /*wait 3 seconds before halting*/
         int now=time();
         while((time()-now)<3);
     }
