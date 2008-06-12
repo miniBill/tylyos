@@ -92,18 +92,11 @@ int putreadtest(){
     put('P');
     for(i=COLUMNS+1;i<COLUMNS+6;i++)
         put(readi(i));
-    writeline("put/read.");
+    write("put/read.");
     for(i=0;i<15;i++)
-        if(readxy(i,row())!=output[i]){
-        check=0;
-        {
-            char number[13]={0};
-            itoa(row(),number);
-            write("|");
-            write(number);
-            write("|");
-        }
-        cputxy(i,row(),Light_Red);
+        if(readxy(i+3,row())!=output[i]){
+            check=0;
+            cputxy(i+3,row(),Light_Red);
         }
     return check;
 }
@@ -111,11 +104,11 @@ int putreadtest(){
 int pointertest(){
     char pointer[17]="Prova puntatore.";
     int i,check=1;
-    writeline(pointer);
+    write(pointer);
     for(i=0;i<16;i++)
-        if(readxy(i,row())!=pointer[i]){
+        if(readxy(i+3,row())!=pointer[i]){
             check=0;
-            cputxy(i,row(),Light_Red);
+            cputxy(i+3,row(),Light_Red);
         }
     return check;
 }
@@ -132,11 +125,11 @@ int itoatest(){
     write(",");
     itobase(160,16,conversion);
     write(conversion);
-    writeline(".");
+    write(".");
     for(i=0;i<6;i++)
-        if(readxy(i+11,row())!=output[i]){
+        if(readxy(i+14,row())!=output[i]){
             check=0;
-            cputxy(i+11,row(),Light_Red);
+            cputxy(i+14,row(),Light_Red);
         }
     return check;
 }
@@ -149,11 +142,11 @@ int strapptest(){
     strapp(conversion,"%b,",/*(void *)*/5);
     strapp(conversion,"%x,",/*(void *)*/12);
     strapp(conversion,"%x.",/*(void *)*/160);
-    writeline(conversion);
+    write(conversion);
     for(i=0;i<8;i++)
-        if(readxy(i+13,row())!=output[i]){
+        if(readxy(i+16,row())!=output[i]){
             check=0;
-            cputxy(i+13,row(),Light_Red);
+            cputxy(i+16,row(),Light_Red);
         }
     return check;
 }
@@ -186,7 +179,7 @@ int mbdtest(){
         write(totalM);
         write("Mb and ");
         write(totalK);
-        writeline("Kb.");
+        write("Kb.");
     }
     return l>0;
 }
@@ -199,7 +192,7 @@ int dinamictestOne(){
     char buff[5]="-/|\\";
     write("Test allocazione dinamica: fase1 ");
 
-    putxy(36,row(),'%');
+    putxy(39,row(),'%');
 
 #ifdef FAST_TESTS
     for(i=0;i<1500;i++){
@@ -209,8 +202,8 @@ int dinamictestOne(){
         if(!(i%40)){
 #endif
             itoa(c,number);
-            writexy(34+(c<10),row(),number);
-            putxy(37,row(),buff[c%4]);
+            writexy(37+(c<10),row(),number);
+            putxy(40,row(),buff[c%4]);
             c++;
         }
 
@@ -233,17 +226,15 @@ int dinamictestOne(){
 #ifdef DONTDEFINETHIS
     }}
 #endif
-    writexy(33,row(),"100");
-    putxy(37,row(),' ');
-    writeline("");
+    writexy(36,row(),"100");
+    putxy(40,row(),' ');
     return check;
 }
 
 int dinamictestTwo(){
     char conversion[33]={0};
     char *dinamicFirst,*dinamicSecond;
-    put(' ');/*HACK*/
-    writexy(27,row(),"fase2 ");
+    writexy(30,row(),"fase2 ");
     dinamicFirst=(char*)malloc(4);
     conversion[0]='\0';
     strapp(conversion,"0x%x=",(unsigned int)dinamicFirst);
@@ -254,23 +245,26 @@ int dinamictestTwo(){
     dinamicFirst=(char*)malloc(4);
 
     strapp(conversion,"=0x%x.",(unsigned int)dinamicFirst);
-    writexy(33,row(),conversion);
-    writeline("");
+    writexy(36,row(),conversion);
 
     return dinamicFirst==dinamicSecond;
 }
 
 typedef int (*test)(void);
 
+inline void greendot(void){write(" * ");cputxy(1,row(),Light_Green);}
+
 int doTests(test tests[]){
     int i;
     int t=row()+1;
     for(i=0;tests[i]!=0;i++){
         NO(t);
+        greendot();
         if((*tests[i])())
             OK(t++);
         else
             t++;
+        writeline("");
     }
     return i;
 }
@@ -322,16 +316,19 @@ void _kmain(void){
 #endif
 
     NO(t);
+    greendot();
     writeline("Inizializzazione GDT");
     initGdt();
     OK(t++);
 
     NO(t);
+    greendot();
     writeline("Inizializzazione IDT");
     initIdt();
     OK(t++);
 
     NO(t);
+    greendot();
     writeline("Inizializzazione Paging");
     initPaging();
     OK(t++);
@@ -348,6 +345,7 @@ void _kmain(void){
 #endif
 
     NO(t);
+    greendot();
     writeline("Kernel pronto!!!");
     OK(t++);
 
