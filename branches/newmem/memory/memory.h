@@ -19,8 +19,6 @@
 #ifndef MEMORY_H_
 #define MEMORY_H_
 
-/*#define NUOVA_GESTIONE_MEMORIA*/
-
 void initGdt();
 
 struct gdtEntry{
@@ -42,7 +40,6 @@ struct gdtPtr gdtPointer;
 
 extern void gdtFlush();
 
-
 #define PAG_PRESENT 	0x1
 #define PAG_NOTPRESENT 	0x0
 
@@ -54,7 +51,6 @@ extern void gdtFlush();
 
 #define PAG_4KPAGE	0x0
 
-
 /* 1 pagina = 4096 byte = 0x1000 */
 
 #define KERNEL_START        0x0 /* 1.048.576 byte */
@@ -65,13 +61,12 @@ extern void gdtFlush();
 #define MIN_SIZE_ALLOCABLE 4 /* minima unità allocabile = 4byte */
 
 unsigned int *pageDir,tempPageSelector,*tempPage; /* area da 4096byte che ospita la pagedir del kernel */
-#ifdef NUOVA_GESTIONE_MEMORIA
+
 #define ARRAY_SIZE 50
 unsigned int *allocationArray[ARRAY_SIZE];
 unsigned int *allocationBitmapStart; /* indirizzo di partenza della bitmap per le allocazioni */
 unsigned int allocationBitmapSize;
 unsigned int ramSize;
-#endif
 
 unsigned int memoryBitmap[MAX_PAGES_IN_MEMORY/32+1];	/* flag per ogni blocco di 4k della memoria fisica */
 
@@ -82,19 +77,9 @@ void setPageSelector(unsigned int *obj,unsigned int pageAdress,unsigned int flag
 
 int getBit(int x);
 void setBit(int x,unsigned int value);
-#ifndef NUOVA_GESTIONE_MEMORIA
-int getBitExt(unsigned int *bitmap,int x);
-void setBitExt(unsigned int *bitmap,int x,unsigned int value);
-#else
-int getBitFromAllocationBitmap(int x);
-#endif
 
-#ifndef NUOVA_GESTIONE_MEMORIA
-/*
- scrive la bitmap in una pagina e inizializza tutti i bit a zero
-*/
-void writeBitmapOnPage(unsigned int* adress);
-#else
+int getBitFromAllocationBitmap(int x);
+
 /*
  scrive la bitmap per le allocazioni e la azzera
 */
@@ -105,7 +90,7 @@ void setupAllocationBitmap();
  pagina: indice della pagina nella pagetable
 */
 void addNewPageAt(unsigned int flags,unsigned int tabella,unsigned int pagina);
-#endif
+
 /*
  ritorna un indirizzo fisico per l'allocazione di una nuova pagina
  alloca: indica se segnare questo indirizzo come utilizzato
@@ -133,6 +118,7 @@ void deletePage(unsigned int virtualAdress);
 */
 void deletePageTable(unsigned int num);
 
+void setBitFromAllocationBitmap(int x,int value);
 
 void* malloc(unsigned int byte);
 void free(void *pointer,unsigned int size);
@@ -153,4 +139,5 @@ extern unsigned int read_cr0();
 extern void write_cr0(unsigned int data);
 extern unsigned int read_cr3();
 extern void write_cr3(unsigned int data);
+
 #endif
