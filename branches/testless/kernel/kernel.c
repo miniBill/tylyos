@@ -48,7 +48,7 @@ void NO(int i){
     cputxy(COLUMNS-1,i,Blue);
 }
 
-void kwrite(char * string){
+void kwrite(const char * string){
     static char * kpointer=(char *)0xb8000;
     int k;
     for(k=0;
