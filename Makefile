@@ -51,3 +51,8 @@ clearos: $(OBJ)
 .PHONY: clean
 clean:
 	rm -f *\~ */*\~ */*.o */*/*\~ */*/*.o log clearos iso.img clearos.iso clearos.iso.sig
+
+.PHONY: smallclean
+smallclean:
+	rm -f *\~ */*\~ */*.o */*/*\~ */*/*.o log clearos clearos.iso clearos.iso.sig
+
