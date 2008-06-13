@@ -99,7 +99,7 @@ void nl(){
     gotoi(pos()+COLUMNS-pos()%COLUMNS);
 }
 
-void write(char* string){
+void write(const char* string){
     int k;
     for(k=0;string[k]!=0 && pos()<total();k++)
         if(string[k]!='\n')
@@ -108,18 +108,18 @@ void write(char* string){
             nl();
 }
 
-void writei(int i,char * string){
+void writei(int i,const char * string){
     int s=pos();
     gotoi(i);
     write(string);
     gotoi(s);
 }
 
-void writexy(int x,int y,char * string){
+void writexy(int x,int y,const char * string){
     writei(xy(x,y),string);
 }
 
-void writeline(char* string){
+void writeline(const char* string){
     write(string);
     nl();
 }

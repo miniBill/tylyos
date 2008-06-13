@@ -21,46 +21,46 @@
 #define SCREEN_H_
 
 enum{
-	Black		=0x00,
-	Blue		=0x01,
-	Green		=0x02,
-	Cyan		=0x03,
-	Red		=0x04,
-	Magenta		=0x05,
-	Brown		=0x06,
-	Light_Gray	=0x07,
-	Dark_Gray	=0x08,
-	Light_Blue	=0x09,
-	Light_Green	=0x0A,
-	Light_Cyan	=0x0B,
-	Light_Red	=0x0C,
-	Light_Magenta	=0x0D,
-	Yellow		=0x0E,
-	White		=0x0F
+	Black          =0x00,
+	Blue           =0x01,
+	Green          =0x02,
+	Cyan           =0x03,
+	Red            =0x04,
+	Magenta        =0x05,
+	Brown          =0x06,
+	Light_Gray     =0x07,
+	Dark_Gray      =0x08,
+	Light_Blue     =0x09,
+	Light_Green    =0x0A,
+	Light_Cyan     =0x0B,
+	Light_Red      =0x0C,
+	Light_Magenta  =0x0D,
+	Yellow         =0x0E,
+	White          =0x0F
 };
 
 enum{
-	Back_Black		=0x10,
-	Back_Blue		=0x11,
-	Back_Green		=0x12,
-	Back_Cyan		=0x13,
-	Back_Red		=0x14,
-	Back_Magenta		=0x15,
-	Back_Brown		=0x16,
-	Back_Light_Gray	=0x17,
-	Back_Dark_Gray	=0x18,
-	Back_Light_Blue	=0x19,
-	Back_Light_Green	=0x1A,
-	Back_Light_Cyan	=0x1B,
-	Back_Light_Red	=0x1C,
-	Back_Light_Magenta	=0x1D,
-	Back_Yellow		=0x1E,
-	Back_White		=0x1F
+	Back_Black         =0x10,
+	Back_Blue          =0x11,
+	Back_Green         =0x12,
+	Back_Cyan          =0x13,
+	Back_Red           =0x14,
+	Back_Magenta       =0x15,
+        Back_Brown         =0x16,
+        Back_Light_Gray    =0x17,
+	Back_Dark_Gray     =0x18,
+	Back_Light_Blue    =0x19,
+	Back_Light_Green   =0x1A,
+	Back_Light_Cyan    =0x1B,
+	Back_Light_Red     =0x1C,
+	Back_Light_Magenta =0x1D,
+	Back_Yellow        =0x1E,
+	Back_White         =0x1F
 };
 
-#define consoleAddr	0xb8000
-#define COLUMNS		80
-#define ROWS		25
+#define consoleAddr 0xb8000
+#define COLUMNS     80
+#define ROWS        25
 
 void setCursorPos(unsigned int x, unsigned int y);
 
@@ -80,10 +80,10 @@ void putxy(int x,int y,char c);
 
 void nl(void);
 
-void write(char* string);
-void writei(int pos,char * string);
-void writexy(int x,int y,char * string);
-void writeline(char* string);
+void write(const char* string);
+void writei(int pos,const char * string);
+void writexy(int x,int y,const char * string);
+void writeline(const char* string);
 
 void clearScreen(void);
 
