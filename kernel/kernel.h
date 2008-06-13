@@ -6,6 +6,6 @@
 
 void halt();
 
-void _kmain(/*multiboot_info_t* mbd, unsigned int magic */);
+void _kmain(multiboot_info_t* mbd, unsigned int magic);
 
 #endif
