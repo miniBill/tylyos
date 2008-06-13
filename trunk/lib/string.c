@@ -19,7 +19,7 @@
 
 #include "string.h"
 
-int strapp(char* dest,char* format,unsigned int num){/*HACK, to have compile-time checks*/
+int strapp(char* dest,const char* format,unsigned int num){/*HACK, to have compile-time checks*/
 /*int strapp(char* dest,char* format,void* p){*/
     /*indice format string*/
     int i;
@@ -73,7 +73,7 @@ int strapp(char* dest,char* format,unsigned int num){/*HACK, to have compile-tim
     return 0;
 }
 
-int strlen(char * string){
+int strlen(const char * string){
     int ret=0;
     while(string[ret]!=0)
         ret++;
