@@ -12,4 +12,5 @@ Run "make clean" to clean up all the object and intermediate files.
 
 Notes
 =====
-make clean does *not* delete floppy.img
+make clean *does* delete iso.img
+make smallclean is the same as make clean, but it does *not* delete iso.img
