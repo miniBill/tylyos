@@ -179,7 +179,7 @@ void keypress(void){
     }
     if(c==0x36||c==0x2A){
         shift=1-shift;
-        putxy(1,ROWS-1,(shift^clock)?'S':'s');
+        putxy(1,ROWS-1,(shift^capslock)?'S':'s');
         return;
     }
     if(c==0x1D){
