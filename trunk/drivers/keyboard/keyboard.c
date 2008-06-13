@@ -137,11 +137,12 @@ static int  pad_map[] = { 7, 8, 9, 0, 4, 5, 6, 0, 1, 2, 3, 0, 0 };
  #endif
 #endif
 
-unsigned escape=0;
-unsigned shift=0;
-unsigned ctrl=0;
-unsigned alt=0;
-unsigned clock=0;
+unsigned short escape=0;
+unsigned short shift=0;
+unsigned short ctrl=0;
+unsigned short alt=0;
+unsigned short numlock=0;
+unsigned short capslock=0;
 
 static char * buffer;
 static int pointer=0;
@@ -191,11 +192,15 @@ void keypress(void){
         putxy(7,ROWS-1,alt?'A':'a');
         return;
     }
+    if(c==0x45){
+        numlock=1-numlock;
+        putxy(9,ROWS-1,numlock?'N':'n');
+    }
     if(c==0x3A){
         if(released)
             return;
-        clock=1-clock;
-        putxy(1,ROWS-1,(shift^clock)?'S':'s');
+        capslock=1-capslock;
+        putxy(1,ROWS-1,(shift^capslock)?'S':'s');
         return;
     }
     if(ctrl&&alt){
@@ -206,7 +211,7 @@ void keypress(void){
         }
     }
     else{
-        if(shift^clock)
+        if(shift^capslock)
             ch=shift_map[c];
         else
             ch=key_map[c];
@@ -223,10 +228,10 @@ void keypress(void){
            put(')');
     }
     else{
-        char number[13]={0};
+        char number[4]={0};
         number[0]=0;
         put('(');
-        itobase(c,16,number);
+        itobase(c,10,number);
         write(number);
         put(')');
     }
