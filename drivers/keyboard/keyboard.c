@@ -193,8 +193,11 @@ void keypress(void){
         return;
     }
     if(c==0x45){
+        if(released)
+            return;
         numlock=1-numlock;
-        putxy(9,ROWS-1,numlock?'N':'n');
+        putxy(10,ROWS-1,numlock?'N':'n');
+        return;
     }
     if(c==0x3A){
         if(released)
