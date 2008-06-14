@@ -155,10 +155,10 @@ int printftest(){
     int i,check=1;
     write("Prova printf:");
     printf("Ciao,%d",10);
-    for(i=0;i<8;i++)
-        if(readxy(i+17,row())!=output[i]){
+    for(i=0;i<7;i++)
+        if(readxy(i+16,row())!=output[i]){
             check=0;
-            cputxy(i+17,row(),Light_Red);
+            cputxy(i+16,row(),Light_Red);
         }
     return check;
 }
@@ -167,7 +167,7 @@ int magictest(){
     char magicString[13]={0};
     write("Test magic number:");
     itobase(magicNumber,16,magicString);
-    writeline(magicString);
+    write(magicString);
     return magicNumber==0x2BADB002;
 }
 
@@ -267,7 +267,7 @@ typedef int (*test)(void);
 inline void greendot(void){write(" * ");cputxy(1,row(),Light_Green);}
 
 int doTests(test tests[]){
-    int i;
+    int i,k;
     int t=row()+1;
     for(i=0;tests[i]!=0;i++){
         NO(t);
