@@ -267,7 +267,7 @@ typedef int (*test)(void);
 inline void greendot(void){write(" * ");cputxy(1,row(),Light_Green);}
 
 int doTests(test tests[]){
-    int i,k;
+    int i;
     int t=row()+1;
     for(i=0;tests[i]!=0;i++){
         NO(t);
