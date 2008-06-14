@@ -7,7 +7,7 @@ int strlen(const char * string);
 
 void itoa(int a,char buff[11]);
 
-void itobase(int a,int base,char * buff);
+void itobase(int a,unsigned short base,char * buff);
 
-int printf(const char* format, int val);
+int printf(const char* format,...);
 #endif

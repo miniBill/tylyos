@@ -85,65 +85,53 @@ void logo(){
     writeline("\\____/_/\\___/\\____/_/   \\____//___/ ");
 }
 
+int check(const char * output,int offset){
+    int retval=1,i;
+    for(i=0;i<strlen(output);i++)
+        if(readxy(i+3+offset,row())!=output[i]){
+            retval=0;
+            cputxy(i+3+offset,row(),Light_Red);
+        }
+    return retval;
+}
+
 int putreadtest(){
     char output[16]="Prova put/read.";
-    int i,check=1;
+    int i;
     put('P');
     for(i=COLUMNS+1;i<COLUMNS+6;i++)
         put(readi(i));
     write("put/read.");
-    for(i=0;i<15;i++)
-        if(readxy(i+3,row())!=output[i]){
-            check=0;
-            cputxy(i+3,row(),Light_Red);
-        }
-    return check;
+    return check(output,0);
 }
 
 int pointertest(){
     char pointer[17]="Prova puntatore.";
-    int i,check=1;
     write(pointer);
-    for(i=0;i<16;i++)
-        if(readxy(i+3,row())!=pointer[i]){
-            check=0;
-            cputxy(i+3,row(),Light_Red);
-        }
-    return check;
+    return check(pointer,0);
 }
 
 int itoatest(){
     char conversion[4]={0};
-    char output[7]="123,A0";
-    int i,check=1;
+    char output[8]="123,-A0";
+    int i;
     write("Prova itoa:");
     for(i=0;i<4;i++)
         conversion[i]=0;
     itoa(123,conversion);
     write(conversion);
     write(",");
-    itobase(160,16,conversion);
+    itobase(-160,16,conversion);
     write(conversion);
     write(".");
-    for(i=0;i<6;i++)
-        if(readxy(i+14,row())!=output[i]){
-            check=0;
-            cputxy(i+14,row(),Light_Red);
-        }
-    return check;
+    return check(output,11);
 }
 
 int printftest(){
-    char output[8]="Ciao,10";
-    int i,check=1;
+    char output[13]="10,CA,a,ciao";
     write("Prova printf:");
-    printf("Ciao,%d",10);
-    for(i=0;i<7;i++)
-        if(readxy(i+16,row())!=output[i]){
-            check=0;
-            cputxy(i+16,row(),Light_Red);
-        }
-    return check;
+    printf("%d,%x,%c,%s",10,0xCA,'a',"ciao");
+    return check(output,13);
 }
 
 int magictest(){
@@ -210,9 +198,11 @@ int dinamictestOne(){
             getPageFromVirtualAdress((unsigned int)dinamicFirst)==
             getPageFromVirtualAdress((unsigned int)dinamicSecond)){
             check=0;
-            printf("%d:",(unsigned int)i);
-            printf("0x%x >> ",(unsigned int)dinamicSecond);
-            printf("0x%x ",(unsigned int)dinamicFirst);
+            printf("%d:0x%x >> 0x%x",
+                      (unsigned int)i,
+                      (unsigned int)dinamicSecond,
+                      (unsigned int)dinamicFirst
+                  );
         }
     }
 #ifdef DONTDEFINETHIS

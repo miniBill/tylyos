@@ -33,43 +33,74 @@ void itoa(int a,char buff[11]){
     itobase(a,10,buff);
 }
 
-void itobase(int a,int base,char * buff){
-    char temp[MAXN]={0};
+void itobase(int a,unsigned short base,char * buff){
     if(a==0)
         buff[0]='0';
     else{
         int i,l;
+        char temp[MAXN]={0};
         if(a<0){
             a=-a;
             buff[0]='-';
         }
+        else
+            buff[0]=0;
         for(l=0;a && (l<MAXN) ; a /= base,l++)
             temp[l] = "0123456789ABCDEF"[a % base];
-        for(i=(l-1),l=0;i>=0;i--)
+        for(i=l-1,l=buff[0]=='-';i>=0;i--)
             buff[l++]=temp[i];
         buff[l]=0;
     }
 }
 
-int printf(const char* format, int val){
-    char buf[11];
-    /*un numero può avere fino a 10 cifre, e bisogna contare pure lo \0*/
+int printf(const char* format,...){
     int size=0;
+    char ** arg=(char**)&format;
+    char buf[33];
     int i;
+    arg++;/*jump "format"*/
     for(i=0;i<strlen(format);i++){
         if(format[i]=='%'){
             switch(format[i+1]){
-                case 'd':
-                    itoa(val,buf);
+                case 'd':{
+                    itoa(*((int *)arg++),buf);
+                    goto number;
+                    break;
+                }
+                case 'x':{
+                    itobase(*((int *)arg++),16,buf);
+                    goto number;
+                    break;
+                }
+                case 'o':{
+                    itobase(*((int *)arg++),8,buf);
+                    goto number;
+                    break;
+                }
+                case 'b':{
+                    itobase(*((int *)arg++),2,buf);
+                    goto number;
+                    break;
+                }
+                case 'c':
+                    put(*((char *)arg++));
+                    size++;
+                    break;
+                case 's':
+                    write((char*)*arg);/*this is BLACK VODOO*/
+                    size+=strlen((char *)*arg++);
+                    break;
+                number:
                     write(buf);
                     size+=strlen(buf);
                     break;
-                case 'x':
-                    itobase(val,16,buf);
-                    write(buf);
-                    size+=strlen(buf);
+                default:
+                    itoa(*((int *)arg++),buf);
+                    write("Malformed format string!");
+                    goto number;
                     break;
             }
+
             i++;
         }
         else{

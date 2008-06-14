@@ -224,12 +224,8 @@ void keypress(void){
         if(released)
            put(')');
     }
-    else{
-        put('(');
-        printf("%d",c);
-        printf(",%x",c);
-        put(')');
-    }
+    else
+        printf("(%d,%x)",c,c);
 }
 
 char getch(){
