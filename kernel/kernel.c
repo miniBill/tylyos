@@ -133,23 +133,6 @@ int itoatest(){
     return check;
 }
 
-int strapptest(){
-    char conversion[10]={0};
-    char output[9]="101,C,A0";
-    int i,check=1;
-    write("Prova strapp:");
-    strapp(conversion,"%b,",/*(void *)*/5);
-    strapp(conversion,"%x,",/*(void *)*/12);
-    strapp(conversion,"%x.",/*(void *)*/160);
-    write(conversion);
-    for(i=0;i<8;i++)
-        if(readxy(i+16,row())!=output[i]){
-            check=0;
-            cputxy(i+16,row(),Light_Red);
-        }
-    return check;
-}
-
 int printftest(){
     char output[8]="Ciao,10";
     int i,check=1;
@@ -198,7 +181,6 @@ int mbdtest(){
 
 int dinamictestOne(){
     char *dinamicFirst,*dinamicSecond;
-    char conversion[60]={0};
     char number[3]={0};
     int c=0,i,check=1;
     char buff[5]="-/|\\";
@@ -228,11 +210,9 @@ int dinamictestOne(){
             getPageFromVirtualAdress((unsigned int)dinamicFirst)==
             getPageFromVirtualAdress((unsigned int)dinamicSecond)){
             check=0;
-            conversion[0]='\0';
-            strapp(conversion,"%d:",(unsigned int)i);
-            strapp(conversion,"0x%x >> ",(unsigned int)dinamicSecond);
-            strapp(conversion,"0x%x ",(unsigned int)dinamicFirst);
-            write(conversion);
+            printf("%d:",(unsigned int)i);
+            printf("0x%x >> ",(unsigned int)dinamicSecond);
+            printf("0x%x ",(unsigned int)dinamicFirst);
         }
     }
 #ifdef DONTDEFINETHIS
@@ -244,20 +224,20 @@ int dinamictestOne(){
 }
 
 int dinamictestTwo(){
-    char conversion[33]={0};
     char *dinamicFirst,*dinamicSecond;
-    writexy(30,row(),"fase2 ");
+    int i;
+    for(i=0;i<27;i++)
+        put(' ');
+    write("fase2 ");
     dinamicFirst=(char*)malloc(4);
-    conversion[0]='\0';
-    strapp(conversion,"0x%x=",(unsigned int)dinamicFirst);
+    printf("0x%x=",(unsigned int)dinamicFirst);
 
     dinamicSecond=dinamicFirst;
     free(dinamicFirst,4);
 
     dinamicFirst=(char*)malloc(4);
 
-    strapp(conversion,"=0x%x.",(unsigned int)dinamicFirst);
-    writexy(36,row(),conversion);
+    printf("=0x%x.",(unsigned int)dinamicFirst);
 
     return dinamicFirst==dinamicSecond;
 }
@@ -304,11 +284,10 @@ void _kmain(multiboot_info_t* mbd, unsigned int magic){
 
     {
         /*REMEMBER TO KEEP SIZE=ITEMS+1!!!*/
-        test tests[8]={
+        test tests[7]={
             putreadtest,
             pointertest,
             itoatest,
-            strapptest,
             printftest,
             magictest,
             mbdtest

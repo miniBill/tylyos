@@ -14,7 +14,7 @@ void tick(void){
         timeS++;
         if(timeS==3600)
             timeS=0;
-        strapp(timestring,"%d",timeS);
+        itoa(timeS,timestring);
         while(timestring[COLUMNS-print]!=0)
             print--;
         writexy(print-1,ROWS-1,timestring);

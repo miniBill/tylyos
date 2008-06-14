@@ -126,17 +126,6 @@ void irq_remap(unsigned int offset_1, unsigned int offset_2){
     io_wait();
 }
 
-void regAppend(char * string,unsigned int reg,char * name){
-    int c=0,i=0;
-    while(string[c]!=',')
-        c++;
-    for(i=0;name[i];i++,c++)
-        string[c]=name[i];
-    string[c+1]=':';
-    string[c+2]=0;
-    strapp(string,"%x,",/*(void*)*/reg);
-}
-
 void interrupt_handler(
     unsigned int eax, unsigned int ebx, unsigned int ecx,
     unsigned int edx, unsigned int ebp, unsigned int esi,
@@ -151,23 +140,31 @@ void interrupt_handler(
     else{
         /* codice che interpreta le interruzioni */
         int c=0;
-        char out[44]="interruzione";
         xtemp++;
         if(isr==33)
             keypress();
         else{
-            for(c=12;c<44;c++)
-                *(out+c)=0;
-            strapp(out,", interrupt: %d",isr);
-            strapp(out,", count: %d.",xtemp);
-            writeline(out);
+            printf("interruzione, interrupt: %d",isr);
+            printf(", count: %d.\n",xtemp);
 #ifdef PRINT_REGISTERS
-            char registers[180];
-            regAppend(registers,eax,"EAX");regAppend(registers,ebx,"EBX");regAppend(registers,ecx,"ECX");regAppend(registers,edx,"EDX");
-            regAppend(registers,ebp,"EBP");regAppend(registers,esi,"ESI");regAppend(registers,edi,"EDI");regAppend(registers,ds,"DS");
-            regAppend(registers,es,"ES");regAppend(registers,fs,"FS");regAppend(registers,gs,"GS");regAppend(registers,eip,"EIP");
-            regAppend(registers,cs,"CS");regAppend(registers,eflags,"EFLAGS");regAppend(registers,error,"ERROR");
-            writeline(registers);
+            printf("EAX: %d",eax);
+            printf("EBX: %d",ebx);
+            printf("ECX: %d",ecx);
+            printf("EDX: %d",edx);
+
+            printf("EBP: %d",ebp);
+            printf("ESI: %d",esi);
+            printf("EDI: %d",edi);
+
+            printf("DS: %d",ds);
+            printf("ES: %d",es);
+            printf("FS: %d",fs);
+            printf("GS: %d",gs);
+
+            printf("EIP: %d",eip);
+            printf("CS: %d",cs);
+            printf("EFLAGS: %d",eflags);
+            printf("ERROR: %d\n",error);
 #else
             c=eax^ebx^ecx^edx^ebp^esi^edi^ds^es^fs^gs^eip^cs^eflags^error;/*HACK*/
 #endif
