@@ -8,8 +8,9 @@ int strapp(char* dest,const char* format,unsigned int p);/*HACK*/
 
 int strlen(const char * string);
 
-void itoa(int a,char buff[12]);
+void itoa(int a,char buff[11]);
 
-void itobase(int a,int base,char buff[12]);
+void itobase(int a,int base,char * buff);
 
+int printf(const char* format, int val);
 #endif

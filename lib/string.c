@@ -1,6 +1,7 @@
 /* Copyright (C) 2008 Leonardo Taglialegne <leonardotaglialegne+clearos@gmail.com>
  * Copyright (C) 2008 Roberto Domenella
- *
+ * Cioyright (C) 2008 Giordano Cristini
+ * 
  * This file is part of ClearOS.
  *
  * ClearOS is free software: you can redistribute it and/or modify
@@ -18,6 +19,8 @@
  */
 
 #include "string.h"
+#include <drivers/screen/screen.h>
+#include <memory/memory.h>
 
 int strapp(char* dest,const char* format,unsigned int num){/*HACK, to have compile-time checks*/
 /*int strapp(char* dest,char* format,void* p){*/
@@ -80,11 +83,11 @@ int strlen(const char * string){
     return ret;
 }
 
-void itoa(int a,char buff[12]){
+void itoa(int a,char buff[11]){
     itobase(a,10,buff);
 }
 
-void itobase(int a,int base,char buff[12]){
+void itobase(int a,int base,char * buff){
     char temp[MAXN]={0};
     if(a==0)
         buff[0]='0';
@@ -100,4 +103,29 @@ void itobase(int a,int base,char buff[12]){
             buff[l++]=temp[i];
         buff[l]=0;
     }
+}
+int printf(const char* format, int val){
+    char buf[11];
+    /*un numero può avere fino a 10 cifre, e bisogna contare pure lo \0*/
+    char* s=(char*)malloc((strlen(format)+11)*sizeof(char));
+    int i,j,k;
+    for(i=0,j=0;i<strlen(format);i++){
+        if(format[i]=='%'){
+            switch(format[i+1]){
+                case 'd':
+                    itoa(val,buf);
+                    for(k=0;k<strlen(buf);k++){
+                        s[j]=buf[k];
+                        j++;
+                    }
+                    break;
+                /*per ora solo %d*/
+            }
+            i++;
+        }
+        else
+            s[j++]=format[i];
+    }
+    write(s);
+    return strlen(s);
 }
