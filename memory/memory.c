@@ -320,8 +320,7 @@ void initPaging(void){
     setPageTableSelector(&pageDir[1023],(unsigned int)pageDir>>12,flags);
     /* inserisce pagine nella prima pagetable */
     for(c2=0,c=KERNEL_START/0x1000;c<1024;c++,c2++){
-        /* printf("descrittore in: 0x%x",pageTab+(c*4));
-        printf(" indirizzo: 0x%x",(c*0x1000)>>12);*/
+        /* printf("descrittore in: 0x%x indirizzo: 0x%x",pageTab+(c*4),(c*0x1000)>>12);*/
         setPageSelector((unsigned int*)((pageTab)+(c2*4)),(c*0x1000)>>12,flags);
     }
     /* ultimo record punta alla pagina della tabella */
