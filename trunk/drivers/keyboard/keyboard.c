@@ -169,15 +169,8 @@ void keypress(void){
         released=1;
         ch=0;
     }
-    if(c>0x80){
-        char test[13]={0};
-        test[0]=0;
-        write("(!)");
-        itoa(c,test);
-        put('|');
-        write(test);
-        put('|');
-    }
+    if(c>0x80)
+        printf("(!)|%d|",c);
     if(c==0x36||c==0x2A){
         shift=1-shift;
         putxy(1,ROWS-1,(shift^capslock)?'S':'s');
@@ -232,12 +225,9 @@ void keypress(void){
            put(')');
     }
     else{
-        char number[6]={0};
-        number[0]=0;
         put('(');
-        itobase(c,10,number);
-        strapp(number,",%x",c);
-        write(number);
+        printf("%d",c);
+        printf(",%x",c);
         put(')');
     }
 }

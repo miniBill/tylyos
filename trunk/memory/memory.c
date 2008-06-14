@@ -300,7 +300,6 @@ void writeBitmapOnPage(unsigned int* adress){
 void initPaging(void){
     int c,c2;
     unsigned int pageTab,pageTab2;
-    char debug[36]={0};
     char flags=PAG_PRESENT|PAG_READWRITE|PAG_SUPERVISOR|PAG_4KPAGE;
     asm("cli");
     /* azzera mappa */
@@ -321,10 +320,8 @@ void initPaging(void){
     setPageTableSelector(&pageDir[1023],(unsigned int)pageDir>>12,flags);
     /* inserisce pagine nella prima pagetable */
     for(c2=0,c=KERNEL_START/0x1000;c<1024;c++,c2++){
-        debug[0]='\0';
-        /* strapp(debug,"descrittore in: %x",(void *)(pageTab+(c*4)));
-        strapp(debug,"indirizzo: %x",(void *)((c*0x1000)>>12));
-         writeline(debug); */
+        /* printf("descrittore in: 0x%x",pageTab+(c*4));
+        printf(" indirizzo: 0x%x",(c*0x1000)>>12);*/
         setPageSelector((unsigned int*)((pageTab)+(c2*4)),(c*0x1000)>>12,flags);
     }
     /* ultimo record punta alla pagina della tabella */

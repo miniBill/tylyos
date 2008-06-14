@@ -22,60 +22,6 @@
 #include <drivers/screen/screen.h>
 #include <memory/memory.h>
 
-int strapp(char* dest,const char* format,unsigned int num){/*HACK, to have compile-time checks*/
-/*int strapp(char* dest,char* format,void* p){*/
-    /*indice format string*/
-    int i;
-    /*indice output*/
-    int o;
-    o=strlen(dest);
-    for(i=0;i<strlen(format);i++){
-        if(format[i]=='%'){
-            int base=10;
-            /*int num=(int)p;*/
-            /*char buf[MAXN] = {0};*/
-            /*lunghezza del numero*/
-            /*int l=0;*/
-            /*indice per copiare*/
-            /*int b=0;*/
-            switch(format[i+1]){
-                case '0':
-                    dest[o++]=0;
-                    break;
-                case 'd':
-                    break;
-                case 'x':
-                    base=16;
-                    break;
-                case 'b':
-                    base=2;
-                    break;
-                case 'o':
-                    base=8;
-                    break;
-                default:
-                    /*NON DOVREBBE SUCCEDERE, E SE SUCCEDE LA FORMAT STRING E' SBAGLIATA*/
-                    base=10;
-                    break;
-            }
-            if(format[i+1]!='0'){
-                itobase(num,base,dest+o);
-                while(dest[o]!=0)
-                    o++;
-                /*for(l=0;num && (l<MAXN) ; num /= base,l++)
-                    buf[l] = "0123456789ABCDEF"[num % base];
-                for(b=(l-1);b>=0;b--)
-                    dest[o++]=buf[b];*/
-            }
-            i++;
-        }
-        else
-            dest[o++]=format[i];
-    }
-    dest[o]=0;
-    return 0;
-}
-
 int strlen(const char * string){
     int ret=0;
     while(string[ret]!=0)
@@ -118,12 +64,19 @@ int printf(const char* format, int val){
                     write(buf);
                     size+=strlen(buf);
                     break;
-                /*per ora solo %d*/
+                case 'x':
+                    itobase(val,16,buf);
+                    write(buf);
+                    size+=strlen(buf);
+                    break;
             }
             i++;
         }
         else{
-            put(format[i]);
+            if(format[i]!='\n')
+                put(format[i]);
+            else
+                nl();
             size++;
         }
     }
