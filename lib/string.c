@@ -1,6 +1,6 @@
 /* Copyright (C) 2008 Leonardo Taglialegne <leonardotaglialegne+clearos@gmail.com>
  * Copyright (C) 2008 Roberto Domenella
- * Cioyright (C) 2008 Giordano Cristini
+ * Copyright (C) 2008 Giordano Cristini
  * 
  * This file is part of ClearOS.
  *
@@ -104,28 +104,28 @@ void itobase(int a,int base,char * buff){
         buff[l]=0;
     }
 }
+
 int printf(const char* format, int val){
     char buf[11];
     /*un numero può avere fino a 10 cifre, e bisogna contare pure lo \0*/
-    char* s=(char*)malloc((strlen(format)+11)*sizeof(char));
-    int i,j,k;
-    for(i=0,j=0;i<strlen(format);i++){
+    int size=0;
+    int i;
+    for(i=0;i<strlen(format);i++){
         if(format[i]=='%'){
             switch(format[i+1]){
                 case 'd':
                     itoa(val,buf);
-                    for(k=0;k<strlen(buf);k++){
-                        s[j]=buf[k];
-                        j++;
-                    }
+                    write(buf);
+                    size+=strlen(buf);
                     break;
                 /*per ora solo %d*/
             }
             i++;
         }
-        else
-            s[j++]=format[i];
+        else{
+            put(format[i]);
+            size++;
+        }
     }
-    write(s);
-    return strlen(s);
+    return size;
 }
