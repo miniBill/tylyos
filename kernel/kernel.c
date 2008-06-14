@@ -150,6 +150,19 @@ int strapptest(){
     return check;
 }
 
+int printftest(){
+    char output[8]="Ciao,10";
+    int i,check=1;
+    write("Prova printf:");
+    printf("Ciao,%d",10);
+    for(i=0;i<8;i++)
+        if(readxy(i+17,row())!=output[i]){
+            check=0;
+            cputxy(i+17,row(),Light_Red);
+        }
+    return check;
+}
+
 int magictest(){
     char magicString[13]={0};
     write("Test magic number:");
@@ -291,11 +304,12 @@ void _kmain(multiboot_info_t* mbd, unsigned int magic){
 
     {
         /*REMEMBER TO KEEP SIZE=ITEMS+1!!!*/
-        test tests[7]={
+        test tests[8]={
             putreadtest,
             pointertest,
             itoatest,
             strapptest,
+            printftest,
             magictest,
             mbdtest
         };
