@@ -17,8 +17,7 @@ void tick(void){
         itoa(timeS,timestring);
         while(timestring[COLUMNS-print]!=0)
             print--;
-        writexy(print-1,ROWS-1,timestring);
-        putxy(COLUMNS-1,ROWS-1,fetchch());
+        writexy(print,ROWS-1,timestring);
     }
 }
 
