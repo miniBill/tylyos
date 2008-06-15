@@ -67,8 +67,6 @@ void initIdt(){
     idt_load();
     irq_remap(0x20,0x28);
 
-    asm("sti");
-
 }
 
 void addIdtSeg(short int i, void (*gestore)(), unsigned char options, unsigned int seg_sel){
