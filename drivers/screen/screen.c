@@ -18,13 +18,18 @@
  */
 
 #include "screen.h"
+#include <memory/memory.h>
 
 #define addr(pos)   (consoleAddr+pos*2)
+#define vaddr(pos)  (2*(pos+baseline*COLUMNS))
+#define vpos()      vaddr(pos())
 #define xy(x,y)     (COLUMNS*y+x)
 #define total()     (COLUMNS*ROWS)
 
-char consoleColor=0x07;
-static char * pointer=(char *)consoleAddr;
+static char consoleColor    =White;
+static char * pointer       =(char *)consoleAddr;
+static char videoMemory[PAGES*ROWS*COLUMNS*2]={0};
+static int baseline         =0;
 
 void setCursorPos(unsigned int x, unsigned int y){
    asm(
@@ -49,38 +54,76 @@ void setCursorPos(unsigned int x, unsigned int y){
        "movw  $0x03d5, %%dx \n"
        "out   %%al, %%dx    \n"
       :
-      : "g" (x), "g" (y)
+      : "g" (y), "g" (x)
       );
 }
 
-int pos(){
+int pos(void){
     return ((int)pointer-consoleAddr)/2;
 }
 
-int row(){
+int row(void){
     return (pos()-1)/COLUMNS;
 }
 
-int checkscroll(int i){
-    int y,x,lines=0;
-    if(i<total())
-        return i;
-    lines=(i-total())/COLUMNS+1;
+void setCursor(void){
+    setCursorPos(pos()%COLUMNS,pos()/COLUMNS);
+}
+
+void pageUp(void){
+    scroll(-20);
+}
+
+void pageDown(void){
+    scroll(20);
+}
+
+void scroll(int lines){
+    int i;
     pointer=(char *)addr(pos()-COLUMNS*lines);
-    for(y=lines;y<ROWS;y++)
-        for(x=0;x<COLUMNS;x++){
-            putxy(x,y-lines,readxy(x,y));
-            cputxy(x,y-lines,creadxy(x,y));
-        }
-    for(y=ROWS-lines;y<ROWS;y++)
-        for(x=0;x<COLUMNS;x++)
-            putxy(x,y,' ');
+    baseline+=lines;
+    if(baseline<0)
+        baseline=0;
+    if(baseline>(PAGES-1)*ROWS){
+        /*FIXME*/
+        int k,x;
+        i=baseline-(PAGES-1)*ROWS;
+        for(k=0;k<baseline;k++)
+            for(x=0;x<COLUMNS;x++){
+                videoMemory[vaddr(xy(x,k))]=videoMemory[vaddr(xy(x,k+i))];
+                videoMemory[vaddr(xy(x,k))+1]=videoMemory[vaddr(xy(x,k+i))+1];
+            }
+        for(;k<PAGES*ROWS;k++)
+            for(x=0;x<COLUMNS;x++){
+                videoMemory[vaddr(xy(x,k))]=' ';
+                videoMemory[vaddr(xy(x,k))+1]=consoleColor;
+            }
+        baseline=(PAGES-1)*ROWS;
+    }
+    for(i=0;i<total();i++){
+        *(char *)addr(i)=videoMemory[vaddr(i)];
+        *(char *)(addr(i)+1)=videoMemory[vaddr(i)+1];
+    }
+}
+
+int checkscroll(int i){
+    int lines=0;
+    if(i<0){
+        lines=i/COLUMNS-1;
+    }
+    else{
+        if(i<total())
+            return i;
+        lines=(i-total())/COLUMNS+1;
+    }
+    scroll(lines);
     return i-lines*COLUMNS;
 }
 
 void gotoi(int i){
     i=checkscroll(i);
     pointer=(char *)addr(i);
+    setCursor();
 }
 
 void gotoxy(int x,int y){
@@ -102,14 +145,19 @@ char readxy(int x,int y){
 void put(char c){
     if(pos()>total())
         nl();
+    videoMemory[vpos()]=c;
+    videoMemory[vpos()+1]=consoleColor;
     *(pointer++)=c;
     *(pointer++)=consoleColor;
+    setCursor();
 }
 
 void puti(int i, char c){
     i=checkscroll(i);
     *(char *)addr(i)=c;
     *(char *)(addr(i)+1)=consoleColor;
+    videoMemory[vaddr(i)]=c;
+    videoMemory[vaddr(i)+1]=consoleColor;
 }
 
 void putxy(int x,int y,char c){
@@ -122,7 +170,7 @@ void nl(){
 
 void write(const char* string){
     int k;
-    for(k=0;string[k]!=0 && pos()<total();k++)
+    for(k=0;string[k]!=0;k++)
         if(string[k]!='\n')
             put(string[k]);
         else
@@ -130,10 +178,12 @@ void write(const char* string){
 }
 
 void writei(int i,const char * string){
-    int s=pos();
-    gotoi(i);
-    write(string);
-    gotoi(s);
+    int k;
+    for(k=0;string[k]!=0;k++)
+        if(string[k]!='\n')
+            puti(i+k,string[k]);
+    else
+        i+=COLUMNS-i%COLUMNS;
 }
 
 void writexy(int x,int y,const char * string){
@@ -166,12 +216,14 @@ char creadxy(int x,int y){
 }
 
 void cput(unsigned char color){
+    videoMemory[vpos()+1]=color;
     *(pointer+1)=color;
 }
 
 void cputi(int i,unsigned char color){
     i=checkscroll(i);
     *(char* )(addr(i)+1)=color;
+    videoMemory[vaddr(i)+1]=color;
 }
 
 void cputxy(int x,int y,unsigned char color){
