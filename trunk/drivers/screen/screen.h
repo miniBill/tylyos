@@ -60,9 +60,13 @@ enum{
 
 #define consoleAddr 0xb8000
 #define COLUMNS     80
+#define PAGES       4 
 #define ROWS        25
 
 void setCursorPos(unsigned int x, unsigned int y);
+
+/* *signed* int, for backscrolling */
+void scroll(int lines);
 
 int pos(void);
 int row(void);
