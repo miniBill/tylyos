@@ -149,6 +149,56 @@ static int pointer=0;
 
 #define KEYBUFSIZE 100
 
+int modifier(char c,int released){
+    if(c==0x36||c==0x2A){
+        shift=1-shift;
+        putxy(1,ROWS-1,shift?'S':'s');
+        return 1;
+    }
+    if(c==0x1D){
+        ctrl=1-ctrl;
+        putxy(4,ROWS-1,ctrl?'C':'c');
+        return 1;
+    }
+    if(c==0x38){
+        alt=1-alt;
+        putxy(7,ROWS-1,alt?'A':'a');
+        return 1;
+    }
+    if(c==0x45){
+        if(!released){
+            numlock=1-numlock;
+            putxy(10,ROWS-1,numlock?'N':'n');
+        }
+        return 1;
+    }
+    if(c==0x3A){
+        if(!released){
+            capslock=1-capslock;
+            putxy(13,ROWS-1,capslock?'K':'k');
+        }
+        return 1;
+    }
+    return 0;
+}
+
+void input(char ch,int released){
+    if(!released){
+        buffer[pointer++]=ch;
+        pointer%=KEYBUFSIZE;
+    }
+    if(ch=='\b'){
+        gotoi(pos()-1);
+        puti(pos(),' ');
+        return;
+    }
+    if(ch=='\n'){
+        nl();
+        return;
+    }
+    put(ch);
+}
+
 void keypress(void){
     unsigned char c=inb(0x60);
     unsigned char ch=0;
@@ -170,36 +220,13 @@ void keypress(void){
         ch=0;
     }
     if(c>0x80)
-        printf("(!)|%d|",c);
-    if(c==0x36||c==0x2A){
-        shift=1-shift;
-        putxy(1,ROWS-1,(shift^capslock)?'S':'s');
+        printf("(!)|%d|",c);/*should NEVER happen*/
+    if(modifier(c,released))
         return;
+    /*if(escape){
+        ch=escaped_map[c];
     }
-    if(c==0x1D){
-        ctrl=1-ctrl;
-        putxy(4,ROWS-1,ctrl?'C':'c');
-        return;
-    }
-    if(c==0x38){
-        alt=1-alt;
-        putxy(7,ROWS-1,alt?'A':'a');
-        return;
-    }
-    if(c==0x45){
-        if(released)
-            return;
-        numlock=1-numlock;
-        putxy(10,ROWS-1,numlock?'N':'n');
-        return;
-    }
-    if(c==0x3A){
-        if(released)
-            return;
-        capslock=1-capslock;
-        putxy(1,ROWS-1,(shift^capslock)?'S':'s');
-        return;
-    }
+    else{*/
     if(ctrl&&alt){
         ch=altgr_map[c];
         if(c==16){
@@ -208,21 +235,25 @@ void keypress(void){
         }
     }
     else{
-        if(shift^capslock)
+        if(shift){
             ch=shift_map[c];
-        else
-            ch=key_map[c];
-    }
-    if(ch!=0){
-        if(released)
-            write("(R");
-        put(ch);
-        if(!released){
-            buffer[pointer++]=ch;
-            pointer%=KEYBUFSIZE;
+            if(capslock&&ch>='A'&&ch<='Z')
+                ch-='A'-'a';
         }
-        if(released)
-           put(')');
+        else{
+            ch=key_map[c];
+            if(capslock&&ch>='a'&&ch<='z')
+                ch+='A'-'a';
+        }
+    }
+    /*}*/
+    if(ch!=0){
+        if(!released)
+            input(ch,released);
+#ifdef PUT_ON_KEY_RELEASE
+        else
+            printf("(R%c)",ch);
+#endif
     }
     else
         printf("(%d,%x)",c,c);
