@@ -66,23 +66,11 @@ void kwrite(const char * string){
 }
 
 void logo(){
-    int i;
-    const int left=22;
-    for(i=0;i<left;i++)
-        put(' ');
-    writeline("   ________                ____      ");
-    for(i=0;i<left;i++)
-        put(' ');
-    writeline("  / ____/ /__  ____  _____/ __ \\____");
-    for(i=0;i<left;i++)
-        put(' ');
-    writeline(" / /   / / _ \\/ __ \\/ ___/ / / /  _/");
-    for(i=0;i<left;i++)
-        put(' ');
-    writeline("/ /___/ /  __/ /_/ / /  / /_/ /\\  \\ ");
-    for(i=0;i<left;i++)
-        put(' ');
-    writeline("\\____/_/\\___/\\____/_/   \\____//___/ ");
+    writeline("                         ________                ____      ");
+    writeline("                        / ____/ /__  ____  _____/ __ \\____");
+    writeline("                       / /   / / _ \\/ __ \\/ ___/ / / /  _/");
+    writeline("                      / /___/ /  __/ /_/ / /  / /_/ /\\  \\ ");
+    writeline("                      \\____/_/\\___/\\____/_/   \\____//___/ ");
 }
 
 int check(const char * output,int offset){
