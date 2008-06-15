@@ -21,41 +21,41 @@
 #define SCREEN_H_
 
 enum{
-	Black          =0x00,
-	Blue           =0x01,
-	Green          =0x02,
-	Cyan           =0x03,
-	Red            =0x04,
-	Magenta        =0x05,
-	Brown          =0x06,
-	Light_Gray     =0x07,
-	Dark_Gray      =0x08,
-	Light_Blue     =0x09,
-	Light_Green    =0x0A,
-	Light_Cyan     =0x0B,
-	Light_Red      =0x0C,
-	Light_Magenta  =0x0D,
-	Yellow         =0x0E,
-	White          =0x0F
+    Black          =0x00,
+    Blue           =0x01,
+    Green          =0x02,
+    Cyan           =0x03,
+    Red            =0x04,
+    Magenta        =0x05,
+    Brown          =0x06,
+    Light_Gray     =0x07,
+    Dark_Gray      =0x08,
+    Light_Blue     =0x09,
+    Light_Green    =0x0A,
+    Light_Cyan     =0x0B,
+    Light_Red      =0x0C,
+    Light_Magenta  =0x0D,
+    Yellow         =0x0E,
+    White          =0x0F
 };
 
 enum{
-	Back_Black         =0x00,
-	Back_Blue          =0x10,
-	Back_Green         =0x20,
-	Back_Cyan          =0x30,
-	Back_Red           =0x40,
-	Back_Magenta       =0x50,
-        Back_Brown         =0x60,
-        Back_Light_Gray    =0x70,
-	Back_Dark_Gray     =0x80,
-	Back_Light_Blue    =0x90,
-	Back_Light_Green   =0xA0,
-	Back_Light_Cyan    =0xB0,
-	Back_Light_Red     =0xC0,
-	Back_Light_Magenta =0xD0,
-	Back_Yellow        =0xE0,
-	Back_White         =0xF0
+    Back_Black         =0x00,
+    Back_Blue          =0x10,
+    Back_Green         =0x20,
+    Back_Cyan          =0x30,
+    Back_Red           =0x40,
+    Back_Magenta       =0x50,
+    Back_Brown         =0x60,
+    Back_Light_Gray    =0x70,
+    Back_Dark_Gray     =0x80,
+    Back_Light_Blue    =0x90,
+    Back_Light_Green   =0xA0,
+    Back_Light_Cyan    =0xB0,
+    Back_Light_Red     =0xC0,
+    Back_Light_Magenta =0xD0,
+    Back_Yellow        =0xE0,
+    Back_White         =0xF0
 };
 
 #define consoleAddr 0xb8000

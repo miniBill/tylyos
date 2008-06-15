@@ -61,8 +61,26 @@ int row(){
     return (pos()-1)/COLUMNS;
 }
 
-void gotoi(int pos){
-    pointer=(char *)addr(pos);
+int checkscroll(int i){
+    int y,x,lines=0;
+    if(i<total())
+        return i;
+    lines=(i-total())/COLUMNS+1;
+    pointer=(char *)addr(pos()-COLUMNS*lines);
+    for(y=lines;y<ROWS;y++)
+        for(x=0;x<COLUMNS;x++){
+            putxy(x,y-lines,readxy(x,y));
+            cputxy(x,y-lines,creadxy(x,y));
+        }
+    for(y=ROWS-lines;y<ROWS;y++)
+        for(x=0;x<COLUMNS;x++)
+            putxy(x,y,' ');
+    return i-lines*COLUMNS;
+}
+
+void gotoi(int i){
+    i=checkscroll(i);
+    pointer=(char *)addr(i);
 }
 
 void gotoxy(int x,int y){
@@ -73,8 +91,8 @@ char read(){
     return *(pointer);
 }
 
-char readi(int pos){
-    return *(int* )addr(pos);
+char readi(int i){
+    return *(int* )addr(i);
 }
 
 char readxy(int x,int y){
@@ -82,13 +100,16 @@ char readxy(int x,int y){
 }
 
 void put(char c){
+    if(pos()>total())
+        nl();
     *(pointer++)=c;
     *(pointer++)=consoleColor;
 }
 
-void puti(int pos, char c){
-    *(char *)addr(pos)=c;
-    *(char *)(addr(pos)+1)=consoleColor;
+void puti(int i, char c){
+    i=checkscroll(i);
+    *(char *)addr(i)=c;
+    *(char *)(addr(i)+1)=consoleColor;
 }
 
 void putxy(int x,int y,char c){
@@ -136,8 +157,8 @@ char cread(){
     return *(pointer+1);
 }
 
-char creadi(int pos){
-    return *(int* )(addr(pos)+1);
+char creadi(int i){
+    return *(int* )(addr(i)+1);
 }
 
 char creadxy(int x,int y){
@@ -148,8 +169,9 @@ void cput(unsigned char color){
     *(pointer+1)=color;
 }
 
-void cputi(int pos,unsigned char color){
-    *(char* )(addr(pos)+1)=color;
+void cputi(int i,unsigned char color){
+    i=checkscroll(i);
+    *(char* )(addr(i)+1)=color;
 }
 
 void cputxy(int x,int y,unsigned char color){
