@@ -65,6 +65,8 @@ enum{
 
 void setCursorPos(unsigned int x, unsigned int y);
 
+void initScreen(void);
+
 /* *signed* int, for backscrolling */
 void scroll(int lines);
 

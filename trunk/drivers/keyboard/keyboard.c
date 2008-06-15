@@ -211,7 +211,6 @@ void keypress(void){
     }
     if(c==0xE0){
         escape=1;
-        put('E');
         return;
     }
     if(c&0x80){
@@ -223,30 +222,70 @@ void keypress(void){
         printf("(!)|%d|",c);/*should NEVER happen*/
     if(modifier(c,released))
         return;
-    /*if(escape){
-        ch=escaped_map[c];
-    }
-    else{*/
-    if(ctrl&&alt){
-        ch=altgr_map[c];
-        if(c==16){
-            writexy(0,0,"Trying halt...");
-            halt();
+    if(escape){
+        escape=0;
+        if(released)
+            return;
+        ch=key_map[c];
+        switch(ch){
+            case '7':
+                gotoxy(0,row());
+                return;
+            case '8':
+                gotoi(pos()-COLUMNS);
+                return;
+            case '9':
+                if(alt)
+                    scroll(-20);
+                return;
+            case '4':
+                gotoi(pos()-1);
+                return;
+            case '5':
+                return;
+            case '6':
+                gotoi(pos()+1);
+                return;
+            case '1':
+                gotoxy(COLUMNS-1,row());
+                return;
+            case '2':
+                gotoi(pos()+COLUMNS);
+                return;
+            case '3':
+                if(alt)
+                    scroll(20);
+                return;
+            case '0':
+                /*TODO*/
+                return;
+            case '.':
+                put(' ');
+                gotoi(pos()-1);
+                return;
         }
     }
     else{
-        if(shift){
-            ch=shift_map[c];
-            if(capslock&&ch>='A'&&ch<='Z')
-                ch-='A'-'a';
+        if(ctrl&&alt){
+            ch=altgr_map[c];
+            if(c==16){
+                writexy(0,0,"Trying halt...");
+                halt();
+            }
         }
         else{
-            ch=key_map[c];
-            if(capslock&&ch>='a'&&ch<='z')
-                ch+='A'-'a';
+            if(shift){
+                ch=shift_map[c];
+                if(capslock&&ch>='A'&&ch<='Z')
+                    ch-='A'-'a';
+            }
+            else{
+                ch=key_map[c];
+                if(capslock&&ch>='a'&&ch<='z')
+                    ch+='A'-'a';
+            }
         }
     }
-    /*}*/
     if(ch!=0){
         if(!released)
             input(ch,released);
