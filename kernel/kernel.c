@@ -268,23 +268,6 @@ void _kmain(multiboot_info_t* mbd, unsigned int magic){
     logo();
     t+=5;
 
-    /*here start the true tests*/
-    magicNumber=magic;
-    multiBootInfo=mbd;
-
-    {
-        /*REMEMBER TO KEEP SIZE=ITEMS+1!!!*/
-        test tests[7]={
-            putreadtest,
-            pointertest,
-            itoatest,
-            printftest,
-            magictest,
-            mbdtest
-        };
-        t+=doTests(tests);
-    }
-
     NO(t);
     greendot();
     writeline("Inizializzazione GDT");
@@ -303,9 +286,19 @@ void _kmain(multiboot_info_t* mbd, unsigned int magic){
     initPaging();
     OK(t++);
 
+    /*here start the true tests*/
+    magicNumber=magic;
+    multiBootInfo=mbd;
+
     {
         /*REMEMBER TO KEEP SIZE=ITEMS+1!!!*/
-        test tests[3]={
+        test tests[9]={
+            putreadtest,
+            pointertest,
+            itoatest,
+            printftest,
+            magictest,
+            mbdtest,
             dinamictestOne,
             dinamictestTwo
         };
@@ -319,8 +312,8 @@ void _kmain(multiboot_info_t* mbd, unsigned int magic){
 
     drawRectangle(0,t,COLUMNS-1,ROWS-t-2,(char)(Yellow|Back_Blue));
     gotoxy(1,t+1);
-    asm("sti");
     setCursorPos(79,24);
+    asm("sti");
     writexy(0,ROWS-1,"[s][c][a][n][k] Time:");
     on=1;
     while(on);
