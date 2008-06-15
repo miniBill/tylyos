@@ -321,7 +321,7 @@ void _kmain(multiboot_info_t* mbd, unsigned int magic){
     gotoxy(1,t+1);
     asm("sti");
     setCursorPos(79,24);
-    writexy(0,ROWS-1,"[s][c][a][n] Time:");
+    writexy(0,ROWS-1,"[s][c][a][n][k] Time:");
     on=1;
     while(on);
     {

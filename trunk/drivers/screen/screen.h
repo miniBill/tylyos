@@ -40,22 +40,22 @@ enum{
 };
 
 enum{
-	Back_Black         =0x10,
-	Back_Blue          =0x11,
-	Back_Green         =0x12,
-	Back_Cyan          =0x13,
-	Back_Red           =0x14,
-	Back_Magenta       =0x15,
-        Back_Brown         =0x16,
-        Back_Light_Gray    =0x17,
-	Back_Dark_Gray     =0x18,
-	Back_Light_Blue    =0x19,
-	Back_Light_Green   =0x1A,
-	Back_Light_Cyan    =0x1B,
-	Back_Light_Red     =0x1C,
-	Back_Light_Magenta =0x1D,
-	Back_Yellow        =0x1E,
-	Back_White         =0x1F
+	Back_Black         =0x00,
+	Back_Blue          =0x10,
+	Back_Green         =0x20,
+	Back_Cyan          =0x30,
+	Back_Red           =0x40,
+	Back_Magenta       =0x50,
+        Back_Brown         =0x60,
+        Back_Light_Gray    =0x70,
+	Back_Dark_Gray     =0x80,
+	Back_Light_Blue    =0x90,
+	Back_Light_Green   =0xA0,
+	Back_Light_Cyan    =0xB0,
+	Back_Light_Red     =0xC0,
+	Back_Light_Magenta =0xD0,
+	Back_Yellow        =0xE0,
+	Back_White         =0xF0
 };
 
 #define consoleAddr 0xb8000
@@ -92,8 +92,8 @@ char cread(void);
 char creadi(int pos);
 char creadxy(int x,int y);
 
-void cput(char color);
-void cputi(int pos,char color);
-void cputxy(int x,int y,char color);
+void cput(unsigned char color);
+void cputi(int pos,unsigned char color);
+void cputxy(int x,int y,unsigned char color);
 
 #endif

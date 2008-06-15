@@ -144,14 +144,14 @@ char creadxy(int x,int y){
     return creadi(xy(x,y));
 }
 
-void cput(char color){
+void cput(unsigned char color){
     *(pointer+1)=color;
 }
 
-void cputi(int pos,char color){
+void cputi(int pos,unsigned char color){
     *(char* )(addr(pos)+1)=color;
 }
 
-void cputxy(int x,int y,char color){
+void cputxy(int x,int y,unsigned char color){
     cputi(xy(x,y),color);
 }
