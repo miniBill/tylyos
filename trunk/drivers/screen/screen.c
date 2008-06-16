@@ -19,6 +19,7 @@
 
 #include "screen.h"
 #include <memory/memory.h>
+#include <lib/string.h>
 
 #define addr(pos)   (consoleAddr+pos*2)
 #define vaddr(pos)  (2*(pos+baseline*COLUMNS))
@@ -80,36 +81,38 @@ void pageDown(void){
 
 void scroll(int lines){
     int i;
-    pointer=(char *)addr(pos()-COLUMNS*lines);
+    setCursor();
     baseline+=lines;
     if(baseline<0)
         baseline=0;
     if(baseline>(PAGES-1)*ROWS){
-        /*FIXME*/
-        int k,x;
-        i=baseline-(PAGES-1)*ROWS;
-        for(k=0;k<baseline;k++)
-            for(x=0;x<COLUMNS;x++){
-                videoMemory[vaddr(xy(x,k))]=videoMemory[vaddr(xy(x,k+i))];
-                videoMemory[vaddr(xy(x,k))+1]=videoMemory[vaddr(xy(x,k+i))+1];
-            }
-        for(;k<PAGES*ROWS;k++)
-            for(x=0;x<COLUMNS;x++){
-                videoMemory[vaddr(xy(x,k))]=' ';
-                videoMemory[vaddr(xy(x,k))+1]=consoleColor;
-            }
+        int c=baseline-(PAGES-1)*ROWS;/*righe da tagliare*/
+        for(i=0;i<((2*PAGES-1)*ROWS-baseline)*COLUMNS;i++){
+            videoMemory[i*2]=videoMemory[(i+c*COLUMNS)*2];
+            videoMemory[i*2+1]=videoMemory[(i+c*COLUMNS)*2+1];
+        }
+        for(;i<PAGES*ROWS*COLUMNS;i++){
+            videoMemory[i*2]=' ';
+            videoMemory[i*2+1]=consoleColor;
+        }
         baseline=(PAGES-1)*ROWS;
     }
     for(i=0;i<total();i++){
-        *(char *)addr(i)=videoMemory[vaddr(i)];
-        *(char *)(addr(i)+1)=videoMemory[vaddr(i)+1];
+        if(videoMemory[vaddr(i)]){
+            *(char *)addr(i)=videoMemory[vaddr(i)];
+            *(char *)(addr(i)+1)=videoMemory[vaddr(i)+1];
+        }
+        else{
+            *(char *)addr(i)=' ';
+            *(char *)(addr(i)+1)=consoleColor;
+        }
     }
 }
 
 int checkscroll(int i){
     int lines=0;
     if(i<0){
-        lines=i/COLUMNS-1;
+        lines=(i+1)/COLUMNS-1;
     }
     else{
         if(i<total())

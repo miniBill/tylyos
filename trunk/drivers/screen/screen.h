@@ -60,7 +60,7 @@ enum{
 
 #define consoleAddr 0xb8000
 #define COLUMNS     80
-#define PAGES       4 
+#define PAGES       4
 #define ROWS        25
 
 void setCursorPos(unsigned int x, unsigned int y);
