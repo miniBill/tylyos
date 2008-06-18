@@ -28,7 +28,7 @@
 
 int xtemp;
 
-void initIdt(){
+void initIdt(void){
     /* inizializzazione */
     int c;
     asm("cli");
@@ -67,6 +67,12 @@ void initIdt(){
     idt_load();
     irq_remap(0x20,0x28);
 
+}
+
+void clearIdt(void){
+    short int i;
+    for(i=0;i<18;i++)
+        addIdtSeg(i,0,0,0);
 }
 
 void addIdtSeg(short int i, void (*gestore)(), unsigned char options, unsigned int seg_sel){

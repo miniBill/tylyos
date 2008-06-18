@@ -268,9 +268,10 @@ void keypress(void){
     else{
         if(ctrl&&alt){
             ch=altgr_map[c];
-            if(c==16){
-                writexy(0,0,"Trying halt...");
-                halt();
+            if(c==0x13){
+                ch=0;
+                writexy((COLUMNS-9)/2,0,"Rebooting");
+                reboot();
             }
         }
         else{

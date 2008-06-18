@@ -34,7 +34,7 @@ static int magicNumber=0;
 
 static multiboot_info_t * multiBootInfo;
 
-void halt(){
+void reboot(void){
     on=0;
 }
 
@@ -65,7 +65,7 @@ void kwrite(const char * string){
         }
 }
 
-void logo(){
+void logo(void){
     writeline("                         ________                ____      ");
     writeline("                        / ____/ /__  ____  _____/ __ \\____");
     writeline("                       / /   / / _ \\/ __ \\/ ___/ / / /  _/");
@@ -83,7 +83,7 @@ int check(const char * output,int offset){
     return retval;
 }
 
-int putreadtest(){
+int putreadtest(void){
     char output[16]="Prova put/read.";
     int i;
     put('P');
@@ -93,13 +93,13 @@ int putreadtest(){
     return check(output,0);
 }
 
-int pointertest(){
+int pointertest(void){
     char pointer[17]="Prova puntatore.";
     write(pointer);
     return check(pointer,0);
 }
 
-int itoatest(){
+int itoatest(void){
     char conversion[4]={0};
     char output[8]="123,-A0";
     int i;
@@ -115,14 +115,14 @@ int itoatest(){
     return check(output,11);
 }
 
-int printftest(){
+int printftest(void){
     char output[13]="10,CA,a,ciao";
     write("Prova printf:");
     printf("%d,%x,%c,%s",10,0xCA,'a',"ciao");
     return check(output,13);
 }
 
-int magictest(){
+int magictest(void){
     char magicString[13]={0};
     write("Test magic number:");
     itobase(magicNumber,16,magicString);
@@ -130,7 +130,7 @@ int magictest(){
     return magicNumber==0x2BADB002;
 }
 
-int mbdtest(){
+int mbdtest(void){
     char lower[13]={0};
     char upper[10]={0};
     char totalM[10]={0};
@@ -155,7 +155,7 @@ int mbdtest(){
     return l>0;
 }
 
-int dinamictestOne(){
+int dinamictestOne(void){
     char *dinamicFirst,*dinamicSecond;
     char number[3]={0};
     int c=0,i,check=1;
@@ -201,7 +201,7 @@ int dinamictestOne(){
     return check;
 }
 
-int dinamictestTwo(){
+int dinamictestTwo(void){
     char *dinamicFirst,*dinamicSecond;
     int i;
     for(i=0;i<27;i++)
@@ -309,6 +309,9 @@ void _kmain(multiboot_info_t* mbd, unsigned int magic){
         /*wait 3 seconds before halting*/
         int now=time();
         while((time()-now)<3);
-        asm("cli\nhlt");
+
+        asm("cli");
+        clearIdt();
+        asm("int $1");
     }
 }

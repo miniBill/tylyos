@@ -4,7 +4,7 @@
 #include "multiboot.h"
 #include "../drivers/screen/screen.h"
 
-void halt();
+void reboot(void);
 
 void _kmain(multiboot_info_t* mbd, unsigned int magic);
 
