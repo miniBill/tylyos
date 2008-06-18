@@ -35,9 +35,10 @@ struct idt_ptr{
 struct idt_entry idt[256];
 struct idt_ptr idt_pointer;
 
-extern void idt_load();
+extern void idt_load(void);
 
-void initIdt();
+void initIdt(void);
+void clearIdt(void);
 
 void addIdtSeg(short int i, void (*gestore)(), unsigned char options, unsigned int seg_sel);
 
@@ -55,27 +56,27 @@ void interrupt_handler (unsigned int eax, unsigned int ebx, unsigned int ecx, un
                         unsigned int eflags, ...);
 
 /*############### funzioni interruzioni ################*/
-extern void isr_0();
-extern void isr_1();
-extern void isr_2();
-extern void isr_3();
-extern void isr_4();
-extern void isr_5();
-extern void isr_6();
-extern void isr_7();
-extern void isr_8();
-extern void isr_9();
-extern void isr_10();
-extern void isr_11();
-extern void isr_12();
-extern void isr_13();
-extern void isr_14();
-extern void isr_15();
-extern void isr_16();
-extern void isr_17();
-extern void isr_18();
-extern void isr_32();
-extern void isr_33();
-extern void isr_47();
+extern void isr_0(void);
+extern void isr_1(void);
+extern void isr_2(void);
+extern void isr_3(void);
+extern void isr_4(void);
+extern void isr_5(void);
+extern void isr_6(void);
+extern void isr_7(void);
+extern void isr_8(void);
+extern void isr_9(void);
+extern void isr_10(void);
+extern void isr_11(void);
+extern void isr_12(void);
+extern void isr_13(void);
+extern void isr_14(void);
+extern void isr_15(void);
+extern void isr_16(void);
+extern void isr_17(void);
+extern void isr_18(void);
+extern void isr_32(void);
+extern void isr_33(void);
+extern void isr_47(void);
 
 #endif
