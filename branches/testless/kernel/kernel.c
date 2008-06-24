@@ -28,7 +28,11 @@
 
 static int on=1;
 
-void halt(){
+static int magicNumber=0;
+
+static multiboot_info_t * multiBootInfo;
+
+void reboot(void){
     on=0;
 }
 
@@ -59,24 +63,12 @@ void kwrite(const char * string){
         }
 }
 
-void logo(){
-    int i;
-    const int left=22;
-    for(i=0;i<left;i++)
-        put(' ');
-    writeline("   ________                ____      ");
-    for(i=0;i<left;i++)
-        put(' ');
-    writeline("  / ____/ /__  ____  _____/ __ \\____");
-    for(i=0;i<left;i++)
-        put(' ');
-    writeline(" / /   / / _ \\/ __ \\/ ___/ / / /  _/");
-    for(i=0;i<left;i++)
-        put(' ');
-    writeline("/ /___/ /  __/ /_/ / /  / /_/ /\\  \\ ");
-    for(i=0;i<left;i++)
-        put(' ');
-    writeline("\\____/_/\\___/\\____/_/   \\____//___/ ");
+void logo(void){
+    writeline("                         ________                ____      ");
+    writeline("                        / ____/ /__  ____  _____/ __ \\____");
+    writeline("                       / /   / / _ \\/ __ \\/ ___/ / / /  _/");
+    writeline("                      / /___/ /  __/ /_/ / /  / /_/ /\\  \\ ");
+    writeline("                      \\____/_/\\___/\\____/_/   \\____//___/ ");
 }
 
 inline void greendot(void){write(" * ");cputxy(1,row(),Light_Green);}
@@ -123,14 +115,18 @@ void _kmain(void){
 
     drawRectangle(0,t,COLUMNS-1,ROWS-t-2,(char)(Yellow|Back_Blue));
     gotoxy(1,t+1);
-    asm("sti");
     setCursorPos(79,24);
-    writexy(0,ROWS-1,"[s][c][a][n] Time:");
+    asm("sti");
+    writexy(0,ROWS-1,"[s][c][a][n][k] Time:");
     on=1;
     while(on);
     {
         /*wait 3 seconds before halting*/
         int now=time();
         while((time()-now)<3);
+
+        asm("cli");
+        clearIdt();
+        asm("int $1");
     }
 }
