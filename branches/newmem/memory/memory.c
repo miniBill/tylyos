@@ -22,6 +22,46 @@
 #include <drivers/screen/screen.h>
 #include <lib/string.h>
 
+/*
+ scrive la bitmap per le allocazioni e la azzera
+*/
+void setupAllocationBitmap(){
+    unsigned int c,i;
+    c=0;
+    /* dimensione della la bitmap */
+    allocationBitmapSize=(ramSize-MEMORY_START)/((8*MIN_SIZE_ALLOCABLE)+1);/* la matematica aiuta :D */
+    /* arrotondamento per eccesso */
+    if((ramSize-MEMORY_START)%((8*MIN_SIZE_ALLOCABLE)+1)>0)
+        allocationBitmapSize++;
+    /* allochiamo la bitmap */
+    while(c<(unsigned int)allocationBitmapSize/0x1000){
+        unsigned int *pointer1=(unsigned int *)addNewPage(PAG_PRESENT|PAG_READWRITE|PAG_SUPERVISOR|PAG_4KPAGE);
+        c++;
+        /* e azzera */
+        for(i=0;i<1024;i++){
+            unsigned int *pointer2=(unsigned int*)(&pointer1[i]);
+            *pointer2=0;
+        }
+    }
+
+}
+
+void setPagetableFull(unsigned int n){
+    unsigned int *pointer;
+    pointer=&pageDir[n];
+    *pointer|=0x200;
+}
+void setPagetableAvailable(unsigned int n){
+    unsigned int *pointer;
+    pointer=&pageDir[n];
+    *pointer&=0xFFFFFDFF;
+}
+unsigned int isPagetableFull(unsigned int n){
+    unsigned int *pointer;
+    pointer=&pageDir[n];
+    return (*pointer>>9)&0x1;
+}
+
 void gdtSet(int num, unsigned long base, unsigned long limit, unsigned char gran, unsigned char access){
     gdt[num].baseLow = (base & 0xFFFF);
     gdt[num].baseMiddle = (base >> 16) & 0xFF;
@@ -61,16 +101,27 @@ enum{
 
 /*######################### Paginazione ####################################*/
 
+unsigned int lastFisic;
 /*
  ritorna un indirizzo fisico per l'allocazione di una nuova pagina
  alloca: indica se segnare questo indirizzo come utilizzato
 */
 unsigned int getNewPage(int alloca){
-    int c;
-    for(c=0;c<MAX_PAGES_IN_MEMORY;c++){
+    unsigned int c;
+    for(c=lastFisic;c<MAX_PAGES_IN_MEMORY;c++){
         if(getBit(c)==0){
             if(alloca==1)
                 setBit(c,1);
+            lastFisic=c+1;
+            return MEMORY_START+(c*0x1000);
+        }
+    }
+    /* se arriva quÃ¬ partire dall inizio a cercare*/
+    for(c=0;c<lastFisic;c++){
+        if(getBit(c)==0){
+            if(alloca==1)
+                setBit(c,1);
+            lastFisic=c+1;
             return MEMORY_START+(c*0x1000);
         }
     }
@@ -112,11 +163,12 @@ void *calloc(unsigned int num, unsigned int size){
 
 /*
  alloca una nuova pagetable e la inserisce nella pagedir
- ritorna l'indice in cui è inserito il selettore
+ ritorna l'indice in cui ï¿½ inserito il selettore
 */
 unsigned int addNewPageTable(unsigned int flags){/* TODO: provare se funziona */
     unsigned int c=0,c2;
     unsigned int *pointer;
+
     /* scorre fino a trovare dove inserire il nuovo selettore */
     while(getFisicAdressFromSelector(pageDir[c])!=0x0)
         c++;
@@ -132,30 +184,36 @@ unsigned int addNewPageTable(unsigned int flags){/* TODO: provare se funziona */
         /* azzera i selettori che contiene */
         setPageSelector(&tempPage[c2],0,0);
     }
+    setPagetableAvailable(c);
     return c;
 }
 
 /* alloca una nuova pagina e ritorna l'indirizzo logico */
 unsigned int addNewPage(unsigned int flags){
-    unsigned int c=1,i;/* la prima pagetable mappa il kernel quindi è inutile leggerla */
+    unsigned int c=1,i;/* la prima pagetable mappa il kernel quindi ï¿½ inutile leggerla */
     unsigned int *pointer;
     /* scorre le pagetable */
     for(c=1;c<1023;c++)
-        if(getFisicAdressFromSelector(pageDir[c])!=0x0){
+        if(getFisicAdressFromSelector(pageDir[c])!=0x0 ){
+        if(isPagetableFull(c)==0){
             pointer=(unsigned int*)virtualAdress(c,1023,0);/* indirizzo pagetable */
             for(i=0;i<1023;i++)
-                if(getFisicAdressFromSelector(pointer[i])==0x0){/* se è un selettore di pagina vuoto */
+                if(getFisicAdressFromSelector(pointer[i])==0x0){/* se ï¿½ un selettore di pagina vuoto */
                     /* alloca spazio e setta il selettore */
                     setPageSelector(&pointer[i], getNewPage(1)>>12 ,flags);
+                   
+                    if(c==1023)setPagetableFull(c);
                     return virtualAdress(c,i,0);
                 }
+            setPagetableFull(c);/* se fa una scansione di una pagetable ed arriva quÃ¬ la pagetable Ã¨ piena */}
         }
-    /* se si arriva quì vuol dire che in nessuna pagetable c'è spazio per una nuova pagina */
+    /* se si arriva quï¿½ vuol dire che in nessuna pagetable c'ï¿½ spazio per una nuova pagina */
     /* crea nuova pagetable */
     c=addNewPageTable(flags);
     /* crea nuova pagina */
-    pointer=(unsigned int*)virtualAdress(c,0,1023);
+    pointer=(unsigned int*)virtualAdress(c,1023,0);
     setPageSelector(&pointer[0], getNewPage(1)>>12 ,flags);
+
 
     return virtualAdress(c,0,0);
 }
@@ -166,9 +224,25 @@ unsigned int addNewPage(unsigned int flags){
  pagina: indice della pagina nella pagetable
 */
 void addNewPageAt(unsigned int flags,unsigned int tabella,unsigned int pagina){
+    unsigned int c2,*pointer;
+    /* se non esiste crea la tabella */
+    if(getFisicAdressFromSelector(pageDir[tabella])==0x0){
+        /* alloca spazio */
+        pointer=(unsigned int*)getNewPage(1);
+        setPageTableSelector(&pageDir[tabella], (unsigned int)pointer>>12 ,flags);
+        /* mi serve scrivere il 1023 record per mappare se stessa altrimenti non sarebbe indirizabile  */
+        /* quindi setto il selettore di pagina temporaneo in modo che punti ai dati appena allocati per la tabella */
+        setPageSelector((unsigned int*)tempPageSelector, (unsigned int)pointer>>12 ,flags);
+        /* in questi dati poi modifico il 1024 record in modo che sia utilizzabile per indirizzarsi */
+        setPageSelector(&tempPage[1023], (unsigned int)pointer>>12 ,flags);
+        for(c2=0;c2<1023;c2++){
+            /* azzera i selettori che contiene */
+            setPageSelector(&tempPage[c2],0,0);
+        }
+        setPagetableAvailable(tabella);
+    }
     /* alloca memoria fisica e setta il selettore della pagina */
-    /*FIXME*/
-    setPageSelector((unsigned int*)virtualAdress(tabella,pagina,0), getNewPage(1)>>12 ,flags);
+    setPageSelector((unsigned int*)virtualAdress(tabella,1023,pagina*4), getNewPage(1)>>12 ,flags);
 }
 
 /*
@@ -188,6 +262,8 @@ void deletePage(unsigned int BaseAdress){
     /* cancello il selettore della pagina */
     selectorAdress=(unsigned int*)virtualAdress(table,1023,page*4);
     setPageSelector(selectorAdress,0,0);
+    /* setto il bit della tabella */
+    setPagetableAvailable(table);
 }
 
 /*
@@ -201,7 +277,7 @@ void deletePageTable(unsigned int num){/* TODO: provare se funziona */
     selector=(unsigned int*)&pageDir[num];
     /* passo tutti i descrittori che contiene e se sono allocate pagine le dealloco */
     for(c=0;c<1023;c++)
-        if(getFisicAdressFromSelector(page[c])!=0x0)/* se è una pagina allocata */
+        if(getFisicAdressFromSelector(page[c])!=0x0)/* se ï¿½ una pagina allocata */
             deletePage(virtualAdress(num,c,0));
     /* dealloco lo spazio per la tabella */
     /* prendo l'indirizzo fisico contenuto nel selettore */
@@ -213,66 +289,82 @@ void deletePageTable(unsigned int num){/* TODO: provare se funziona */
     setPageTableSelector(selector,0,0);
 }
 
-void* malloc(unsigned int byte){/*TODO: implementare */
-    unsigned int *pointer,c,tabella,pagina,end,i;
-    /* se non è possibile allocare nella prima area dell array è impossibile allocare */
-    if(*allocationArray[0]<byte){
+void* malloc(unsigned int byte){
+    unsigned int *pointer,c,tabella,pagina,end,ret,lastS;
+    if(byte%MIN_SIZE_ALLOCABLE>0)
+        byte+=MIN_SIZE_ALLOCABLE-(byte%MIN_SIZE_ALLOCABLE);
+ asm("cli");
+    /* se non ï¿½ possibile allocare nella prima area dell array ï¿½ impossibile allocare */
+    if(*(unsigned int*)allocationArray[0]<byte){
         return 0x0;
     }
+
     /* alloca nel primo elemento */
+    ret=(unsigned int)allocationArray[0];
     /* alloca nella bitmap */
-    end=(unsigned int)(allocationBitmapSize+allocationBitmapStart);
-    for(c=0;c<byte/4;c++)
-        setBitFromAllocationBitmap(((unsigned int)allocationArray[0]-end+(c*4))/4,1);
+    end=(unsigned int)(allocationBitmapSize+(unsigned int)allocationBitmapStart);
+    for(c=0;c<byte/4;c++){
+        setBitFromAllocationBitmap((((unsigned int)allocationArray[0]-end)/4)+c,1);
+    }
     /* verifica che vi siano pagine che indirizzano l'allocaione */
     c=0;
-    tabella=getTableFromVirtualAdress((int)/*FIXME*/allocationArray[0]);
-    pagina=getPageFromVirtualAdress((int)/*FIXME*/allocationArray[0]);
+    tabella=getTableFromVirtualAdress((unsigned int)allocationArray[0]);
+    pagina=getPageFromVirtualAdress((unsigned int)allocationArray[0]);
     pointer=(unsigned int*)virtualAdress(tabella,1023,0);
-    while(c<byte/0x1000){/* passa le pagine occupate dall allocazione */
-        if(getFisicAdressFromSelector(pointer[i])==0x0){/* se un selettore non è allocato */
+    do{/* passa le pagine occupate dall allocazione */
+        if(getFisicAdressFromSelector(pointer[c])==0x0){/* se un selettore non ï¿½ allocato */
             /* allocalo */
             addNewPageAt(PAG_PRESENT|PAG_READWRITE|PAG_SUPERVISOR|PAG_4KPAGE,tabella,pagina+c);
         }
         c++;
-    }
+    }while(c<=byte/0x1000);
     /* ridimensiono l'area */
+
+    lastS=*(unsigned int*)allocationArray[0];
+
+    allocationArray[0]+=byte;
+    tabella=getTableFromVirtualAdress((unsigned int)allocationArray[0]);
+    pagina=getPageFromVirtualAdress((unsigned int)allocationArray[0]);
+    pointer=(unsigned int*)virtualAdress(tabella,1023,0);
     /* setto la nuova dimensione */
-    /* riordino l'array */
-    return 0;/*FIXME*/
-}
-
-void free(void *pointer,unsigned int size){/*TODO: implementare */
-    pointer=(unsigned int*)size;
-}
-
-/*
- scrive la bitmap per le allocazioni e la azzera
-*/
-void setupAllocationBitmap(){
-    unsigned int c,i;
-    c=(unsigned int)allocationBitmapStart;
-    /* dimensione della la bitmap */
-    allocationBitmapSize=(ramSize-MEMORY_START)/(8*MIN_SIZE_ALLOCABLE+1);/* la matematica aiuta :D */
-    /* arrotondamento per eccesso */
-    if((ramSize-MEMORY_START)%(8*MIN_SIZE_ALLOCABLE+1)>0)
-        allocationBitmapSize++;
-    /* allochiamo la bitmap */
-    while(c<(unsigned int)allocationBitmapStart+allocationBitmapSize){
-        unsigned int *pointer1=(unsigned int *)/*FIXME*/addNewPage(PAG_PRESENT|PAG_READWRITE|PAG_SUPERVISOR|PAG_4KPAGE);
-        c+=0x1000;
-        /* e azzera */
-        for(i=0;i<1024;i++){
-            unsigned int *pointer2=(unsigned int*)((i*4)+pointer1);
-            *pointer2=0;
-        }
+    if(getFisicAdressFromSelector( pointer[pagina] )==0x0){/* se non c'Ã¨ una pagina creala in modo da poter scrivere la dimensione della area libera */
+        addNewPageAt(PAG_PRESENT|PAG_READWRITE|PAG_SUPERVISOR|PAG_4KPAGE,tabella,pagina);
     }
+    if(getPageFromVirtualAdress((unsigned int)allocationArray[0])!=getPageFromVirtualAdress((unsigned int)allocationArray[0]+4) && getFisicAdressFromSelector( pointer[pagina+1] )==0x0){/* se sfora nella pagina dopo mappala */
+        addNewPageAt(PAG_PRESENT|PAG_READWRITE|PAG_SUPERVISOR|PAG_4KPAGE,tabella,pagina+1);
+    }
+    pointer=(unsigned int*)allocationArray[0];
+    *pointer=lastS-byte;
+    /* riordino l'array *//*TODO: implementare*/
+ asm("sti");
+
+    return (unsigned int*)ret;
 }
+
+void free(void *pointer,unsigned int size){
+    unsigned int bitmapSize,table,page,offset,c;/*,end;*/
+
+    /* ricavo la dimensione in byte della bitmap */
+    bitmapSize=(0x1000-128)/8/MIN_SIZE_ALLOCABLE;
+
+    /* scompongo l'indirizzo */
+    table=getTableFromVirtualAdress((unsigned int)pointer);
+    page=getPageFromVirtualAdress((unsigned int)pointer);
+    offset=getOffsetFromVirtualAdress((unsigned int)pointer);
+
+    /* dealloco */
+    for(c=0;c<size;c++)
+        setBitExt((unsigned int*)virtualAdress(table,page,0),c + (offset-bitmapSize)/MIN_SIZE_ALLOCABLE ,0);
+}
+
+
 
 void initPaging(void){
     int c,c2;
     unsigned int pageTab,pageTab2;
     char flags=PAG_PRESENT|PAG_READWRITE|PAG_SUPERVISOR|PAG_4KPAGE;
+    lastFisic=0;
+    ramSize=30000000;
     asm("cli");
     /* azzera mappa */
     for(c=0;c<MAX_PAGES_IN_MEMORY/32+1;c++)
@@ -292,7 +384,7 @@ void initPaging(void){
     setPageTableSelector(&pageDir[1023],(unsigned int)pageDir>>12,flags);
     /* inserisce pagine nella prima pagetable */
     for(c2=0,c=KERNEL_START/0x1000;c<1024;c++,c2++){
-        /* printf("descrittore in: %x,indirizzo: %x\n",pageTab+(c*4),(c*0x1000)>>12);*/
+        /* printf("descrittore in: 0x%x indirizzo: 0x%x",pageTab+(c*4),(c*0x1000)>>12);*/
         setPageSelector((unsigned int*)((pageTab)+(c2*4)),(c*0x1000)>>12,flags);
     }
     /* ultimo record punta alla pagina della tabella */
@@ -309,32 +401,38 @@ void initPaging(void){
     setPageSelector((unsigned int*)(pageTab2+(1023*4)),pageTab2>>12,flags);
     /* setta il selettore della pagedir */
     setPageSelector((unsigned int*)((pageTab2)+(0*4)),(unsigned int)pageDir>>12,flags);
+    
 
      /*setta un selettore utile per un indirizzamento temporaneo (da modificare al volo per modificare specifici indirizzi fisici)*/
     tempPageSelector=getNewPage(1);
     setPageSelector((unsigned int*)((pageTab2)+(1*4)),tempPageSelector>>12,flags);
-    /* quindi il rispettivo indirizzo dopo l'attivazione della paginazione sarà */
+    /* quindi il rispettivo indirizzo dopo l'attivazione della paginazione sarï¿½ */
     tempPageSelector=virtualAdress(1,1023,1*4);
-    /* l'indirizzo che prenderà l'area del selettore temporaneo */
+    /* l'indirizzo che prenderï¿½ l'area del selettore temporaneo */
     tempPage=(unsigned int*)virtualAdress(1,1,0);
+
     /* indirizzo da cui parte la bitmap per le allocazioni */
     allocationBitmapStart=(unsigned int*)virtualAdress(1,2,0);
+
     write_cr3((unsigned int)pageDir); /* put that page directory address into CR3 */
     write_cr0(read_cr0() | 0x80000000); /* set the paging bit in CR0 to 1 */
-    /* inizializza la bitmap */
+    
     setupAllocationBitmap();
+
     /* inizializza l'array */
     for(c=0;c<ARRAY_SIZE;c++)
         allocationArray[c]=0;
     /* inizializza la prima area libera nell array */
-    allocationArray[0]=allocationBitmapStart;/*FIXME: risistemare le entry iniziali dell array contando che alla fine di ogni pagetable vi è un area non utilizzabile*/
-    *allocationBitmapStart=ramSize;/*TODO: controllare effettivamente di mettere il valore dello spazio libero massimo*/
-    asm("sti");
+    allocationArray[0]=(unsigned int)virtualAdress(2,0,0);/*FIXME: risistemare le entry iniziali dell array contando che alla fine di ogni pagetable vi ï¿½ un area non utilizzabile*/
+    /* allocalo */
+    addNewPageAt(flags,getTableFromVirtualAdress(allocationArray[0]),getPageFromVirtualAdress(allocationArray[0]));
+    *(unsigned int*)allocationArray[0]=virtualAdress(2,0,0)-((unsigned int)allocationBitmapStart+allocationBitmapSize);/*TODO: controllare effettivamente di mettere il valore dello spazio libero massimo*/
+asm("sti");
 }
 
 /* obj: indirizzo dell'area su cui scrivere il selettore
  * TableAdress: indirizzo della tabella nella memoria (NB: una tabella occupa una pagina da 4K
- * questo indirizzo indica i 20 bit più significativi dell indirizzo della tabella)
+ * questo indirizzo indica i 20 bit piï¿½ significativi dell indirizzo della tabella)
  */
 void setPageTableSelector(unsigned int *obj,unsigned int tableAdress,unsigned int flags){
     *obj=0;
@@ -344,7 +442,7 @@ void setPageTableSelector(unsigned int *obj,unsigned int tableAdress,unsigned in
 
 /* obj: indirizzo dell'area su cui scrivere il selettore
  * TableAdress: indirizzo della pagina nella memoria (NB: una pagina occupa 4K
- * questo indirizzo indica i 20 bit più significativi dell indirizzo)
+ * questo indirizzo indica i 20 bit piï¿½ significativi dell indirizzo)
  */
 void setPageSelector(unsigned int *obj,unsigned int pageAdress,unsigned int flags){
     *obj=0;
@@ -368,6 +466,23 @@ void setBit(int x,unsigned int value){
         memoryBitmap[off1]|=1<<off2;
     else
         memoryBitmap[off1]&=~(1<<off2);
+}
+
+int getBitExt(unsigned int *bitmap,int x){
+    int off1,off2;
+    off1=x/32;
+    off2=x%32;
+    return (bitmap[off1]>>off2)&1;
+}
+void setBitExt(unsigned int *bitmap,int x,unsigned int value){
+    int off1,off2;
+    off1=x/32;
+    off2=x%32;
+    value&=0x1;
+    if(value)
+        bitmap[off1]|=1<<off2;
+    else
+        bitmap[off1]&=~(1<<off2);
 }
 
 /*
@@ -436,3 +551,4 @@ void setBitFromAllocationBitmap(int x,int value){/*TODO: verificare funzionament
     else
         allocationBitmapStart[off1]&=~(1<<off2);
 }
+

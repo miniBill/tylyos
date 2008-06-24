@@ -40,6 +40,7 @@ struct gdtPtr gdtPointer;
 
 extern void gdtFlush();
 
+
 #define PAG_PRESENT 	0x1
 #define PAG_NOTPRESENT 	0x0
 
@@ -50,6 +51,8 @@ extern void gdtFlush();
 #define PAG_SUPERVISOR	0x0
 
 #define PAG_4KPAGE	0x0
+
+#define ARRAY_SIZE      30
 
 /* 1 pagina = 4096 byte = 0x1000 */
 
@@ -62,14 +65,9 @@ extern void gdtFlush();
 
 unsigned int *pageDir,tempPageSelector,*tempPage; /* area da 4096byte che ospita la pagedir del kernel */
 
-#define ARRAY_SIZE 50
-unsigned int *allocationArray[ARRAY_SIZE];
-unsigned int *allocationBitmapStart; /* indirizzo di partenza della bitmap per le allocazioni */
-unsigned int allocationBitmapSize;
-unsigned int ramSize;
-
 unsigned int memoryBitmap[MAX_PAGES_IN_MEMORY/32+1];	/* flag per ogni blocco di 4k della memoria fisica */
 
+unsigned int *allocationBitmapStart,allocationBitmapSize,ramSize,*allocationArray;
 void initPaging();
 
 void setPageTableSelector(unsigned int *obj,unsigned int tableAdress,unsigned int flags);
@@ -77,19 +75,14 @@ void setPageSelector(unsigned int *obj,unsigned int pageAdress,unsigned int flag
 
 int getBit(int x);
 void setBit(int x,unsigned int value);
+int getBitExt(unsigned int *bitmap,int x);
+void setBitExt(unsigned int *bitmap,int x,unsigned int value);
 
+/*
+ restituisce il bit x della bitmap tenendo conto che ogni fine pagetable contiene una pagina non utilizabile
+*/
 int getBitFromAllocationBitmap(int x);
-
-/*
- scrive la bitmap per le allocazioni e la azzera
-*/
-void setupAllocationBitmap();
-/*
- alloca una pagina inserendo il selettore nella posizione specificata da parametro
- tabella: indice della tabella nella pagedir
- pagina: indice della pagina nella pagetable
-*/
-void addNewPageAt(unsigned int flags,unsigned int tabella,unsigned int pagina);
+void setBitFromAllocationBitmap(int x,int value);
 
 /*
  ritorna un indirizzo fisico per l'allocazione di una nuova pagina
@@ -118,7 +111,6 @@ void deletePage(unsigned int virtualAdress);
 */
 void deletePageTable(unsigned int num);
 
-void setBitFromAllocationBitmap(int x,int value);
 
 void* malloc(unsigned int byte);
 void free(void *pointer,unsigned int size);
@@ -139,5 +131,4 @@ extern unsigned int read_cr0();
 extern void write_cr0(unsigned int data);
 extern unsigned int read_cr3();
 extern void write_cr3(unsigned int data);
-
 #endif
