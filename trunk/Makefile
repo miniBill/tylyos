@@ -26,6 +26,7 @@ OBJ= bootloader/loader.o \
      interrupt/interrupt.o interrupt/interruptHandler.o interrupt/ldt.o \
      gui/gui.o
 LDFLAGS= -T linker.ld
+CC=i686-pc-linux-gnu-gcc
 
 all:iso.img
 
