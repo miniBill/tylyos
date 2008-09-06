@@ -16,6 +16,7 @@
 # along with ClearOS.  If not, see <http://www.gnu.org/licenses/>.
 
 CFLAGS:= -march=i386 -ffreestanding -Wall -pedantic -Wextra -I. -Werror -fno-stack-protector
+ASFLAGS:= -march=i386
 OBJ= bootloader/loader.o \
      kernel/stdio.o kernel/kernel.o \
      lib/string.o \
@@ -26,7 +27,10 @@ OBJ= bootloader/loader.o \
      interrupt/interrupt.o interrupt/interruptHandler.o interrupt/ldt.o \
      gui/gui.o
 LDFLAGS= -T linker.ld
+
 CC=i686-pc-linux-gnu-gcc
+AS=i686-pc-linux-gnu-as
+LD=i686-pc-linux-gnu-ld
 
 all:iso.img
 
