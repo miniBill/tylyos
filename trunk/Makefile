@@ -28,9 +28,7 @@ OBJ= bootloader/loader.o \
      gui/gui.o
 LDFLAGS= -T linker.ld
 
-CC=i686-pc-linux-gnu-gcc
-AS=i686-pc-linux-gnu-as
-LD=i686-pc-linux-gnu-ld
+include Makefile.in
 
 all:iso.img
 

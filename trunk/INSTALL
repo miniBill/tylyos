@@ -1,6 +1,7 @@
 Compiling ClearOS
 ========================================
 Run "make" to compile ClearOS.
+(If it's the first time you compile it you have to run "./configure")
 
 Running ClearOS
 ===============
