@@ -40,6 +40,8 @@ extern void idt_load(void);
 void initIdt(void);
 void clearIdt(void);
 
+void addIdtSegZ(short int i);
+void addIdtSegN(short int i, void (*gestore)());
 void addIdtSeg(short int i, void (*gestore)(), unsigned char options, unsigned int seg_sel);
 
 /*
@@ -77,6 +79,7 @@ extern void isr_17(void);
 extern void isr_18(void);
 extern void isr_32(void);
 extern void isr_33(void);
+extern void isr_46(void);
 extern void isr_47(void);
 
 #endif
