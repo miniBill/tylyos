@@ -22,6 +22,7 @@
 
 .globl isr_32
 .globl isr_33
+.globl isr_46
 .globl isr_47
 
 isr_0:          # division by zero exception
@@ -111,25 +112,25 @@ isr_14:          # page fault
 
 isr_15:          # unknown interrupt
     cli
-    push $0     # Codice di errore fittizio.
+    push $0      # Codice di errore fittizio.
     push $15     # Numero di procedura ISR.
     jmp isr_common
 
 isr_16:          # coprocessor fault
     cli
-    push $0     # Codice di errore fittizio.
+    push $0      # Codice di errore fittizio.
     push $16     # Numero di procedura ISR.
     jmp isr_common
 
 isr_17:          # alignment check exception
     cli
-    push $0     # Codice di errore fittizio.
+    push $0      # Codice di errore fittizio.
     push $17     # Numero di procedura ISR.
     jmp isr_common
 
 isr_18:          # machine check exception
     cli
-    push $0     # Codice di errore fittizio.
+    push $0      # Codice di errore fittizio.
     push $18     # Numero di procedura ISR.
     jmp isr_common
 
@@ -143,7 +144,13 @@ isr_32:         # IRQ 0: timer
 isr_33:         # IRQ 1: tastiera
     cli
     push $0     # Codice di errore fittizio.
-    push $33     # Numero di procedura ISR.
+    push $33    # Numero di procedura ISR.
+    jmp isr_common
+
+isr_46:         # IRQ 14: canale IDE primario
+    cli
+    push $0
+    push $46
     jmp isr_common
 
 isr_47:         # IRQ 15: canale IDE secondario
