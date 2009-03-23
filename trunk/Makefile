@@ -24,6 +24,7 @@ OBJ= bootloader/loader.o \
        drivers/screen/screen.o \
        drivers/keyboard/keyboard.o \
        drivers/timer/timer.o \
+       drivers/hdd/ata.o \
      interrupt/interrupt.o interrupt/interruptHandler.o interrupt/ldt.o \
      gui/gui.o
 LDFLAGS= -T linker.ld
@@ -33,23 +34,34 @@ include Makefile.in
 all:iso.img
 
 iso.img: clearos
-	mkdir iso && \
-mkdir -p iso/boot/grub && \
-cp stage2_eltorito iso/boot/grub && \
-echo "timeout 1">>iso/boot/grub/menu.lst && \
-echo "title   ClearOS">>iso/boot/grub/menu.lst && \
-echo "kernel  /boot/clearos">>iso/boot/grub/menu.lst && \
-cp clearos iso/boot/clearos && \
-mkisofs -quiet -R -b boot/grub/stage2_eltorito -no-emul-boot \
--boot-load-size 4 -boot-info-table -o iso.img iso && \
-echo "Iso created" && \
-rm -R iso
+	@echo "Preparing iso..."
+	@mkdir iso && \
+	mkdir -p iso/boot/grub && \
+	cp stage2_eltorito iso/boot/grub && \
+	echo "timeout 1">>iso/boot/grub/menu.lst && \
+	echo "title   ClearOS">>iso/boot/grub/menu.lst && \
+	echo "kernel  /boot/clearos">>iso/boot/grub/menu.lst && \
+	cp clearos iso/boot/clearos && \
+	mkisofs -quiet -R -b boot/grub/stage2_eltorito -no-emul-boot \
+	-boot-load-size 4 -boot-info-table -o iso.img iso && \
+	echo "Iso created" && \
+	rm -R iso
 
 clearos: $(OBJ)
-	$(LD) $(LDFLAGS) $^ -o $@
+	@echo "LD" $@
+	@$(LD) $(LDFLAGS) $^ -o $@
+
+%.o:%.s
+	@echo "AS" $@
+	@$(AS) $(ASFLAGS) $^ -o $@
+
+%.o: %.c
+	@echo "GCC" $@
+	@$(CC) $(CFLAGS) -c -o $@ $^
 
 %.o: %.asm
-	nasm -f elf -o $@ $^
+	@echo "NASM" $@
+	@nasm -f elf -o $@ $^
 
 .PHONY: clean
 clean:
