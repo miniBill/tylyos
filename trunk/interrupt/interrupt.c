@@ -28,44 +28,48 @@
 
 int xtemp;
 
+/*riempie la IDT (interrupt descriptor table)*/
 void initIdt(void){
     /* inizializzazione */
     int c;
     asm("cli");
     xtemp=0;
     for(c=0;c<256;c++)
-        addIdtSegZ(c);
-
-    addIdtSegN( 0, isr_0);
-    addIdtSegN( 1, isr_1);
-    addIdtSegN( 2, isr_2);
-    addIdtSegN( 3, isr_3);
-    addIdtSegN( 4, isr_4);
-    addIdtSegN( 5, isr_5);
-    addIdtSegN( 6, isr_6);
-    addIdtSegN( 7, isr_7);
-    addIdtSegN( 8, isr_8);
-    addIdtSegN( 9, isr_9);
-    addIdtSegN(10,isr_10);
-    addIdtSegN(11,isr_11);
-    addIdtSegN(12,isr_12);
-    addIdtSegN(13,isr_13);
-    addIdtSegN(14,isr_14);
-    addIdtSegN(15,isr_15);
-    addIdtSegN(16,isr_16);
-    addIdtSegN(17,isr_17);
-    addIdtSegN(18,isr_18);
+        addIdtSeg(c,0,0,0);
+    
+    /*DA RICONTROLLARE IL SELETTORE DI SEGMENTO!!!!*/
+    addIdtSeg( 0, isr_0,0x80,0x08);
+    addIdtSeg( 1, isr_1,0x80,0x08);
+    addIdtSeg( 2, isr_2,0x80,0x08);
+    addIdtSeg( 3, isr_3,0x80,0x08);
+    addIdtSeg( 4, isr_4,0x80,0x08);
+    addIdtSeg( 5, isr_5,0x80,0x08);
+    addIdtSeg( 6, isr_6,0x80,0x08);
+    addIdtSeg( 7, isr_7,0x80,0x08);
+    addIdtSeg( 8, isr_8,0x80,0x08);
+    addIdtSeg( 9, isr_9,0x80,0x08);
+    addIdtSeg(10,isr_10,0x80,0x08);
+    addIdtSeg(11,isr_11,0x80,0x08);
+    addIdtSeg(12,isr_12,0x80,0x08);
+    addIdtSeg(13,isr_13,0x80,0x08);
+    addIdtSeg(14,isr_14,0x80,0x08);
+    addIdtSeg(15,isr_15,0x80,0x08);
+    addIdtSeg(16,isr_16,0x80,0x08);
+    addIdtSeg(17,isr_17,0x80,0x08);
+    addIdtSeg(18,isr_18,0x80,0x08);
     for(c=32;c<50;c++)
-        addIdtSegN(c,isr_32);
-    addIdtSegN(32,isr_32);
-    addIdtSegN(33,isr_33);
-    addIdtSegN(46,isr_46);
-    addIdtSegN(47,isr_47);
+        addIdtSeg(c,isr_32,0x80,0x08);
+    addIdtSeg(32,isr_32,0x80,0x08);
+    addIdtSeg(33,isr_33,0x80,0x08);
+    addIdtSeg(47,isr_47,0x80,0x08);
 
     idt_pointer.limit=0xFFFF;
     idt_pointer.base=(unsigned int)&idt;
 
+    /*scrive idt_pointer nel registro lidt*/
     idt_load();
+    /*rimappa gli offset delle interrupt generate dai PIC*/
+    /*          32   40 */
     irq_remap(0x20,0x28);
 
 }
@@ -74,14 +78,6 @@ void clearIdt(void){
     short int i;
     for(i=0;i<18;i++)
         addIdtSeg(i,0,0,0);
-}
-
-void addIdtSegN(short int i,void (*gestore)()){
-    addIdtSeg(i,gestore,0x80,0x08);
-}
-
-void addIdtSegZ(short int i){
-    addIdtSeg(i,0,0,0);
 }
 
 void addIdtSeg(short int i, void (*gestore)(), unsigned char options, unsigned int seg_sel){

@@ -19,6 +19,9 @@
 #ifndef MEMORY_H_
 #define MEMORY_H_
 
+unsigned int getEBP();
+unsigned int getESP();
+
 void initGdt();
 
 struct gdtEntry{
@@ -38,7 +41,7 @@ struct gdtPtr{
 struct gdtEntry gdt[3];
 struct gdtPtr gdtPointer;
 
-extern void gdtFlush();
+extern void gdtFlush(unsigned short selettoreSegmentoCodice,unsigned short selettoreSegmentoDati);
 
 
 #define PAG_PRESENT 	0x1
@@ -60,7 +63,7 @@ extern void gdtFlush();
 
 #define MAX_PAGES_IN_MEMORY 100000 /* numero massimo di pagine allocabili in memoria contemporaneamente */
 
-#define MIN_SIZE_ALLOCABLE 4 /* minima unità allocabile = 4byte */
+#define MIN_SIZE_ALLOCABLE 8 /* minima unità allocabile = 8byte */
 
 unsigned int *pageDir,tempPageSelector,*tempPage; /* area da 4096byte che ospita la pagedir del kernel */
 
@@ -76,10 +79,6 @@ void setBit(int x,unsigned int value);
 int getBitExt(unsigned int *bitmap,int x);
 void setBitExt(unsigned int *bitmap,int x,unsigned int value);
 
-/*
- scrive la bitmap in una pagina e inizializza tutti i bit a zero
-*/
-void writeBitmapOnPage(unsigned int* adress);
 
 /*
  ritorna un indirizzo fisico per l'allocazione di una nuova pagina
@@ -128,4 +127,13 @@ extern unsigned int read_cr0();
 extern void write_cr0(unsigned int data);
 extern unsigned int read_cr3();
 extern void write_cr3(unsigned int data);
+
+/*struttura lista allocazioni*/
+struct memoryArea{
+    unsigned int size;/*dimensione in multipli di MIN_SIZE_ALLOCABLE*/
+    unsigned int *next;/*prossima area*/
+} __attribute__((packed));
+
+struct memoryArea *freeArea,*AllocatedArea;/*liste aree allocate e libere*/
+
 #endif

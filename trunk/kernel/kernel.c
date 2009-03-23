@@ -119,6 +119,7 @@ int printftest(void){
     char output[13]="10,CA,a,ciao";
     write("Prova printf:");
     printf("%d,%x,%c,%s",10,0xCA,'a',"ciao");
+    printf(" base stack: %x end: %x",getEBP(),getESP());
     return check(output,13);
 }
 
@@ -165,11 +166,11 @@ int dinamictestOne(void){
     putxy(39,row(),'%');
 
 #ifdef FAST_TESTS
-    for(i=0;i<1500;i++){
-        if(!(i%15)){
+    for(i=0;i<10;i++){
+        if(!(i%1)){
 #else
-    for(i=0;i<4000;i++){
-        if(!(i%40)){
+    for(i=0;i<100;i++){
+        if(!(i%1)){
 #endif
             itoa(c,number);
             writexy(37+(c<10),row(),number);
@@ -182,10 +183,12 @@ int dinamictestOne(void){
 
         *dinamicFirst=0;
 
-        if((dinamicSecond+4)!=dinamicFirst &&
+        if((dinamicSecond+4096)!=dinamicFirst  &&
             getPageFromVirtualAdress((unsigned int)dinamicFirst)==
             getPageFromVirtualAdress((unsigned int)dinamicSecond)){
+           
             check=0;
+writeline(" ");
             printf("%d:0x%x >> 0x%x",
                       (unsigned int)i,
                       (unsigned int)dinamicSecond,

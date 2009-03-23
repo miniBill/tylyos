@@ -1,8 +1,10 @@
 #ifndef STDIO_H_
 #define STDIO_H_
 
-unsigned char inb(int portnum);
-void outb(int data, int portnum);
+inline unsigned char inb(int portnum);
+inline unsigned short inw(unsigned short portnum);
+inline void outb(int portnum, int data);
+inline void outw(unsigned short portnum, unsigned short data);
 void io_wait(void);
 
 #endif

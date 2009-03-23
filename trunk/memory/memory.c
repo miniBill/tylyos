@@ -22,6 +22,20 @@
 #include <drivers/screen/screen.h>
 #include <lib/string.h>
 
+/*ritorna il valore del registro EBP*/
+unsigned int getEBP(){
+    unsigned int data=0;
+    asm volatile("mov %%ebp, %0":"=r" (data) );
+    return data;
+}
+/*ritorna il valore del registro ESP*/
+unsigned int getESP(){
+    unsigned int data=0;
+    asm volatile("mov %%esp, %0":"=r" (data) );
+    return data;
+}
+
+/*setta una riga della GDT (descrittore di segmento)*/
 void gdtSet(int num, unsigned long base, unsigned long limit, unsigned char gran, unsigned char access){
     gdt[num].baseLow = (base & 0xFFFF);
     gdt[num].baseMiddle = (base >> 16) & 0xFF;
@@ -34,30 +48,20 @@ void gdtSet(int num, unsigned long base, unsigned long limit, unsigned char gran
     gdt[num].access = access;
 }
 
+/*inizializza i segmenti di default*/
 void initGdt(){
     gdtPointer.limit = (sizeof(struct gdtEntry) * 3) - 1;
     gdtPointer.base = (int)&gdt;
 
     gdtSet(0, 0, 0, 0, 0); /*Il puntatore NULL!*/
+    /*segmento codice kernel*/
     gdtSet(1, 0, 0xFFFFFFFF,MEM_GRANULAR|MEM_32,
         MEM_PRESENT|MEM_CODE_DATA|MEM_RW|MEM_CODE);
+    /*segmento dati kernel*/
     gdtSet(2, 0, 0xFFFFFFFF,MEM_GRANULAR|MEM_32,
         MEM_PRESENT|MEM_CODE_DATA|MEM_RW);
-    gdtFlush();
+    gdtFlush(0x08,0x10);
 }
-
-enum{
-    PAGE_NOTPRESENT = 0x0,
-    PAGE_PRESENT    = 0x1,
-
-    PAGE_READONLY   = 0x0,
-    PAGE_READWRITE  = 0x2,
-
-    PAGE_SUPERVISOR = 0x0,
-    PAGE_USER       = 0x4,
-
-    PAGE_4KPAGE    = 0x0
-};
 
 /*######################### Paginazione ####################################*/
 
@@ -126,6 +130,7 @@ unsigned int addNewPageTable(unsigned int flags){/* TODO: provare se funziona */
     /* mi serve scrivere il 1023 record per mappare se stessa altrimenti non sarebbe indirizabile  */
     /* quindi setto il selettore di pagina temporaneo in modo che punti ai dati appena allocati per la tabella */
     setPageSelector((unsigned int*)tempPageSelector, (unsigned int)pointer>>12 ,flags);
+
     /* in questi dati poi modifico il 1024 record in modo che sia utilizzabile per indirizzarsi */
     setPageSelector(&tempPage[1023], (unsigned int)pointer>>12 ,flags);
     for(c2=0;c2<1023;c2++){
@@ -147,8 +152,6 @@ unsigned int addNewPage(unsigned int flags){
                 if(getFisicAdressFromSelector(pointer[i])==0x0){/* se è un selettore di pagina vuoto */
                     /* alloca spazio e setta il selettore */
                     setPageSelector(&pointer[i], getNewPage(1)>>12 ,flags);
-                    /* azzera la bitmap che indica le allocazioni nella pagina */
-                    writeBitmapOnPage((unsigned int*)virtualAdress(c,i,0));
                     return virtualAdress(c,i,0);
                 }
         }
@@ -159,8 +162,6 @@ unsigned int addNewPage(unsigned int flags){
     pointer=(unsigned int*)virtualAdress(c,0,1023);
     setPageSelector(&pointer[0], getNewPage(1)>>12 ,flags);
 
-    /* azzera la bitmap che indica le allocazioni nella pagina */
-    writeBitmapOnPage((unsigned int*)virtualAdress(c,0,0));
     return virtualAdress(c,0,0);
 }
 
@@ -207,95 +208,22 @@ void deletePageTable(unsigned int num){/* TODO: provare se funziona */
 }
 
 void* malloc(unsigned int byte){
-    unsigned int bitmapSize;
-    unsigned int c=1,i,i2,i3;/* la prima pagetable mappa il kernel quindi è inutile leggerla */
-    unsigned int *pointer,*pointer2;
-    unsigned int flag,ret,bitCounter;
-
-     /* ricavo la dimensione in byte della bitmap */
-    bitmapSize=(0x1000-128)/8/MIN_SIZE_ALLOCABLE;
-
-    if(byte<0x1000-bitmapSize){/* se il numero di byte da allocare stanno in una pagina */
-        /* passa le pagetable */
-        for(c=1;c<1023;c++)
-            if(getFisicAdressFromSelector(pageDir[c])!=0x0){
-                /* indirizzo pagetable */
-                pointer=(unsigned int*)virtualAdress(c,1023,0);
-                /* passa le pagine */
-                for(i=0;i<1023;i++)
-                    if(getFisicAdressFromSelector(pointer[i])!=0x0 && !(c==1 && (i==0 || i==1))){/* se non è una pagina vuota */
-                        pointer2=(unsigned int*)virtualAdress(c,i,0);
-                        flag=0;
-                        bitCounter=0;
-                        /* passa la bitmap cercando una sequenza di bit pari a zero abbastanza lunga */
-                        for(i2=0;i2<bitmapSize*8;i2++){
-                            if(getBitExt(pointer2,i2)==0){/* se il bit è 0 sett il flag e incrementa il bitCounter */
-                                if(flag==0){
-                                    flag=1;
-                                    ret=i2;
-                                }
-                                bitCounter++;
-                                if(byte<=bitCounter*4){/* se lo spazio è abbastanza grosso */
-                                    /* alloca */
-                                    for(i3=0;i3<bitCounter;i3++){
-                                        setBitExt(pointer2,ret+i3,1);
-                                    }
-
-                                    /* ritorna l'indirizzo appena allocato */
-                                    return (void*)virtualAdress(c,i,(unsigned int)(ret*MIN_SIZE_ALLOCABLE)+bitmapSize);
-                                }
-                            }else{/* se è a 1 resetta il flag e il bitCounter */
-                                flag=0;
-                                bitCounter=0;
-                                ret=0;
-                            }
-                        }
-                    }
-                c++;
-        }
-        /* se arriva quì non c'è spazio in nessuna pagina allocata */
-        /* alloca nuova pagina */
-        pointer=(unsigned int*)addNewPage(PAG_PRESENT|PAG_READWRITE|PAG_SUPERVISOR|PAG_4KPAGE);
-        /* alloca e ritorna il puntatore */
-        i=byte/MIN_SIZE_ALLOCABLE;
-        if(byte%MIN_SIZE_ALLOCABLE>0)/* approssima per eccesso */
-         i++;
-        for(i3=0;i3<i;i3++){
-            setBitExt(pointer,i3,1);
-        }
-        return (void*)virtualAdress(getTableFromVirtualAdress((unsigned int)pointer),getPageFromVirtualAdress((unsigned int)pointer),bitmapSize);
-    }else{/* non è possibile allocare un numero di byte contigui di questa dimensione, forse da sistemare in futuro */}
-    return (void*)0;
+    /*TODO:implementare*/
+    unsigned int *pointer;
+    writeline(">>WARNING: malloc per il kernel non implementata");
+    byte=0;
+    /* alloca nuova pagina */
+    pointer=(unsigned int*)addNewPage(PAG_PRESENT|PAG_READWRITE|PAG_SUPERVISOR|PAG_4KPAGE);
+    return (void*)pointer;
 }
 
 void free(void *pointer,unsigned int size){
-    unsigned int bitmapSize,table,page,offset,c;/*,end;*/
-
-    /* ricavo la dimensione in byte della bitmap */
-    bitmapSize=(0x1000-128)/8/MIN_SIZE_ALLOCABLE;
-
-    /* scompongo l'indirizzo */
-    table=getTableFromVirtualAdress((unsigned int)pointer);
-    page=getPageFromVirtualAdress((unsigned int)pointer);
-    offset=getOffsetFromVirtualAdress((unsigned int)pointer);
-
-    /* dealloco */
-    for(c=0;c<size;c++)
-        setBitExt((unsigned int*)virtualAdress(table,page,0),c + (offset-bitmapSize)/MIN_SIZE_ALLOCABLE ,0);
+    /*TODO:implementare*/
+    writeline(">>WARNING: free per il kernel non implementata");
+    size=0;
+    deletePage((unsigned int)pointer);
 }
 
-/*
- scrive la bitmap in una pagina e inizializza tutti i bit a zero
-*/
-void writeBitmapOnPage(unsigned int* adress){
-    unsigned int bitmapSize,c;
-    /* ricavo la dimensione in byte della bitmap */
-    bitmapSize=0x1000/8/MIN_SIZE_ALLOCABLE;
-    /* azzera tutti i bit */
-    for(c=0;c<bitmapSize/4;c++){
-        adress[c]=0;
-    }
-}
 
 void initPaging(void){
     int c,c2;
@@ -351,6 +279,7 @@ void initPaging(void){
     asm("sti");
 }
 
+/*setta il valore di un selettore*/
 /* obj: indirizzo dell'area su cui scrivere il selettore
  * TableAdress: indirizzo della tabella nella memoria (NB: una tabella occupa una pagina da 4K
  * questo indirizzo indica i 20 bit più significativi dell indirizzo della tabella)
