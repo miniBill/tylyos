@@ -18,6 +18,7 @@
 
 #include "ata.h"
 #include <kernel/stdio.h>
+#include <kernel/kernel.h>
 
 int isControllerPresent(int controller){
 	int port=controller?0x1F3:0x173;
@@ -26,3 +27,16 @@ int isControllerPresent(int controller){
 		return 1;
 	return 0;
 }
+
+int isHddPresent(int controller, int hdd){
+	short tmpword;
+	int port=controller?0x1F6:0x176;
+	if(!isControllerPresent(controller))
+		return 0;
+	
+	outb(port, hdd?0xB0:0xA0);
+	sleep(1);
+	tmpword = inb(port+1);
+	return (tmpword & 0x40)>0;
+}
+
