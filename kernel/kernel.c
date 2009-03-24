@@ -23,6 +23,7 @@
 #include <memory/memory.h>
 #include <interrupt/interrupt.h>
 #include <drivers/timer/timer.h>
+#include <drivers/hdd/ata.h>
 
 #include <gui/gui.h>
 
@@ -242,6 +243,26 @@ int doTests(test tests[]){
     return i;
 }
 
+int checkHdd(int t){
+    int controller=0;
+    NO(t);
+    greendot();
+    controller=(isControllerPresent(0)>0)?1:0;
+    printf("Rilevamento controller hdd: primario   %d\n",controller);
+    if(controller)
+        OK(t);
+    t++;
+
+    NO(t);
+    greendot();
+    controller=(isControllerPresent(1)>0)?1:0;
+    printf("                            secondario %d\n",controller);
+    if(controller)
+        OK(t);
+    t++;
+    return t;
+}
+
 void _kmain(multiboot_info_t* mbd, unsigned int magic){
     int t=0;/*test number*/
 
@@ -290,8 +311,8 @@ void _kmain(multiboot_info_t* mbd, unsigned int magic){
             printftest,
             magictest,
             mbdtest,
-            dinamictestOne,
-            dinamictestTwo
+            /*dinamictestOne,
+            dinamictestTwo*/
         };
         t+=doTests(tests);
     }
@@ -300,6 +321,8 @@ void _kmain(multiboot_info_t* mbd, unsigned int magic){
     greendot();
     writeline("Kernel pronto!!!");
     OK(t++);
+
+    t=checkHdd(t);
 
     drawRectangle(0,t,COLUMNS-1,ROWS-t-2,(char)(Yellow|Back_Blue));
     gotoxy(1,t+1);

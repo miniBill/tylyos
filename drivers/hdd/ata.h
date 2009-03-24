@@ -16,13 +16,4 @@
  * along with ClearOS.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "ata.h"
-#include <kernel/stdio.h>
-
-int isControllerPresent(int controller){
-	int port=controller?0x1F3:0x173;
-	outb(port,0x88);
-	if(inb(port)==0x88)
-		return 1;
-	return 0;
-}
+int isControllerPresent(int controller);
