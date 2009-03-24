@@ -17,3 +17,5 @@
  */
 
 int isControllerPresent(int controller);
+
+int isHddPresent(int controller,int hdd);

@@ -27,7 +27,7 @@
 
 #include <gui/gui.h>
 
-#define FAST_TESTS
+/*#define FAST_TESTS*/
 
 static int on=1;
 
@@ -224,9 +224,44 @@ int dinamictestTwo(void){
     return dinamicFirst==dinamicSecond;
 }
 
-typedef int (*test)(void);
-
 inline void greendot(void){write(" * ");cputxy(1,row(),Light_Green);}
+
+int checkHdd(int t,int controller,int disk){
+	int present=0;
+	NO(t);
+	greendot();
+	present=isHddPresent(controller,disk);
+	printf("Rilevamento presenza   hdd: %s %s\n",disk?"slave     ":"master    ",present?"presente":"assente");
+	if(present)
+		OK(t);
+	return t+1;
+}
+
+int checkController(int t,int controller){
+	int present=0;
+	NO(t);
+	greendot();
+	present=isControllerPresent(controller);
+	printf("Rilevamento controller hdd: %s %s\n",controller?"secondario":"primario  ",present?"presente":"assente");
+	if(present)
+		OK(t);
+	else
+		return t+1;
+	t++;
+	
+	t=checkHdd(t,controller,0);
+	t=checkHdd(t,controller,1);
+	
+	return t;
+}
+
+int checkHdds(int t){
+	t=checkController(t,0);
+	t=checkController(t,1);
+	return t;
+}
+
+typedef int (*test)(void);
 
 int doTests(test tests[]){
     int i;
@@ -241,26 +276,6 @@ int doTests(test tests[]){
         writeline("");
     }
     return i;
-}
-
-int checkHdd(int t){
-    int controller=0;
-    NO(t);
-    greendot();
-    controller=(isControllerPresent(0)>0)?1:0;
-    printf("Rilevamento controller hdd: primario   %d\n",controller);
-    if(controller)
-        OK(t);
-    t++;
-
-    NO(t);
-    greendot();
-    controller=(isControllerPresent(1)>0)?1:0;
-    printf("                            secondario %d\n",controller);
-    if(controller)
-        OK(t);
-    t++;
-    return t;
 }
 
 void _kmain(multiboot_info_t* mbd, unsigned int magic){
@@ -304,7 +319,7 @@ void _kmain(multiboot_info_t* mbd, unsigned int magic){
 
     {
         /*REMEMBER TO KEEP SIZE=ITEMS+1!!!*/
-        test tests[9]={
+        test tests[7]={
             putreadtest,
             pointertest,
             itoatest,
@@ -322,7 +337,7 @@ void _kmain(multiboot_info_t* mbd, unsigned int magic){
     writeline("Kernel pronto!!!");
     OK(t++);
 
-    t=checkHdd(t);
+    t=checkHdds(t);
 
     drawRectangle(0,t,COLUMNS-1,ROWS-t-2,(char)(Yellow|Back_Blue));
     gotoxy(1,t+1);
@@ -340,4 +355,10 @@ void _kmain(multiboot_info_t* mbd, unsigned int magic){
         clearIdt();
         asm("int $1");
     }
+}
+
+void sleep(int i){
+    int c;
+    for(c=0;c<100*i;c++)
+        ;
 }

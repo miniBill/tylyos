@@ -24,20 +24,17 @@ inline unsigned char inb(int portnum){
     return data;
 }
 
-inline unsigned short inw(unsigned short portnum)
-{
+inline unsigned short inw(unsigned short portnum){
     unsigned short _v;
     asm("inw %1,%0" : "=a" (_v) : "d" (portnum));
-    
     return _v;
 }
 
 inline void outb(int portnum, int data){
-    asm("outb %%ax, %%dx" :: "a" (data),"d" (portnum));
+    asm("outb %%al, %%dx" :: "a" (data),"d" (portnum));
 }
 
-inline void outw(unsigned short portnum, unsigned short data)
-{
+inline void outw(unsigned short portnum, unsigned short data){
     asm("outw %%ax,%%dx" :: "a" (data), "d" (portnum));
 }
 
