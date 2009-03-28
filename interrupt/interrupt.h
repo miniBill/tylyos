@@ -19,6 +19,8 @@
 #ifndef INTERRUPT_H_
 #define INTERRUPT_H_
 
+#define INTERRUPT_PRESENT 0x80
+
 struct idt_entry{
     unsigned short base_lo;
     unsigned short sel;

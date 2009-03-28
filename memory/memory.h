@@ -38,8 +38,12 @@ struct gdtPtr{
     unsigned int base;
 } __attribute__((packed));
 
-struct gdtEntry gdt[3];
+#define NUMERO_SEGMENTI 5 
+
+struct gdtEntry gdt[NUMERO_SEGMENTI];
 struct gdtPtr gdtPointer;
+
+unsigned short segmentoCodiceKernel,segmentoDatiKernel;/*selettori di segmento*/
 
 extern void gdtFlush(unsigned short selettoreSegmentoCodice,unsigned short selettoreSegmentoDati);
 
