@@ -38,30 +38,30 @@ void initIdt(void){
         addIdtSeg(c,0,0,0);
     
     /*DA RICONTROLLARE IL SELETTORE DI SEGMENTO!!!!*/
-    addIdtSeg( 0, isr_0,0x80,0x08);
-    addIdtSeg( 1, isr_1,0x80,0x08);
-    addIdtSeg( 2, isr_2,0x80,0x08);
-    addIdtSeg( 3, isr_3,0x80,0x08);
-    addIdtSeg( 4, isr_4,0x80,0x08);
-    addIdtSeg( 5, isr_5,0x80,0x08);
-    addIdtSeg( 6, isr_6,0x80,0x08);
-    addIdtSeg( 7, isr_7,0x80,0x08);
-    addIdtSeg( 8, isr_8,0x80,0x08);
-    addIdtSeg( 9, isr_9,0x80,0x08);
-    addIdtSeg(10,isr_10,0x80,0x08);
-    addIdtSeg(11,isr_11,0x80,0x08);
-    addIdtSeg(12,isr_12,0x80,0x08);
-    addIdtSeg(13,isr_13,0x80,0x08);
-    addIdtSeg(14,isr_14,0x80,0x08);
-    addIdtSeg(15,isr_15,0x80,0x08);
-    addIdtSeg(16,isr_16,0x80,0x08);
-    addIdtSeg(17,isr_17,0x80,0x08);
-    addIdtSeg(18,isr_18,0x80,0x08);
+    addIdtSeg( 0, isr_0,INTERRUPT_PRESENT,0x08);
+    addIdtSeg( 1, isr_1,INTERRUPT_PRESENT,0x08);
+    addIdtSeg( 2, isr_2,INTERRUPT_PRESENT,0x08);
+    addIdtSeg( 3, isr_3,INTERRUPT_PRESENT,0x08);
+    addIdtSeg( 4, isr_4,INTERRUPT_PRESENT,0x08);
+    addIdtSeg( 5, isr_5,INTERRUPT_PRESENT,0x08);
+    addIdtSeg( 6, isr_6,INTERRUPT_PRESENT,0x08);
+    addIdtSeg( 7, isr_7,INTERRUPT_PRESENT,0x08);
+    addIdtSeg( 8, isr_8,INTERRUPT_PRESENT,0x08);
+    addIdtSeg( 9, isr_9,INTERRUPT_PRESENT,0x08);
+    addIdtSeg(10,isr_10,INTERRUPT_PRESENT,0x08);
+    addIdtSeg(11,isr_11,INTERRUPT_PRESENT,0x08);
+    addIdtSeg(12,isr_12,INTERRUPT_PRESENT,0x08);
+    addIdtSeg(13,isr_13,INTERRUPT_PRESENT,0x08);
+    addIdtSeg(14,isr_14,INTERRUPT_PRESENT,0x08);
+    addIdtSeg(15,isr_15,INTERRUPT_PRESENT,0x08);
+    addIdtSeg(16,isr_16,INTERRUPT_PRESENT,0x08);
+    addIdtSeg(17,isr_17,INTERRUPT_PRESENT,0x08);
+    addIdtSeg(18,isr_18,INTERRUPT_PRESENT,0x08);
     for(c=32;c<50;c++)
-        addIdtSeg(c,isr_32,0x80,0x08);
-    addIdtSeg(32,isr_32,0x80,0x08);
-    addIdtSeg(33,isr_33,0x80,0x08);
-    addIdtSeg(47,isr_47,0x80,0x08);
+        addIdtSeg(c,isr_32,INTERRUPT_PRESENT,0x08);
+    addIdtSeg(32,isr_32,INTERRUPT_PRESENT,0x08);
+    addIdtSeg(33,isr_33,INTERRUPT_PRESENT,0x08);
+    addIdtSeg(47,isr_47,INTERRUPT_PRESENT,0x08);
 
     idt_pointer.limit=0xFFFF;
     idt_pointer.base=(unsigned int)&idt;
@@ -86,7 +86,7 @@ void addIdtSeg(short int i, void (*gestore)(), unsigned char options, unsigned i
     idt[i].base_lo= (indirizzo&0xFFFF);
     idt[i].always0=0x00;
     idt[i].sel = seg_sel;
-    idt[i].flags = options|0xE; /* 1|11|0: valido|ring3|sistema  */
+    idt[i].flags = options|0xE; /* 1|110: 32bit|interrupt gate  */
 }
 
 void sendICW(int pic_p,int pic_s ,int data){

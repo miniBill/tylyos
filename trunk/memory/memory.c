@@ -50,17 +50,27 @@ void gdtSet(int num, unsigned long base, unsigned long limit, unsigned char gran
 
 /*inizializza i segmenti di default*/
 void initGdt(){
-    gdtPointer.limit = (sizeof(struct gdtEntry) * 3) - 1;
+    gdtPointer.limit = (sizeof(struct gdtEntry) * NUMERO_SEGMENTI) - 1;
     gdtPointer.base = (int)&gdt;
 
     gdtSet(0, 0, 0, 0, 0); /*Il puntatore NULL!*/
     /*segmento codice kernel*/
     gdtSet(1, 0, 0xFFFFFFFF,MEM_GRANULAR|MEM_32,
-        MEM_PRESENT|MEM_CODE_DATA|MEM_RW|MEM_CODE);
+        MEM_PRESENT|MEM_CODE_DATA|MEM_RW|MEM_KERNEL|MEM_CODE);
     /*segmento dati kernel*/
     gdtSet(2, 0, 0xFFFFFFFF,MEM_GRANULAR|MEM_32,
-        MEM_PRESENT|MEM_CODE_DATA|MEM_RW);
-    gdtFlush(0x08,0x10);
+        MEM_PRESENT|MEM_CODE_DATA|MEM_RW|MEM_KERNEL|MEM_DATA);
+
+    /*segmento codice user mode*/
+    gdtSet(3, MEMORY_START, 0xFFFFFFFF-MEMORY_START,MEM_GRANULAR|MEM_32,
+        MEM_PRESENT|MEM_CODE_DATA|MEM_RW|MEM_USER|MEM_CODE);
+    /*segmento dati user mode*/
+    gdtSet(4, MEMORY_START, 0xFFFFFFFF-MEMORY_START,MEM_GRANULAR|MEM_32,
+        MEM_PRESENT|MEM_CODE_DATA|MEM_RW|MEM_USER|MEM_DATA);
+
+    segmentoCodiceKernel=0x08;
+    segmentoDatiKernel=0x10;
+    gdtFlush(segmentoCodiceKernel,segmentoDatiKernel);
 }
 
 /*######################### Paginazione ####################################*/
