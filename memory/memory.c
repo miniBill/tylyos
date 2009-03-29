@@ -113,11 +113,28 @@ void *calloc(unsigned int num, unsigned int size){
 
 
 void* kmalloc(unsigned int byte){
-    /*TODO:testare ed inserire controllo per non sforare nella memoria user*/
+    /*TODO:inserire controllo per non sforare nella memoria user*/
     struct memoryArea *pre,*next;
 
     if(kmallocList!=0)
     {
+        
+        /*controlla se vi è spazio prima del primo elemento*/        
+        if(
+            (unsigned int)kmallocList-mallocMemoryStart
+            >= byte + sizeof(struct memoryArea) 
+          )
+        {
+            /*printf("prima della lista %d\n", (unsigned int)kmallocList-mallocMemoryStart-sizeof(struct memoryArea));*/
+            pre=(struct memoryArea*)mallocMemoryStart;
+            next=(struct memoryArea*)kmallocList;
+            (*pre).next=next;
+            (*pre).size=byte;
+            kmallocList=pre;
+
+            return (void*)((unsigned int)pre+sizeof(struct memoryArea));
+        }
+
         pre=kmallocList;
         next=(*pre).next;
         
@@ -169,11 +186,41 @@ void* kmalloc(unsigned int byte){
 
 }
 
-void kfree(void *pointer,unsigned int size){
-    /*TODO:implementare*/
-    writeline(">>WARNING: free per il kernel non implementata");
-    pointer=0;
-    size=0;
+void kfree(void *pointer){
+    unsigned int tempPointer,tempPrePointer;
+
+    /*scorre la lista cercando l'elemento*/
+    tempPointer=(unsigned int)kmallocList;
+    tempPrePointer=0;
+    while(tempPointer!=0)
+    {
+        if(tempPointer+sizeof(struct memoryArea)==(unsigned int)pointer)
+        {
+            /*trovato, dealloca l'elemento*/
+            /*printf("trovato :D\n");*/
+            if(tempPrePointer==0)
+            {
+                /*è il primo elemento della lista*/
+                kmallocList=(*(struct memoryArea*)tempPointer).next;
+            }
+            else
+            {
+                if((*(struct memoryArea*)tempPointer).next!=0)
+                {
+                    /*se non è l'ultimo elemento bypassalo*/
+                    (*(struct memoryArea*)tempPrePointer).next=(*(struct memoryArea*)tempPointer).next;
+                }
+                else
+                {
+                    /*se è l'ultimo elemento metti a 0 il puntatore preedente*/
+                    (*(struct memoryArea*)tempPrePointer).next=0;
+                }
+                    
+            }
+        }
+        tempPrePointer=tempPointer;
+        tempPointer=(unsigned int)(*(struct memoryArea*)tempPointer).next;
+    }
 }
 
 

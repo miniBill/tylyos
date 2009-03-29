@@ -87,7 +87,7 @@ void setBitExt(unsigned int *bitmap,int x,unsigned int value);
 
 
 void* kmalloc(unsigned int byte);
-void kfree(void *pointer,unsigned int size);
+void kfree(void *pointer);
 
 
 /* ritornano le componenti dell indirizzo logico */

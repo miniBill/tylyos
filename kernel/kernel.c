@@ -158,7 +158,8 @@ int mbdtest(void){
 }
 
 int dinamictestOne(void){
-    int pointera,pointerb,pointerc;
+    unsigned int pointera,pointerb,pointerc;
+    int ret=1;
     write("Test allocazione dinamica: fase1 ");
 
     printf("heap start %d",mallocMemoryStart);
@@ -166,12 +167,30 @@ int dinamictestOne(void){
     pointerb=(unsigned int)kmalloc(4);
     pointerc=(unsigned int)kmalloc(4);
 
-    if(pointerc-pointerb == 12 &&
-       pointerb-pointera == 12)
-           return 1;
-       else
-           return 0;
 
+    if(!(pointerc-pointerb == 12 &&
+       pointerb-pointera == 12))
+	   ret=0;
+
+    kfree((void*)pointera);
+    if(!(pointera==(unsigned int)kmalloc(4)))
+    {
+       printf("a\n");
+       ret=0;
+    }
+    kfree((void*)pointerb);
+    if(!(pointerb==(unsigned int)kmalloc(4)))
+    {
+       printf("b\n");
+       ret=0;
+    }
+    kfree((void*)pointerc);
+    if(!(pointerc==(unsigned int)kmalloc(4)))
+    {
+       printf("c\n");
+       ret=0;
+    }
+    return ret;
 }
 
 int dinamictestTwo(void){
@@ -184,7 +203,7 @@ int dinamictestTwo(void){
     printf("0x%x=",(unsigned int)dinamicFirst);
 
     dinamicSecond=dinamicFirst;
-    kfree(dinamicFirst,4);
+    kfree(dinamicFirst);
 
     dinamicFirst=(char*)kmalloc(4);
 
