@@ -63,14 +63,17 @@ extern void gdtFlush(unsigned short selettoreSegmentoCodice,unsigned short selet
 
 /* 1 pagina = 4096 byte = 0x1000 */
 
-#define KERNEL_START        0x0 /* 1.048.576 byte */
-#define MEMORY_START 0x00400000 /* 4.194.304 byte*/
+#define KERNEL_START        0x0 /* indirizzo di inizio kernel*/
+#define KERNEL_MEMORY_START 0x00400000 /* indirizzo inizio zona allocazioni del kernel  NB: deve essere multiplo di 0x1000*/
+#define USER_START 0x98A000 /*10002432 10MB circa NB: deve essere multiplo di 0x1000*/
+
+unsigned int mallocMemoryStart; /* indirizzo inizio allocazioni kmalloc*/
 
 #define MAX_PAGES_IN_MEMORY 100000 /* numero massimo di pagine allocabili in memoria contemporaneamente */
 
 #define MIN_SIZE_ALLOCABLE 8 /* minima unità allocabile = 8byte */
 
-unsigned int *pageDir,tempPageSelector,*tempPage; /* area da 4096byte che ospita la pagedir del kernel */
+unsigned int *pageDir; /* area da 4096byte che ospita la pagedir del kernel */
 
 unsigned int memoryBitmap[MAX_PAGES_IN_MEMORY/32+1];	/* flag per ogni blocco di 4k della memoria fisica */
 
@@ -85,32 +88,7 @@ int getBitExt(unsigned int *bitmap,int x);
 void setBitExt(unsigned int *bitmap,int x,unsigned int value);
 
 
-/*
- ritorna un indirizzo fisico per l'allocazione di una nuova pagina
- alloca: indica se segnare questo indirizzo come utilizzato
-*/
-unsigned int getNewPage(int alloca);
 
-/*
- alloca una nuova pagetable e la inserisce nella pagedir
- ritorna l'indice in cui e' inserito il selettore
-*/
-unsigned int addNewPageTable(unsigned int flags);
-
-/* alloca una nuova pagina e ritorna l'indirizzo logico */
-unsigned int addNewPage(unsigned int flags);
-
-/*
- dealloca una pagina
- BaseAdress: indirizzo logico di inizio pagina
-*/
-void deletePage(unsigned int virtualAdress);
-
-/*
- dealloca una pagetable
- num: indice della pagetable nella pagedir
-*/
-void deletePageTable(unsigned int num);
 
 
 void* kmalloc(unsigned int byte);
