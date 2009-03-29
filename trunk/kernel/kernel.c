@@ -18,22 +18,24 @@
  */
 
 #include "kernel.h"
+#include "tests.h"
 #include "multiboot.h"
 #include <lib/string.h>
 #include <memory/memory.h>
 #include <interrupt/interrupt.h>
 #include <drivers/timer/timer.h>
+
 #include <drivers/hdd/ata.h>
 
 #include <gui/gui.h>
-
-#define FAST_TESTS
 
 static int on=1;
 
 static int magicNumber=0;
 
 static multiboot_info_t * multiBootInfo;
+
+inline void greendot(void){write(" * ");cputxy(1,row(),Light_Green);}
 
 void reboot(void){
     on=0;
@@ -84,149 +86,22 @@ int check(const char * output,int offset){
     return retval;
 }
 
-int putreadtest(void){
-    char output[16]="Prova put/read.";
-    int i;
-    put('P');
-    for(i=COLUMNS+1;i<COLUMNS+6;i++)
-        put(readi(i));
-    write("put/read.");
-    return check(output,0);
-}
-
-int pointertest(void){
-    char pointer[17]="Prova puntatore.";
-    write(pointer);
-    return check(pointer,0);
-}
-
-int itoatest(void){
-    char conversion[4]={0};
-    char output[8]="123,-A0";
-    int i;
-    write("Prova itoa:");
-    for(i=0;i<4;i++)
-        conversion[i]=0;
-    itoa(123,conversion);
-    write(conversion);
-    write(",");
-    itobase(-160,16,conversion);
-    write(conversion);
-    write(".");
-    return check(output,11);
-}
-
-int printftest(void){
-    char output[13]="10,CA,a,ciao";
-    write("Prova printf:");
-    printf("%d,%x,%c,%s",10,0xCA,'a',"ciao");
-    printf(" base stack: %x end: %x",getEBP(),getESP());
-    return check(output,13);
-}
-
-int magictest(void){
-    char magicString[13]={0};
-    write("Test magic number:");
-    itobase(magicNumber,16,magicString);
-    write(magicString);
-    return magicNumber==0x2BADB002;
-}
-
-int mbdtest(void){
-    char lower[13]={0};
-    char upper[10]={0};
-    char totalM[10]={0};
-    char totalK[5]={0};
-    int l=multiBootInfo->mem_lower;
-    int u=multiBootInfo->mem_upper;
-    if (multiBootInfo->flags & 1){
-        itoa(l,lower);
-        itoa(u/1024,upper);
-        itoa((l+u)/1024,totalM);
-        itoa((l+u)%1024,totalK);
-        write("Lower memory:");
-        write(lower);
-        write("Kb, Upper memory:");
-        write(upper);
-        write("Mb, Total memory:");
-        write(totalM);
-        write("Mb and ");
-        write(totalK);
-        write("Kb.");
-    }
-    return l>0;
-}
-
-int dinamictestOne(void){
-    unsigned int pointera,pointerb,pointerc;
-    int ret=1;
-    write("Test allocazione dinamica: fase1 ");
-
-    printf("heap start %d",mallocMemoryStart);
-    pointera=(unsigned int)kmalloc(4);
-    pointerb=(unsigned int)kmalloc(4);
-    pointerc=(unsigned int)kmalloc(4);
-
-
-    if(!(pointerc-pointerb == 12 &&
-       pointerb-pointera == 12))
-	   ret=0;
-
-    kfree((void*)pointera);
-    if(!(pointera==(unsigned int)kmalloc(4)))
-    {
-       printf("a\n");
-       ret=0;
-    }
-    kfree((void*)pointerb);
-    if(!(pointerb==(unsigned int)kmalloc(4)))
-    {
-       printf("b\n");
-       ret=0;
-    }
-    kfree((void*)pointerc);
-    if(!(pointerc==(unsigned int)kmalloc(4)))
-    {
-       printf("c\n");
-       ret=0;
-    }
-    return ret;
-}
-
-int dinamictestTwo(void){
-    char *dinamicFirst,*dinamicSecond;
-    int i;
-    for(i=0;i<27;i++)
-        put(' ');
-    write("fase2 ");
-    dinamicFirst=(char*)kmalloc(4);
-    printf("0x%x=",(unsigned int)dinamicFirst);
-
-    dinamicSecond=dinamicFirst;
-    kfree(dinamicFirst);
-
-    dinamicFirst=(char*)kmalloc(4);
-
-    printf("=0x%x.",(unsigned int)dinamicFirst);
-
-    return dinamicFirst==dinamicSecond;
-}
-
-inline void greendot(void){write(" * ");cputxy(1,row(),Light_Green);}
-
-int checkHdd(int t,int controller,int disk){
+int checkHdd(int controller,int disk){
 	int present=0;
+	int t=row()+1;
 	NO(t);
 	greendot();
 	present=isHddPresent(controller,disk);
 	printf("Rilevamento presenza   hdd: %s %s\n",disk?"slave     ":"master    ",present?"presente":"assente");
 	if(present)
 		OK(t);
-	return t+1;
+	return present;
 }
 
-int checkController(int t,int controller){
+int checkController(int controller){
 	int present=0;
+	int ret=0;
+	int t=row()+1;
 	NO(t);
 	greendot();
 	present=isControllerPresent(controller);
@@ -234,39 +109,72 @@ int checkController(int t,int controller){
 	if(present)
 		OK(t);
 	else
-		return t+1;
-	t++;
-	
-	t=checkHdd(t,controller,0);
-	t=checkHdd(t,controller,1);
-	
-	return t;
+		return 0;
+	ret|=8;
+	ret|=checkHdd(controller,0)<<2;
+	ret|=checkHdd(controller,1)<<1;
+	return ret;
 }
 
-int checkHdds(int t){
-	t=checkController(t,0);
-	t=checkController(t,1);
-	return t;
+int checkHdds(void){
+	int ret=0;
+	ret|=checkController(0);
+	ret|=checkController(1)<<4;
+	return ret;
 }
 
-typedef int (*test)(void);
-
-int doTests(test tests[]){
-    int i;
-    int t=row()+1;
-    for(i=0;tests[i]!=0;i++){
-        NO(t);
-        greendot();
-        if((*tests[i])())
-            OK(t++);
-        else
-            t++;
-        writeline("");
-    }
-    return i;
+int magictest(void){
+	char magicString[13]={0};
+	write("Test magic number:");
+	itobase(magicNumber,16,magicString);
+	write(magicString);
+	return magicNumber==0x2BADB002;
 }
 
-void _kmain(multiboot_info_t* mbd, unsigned int magic){
+int mbdtest(void){
+	char lower[13]={0};
+	char upper[10]={0};
+	char totalM[10]={0};
+	char totalK[5]={0};
+	int l=multiBootInfo->mem_lower;
+	int u=multiBootInfo->mem_upper;
+	if (multiBootInfo->flags & 1){
+		itoa(l,lower);
+		itoa(u/1024,upper);
+		itoa((l+u)/1024,totalM);
+		itoa((l+u)%1024,totalK);
+		write("Lower memory:");
+		write(lower);
+		write("Kb, Upper memory:");
+		write(upper);
+		write("Mb, Total memory:");
+		write(totalM);
+		write("Mb and ");
+		write(totalK);
+		write("Kb.");
+	}
+	return l>0;
+}
+
+void magic(void){
+	int t=row()+1;
+	NO(t);
+	greendot();
+	if(magictest())
+		OK(t++);
+	else
+		t++;
+	writeline("");
+	NO(t);
+	greendot();
+	if(mbdtest())
+		OK(t++);
+	else
+		t++;
+	writeline("");
+}
+
+void _kmain(multiboot_info_t* mbd, unsigned int magicN){
     int t=0;/*test number*/
 
     clearScreen();
@@ -285,46 +193,29 @@ void _kmain(multiboot_info_t* mbd, unsigned int magic){
 
     NO(t);
     greendot();
-    writeline("Inizializzazione GDT");
+    write("Inizializzazione:");
+
+    write(" GDT");
     initGdt();
-    OK(t++);
 
-    NO(t);
-    greendot();
-    writeline("Inizializzazione IDT");
+    write(" IDT");
     initIdt();
-    OK(t++);
 
-    NO(t);
-    greendot();
-    writeline("Inizializzazione Paging");
+    writeline(" Paging");
     initPaging();
     OK(t++);
 
     /*here start the true tests*/
-    magicNumber=magic;
+    magicNumber=magicN;
     multiBootInfo=mbd;
 
-    {
-        /*REMEMBER TO KEEP SIZE=ITEMS+1!!!*/
-#ifdef FAST_TESTS
-	test tests[3]={
-#else
-        test tests[8]={
-            putreadtest,
-            pointertest,
-            itoatest,
-            printftest,
-            magictest,
-#endif
-            mbdtest,
-            dinamictestOne,
-            /*dinamictestTwo*/
-        };
-        t+=doTests(tests);
-    }
+    doTests();
 
-    t=checkHdds(t);
+    magic();
+
+    printf("%b\n",checkHdds());
+
+    t=row()+1;
 
     NO(t);
     greendot();
