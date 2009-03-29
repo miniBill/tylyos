@@ -40,3 +40,39 @@ int isHddPresent(int controller, int hdd){
 	return (tmpword & 0x40)>0;
 }
 
+void readSector(int controller, int hdd, int sector, unsigned char buffer[256]){
+	int port=controller?0x170:0x1F0;
+	int i=0;
+	short word=0;
+	outb(port+1,0x00);/*NULL byte*/
+	outb(port+2,0x01);/*sector count*/
+	outb(port+3,(unsigned char)sector);/*low 8 bits*/
+	outb(port+4,(unsigned char)(sector >> 8));/*next 8 bits*/
+	outb(port+5,(unsigned char)(sector >> 16));/*next 8 bits*/
+	outb(port+6,0xE0|(hdd<<4)|((sector>>24)&0x0F));/*last 4 bits + drive + some magic*/
+	outb(port+1,0x20);/*read!*/
+	while(!(inb(port+1)&0x08)){sleep(1);}/*wait till it's ready*/
+	for(i=0;i<256;i++){
+		word=inw(port);
+		buffer[i*2]=(unsigned char)word;
+		buffer[i*2+1]=(unsigned char)(word>>8);
+	}
+}
+
+void writeSector(int controller, int hdd, int sector, unsigned char buffer[256]){
+	int port=controller?0x170:0x1F0;
+	int i=0;
+	short word=0;
+	outb(port+1,0x00);/*NULL byte*/
+	outb(port+2,0x01);/*sector count*/
+	outb(port+3,(unsigned char)sector);/*low 8 bits*/
+	outb(port+4,(unsigned char)(sector >> 8));/*next 8 bits*/
+	outb(port+5,(unsigned char)(sector >> 16));/*next 8 bits*/
+	outb(port+6,0xE0|(hdd<<4)|((sector>>24)&0x0F));/*last 4 bits + drive + some magic*/
+	outb(port+1,0x30);/*write!*/
+	while(!(inb(port+1)&0x08)){sleep(1);}/*wait till it's ready*/
+	for(i=0;i<256;i++){
+		word=buffer[i*2]|buffer[i*2+1]<<8;
+		outw(port,word);
+	}
+}
