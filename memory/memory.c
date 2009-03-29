@@ -70,6 +70,9 @@ void initGdt(){
 
     segmentoCodiceKernel=0x08;
     segmentoDatiKernel=0x10;
+    segmentoCodiceUser=0x18;
+    segmentoDatiUser=0x20;
+
     gdtFlush(segmentoCodiceKernel,segmentoDatiKernel);
 }
 
@@ -80,6 +83,7 @@ void initGdt(){
  alloca: indica se segnare questo indirizzo come utilizzato
 */
 unsigned int getNewPage(int alloca){
+/*TODO: riscrivere completamente tenendo conto dei descrittori di memoria fisica*/
     int c;
     for(c=0;c<MAX_PAGES_IN_MEMORY;c++){
         if(getBit(c)==0){
@@ -117,7 +121,7 @@ unsigned int getOffsetFromVirtualAdress(unsigned int adress){
 }
 
 void *calloc(unsigned int num, unsigned int size){
-    char *retval=malloc(num*size);
+    char *retval=kmalloc(num*size);
     unsigned int i;
     for(i=0;i<(num*size)/sizeof(char);i++)
         retval[i]=0;
@@ -128,6 +132,7 @@ void *calloc(unsigned int num, unsigned int size){
  alloca una nuova pagetable e la inserisce nella pagedir
  ritorna l'indice in cui è inserito il selettore
 */
+/*TODO: controllare l'effettiva utilità*/
 unsigned int addNewPageTable(unsigned int flags){/* TODO: provare se funziona */
     unsigned int c=0,c2;
     unsigned int *pointer;
@@ -151,6 +156,7 @@ unsigned int addNewPageTable(unsigned int flags){/* TODO: provare se funziona */
 }
 
 /* alloca una nuova pagina e ritorna l'indirizzo logico */
+/*TODO: controllare l'effettiva utilità*/
 unsigned int addNewPage(unsigned int flags){
     unsigned int c=1,i;/* la prima pagetable mappa il kernel quindi è inutile leggerla */
     unsigned int *pointer;
@@ -179,6 +185,7 @@ unsigned int addNewPage(unsigned int flags){
  dealloca una pagina
  BaseAdress: indirizzo logico di inizio pagina
 */
+/*TODO: controllare l'utilità, in ogni caso da riscrivere completamente*/
 void deletePage(unsigned int BaseAdress){
     unsigned int table,page,fisicAdress,*selectorAdress,*temp;
     /* scompongo l'indirizzo */
@@ -198,6 +205,7 @@ void deletePage(unsigned int BaseAdress){
  dealloca una pagetable
  num: indice della pagetable nella pagedir
 */
+/*TODO: controllare l'effettiva utilità*/
 void deletePageTable(unsigned int num){/* TODO: provare se funziona */
     unsigned int *selector,*page,fisicAdress,*temp,c;
     /* trovo gli indirizzi del selettore e della pagina che la contiene */
@@ -217,7 +225,7 @@ void deletePageTable(unsigned int num){/* TODO: provare se funziona */
     setPageTableSelector(selector,0,0);
 }
 
-void* malloc(unsigned int byte){
+void* kmalloc(unsigned int byte){
     /*TODO:implementare*/
     unsigned int *pointer;
     writeline(">>WARNING: malloc per il kernel non implementata");
@@ -227,7 +235,7 @@ void* malloc(unsigned int byte){
     return (void*)pointer;
 }
 
-void free(void *pointer,unsigned int size){
+void kfree(void *pointer,unsigned int size){
     /*TODO:implementare*/
     writeline(">>WARNING: free per il kernel non implementata");
     size=0;

@@ -180,7 +180,7 @@ int dinamictestOne(void){
         }
 
         dinamicSecond=dinamicFirst;
-        dinamicFirst=(char*)malloc(4);
+        dinamicFirst=(char*)kmalloc(4);
 
         *dinamicFirst=0;
 
@@ -211,13 +211,13 @@ int dinamictestTwo(void){
     for(i=0;i<27;i++)
         put(' ');
     write("fase2 ");
-    dinamicFirst=(char*)malloc(4);
+    dinamicFirst=(char*)kmalloc(4);
     printf("0x%x=",(unsigned int)dinamicFirst);
 
     dinamicSecond=dinamicFirst;
-    free(dinamicFirst,4);
+    kfree(dinamicFirst,4);
 
-    dinamicFirst=(char*)malloc(4);
+    dinamicFirst=(char*)kmalloc(4);
 
     printf("=0x%x.",(unsigned int)dinamicFirst);
 

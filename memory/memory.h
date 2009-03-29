@@ -43,7 +43,8 @@ struct gdtPtr{
 struct gdtEntry gdt[NUMERO_SEGMENTI];
 struct gdtPtr gdtPointer;
 
-unsigned short segmentoCodiceKernel,segmentoDatiKernel;/*selettori di segmento*/
+unsigned short segmentoCodiceKernel,segmentoDatiKernel;/*selettori di segmento kernel*/
+unsigned short segmentoCodiceUser,segmentoDatiUser;/*selettori di segmento user*/
 
 extern void gdtFlush(unsigned short selettoreSegmentoCodice,unsigned short selettoreSegmentoDati);
 
@@ -112,8 +113,8 @@ void deletePage(unsigned int virtualAdress);
 void deletePageTable(unsigned int num);
 
 
-void* malloc(unsigned int byte);
-void free(void *pointer,unsigned int size);
+void* kmalloc(unsigned int byte);
+void kfree(void *pointer,unsigned int size);
 
 
 /* ritornano le componenti dell indirizzo logico */
@@ -134,10 +135,10 @@ extern void write_cr3(unsigned int data);
 
 /*struttura lista allocazioni*/
 struct memoryArea{
-    unsigned int size;/*dimensione in multipli di MIN_SIZE_ALLOCABLE*/
-    unsigned int *next;/*prossima area*/
+    unsigned int size;/*dimensione in byte*/
+    unsigned int *next;/*indirizzo header della prossima area*/
 } __attribute__((packed));
 
-struct memoryArea *freeArea,*AllocatedArea;/*liste aree allocate e libere*/
+struct memoryArea *AllocatedArea;/*liste aree allocate e libere*/
 
 #endif

@@ -205,7 +205,7 @@ void keypress(void){
     unsigned char released=0;
     static int init=0;
     if(!init){
-        buffer=(char *)malloc(KEYBUFSIZE*sizeof(buffer));
+        buffer=(char *)kmalloc(KEYBUFSIZE*sizeof(buffer));
         for(init=0;init<KEYBUFSIZE;init++)
             buffer[init]=0;
     }
