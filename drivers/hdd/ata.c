@@ -21,7 +21,7 @@
 #include <kernel/kernel.h>
 
 int isControllerPresent(int controller){
-	int port=controller?0x1F3:0x173;
+	int port=controller?0x173:0x1F3;
 	outb(port,0x88);
 	if(inb(port)==0x88)
 		return 1;
@@ -30,7 +30,7 @@ int isControllerPresent(int controller){
 
 int isHddPresent(int controller, int hdd){
 	short tmpword;
-	int port=controller?0x1F6:0x176;
+	int port=controller?0x176:0x1F6;
 	if(!isControllerPresent(controller))
 		return 0;
 	
