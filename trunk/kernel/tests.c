@@ -103,6 +103,11 @@ int dinamictestTwo(void){
     return dinamicFirst==dinamicSecond;
 }
 
+/*int hddTest(void){
+	char buffer[256];
+	char first;
+}*/
+
 void run(test tests[]){
     int i;
     int t=row()+1;

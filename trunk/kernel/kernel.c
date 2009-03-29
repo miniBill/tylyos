@@ -213,7 +213,8 @@ void _kmain(multiboot_info_t* mbd, unsigned int magicN){
 
     magic();
 
-    printf("%b\n",checkHdds());
+    if(checkHdds()!=0xCC)
+    	NO(0);/*HACK*/
 
     t=row()+1;
 
