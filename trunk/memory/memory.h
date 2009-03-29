@@ -69,21 +69,16 @@ extern void gdtFlush(unsigned short selettoreSegmentoCodice,unsigned short selet
 
 unsigned int mallocMemoryStart; /* indirizzo inizio allocazioni kmalloc*/
 
-#define MAX_PAGES_IN_MEMORY 100000 /* numero massimo di pagine allocabili in memoria contemporaneamente */
 
-#define MIN_SIZE_ALLOCABLE 8 /* minima unità allocabile = 8byte */
 
 unsigned int *pageDir; /* area da 4096byte che ospita la pagedir del kernel */
 
-unsigned int memoryBitmap[MAX_PAGES_IN_MEMORY/32+1];	/* flag per ogni blocco di 4k della memoria fisica */
 
 void initPaging();
 
 void setPageTableSelector(unsigned int *obj,unsigned int tableAdress,unsigned int flags);
 void setPageSelector(unsigned int *obj,unsigned int pageAdress,unsigned int flags);
 
-int getBit(int x);
-void setBit(int x,unsigned int value);
 int getBitExt(unsigned int *bitmap,int x);
 void setBitExt(unsigned int *bitmap,int x,unsigned int value);
 
@@ -114,9 +109,9 @@ extern void write_cr3(unsigned int data);
 /*struttura lista allocazioni*/
 struct memoryArea{
     unsigned int size;/*dimensione in byte*/
-    unsigned int *next;/*indirizzo header della prossima area*/
+    struct memoryArea *next;/*indirizzo header della prossima area*/
 } __attribute__((packed));
 
-struct memoryArea *AllocatedArea;/*liste aree allocate e libere*/
+struct memoryArea *kmallocList;/*liste aree allocate e libere*/
 
 #endif
