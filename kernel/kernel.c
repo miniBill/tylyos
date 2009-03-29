@@ -158,51 +158,20 @@ int mbdtest(void){
 }
 
 int dinamictestOne(void){
-    char *dinamicFirst,*dinamicSecond;
-    char number[3]={0};
-    int c=0,i,check=1;
-    char buff[5]="-/|\\";
+    int pointera,pointerb,pointerc;
     write("Test allocazione dinamica: fase1 ");
 
-    putxy(39,row(),'%');
+    printf("heap start %d",mallocMemoryStart);
+    pointera=(unsigned int)kmalloc(4);
+    pointerb=(unsigned int)kmalloc(4);
+    pointerc=(unsigned int)kmalloc(4);
 
-#ifdef FAST_TESTS
-    for(i=0;i<10;i++){
-        if(!(i%1)){
-#else
-    for(i=0;i<100;i++){
-        if(!(i%1)){
-#endif
-            itoa(c,number);
-            writexy(37+(c<10),row(),number);
-            putxy(40,row(),buff[c%4]);
-            c++;
-        }
+    if(pointerc-pointerb == 12 &&
+       pointerb-pointera == 12)
+           return 1;
+       else
+           return 0;
 
-        dinamicSecond=dinamicFirst;
-        dinamicFirst=(char*)kmalloc(4);
-
-        *dinamicFirst=0;
-
-        if((dinamicSecond+4096)!=dinamicFirst  &&
-            getPageFromVirtualAdress((unsigned int)dinamicFirst)==
-            getPageFromVirtualAdress((unsigned int)dinamicSecond)){
-           
-            check=0;
-writeline(" ");
-            printf("%d:0x%x >> 0x%x",
-                      (unsigned int)i,
-                      (unsigned int)dinamicSecond,
-                      (unsigned int)dinamicFirst
-                  );
-        }
-    }
-#ifdef DONTDEFINETHIS
-    }}
-#endif
-    writexy(36,row(),"100");
-    putxy(40,row(),' ');
-    return check;
 }
 
 int dinamictestTwo(void){
@@ -319,15 +288,15 @@ void _kmain(multiboot_info_t* mbd, unsigned int magic){
 
     {
         /*REMEMBER TO KEEP SIZE=ITEMS+1!!!*/
-        test tests[7]={
+        test tests[8]={
             putreadtest,
             pointertest,
             itoatest,
             printftest,
             magictest,
             mbdtest,
-            /*dinamictestOne,
-            dinamictestTwo*/
+            dinamictestOne,
+            /*dinamictestTwo*/
         };
         t+=doTests(tests);
     }

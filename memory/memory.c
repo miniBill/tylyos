@@ -113,10 +113,60 @@ void *calloc(unsigned int num, unsigned int size){
 
 
 void* kmalloc(unsigned int byte){
-    /*TODO:implementare*/
-    writeline(">>WARNING: malloc per il kernel non implementata");
-    byte=0;
-    return 0;
+    /*TODO:testare ed inserire controllo per non sforare nella memoria user*/
+    struct memoryArea *pre,*next;
+
+    if(kmallocList!=0)
+    {
+        pre=kmallocList;
+        next=(*pre).next;
+        
+        while(next!=0)
+        {
+            /*controlla lo spazio fra le due allocazioni*/
+            if(
+               ((unsigned int)next)-
+               ((unsigned int)pre+sizeof(struct memoryArea)+(*pre).size)
+               >= byte
+              )
+            {
+                /*c'è spazio, alloca fra pre e next*/
+                struct memoryArea *temp;
+                (*pre).next=(struct memoryArea*)((unsigned int)pre+sizeof(struct memoryArea)+(*pre).size);
+                temp=(*pre).next;
+                (*temp).next=next;
+                (*temp).size=byte;
+
+                /*printf("in mezzo\n");*/
+
+                return (void*)((unsigned int)temp+sizeof(struct memoryArea));
+            }
+            pre=next;
+            next=(*next).next;
+        }
+        /*non è stato trovato spazio negli spazi liberi fra le allocazioni*/
+        /*verrà quindi allocato alla fine della lista*/
+        next=(struct memoryArea*)((unsigned int)pre+(*pre).size+sizeof(struct memoryArea));
+        (*pre).next=next;
+        (*next).next=0;
+        (*next).size=byte;
+
+        /*printf("alla fine\n");*/
+
+        return (void*)((unsigned int)next+sizeof(struct memoryArea));
+    }
+    else
+    {
+        /*lista allocazioni vuota*/
+        kmallocList=(struct memoryArea*)mallocMemoryStart;
+        (*kmallocList).next=0;
+        (*kmallocList).size=byte;
+
+        /*printf("lista vuota %d\n",kmallocList);*/
+
+        return (void*)((unsigned int)kmallocList+sizeof(struct memoryArea));
+    }
+
 }
 
 void kfree(void *pointer,unsigned int size){
@@ -164,7 +214,11 @@ void initPaging(void){
         }
     }
 
-    mallocMemoryStart=0;/*inserire l'indirizzo di fine delle pagetables*/
+    pointer+=0x1000;/*locazione successiva all ultima pagetable creata*/
+    mallocMemoryStart=pointer;/*indirizzo base dell heap*/
+
+    kmallocList=0;/*nessuna allocazione*/
+
     write_cr3((unsigned int)pageDir); /* put that page directory address into CR3 */
     write_cr0(read_cr0() | 0x80000000); /* set the paging bit in CR0 to 1 */
 
@@ -192,23 +246,7 @@ void setPageSelector(unsigned int *obj,unsigned int pageAdress,unsigned int flag
     *obj|=(pageAdress<<12)&0xFFFFF000;
 }
 
-int getBit(int x){
-    int off1,off2;
-    off1=x/32;
-    off2=x%32;
-    return (memoryBitmap[off1]>>off2)&1;
-}
 
-void setBit(int x,unsigned int value){
-    int off1,off2;
-    off1=x/32;
-    off2=x%32;
-    value&=0x1;
-    if(value)
-        memoryBitmap[off1]|=1<<off2;
-    else
-        memoryBitmap[off1]&=~(1<<off2);
-}
 
 int getBitExt(unsigned int *bitmap,int x){
     int off1,off2;
