@@ -28,12 +28,13 @@ OBJ= bootloader/loader.o \
      interrupt/interrupt.o interrupt/interruptHandler.o interrupt/ldt.o \
      gui/gui.o
 LDFLAGS= -T linker.ld
+MK=Makefile.in
 
 include Makefile.in
 
-all:clearos.iso
+all:clearos.iso 
 
-clearos.iso: clearos
+clearos.iso: clearos Makefile.in
 	@echo "Preparing iso..."
 	@mkdir iso && \
 	mkdir -p iso/boot/grub && \
@@ -47,11 +48,15 @@ clearos.iso: clearos
 	echo "Iso created" && \
 	rm -R iso
 
+Makefile.in:
+	@echo "Configuring..."
+	@./configure
+
 clearos: $(OBJ)
 	@echo "LD" $@
 	@$(LD) $(LDFLAGS) $^ -o $@
 
-%.o:%.s
+%.o:%.s 
 	@echo "AS" $@
 	@$(AS) $(ASFLAGS) $^ -o $@
 
