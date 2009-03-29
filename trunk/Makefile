@@ -31,9 +31,9 @@ LDFLAGS= -T linker.ld
 
 include Makefile.in
 
-all:iso.img
+all:clearos.iso
 
-iso.img: clearos
+clearos.iso: clearos
 	@echo "Preparing iso..."
 	@mkdir iso && \
 	mkdir -p iso/boot/grub && \
@@ -43,7 +43,7 @@ iso.img: clearos
 	echo "kernel  /boot/clearos">>iso/boot/grub/menu.lst && \
 	cp clearos iso/boot/clearos && \
 	mkisofs -quiet -R -b boot/grub/stage2_eltorito -no-emul-boot \
-	-boot-load-size 4 -boot-info-table -o iso.img iso && \
+	-boot-load-size 4 -boot-info-table -o $@ iso && \
 	echo "Iso created" && \
 	rm -R iso
 
@@ -65,9 +65,9 @@ clearos: $(OBJ)
 
 .PHONY: clean
 clean:
-	rm -f *\~ */*\~ */*.o */*/*\~ */*/*.o log clearos iso.img clearos.iso clearos.iso.sig
+	rm -f *\~ */*\~ */*.o */*/*\~ */*/*.o log clearos clearos.iso clearos.iso.sig
 
 .PHONY: smallclean
 smallclean:
-	rm -f *\~ */*\~ */*.o */*/*\~ */*/*.o log clearos clearos.iso clearos.iso.sig
+	rm -f *\~ */*\~ */*.o */*/*\~ */*/*.o log clearos clearos.iso.sig
 
