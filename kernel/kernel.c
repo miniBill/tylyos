@@ -27,7 +27,7 @@
 
 #include <gui/gui.h>
 
-/*#define FAST_TESTS*/
+#define FAST_TESTS
 
 static int on=1;
 
@@ -307,12 +307,16 @@ void _kmain(multiboot_info_t* mbd, unsigned int magic){
 
     {
         /*REMEMBER TO KEEP SIZE=ITEMS+1!!!*/
+#ifdef FAST_TESTS
+	test tests[3]={
+#else
         test tests[8]={
             putreadtest,
             pointertest,
             itoatest,
             printftest,
             magictest,
+#endif
             mbdtest,
             dinamictestOne,
             /*dinamictestTwo*/
@@ -320,12 +324,12 @@ void _kmain(multiboot_info_t* mbd, unsigned int magic){
         t+=doTests(tests);
     }
 
+    t=checkHdds(t);
+
     NO(t);
     greendot();
     writeline("Kernel pronto!!!");
     OK(t++);
-
-    t=checkHdds(t);
 
     drawRectangle(0,t,COLUMNS-1,ROWS-t-2,(char)(Yellow|Back_Blue));
     gotoxy(1,t+1);
