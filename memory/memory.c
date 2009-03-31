@@ -236,9 +236,8 @@ void initPaging(void){
     pageDir=(unsigned int*)KERNEL_MEMORY_START;
     pointer=(unsigned int)pageDir;
 
-
-        setPageTableSelector(&pageDir[c],0,0);
-        setPageTableSelector(&pageDir[c],0,0);
+    for(c=0;c<(1024*1024);c++)
+        pageDir[c]=0;
 
     pageIndex=0;
     pageTableIndex=0;
@@ -261,8 +260,7 @@ void initPaging(void){
         }
     }
 
-    pointer+=0x1000;/*locazione successiva all ultima pagetable creata*/
-    mallocMemoryStart=pointer;/*indirizzo base dell heap*/
+    mallocMemoryStart=(unsigned int)pageDir+(((1024*1024)+1)*4);/*indirizzo base dell heap*/
 
     kmallocList=0;/*nessuna allocazione*/
 

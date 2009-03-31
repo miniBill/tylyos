@@ -65,7 +65,7 @@ extern void gdtFlush(unsigned short selettoreSegmentoCodice,unsigned short selet
 
 #define KERNEL_START        0x0 /* indirizzo di inizio kernel*/
 #define KERNEL_MEMORY_START 0x00400000 /* indirizzo inizio zona allocazioni del kernel  NB: deve essere multiplo di 0x1000*/
-#define USER_START 0x98A000 /*10002432 10MB circa NB: deve essere multiplo di 0x1000*/
+#define USER_START 0xFA3000 /*20MB circa NB: deve essere multiplo di 0x1000*/
 
 unsigned int mallocMemoryStart; /* indirizzo inizio allocazioni kmalloc*/
 

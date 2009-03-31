@@ -76,3 +76,4 @@ void writeSector(int controller, int hdd, int sector, unsigned char buffer[256])
 		outw(port,word);
 	}
 }
+
