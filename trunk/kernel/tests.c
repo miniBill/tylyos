@@ -57,8 +57,9 @@ int dinamictestOne(void){
     pointera=(unsigned int)kmalloc(4);
     pointerb=(unsigned int)kmalloc(4);
     pointerc=(unsigned int)kmalloc(4);
-
-
+/*
+printf("\n%d %d %d\n",pointera,pointerb,pointerc);
+*/
     if(!(pointerc-pointerb == 12 &&
             pointerb-pointera == 12))
         ret=0;
@@ -138,3 +139,4 @@ void doTests(void){
         };
         run(tests);
 }
+
