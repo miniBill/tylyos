@@ -61,12 +61,6 @@ void initGdt(){
     gdtSet(2, 0, 0xFFFFFFFF,MEM_GRANULAR|MEM_32,
         MEM_PRESENT|MEM_CODE_DATA|MEM_RW|MEM_KERNEL|MEM_DATA);
 
-    /*segmento codice user mode*/
-    gdtSet(3, USER_START, 0xFFFFFFFF-USER_START,MEM_GRANULAR|MEM_32,
-        MEM_PRESENT|MEM_CODE_DATA|MEM_RW|MEM_USER|MEM_CODE);
-    /*segmento dati user mode*/
-    gdtSet(4, USER_START, 0xFFFFFFFF-USER_START,MEM_GRANULAR|MEM_32,
-        MEM_PRESENT|MEM_CODE_DATA|MEM_RW|MEM_USER|MEM_DATA);
 
     segmentoCodiceKernel=0x08;
     segmentoDatiKernel=0x10;
@@ -227,6 +221,7 @@ void kfree(void *pointer){
 void initPaging(void){
     unsigned int pointer,fisicPointer;
     int pageIndex,pageTableIndex;
+    unsigned int addMem;
     char flags=PAG_PRESENT|PAG_READWRITE|PAG_SUPERVISOR|PAG_4KPAGE;
     int c=0;
     asm("cli");
@@ -236,12 +231,19 @@ void initPaging(void){
     pageDir=(unsigned int*)KERNEL_MEMORY_START;
     pointer=(unsigned int)pageDir;
 
-    for(c=0;c<(1024*1024);c++)
+
+    mallocMemoryStart=(unsigned int)pageDir+(((1024*1024)+1)*4);/*indirizzo base dell heap*/
+    addMem=((double)memoriaFisica/1000000000.0)*3000000.0;
+    userMemoryStart=mallocMemoryStart+MIN_HEAP_SIZE+addMem;
+    userMemoryStart+= 0x1000-(userMemoryStart%0x1000);
+
+
+    for(c=0;c<(1024*1024)+1;c++)
         pageDir[c]=0;
 
     pageIndex=0;
     pageTableIndex=0;
-    while(fisicPointer<USER_START)
+    while(fisicPointer<userMemoryStart)
     {
         /*passa i selettori di pagina della pagetabla puntata da pointer*/
         setPageSelector((unsigned int*)(pointer+(pageIndex*4)),fisicPointer>>12,flags);
@@ -260,7 +262,17 @@ void initPaging(void){
         }
     }
 
-    mallocMemoryStart=(unsigned int)pageDir+(((1024*1024)+1)*4);/*indirizzo base dell heap*/
+
+
+    /*segmento codice user mode*/
+    gdtSet(3, userMemoryStart, 0xFFFFFFFF-userMemoryStart,MEM_GRANULAR|MEM_32,
+        MEM_PRESENT|MEM_CODE_DATA|MEM_RW|MEM_USER|MEM_CODE);
+    /*segmento dati user mode*/
+    gdtSet(4, userMemoryStart, 0xFFFFFFFF-userMemoryStart,MEM_GRANULAR|MEM_32,
+        MEM_PRESENT|MEM_CODE_DATA|MEM_RW|MEM_USER|MEM_DATA);
+
+
+
 
     kmallocList=0;/*nessuna allocazione*/
 
