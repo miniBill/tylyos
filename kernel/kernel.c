@@ -177,6 +177,13 @@ void magic(void){
 void _kmain(multiboot_info_t* mbd, unsigned int magicN){
     int t=0;/*test number*/
 
+
+    magicNumber=magicN;
+    multiBootInfo=mbd;
+
+    memoriaFisica=multiBootInfo->mem_lower+multiBootInfo->mem_upper;
+    memoriaFisica*=1024;
+
     clearScreen();
 
     NO(t);
@@ -206,8 +213,6 @@ void _kmain(multiboot_info_t* mbd, unsigned int magicN){
     OK(t++);
 
     /*here start the true tests*/
-    magicNumber=magicN;
-    multiBootInfo=mbd;
 
     doTests();
 

@@ -65,11 +65,13 @@ extern void gdtFlush(unsigned short selettoreSegmentoCodice,unsigned short selet
 
 #define KERNEL_START        0x0 /* indirizzo di inizio kernel*/
 #define KERNEL_MEMORY_START 0x00400000 /* indirizzo inizio zona allocazioni del kernel  NB: deve essere multiplo di 0x1000*/
-#define USER_START 0xFA3000 /*20MB circa NB: deve essere multiplo di 0x1000*/
+
+#define MIN_HEAP_SIZE 0x98A000 /* 10MB circa di heap a cui verrà sommato il valore calcolato in base allla memoria fisica */
 
 unsigned int mallocMemoryStart; /* indirizzo inizio allocazioni kmalloc*/
+unsigned int memoriaFisica; /* byte di memoria fisica */
 
-
+unsigned int userMemoryStart; /* indirizzo di partenza del segmento user*/
 
 unsigned int *pageDir; /* area da 4096byte che ospita la pagedir del kernel */
 
