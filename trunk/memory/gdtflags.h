@@ -20,6 +20,10 @@
 #ifndef GDTFLAGS_H_
 #define GDTFLAGS_H_
 
+
+#define RPL_USER 0x3
+#define RPL_KERNEL 0x0
+
 enum{
                             /*         V                    */
     MEM_RO          = 0x00, /*00|00|00|00 0=read only       */

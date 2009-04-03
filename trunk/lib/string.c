@@ -29,6 +29,14 @@ int strlen(const char * string){
     return ret;
 }
 
+void strcpy(char *source,char *dest)
+{
+    int c;
+    for(c=0;c<strlen(source);c++)
+        dest[c]=source[c];
+    dest[c]=0;
+}
+
 void itoa(int a,char buff[11]){
     itobase(a,10,buff);
 }

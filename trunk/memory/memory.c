@@ -35,6 +35,12 @@ unsigned int getESP(){
     return data;
 }
 
+/*ritorna un selettore di segmento assemblato usando i dati passati*/
+unsigned short segmentSelector(unsigned int index,char tableIndicator,char RPL)
+{
+    return ((index<<3)&0xFFF8)|((tableIndicator<<2)&0x4)|(RPL);
+}
+
 /*setta una riga della GDT (descrittore di segmento)*/
 void gdtSet(int num, unsigned long base, unsigned long limit, unsigned char gran, unsigned char access){
     gdt[num].baseLow = (base & 0xFFFF);
@@ -62,10 +68,10 @@ void initGdt(){
         MEM_PRESENT|MEM_CODE_DATA|MEM_RW|MEM_KERNEL|MEM_DATA);
 
 
-    segmentoCodiceKernel=0x08;
-    segmentoDatiKernel=0x10;
-    segmentoCodiceUser=0x18;
-    segmentoDatiUser=0x20;
+    segmentoCodiceKernel=segmentSelector(1,0,RPL_KERNEL);
+    segmentoDatiKernel=segmentSelector(2,0,RPL_KERNEL);
+    segmentoCodiceUser=segmentSelector(3,0,RPL_USER);
+    segmentoDatiUser=segmentSelector(4,0,RPL_USER);
 
     gdtFlush(segmentoCodiceKernel,segmentoDatiKernel);
 }
@@ -122,45 +128,45 @@ void* kmalloc(unsigned int byte){
             /*printf("prima della lista %d\n", (unsigned int)kmallocList-mallocMemoryStart-sizeof(struct memoryArea));*/
             pre=(struct memoryArea*)mallocMemoryStart;
             next=(struct memoryArea*)kmallocList;
-            (*pre).next=next;
-            (*pre).size=byte;
+            pre->next=next;
+            pre->size=byte;
             kmallocList=pre;
 
             return (void*)((unsigned int)pre+sizeof(struct memoryArea));
         }
 
         pre=kmallocList;
-        next=(*pre).next;
+        next=pre->next;
         
         while(next!=0)
         {
             /*controlla lo spazio fra le due allocazioni*/
             if(
                ((unsigned int)next)-
-               ((unsigned int)pre+sizeof(struct memoryArea)+(*pre).size)
+               ((unsigned int)pre+sizeof(struct memoryArea)+pre->size)
                >= byte
               )
             {
                 /*c'è spazio, alloca fra pre e next*/
                 struct memoryArea *temp;
-                (*pre).next=(struct memoryArea*)((unsigned int)pre+sizeof(struct memoryArea)+(*pre).size);
-                temp=(*pre).next;
-                (*temp).next=next;
-                (*temp).size=byte;
+                pre->next=(struct memoryArea*)((unsigned int)pre+sizeof(struct memoryArea)+pre->size);
+                temp=pre->next;
+                temp->next=next;
+                temp->size=byte;
 
                 /*printf("in mezzo\n");*/
 
                 return (void*)((unsigned int)temp+sizeof(struct memoryArea));
             }
             pre=next;
-            next=(*next).next;
+            next=next->next;
         }
         /*non è stato trovato spazio negli spazi liberi fra le allocazioni*/
         /*verrà quindi allocato alla fine della lista*/
-        next=(struct memoryArea*)((unsigned int)pre+(*pre).size+sizeof(struct memoryArea));
-        (*pre).next=next;
-        (*next).next=0;
-        (*next).size=byte;
+        next=(struct memoryArea*)((unsigned int)pre+pre->size+sizeof(struct memoryArea));
+        pre->next=next;
+        next->next=0;
+        next->size=byte;
 
         /*printf("alla fine\n");*/
 
@@ -170,8 +176,8 @@ void* kmalloc(unsigned int byte){
     {
         /*lista allocazioni vuota*/
         kmallocList=(struct memoryArea*)mallocMemoryStart;
-        (*kmallocList).next=0;
-        (*kmallocList).size=byte;
+        kmallocList->next=0;
+        kmallocList->size=byte;
 
         /*printf("lista vuota %d\n",kmallocList);*/
 
