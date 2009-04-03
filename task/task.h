@@ -19,7 +19,7 @@
 #ifndef TASK_H
 #define TASK_H
 
-typedef struct tss
+struct tss
 {
     unsigned int        link;
     unsigned int        esp0;
@@ -44,17 +44,26 @@ typedef struct tss
     unsigned short      gs, __gsh;
     unsigned short      ldtr, __ldtrh;
     unsigned short      trace, io_map_addr;
-} tss_t;
+};
 
+#define MAX_TASK_NAME_LEN 20
 struct task
 {
+    struct tss *TSSaddr;
     unsigned int procID;
     char stato;
-    char nome[20];
+    char nome[MAX_TASK_NAME_LEN];
+    char privilegi;
 };
 
 
 void initTaskManagement();
+
+/*setta un selettore di segmento TSS*/
+/*num: indice nella GDT*/
+/*base: base segmento*/
+/*access: MEM_TSS_BUSY|MEM_TSS|MEM_KERNEL|MEM_RING1|MEM_RING2|MEM_USER|MEM_PRESENT|MEM_NOT_PRESENT*/
+void TSSset(int num, unsigned long base, unsigned char access);
 
 #endif
 

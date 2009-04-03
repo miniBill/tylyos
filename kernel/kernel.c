@@ -22,6 +22,7 @@
 #include "multiboot.h"
 #include <lib/string.h>
 #include <memory/memory.h>
+#include <task/task.h>
 #include <interrupt/interrupt.h>
 #include <drivers/timer/timer.h>
 
