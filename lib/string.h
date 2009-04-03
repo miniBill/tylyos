@@ -5,6 +5,8 @@
 
 int strlen(const char * string);
 
+void strcpy(char *source,char *dest);
+
 void itoa(int a,char buff[11]);
 
 void itobase(int a,unsigned short base,char * buff);

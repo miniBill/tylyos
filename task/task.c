@@ -18,9 +18,12 @@
 
 #include "task.h"
 #include <memory/memory.h>
+#include <lib/string.h>
 
 void initTaskManagement()
 {
+    taskListRoot=0;
+
     return;
 }
 
@@ -38,5 +41,91 @@ void TSSset(int num, unsigned long base, unsigned char access){
     /*granularity.low is limit.high*/
     gdt[num].granularity = ((limit >> 16) & 0x0F);
     gdt[num].access = access;
+}
+
+void addTask(char nome[MAX_TASK_NAME_LEN],char privilegi)
+{
+    /*alloca le strutture necessarie*/
+    struct taskStruct *newTask=kmalloc(sizeof(struct taskStruct));
+    struct taskListElement *newListElement=kmalloc(sizeof(struct taskListElement));
+    struct taskListElement *pointer;
+
+    newListElement->task=newTask;
+    newListElement->next=0;
+
+    newTask->privilegi=privilegi;
+    strcpy(nome,newTask->nome);
+
+    /*scrive i valori di default nel TSS*/
+
+    newTask->TSS.link=0;
+    /*stack pointer*/
+    newTask->TSS.esp0=0;/*RICORDARSI DI FARLO AGGIORNARE DAL LOADER*/
+    newTask->TSS.esp1=0;/*RICORDARSI DI FARLO AGGIORNARE DAL LOADER*/
+    newTask->TSS.esp2=0;/*RICORDARSI DI FARLO AGGIORNARE DAL LOADER*/
+
+    /*aree da settare a 0*/
+    newTask->TSS.__ss0h=0;/*sempre a 0*/
+    newTask->TSS.__ss1h=0;/*sempre a 0*/
+    newTask->TSS.__ss2h=0;/*sempre a 0*/
+
+    /*selettori stack*/ 
+    newTask->TSS.ss0=segmentoDatiUser;
+    newTask->TSS.ss1=segmentoDatiUser;
+    newTask->TSS.ss2=segmentoDatiUser;
+
+    newTask->TSS.cr3=(unsigned int)pageDir;
+
+    newTask->TSS.eip=0;/*RICORDARSI DI FARLO AGGIORNARE DAL LOADER*/
+
+    newTask->TSS.eflags=0;
+
+    newTask->TSS.eax=0;
+    newTask->TSS.ecx=0;
+    newTask->TSS.edx=0;
+    newTask->TSS.ebx=0;
+
+    newTask->TSS.esi=0;
+    newTask->TSS.edi=0;
+
+    newTask->TSS.esp=0;/*RICORDARSI DI FARLO AGGIORNARE DAL LOADER*/
+    newTask->TSS.ebp=0;/*RICORDARSI DI FARLO AGGIORNARE DAL LOADER*/
+  
+    /*selettori segmenti*/
+    newTask->TSS.es=segmentoDatiUser;
+    newTask->TSS.cs=segmentoCodiceUser;
+    newTask->TSS.ss=segmentoDatiUser;
+    newTask->TSS.ds=segmentoDatiUser;
+    newTask->TSS.fs=segmentoDatiUser;
+    newTask->TSS.gs=segmentoDatiUser;
+
+    /*selettore LDT*/
+    newTask->TSS.ldtr=0;
+
+    /*campi da azzerare*/
+    newTask->TSS.__esh=0;
+    newTask->TSS.__csh=0;
+    newTask->TSS.__ssh=0;
+    newTask->TSS.__dsh=0;
+    newTask->TSS.__fsh=0;
+    newTask->TSS.__gsh=0;
+    newTask->TSS.__ldtrh=0;
+
+    newTask->TSS.trace=0;
+
+    /*aggiunge alla lista dei task*/
+    pointer=taskListRoot; 
+   
+    if(pointer!=0) 
+    {
+        while(pointer->next!=0)
+        {
+            pointer=pointer->next;
+        }
+
+        pointer->next=newListElement;
+    }
+    else
+        taskListRoot=newListElement;
 }
 

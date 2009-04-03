@@ -47,15 +47,25 @@ struct tss
 };
 
 #define MAX_TASK_NAME_LEN 20
-struct task
+struct taskStruct
 {
-    struct tss *TSSaddr;
+    struct tss TSS;
     unsigned int procID;
     char stato;
     char nome[MAX_TASK_NAME_LEN];
     char privilegi;
 };
 
+struct taskListElement
+{
+    struct taskListElement *next;
+    struct taskStruct *task; 
+};
+
+struct taskListElement *taskListRoot; /*puntatore al primo elemento della lista dei task*/
+
+unsigned int lastTSSindex; /*questi due indici si riferiscono alla GDT*/
+unsigned int TSSindex;/*per lo switch serve il nuovo TSS e quello vecchio, queste variabili sono usate per capire la loro locazione*/
 
 void initTaskManagement();
 
@@ -64,6 +74,7 @@ void initTaskManagement();
 /*base: base segmento*/
 /*access: MEM_TSS_BUSY|MEM_TSS|MEM_KERNEL|MEM_RING1|MEM_RING2|MEM_USER|MEM_PRESENT|MEM_NOT_PRESENT*/
 void TSSset(int num, unsigned long base, unsigned char access);
+
 
 #endif
 

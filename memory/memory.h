@@ -22,6 +22,9 @@
 unsigned int getEBP();
 unsigned int getESP();
 
+/*ritorna un selettore di segmento assemblato usando i dati passati*/
+unsigned short segmentSelector(unsigned int index,char tableIndicator,char RPL);
+
 void initGdt();
 
 struct gdtEntry{
