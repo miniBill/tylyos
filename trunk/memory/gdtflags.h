@@ -21,7 +21,7 @@
 #define GDTFLAGS_H_
 
 enum{
-                            /*          V                   */
+                            /*         V                    */
     MEM_RO          = 0x00, /*00|00|00|00 0=read only       */
     MEM_RW          = 0x02, /*00|00|00|10 1=read and write  */
 
@@ -32,6 +32,10 @@ enum{
                             /*      V                       */
     MEM_DATA        = 0x00, /*00|00|00|00 0=dati            */
     MEM_CODE        = 0x08, /*00|00|10|00 1=codice          */
+
+
+    MEM_TSS        = 0x09, /*00|00|10|01           */
+    MEM_TSS_BUSY   = 0x0B, /*00|00|10|11           */
 
                             /* V V                          */
     MEM_KERNEL      = 0x00, /*00|00|00|00 00=ring0 (kernel) */

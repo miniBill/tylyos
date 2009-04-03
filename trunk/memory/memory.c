@@ -55,10 +55,10 @@ void initGdt(){
 
     gdtSet(0, 0, 0, 0, 0); /*Il puntatore NULL!*/
     /*segmento codice kernel*/
-    gdtSet(1, 0, 0xFFFFFFFF,MEM_GRANULAR|MEM_32,
+    gdtSet(1, 0, (0xFFFFFFFF)/0x1000,MEM_GRANULAR|MEM_32,
         MEM_PRESENT|MEM_CODE_DATA|MEM_RW|MEM_KERNEL|MEM_CODE);
     /*segmento dati kernel*/
-    gdtSet(2, 0, 0xFFFFFFFF,MEM_GRANULAR|MEM_32,
+    gdtSet(2, 0, (0xFFFFFFFF)/0x1000,MEM_GRANULAR|MEM_32,
         MEM_PRESENT|MEM_CODE_DATA|MEM_RW|MEM_KERNEL|MEM_DATA);
 
 
@@ -265,10 +265,10 @@ void initPaging(void){
 
 
     /*segmento codice user mode*/
-    gdtSet(3, userMemoryStart, 0xFFFFFFFF-userMemoryStart,MEM_GRANULAR|MEM_32,
+    gdtSet(3, userMemoryStart, (0xFFFFFFFF-userMemoryStart)/0x1000,MEM_GRANULAR|MEM_32,
         MEM_PRESENT|MEM_CODE_DATA|MEM_RW|MEM_USER|MEM_CODE);
     /*segmento dati user mode*/
-    gdtSet(4, userMemoryStart, 0xFFFFFFFF-userMemoryStart,MEM_GRANULAR|MEM_32,
+    gdtSet(4, userMemoryStart, (0xFFFFFFFF-userMemoryStart)/0x1000,MEM_GRANULAR|MEM_32,
         MEM_PRESENT|MEM_CODE_DATA|MEM_RW|MEM_USER|MEM_DATA);
 
 

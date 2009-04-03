@@ -28,7 +28,7 @@ struct gdtEntry{
     unsigned short limitLow;
     unsigned short baseLow;
     unsigned char baseMiddle;
-    unsigned char access;
+    unsigned char access; /* |p|dpl|s|type| */
     unsigned char granularity;
     unsigned char baseHigh;
 } __attribute__((packed));
