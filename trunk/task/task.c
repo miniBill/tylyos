@@ -43,7 +43,7 @@ void TSSset(int num, unsigned long base, unsigned char access){
     gdt[num].access = access;
 }
 
-void addTask(char nome[MAX_TASK_NAME_LEN],char privilegi)
+int addTask(char nome[MAX_TASK_NAME_LEN],char privilegi)
 {
     /*alloca le strutture necessarie*/
     struct taskStruct *newTask=kmalloc(sizeof(struct taskStruct));
@@ -53,6 +53,7 @@ void addTask(char nome[MAX_TASK_NAME_LEN],char privilegi)
     newListElement->task=newTask;
     newListElement->next=0;
 
+    newTask->procID=getNewProcID();
     newTask->privilegi=privilegi;
     strcpy(nome,newTask->nome);
 
@@ -127,5 +128,77 @@ void addTask(char nome[MAX_TASK_NAME_LEN],char privilegi)
     }
     else
         taskListRoot=newListElement;
+
+
+    return newTask->procID;
 }
 
+int removeTask(unsigned int procID)
+{
+    struct taskListElement *pointer=taskListRoot;
+    struct taskListElement *prePointer=0;
+
+    if(pointer!=0)
+    {
+        do
+        {
+            if(pointer->task->procID==procID)
+            {
+                /*trovato*/
+                if(prePointer==0)
+                {
+                    kfree(taskListRoot->task);
+                    kfree(taskListRoot);
+
+                    taskListRoot=0;
+                }
+                else
+                {
+                    prePointer->next=pointer->next;
+                    
+                    kfree(pointer->task);
+                    kfree(pointer);
+                }
+                return 1;
+            }
+            prePointer=pointer;
+            pointer=pointer->next;
+        }
+        while(pointer!=0);
+    }
+
+
+    return 0;
+}
+
+unsigned int getNewProcID()
+{
+    struct taskListElement *pointer;
+    unsigned int id=0;
+
+    while(1)
+    {
+        pointer=taskListRoot;
+
+        if(pointer!=0)
+        {
+            int find=0;
+            do
+            {
+                if(pointer->task->procID==id)
+                    find=1;
+                pointer=pointer->next;
+            }
+            while(pointer!=0);
+
+            if(find==0)
+                return id;
+        }
+        else
+        {
+            return id; 
+        }
+
+        id++;
+    }
+}
