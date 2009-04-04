@@ -75,6 +75,13 @@ void initTaskManagement();
 /*access: MEM_TSS_BUSY|MEM_TSS|MEM_KERNEL|MEM_RING1|MEM_RING2|MEM_USER|MEM_PRESENT|MEM_NOT_PRESENT*/
 void TSSset(int num, unsigned long base, unsigned char access);
 
+/*ritorna un procID libero*/
+unsigned int getNewProcID();
+
+/*alloca le strutture ed aggiunge il task alla lista dei processi*/
+/*ritorna l'id del task*/
+int addTask(char nome[MAX_TASK_NAME_LEN],char privilegi);
+int removeTask(unsigned int procID);
 
 #endif
 
