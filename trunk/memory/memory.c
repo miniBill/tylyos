@@ -239,8 +239,11 @@ void initPaging(void){
 
 
     mallocMemoryStart=(unsigned int)pageDir+(((1024*1024)+1)*4);/*indirizzo base dell heap*/
-    addMem=((double)memoriaFisica/1000000000.0)*3000000.0;
-    userMemoryStart=mallocMemoryStart+MIN_HEAP_SIZE+addMem;
+    addMem=(double)memoriaFisica/4.0;/*un quarto della memoria fisica e' riservata al kernel*/
+    if(addMem<MIN_HEAP_SIZE)/*se un quarto della memoria non e' abbastanza e' meglio garantirsi un minimo*/
+        addMem=MIN_HEAP_SIZE;
+    /*printf("addMem: %d ",addMem);*/
+    userMemoryStart=mallocMemoryStart+addMem;
     userMemoryStart+= 0x1000-(userMemoryStart%0x1000);
 
 
@@ -286,6 +289,11 @@ void initPaging(void){
     write_cr0(read_cr0() | 0x80000000); /* set the paging bit in CR0 to 1 */
 
     asm("sti");
+
+
+    /*inizializzazione gestione della memoria fisica*/
+    pagesList=0;/*nessuna pagina per i processi allocata*/
+    
 }
 
 /*setta il valore di un selettore*/

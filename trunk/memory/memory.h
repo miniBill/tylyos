@@ -119,4 +119,16 @@ struct memoryArea{
 
 struct memoryArea *kmallocList;/*liste aree allocate e libere*/
 
+
+/*descrittore di pagina fisica*/
+struct pagina
+{
+    unsigned int procID;         
+    unsigned int indirizzoLog;   /*indirizzo logino alla quale èappata la pagina nel processo*/
+    unsigned int indirizzoFis;    /*indirizzo fisico, se uguale a 0 e' swappata sull hd */
+    struct paginaF *next;
+};
+
+struct pagina *pagesList;
+
 #endif
