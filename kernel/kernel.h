@@ -6,7 +6,7 @@
 
 void reboot(void);
 
-void sleep(int time);
+void sleep(unsigned int time);
 
 void _kmain(multiboot_info_t* mbd, unsigned int magic);
 

@@ -223,8 +223,7 @@ void _kmain(multiboot_info_t* mbd, unsigned int magicN){
 
     magic();
 
-    if(checkHdds()!=0xCC)
-    	NO(0);/*HACK*/
+    checkHdds();
 
     t=row()+1;
 
@@ -242,8 +241,7 @@ void _kmain(multiboot_info_t* mbd, unsigned int magicN){
     while(on);
     {
         /*wait 3 seconds before halting*/
-        int now=time();
-        while((time()-now)<3);
+        sleep(3000);
 
         asm("cli");
         clearIdt();
@@ -251,8 +249,8 @@ void _kmain(multiboot_info_t* mbd, unsigned int magicN){
     }
 }
 
-void sleep(int i){
-    int c;
-    for(c=0;c<100*i;c++)
-        ;
+void sleep(unsigned int i)
+{
+    unsigned long int temp=time();
+    while(time()-temp<i); 
 }
