@@ -4,16 +4,16 @@
 #include <drivers/screen/screen.h>
 #include <drivers/keyboard/keyboard.h>
 
-static int timeCount=0;
+static unsigned long int timeCount=0;
 
 void initTimer()
 {
-    int divisor=65535;
+    unsigned int divisor=1000;/*TODO:ricontrollare l'inizializzazione in modo da garantire tick ad intervalli conosciuti*/
     asm("cli");
     timeCount=0;
-    outb(0x36,PIT_COMMREG);
-    outb(divisor & 0xFF,PIT_DATAREG0);
-    outb(divisor >> 8,PIT_DATAREG0);
+    outb(PIT_COMMREG,0x34);
+    outb(PIT_DATAREG0,divisor & 0xFF);
+    outb(PIT_DATAREG0,divisor >> 8);
     asm("sti");
 }
 
