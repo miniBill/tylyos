@@ -8,6 +8,6 @@ void initTimer();
 
 void tick(void);
 
-int time(void);
+unsigned long int time(void);
 
 #endif

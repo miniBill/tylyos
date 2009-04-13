@@ -30,6 +30,6 @@ void tick(void){
     }
 }
 
-int time(void){
+unsigned long int time(void){
     return timeCount;
 }
