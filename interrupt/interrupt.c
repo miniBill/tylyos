@@ -20,6 +20,7 @@
 
 
 #include "interrupt.h"
+#include <memory/memory.h>
 #include <lib/string.h>
 #include <kernel/stdio.h>
 #include <drivers/screen/screen.h>
@@ -38,25 +39,25 @@ void initIdt(void){
         addIdtSeg(c,0,0,0);
     
     /*DA RICONTROLLARE IL SELETTORE DI SEGMENTO!!!!*/
-    addIdtSeg( 0, isr_0,INTERRUPT_PRESENT,0x08);
-    addIdtSeg( 1, isr_1,INTERRUPT_PRESENT,0x08);
-    addIdtSeg( 2, isr_2,INTERRUPT_PRESENT,0x08);
-    addIdtSeg( 3, isr_3,INTERRUPT_PRESENT,0x08);
-    addIdtSeg( 4, isr_4,INTERRUPT_PRESENT,0x08);
-    addIdtSeg( 5, isr_5,INTERRUPT_PRESENT,0x08);
-    addIdtSeg( 6, isr_6,INTERRUPT_PRESENT,0x08);
-    addIdtSeg( 7, isr_7,INTERRUPT_PRESENT,0x08);
-    addIdtSeg( 8, isr_8,INTERRUPT_PRESENT,0x08);
-    addIdtSeg( 9, isr_9,INTERRUPT_PRESENT,0x08);
-    addIdtSeg(10,isr_10,INTERRUPT_PRESENT,0x08);
-    addIdtSeg(11,isr_11,INTERRUPT_PRESENT,0x08);
-    addIdtSeg(12,isr_12,INTERRUPT_PRESENT,0x08);
-    addIdtSeg(13,isr_13,INTERRUPT_PRESENT,0x08);
-    addIdtSeg(14,isr_14,INTERRUPT_PRESENT,0x08);
-    addIdtSeg(15,isr_15,INTERRUPT_PRESENT,0x08);
-    addIdtSeg(16,isr_16,INTERRUPT_PRESENT,0x08);
-    addIdtSeg(17,isr_17,INTERRUPT_PRESENT,0x08);
-    addIdtSeg(18,isr_18,INTERRUPT_PRESENT,0x08);
+    addIdtSeg( 0, isr_0,INTERRUPT_PRESENT,segmentoCodiceKernel);
+    addIdtSeg( 1, isr_1,INTERRUPT_PRESENT,segmentoCodiceKernel);
+    addIdtSeg( 2, isr_2,INTERRUPT_PRESENT,segmentoCodiceKernel);
+    addIdtSeg( 3, isr_3,INTERRUPT_PRESENT,segmentoCodiceKernel);
+    addIdtSeg( 4, isr_4,INTERRUPT_PRESENT,segmentoCodiceKernel);
+    addIdtSeg( 5, isr_5,INTERRUPT_PRESENT,segmentoCodiceKernel);
+    addIdtSeg( 6, isr_6,INTERRUPT_PRESENT,segmentoCodiceKernel);
+    addIdtSeg( 7, isr_7,INTERRUPT_PRESENT,segmentoCodiceKernel);
+    addIdtSeg( 8, isr_8,INTERRUPT_PRESENT,segmentoCodiceKernel);
+    addIdtSeg( 9, isr_9,INTERRUPT_PRESENT,segmentoCodiceKernel);
+    addIdtSeg(10,isr_10,INTERRUPT_PRESENT,segmentoCodiceKernel);
+    addIdtSeg(11,isr_11,INTERRUPT_PRESENT,segmentoCodiceKernel);
+    addIdtSeg(12,isr_12,INTERRUPT_PRESENT,segmentoCodiceKernel);
+    addIdtSeg(13,isr_13,INTERRUPT_PRESENT,segmentoCodiceKernel);
+    addIdtSeg(14,isr_14,INTERRUPT_PRESENT,segmentoCodiceKernel);
+    addIdtSeg(15,isr_15,INTERRUPT_PRESENT,segmentoCodiceKernel);
+    addIdtSeg(16,isr_16,INTERRUPT_PRESENT,segmentoCodiceKernel);
+    addIdtSeg(17,isr_17,INTERRUPT_PRESENT,segmentoCodiceKernel);
+    addIdtSeg(18,isr_18,INTERRUPT_PRESENT,segmentoCodiceKernel);
     for(c=32;c<50;c++)
         addIdtSeg(c,isr_32,INTERRUPT_PRESENT,0x08);
     addIdtSeg(32,isr_32,INTERRUPT_PRESENT,0x08);
