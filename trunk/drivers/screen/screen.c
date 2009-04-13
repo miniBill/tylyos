@@ -32,6 +32,7 @@ static char * pointer       =(char *)consoleAddr;
 static char videoMemory[PAGES*ROWS*COLUMNS*2]={0};
 static int baseline         =0;
 
+
 void setCursorPos(unsigned int x, unsigned int y){
    asm(
        "movl  %0, %%eax     \n"

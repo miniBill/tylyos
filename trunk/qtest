@@ -1,2 +1,2 @@
 #!/bin/sh
-qemu -cdrom iso.img
+qemu -cdrom clearos.iso
