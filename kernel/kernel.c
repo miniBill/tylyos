@@ -70,11 +70,20 @@ void kwrite(const char * string){
 }
 
 void logo(void){
+
     writeline("                         ________                ____      ");
     writeline("                        / ____/ /__  ____  _____/ __ \\____");
     writeline("                       / /   / / _ \\/ __ \\/ ___/ / / /  _/");
     writeline("                      / /___/ /  __/ /_/ / /  / /_/ /\\  \\ ");
     writeline("                      \\____/_/\\___/\\____/_/   \\____//___/ ");
+
+/*
+    writeline("                       ___ _                  ___  __   "); 
+    writeline("                      / __\\ | ___  __ _ _ __ /___\\/ _\\  "); 
+    writeline("                     / /  | |/ _ \\/ _` | '__//  //\\ \\   "); 
+    writeline("                    / /___| |  __/ (_| | | / \\_// _\\ \\  "); 
+    writeline("                    \\____/|_|\\___|\\__,_|_| \\___/  \\__/  "); 
+*/                              
 }
 
 int check(const char * output,int offset){

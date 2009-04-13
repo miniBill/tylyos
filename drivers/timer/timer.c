@@ -19,14 +19,14 @@ void initTimer()
 
 void tick(void){
     timeCount++;
-    if(timeCount%100==0)
+    if(timeCount%1000==0)
     {
-    char timestring[9]={0};
-    int print=COLUMNS;
-    itoa(timeCount,timestring);
-    while(timestring[COLUMNS-print]!=0)
-        print--;
-    writexy(print,ROWS-1,timestring);
+        char timestring[9]={0};
+        int print=COLUMNS;
+        itoa(timeCount/1000,timestring);
+        while(timestring[COLUMNS-print]!=0)
+            print--;
+        writexy(print,ROWS-1,timestring);
     }
 }
 
