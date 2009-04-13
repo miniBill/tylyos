@@ -185,6 +185,7 @@ void _kmain(multiboot_info_t* mbd, unsigned int magicN){
     memoriaFisica=multiBootInfo->mem_lower+multiBootInfo->mem_upper;
     memoriaFisica*=1024;
 
+
     clearScreen();
 
     NO(t);
@@ -208,6 +209,9 @@ void _kmain(multiboot_info_t* mbd, unsigned int magicN){
 
     write(" IDT");
     initIdt();
+
+    write(" PIT");
+    initTimer();
 
     writeline(" Paging");
     initPaging();

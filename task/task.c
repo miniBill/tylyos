@@ -156,6 +156,7 @@ int removeTask(unsigned int procID)
                 {
                     prePointer->next=pointer->next;
                     
+                    /*dealloca le strutture*/
                     kfree(pointer->task);
                     kfree(pointer);
                 }

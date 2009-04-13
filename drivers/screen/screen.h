@@ -63,6 +63,7 @@ enum{
 #define PAGES       4
 #define ROWS        25
 
+
 void setCursorPos(unsigned int x, unsigned int y);
 
 void initScreen(void);
