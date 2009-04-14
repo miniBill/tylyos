@@ -336,3 +336,87 @@ void setBitExt(unsigned int *bitmap,int x,unsigned int value){
         bitmap[off1]&=~(1<<off2);
 }
 
+/*aggiunge con un insert sort una pagina nella lista delle pagine*/
+void addPaginaToList(struct pagina *p)
+{
+    /*TODO: da testare*/
+    struct pagina *pointer;
+
+    pointer=pagesList;
+
+    if(pointer==0)/*se la lista e' vuota aggiungi all inizio*/
+        pagesList=p;
+    else
+    {
+        /*se e' da aggiungere prima del primo elemento*/
+        if(p->indirizzoLog<pagesList->indirizzoLog)
+        {
+            p->next=pagesList;
+            pagesList=p;
+            return;
+        }
+
+        /*scorre la lista cercando la posizione in cui inserire la pagina*/
+        while(pointer->next!=0)
+        {
+            /*se l'elemento precedente ha un indirizzo minore o uguale ed il successivo ha un indirizzo maggiore, inserisci*/
+            if(pointer->indirizzoLog<=p->indirizzoLog && pointer->next->indirizzoLog>p->indirizzoLog)
+            {
+                p->next=pointer->next;
+                pointer->next=p;
+                return;
+            }
+        }
+        
+        /*se arriva qui' l'elemento e' da inserire in fondo alla lista*/
+        pointer->next=p;
+        p->next=0;
+        return;
+    }
+
+}
+
+/*rimuove una pagina dalla lista delle pagine*/
+unsigned int removePaginaFromList(unsigned int procID,unsigned int indirizzoLogico)
+{
+    /*TODO: da testare*/
+    struct pagina *pointer;
+
+    pointer=pagesList;
+
+    if(pagesList==0)
+        return 0;
+    else
+    {
+        /*se e' da eliminare il primo element della lista*/
+        if(pointer->procID==procID && pointer->indirizzoLog==indirizzoLogico)
+        {
+            pagesList=pointer->next;
+            kfree(pointer);
+            return 1;
+        }
+ 
+        /*scorre la lista*/
+        while(pointer->next!=0)
+        {
+            /*se trova l'elemento lo elimina*/
+            if(pointer->next->procID==procID && pointer->next->indirizzoLog==indirizzoLogico)
+            {
+                struct pagina *temp;
+                temp=pointer->next;
+                pointer->next=pointer->next->next;
+                kfree(temp);
+                return 1;
+            }
+        }
+    }
+
+    return 0;
+}
+
+/*ritorna un indirizzo fisico libero, pronto per lallocazione di una nuova pagina*/
+unsigned int getFreePage()
+{
+    /*TODO: implementare*/
+    return 0;
+}
