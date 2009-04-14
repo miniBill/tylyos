@@ -84,8 +84,8 @@ void initPaging();
 void setPageTableSelector(unsigned int *obj,unsigned int tableAdress,unsigned int flags);
 void setPageSelector(unsigned int *obj,unsigned int pageAdress,unsigned int flags);
 
-int getBitExt(unsigned int *bitmap,int x);
-void setBitExt(unsigned int *bitmap,int x,unsigned int value);
+int getBitExt(unsigned int *bitmap,unsigned int x);
+void setBitExt(unsigned int *bitmap,unsigned int x,unsigned int value);
 
 
 
@@ -133,13 +133,41 @@ struct pagina *pagesList;
 
 
 /*aggiunge con un insert sort una pagina nella lista delle pagine*/
+/*NON MODIFICA LA BITMAP*/
 void addPaginaToList(struct pagina *p);
 
 /*rimuove una pagina dalla lista delle pagine*/
+/*NON MODIFICA LA BITMAP*/
 unsigned int removePaginaFromList(unsigned int procID,unsigned int indirizzoLogico);
 
 /*ritorna un indirizzo fisico libero, pronto per lallocazione di una nuova pagina*/
+/*NON MODIFICA LA BITMAP*/
 unsigned int getFreePage();
 
+
+struct bitmap
+{
+    unsigned int *data;
+    unsigned int size;
+};
+
+/*rappresenta attraverso una bitmap lo stato di ogni pagina fisica in memoria
+ * 0 non usata
+ * 1 usata
+ *
+ * NB: le pagine fisiche a cui si riferisce la bitmap sono quelle mappate dopo il kernel
+ */
+struct bitmap mappaPagineFisiche;
+
+/*ritorna l'indice corrispondente ad una pagina fisica da utilizzare nella bitmap delle pagine fisiche*/
+unsigned int convertFisAddrToBitmapIndex(unsigned int addr);
+/*ritorna l'indirizzo fisico corrispondente ad un determinato indice della bitmap delle pagine fisiche*/
+unsigned int convertBitmapIndexToFisAddr(unsigned int index);
+
+/*setta lo stato di una pagina fisica nella bitmap
+ * 0 libera
+ * 1 allocata
+ */
+void setPaginaFisica(unsigned int index,unsigned int stato);
 
 #endif

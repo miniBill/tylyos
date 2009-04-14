@@ -319,13 +319,13 @@ void setPageSelector(unsigned int *obj,unsigned int pageAdress,unsigned int flag
 
 
 
-int getBitExt(unsigned int *bitmap,int x){
+int getBitExt(unsigned int *bitmap,unsigned int x){
     int off1,off2;
     off1=x/32;
     off2=x%32;
     return (bitmap[off1]>>off2)&1;
 }
-void setBitExt(unsigned int *bitmap,int x,unsigned int value){
+void setBitExt(unsigned int *bitmap,unsigned int x,unsigned int value){
     int off1,off2;
     off1=x/32;
     off2=x%32;
@@ -337,6 +337,7 @@ void setBitExt(unsigned int *bitmap,int x,unsigned int value){
 }
 
 /*aggiunge con un insert sort una pagina nella lista delle pagine*/
+/*NON MODIFICA LA BITMAP*/
 void addPaginaToList(struct pagina *p)
 {
     /*TODO: da testare*/
@@ -377,6 +378,7 @@ void addPaginaToList(struct pagina *p)
 }
 
 /*rimuove una pagina dalla lista delle pagine*/
+/*NON MODIFICA LA BITMAP*/
 unsigned int removePaginaFromList(unsigned int procID,unsigned int indirizzoLogico)
 {
     /*TODO: da testare*/
@@ -415,8 +417,39 @@ unsigned int removePaginaFromList(unsigned int procID,unsigned int indirizzoLogi
 }
 
 /*ritorna un indirizzo fisico libero, pronto per lallocazione di una nuova pagina*/
+/*NON MODIFICA LA BITMAP*/
 unsigned int getFreePage()
 {
-    /*TODO: implementare*/
+    /*TODO: testare*/
+    unsigned int c=0;
+    for(;c<mappaPagineFisiche.size;c++)
+    {
+        if(getBitExt(mappaPagineFisiche.data,c)==0)
+            return convertBitmapIndexToFisAddr(c); 
+    } 
     return 0;
+}
+
+
+/*ritorna l'indice corrispondente ad una pagina fisica da utilizzare nella bitmap delle pagine fisiche*/
+unsigned int convertFisAddrToBitmapIndex(unsigned int addr)
+{
+    return (addr-userMemoryStart)/0x1000;
+}
+/*ritorna l'indirizzo fisico corrispondente ad un determinato indice della bitmap delle pagine fisiche*/
+unsigned int convertBitmapIndexToFisAddr(unsigned int index)
+{
+    return (index*0x1000)+userMemoryStart;
+}
+
+/*setta lo stato di una pagina fisica nella bitmap
+ * 0 libera
+ * 1 allocata
+ */
+void setPaginaFisica(unsigned int index,unsigned int stato)
+{
+    if(index < mappaPagineFisiche.size)
+    {
+        setBitExt(mappaPagineFisiche.data,index,stato);        
+    }
 }
