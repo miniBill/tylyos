@@ -126,9 +126,20 @@ struct pagina
     unsigned int procID;         
     unsigned int indirizzoLog;   /*indirizzo logino alla quale èappata la pagina nel processo*/
     unsigned int indirizzoFis;    /*indirizzo fisico, se uguale a 0 e' swappata sull hd */
-    struct paginaF *next;
+    struct pagina *next;
 };
 
 struct pagina *pagesList;
+
+
+/*aggiunge con un insert sort una pagina nella lista delle pagine*/
+void addPaginaToList(struct pagina *p);
+
+/*rimuove una pagina dalla lista delle pagine*/
+unsigned int removePaginaFromList(unsigned int procID,unsigned int indirizzoLogico);
+
+/*ritorna un indirizzo fisico libero, pronto per lallocazione di una nuova pagina*/
+unsigned int getFreePage();
+
 
 #endif
