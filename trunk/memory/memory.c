@@ -293,6 +293,10 @@ void initPaging(void){
 
     /*inizializzazione gestione della memoria fisica*/
     pagesList=0;/*nessuna pagina per i processi allocata*/
+
+    /*alloca la bitmap per le pagine fisiche*/
+    mappaPagineFisiche.size=(memoriaFisica-userMemoryStart)/0x1000;
+    mappaPagineFisiche.data=kmalloc((mappaPagineFisiche.size/8)+1);/*ok, non avevo voglia di fare un controllo sul resto della divizione per 8 ed ho aggiunto +1*/
     
 }
 
