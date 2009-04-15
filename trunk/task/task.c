@@ -27,7 +27,7 @@ void initTaskManagement()
     return;
 }
 
-/*setta un selettore di segmento TSS*/
+/*setta un selettore di segmento TSS nella GDT*/
 /*num: indice nella GDT*/
 /*base: base segmento*/
 /*access: MEM_TSS_BUSY|MEM_TSS|MEM_KERNEL|MEM_RING1|MEM_RING2|MEM_USER|MEM_PRESENT|MEM_NOT_PRESENT*/
@@ -77,6 +77,7 @@ int addTask(char nome[MAX_TASK_NAME_LEN],char privilegi)
 
     newTask->TSS.cr3=(unsigned int)pageDir;
 
+    /*istruction pointer*/
     newTask->TSS.eip=0;/*RICORDARSI DI FARLO AGGIORNARE DAL LOADER*/
 
     newTask->TSS.eflags=0;
@@ -133,6 +134,7 @@ int addTask(char nome[MAX_TASK_NAME_LEN],char privilegi)
     return newTask->procID;
 }
 
+/*rimuove un task dalla lista dei task e dealloca le strutture*/
 int removeTask(unsigned int procID)
 {
     struct taskListElement *pointer=taskListRoot;
@@ -172,6 +174,7 @@ int removeTask(unsigned int procID)
     return 0;
 }
 
+/*ritorna un id non utilizzato*/
 unsigned int getNewProcID()
 {
     struct taskListElement *pointer;

@@ -136,7 +136,7 @@ struct pagina *pagesList;
 /*NON MODIFICA LA BITMAP*/
 void addPaginaToList(struct pagina *p);
 
-/*rimuove una pagina dalla lista delle pagine*/
+/*rimuove una pagina dalla lista delle pagine  E DEALLOCA LA STRUTTURA*/
 /*NON MODIFICA LA BITMAP*/
 unsigned int removePaginaFromList(unsigned int procID,unsigned int indirizzoLogico);
 
@@ -169,5 +169,11 @@ unsigned int convertBitmapIndexToFisAddr(unsigned int index);
  * 1 allocata
  */
 void setPaginaFisica(unsigned int index,unsigned int stato);
+
+/*funzione da utilizzare per l'allocazione di una nuova pagina per un task*/
+struct pagina *allocaNuovaPagina(unsigned int procID,unsigned int indirizzoLog);
+
+/*funzione da utilizzare per la deallocazione di una pagina di un task*/
+unsigned int deallocaPagina(unsigned int procID,unsigned int indirizzoLog);
 
 #endif
