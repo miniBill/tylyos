@@ -381,7 +381,7 @@ void addPaginaToList(struct pagina *p)
 
 }
 
-/*rimuove una pagina dalla lista delle pagine*/
+/*rimuove una pagina dalla lista delle pagine E DEALLOCA LA STRUTTURA*/
 /*NON MODIFICA LA BITMAP*/
 unsigned int removePaginaFromList(unsigned int procID,unsigned int indirizzoLogico)
 {
@@ -456,4 +456,55 @@ void setPaginaFisica(unsigned int index,unsigned int stato)
     {
         setBitExt(mappaPagineFisiche.data,index,stato);        
     }
+}
+
+/*funzione da utilizzare per l'allocazione di una nuova pagina per un task*/
+struct pagina *allocaNuovaPagina(unsigned int procID,unsigned int indirizzoLog)
+{
+    struct pagina *temp=kmalloc(sizeof(struct pagina));
+
+    /*setta i valori*/
+    temp->procID=procID;
+    temp->indirizzoLog=indirizzoLog;
+
+    temp->indirizzoFis=getFreePage();/*cerca una pagina fisica libera*/
+    /*TODO: implementare il controllo nel caso in cui la memoria fisica sia piena*/
+    setPaginaFisica(convertFisAddrToBitmapIndex( temp->indirizzoFis ),1);/*segna la pagina come utilizzata*/ 
+
+    /*aggiunge alla lista delle pagine*/
+    addPaginaToList(temp);
+
+    return temp;
+}
+
+/*funzione da utilizzare per la deallocazione di una pagina di un task*/
+unsigned int deallocaPagina(unsigned int procID,unsigned int indirizzoLog)
+{
+    struct pagina *pointer=pagesList;
+
+    /*cerca la pagina nella lista*/
+    while(pointer!=0)
+    {
+        if(pointer->procID==procID && pointer->indirizzoLog==indirizzoLog)
+            break;
+        pointer=pointer->next;
+    }
+    
+    if(pointer==0)/*se non ha trovato la pagina*/
+        return 0;
+
+    /*aggiorna la bitmap se necessario*/
+    if(pointer->indirizzoFis!=0)/*se la pagina e' in memoria RAM*/
+    {
+        setPaginaFisica(convertFisAddrToBitmapIndex( pointer->indirizzoFis ),0);
+    }
+    else/*se la pagina non e' in memoria RAM*/
+    {
+        /*TODO: implementare la deallocazione nel caso la pagina sia swappata sull hard disk*/
+    }
+
+    /*rimuove la pagina dalla lista e dealloca la struttura*/
+    removePaginaFromList(procID,indirizzoLog);    
+    
+    return 1;
 }
