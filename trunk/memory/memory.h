@@ -129,7 +129,6 @@ struct pagina
     struct pagina *next;
 };
 
-struct pagina *pagesList;
 
 
 /*aggiunge con un insert sort una pagina nella lista delle pagine*/
