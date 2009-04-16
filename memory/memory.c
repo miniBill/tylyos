@@ -21,6 +21,7 @@
 #include "gdtflags.h"
 #include <drivers/screen/screen.h>
 #include <lib/string.h>
+#include <task/task.h>
 
 /*ritorna il valore del registro EBP*/
 unsigned int getEBP(){
@@ -292,7 +293,6 @@ void initPaging(void){
 
 
     /*inizializzazione gestione della memoria fisica*/
-    pagesList=0;/*nessuna pagina per i processi allocata*/
 
     /*alloca la bitmap per le pagine fisiche*/
     mappaPagineFisiche.size=(memoriaFisica-userMemoryStart)/0x1000;
@@ -346,18 +346,20 @@ void addPaginaToList(struct pagina *p)
 {
     /*TODO: da testare*/
     struct pagina *pointer;
+    struct taskStruct *taskPointer;
 
-    pointer=pagesList;
+    taskPointer=getTask(p->procID);
+    pointer=taskPointer->listaPagine;
 
     if(pointer==0)/*se la lista e' vuota aggiungi all inizio*/
-        pagesList=p;
+        taskPointer->listaPagine=p;
     else
     {
         /*se e' da aggiungere prima del primo elemento*/
-        if(p->indirizzoLog<pagesList->indirizzoLog)
+        if(p->indirizzoLog<taskPointer->listaPagine->indirizzoLog)
         {
-            p->next=pagesList;
-            pagesList=p;
+            p->next=taskPointer->listaPagine;
+            taskPointer->listaPagine=p;
             return;
         }
 
@@ -387,17 +389,19 @@ unsigned int removePaginaFromList(unsigned int procID,unsigned int indirizzoLogi
 {
     /*TODO: da testare*/
     struct pagina *pointer;
+    struct taskStruct *taskPointer;
 
-    pointer=pagesList;
+    taskPointer=getTask(procID);
+    pointer=taskPointer->listaPagine;
 
-    if(pagesList==0)
+    if(pointer==0)
         return 0;
     else
     {
         /*se e' da eliminare il primo element della lista*/
         if(pointer->procID==procID && pointer->indirizzoLog==indirizzoLogico)
         {
-            pagesList=pointer->next;
+            taskPointer->listaPagine=pointer->next;
             kfree(pointer);
             return 1;
         }
@@ -480,7 +484,8 @@ struct pagina *allocaNuovaPagina(unsigned int procID,unsigned int indirizzoLog)
 /*funzione da utilizzare per la deallocazione di una pagina di un task*/
 unsigned int deallocaPagina(unsigned int procID,unsigned int indirizzoLog)
 {
-    struct pagina *pointer=pagesList;
+    struct pagina *pointer;
+    pointer=getTask(procID)->listaPagine;
 
     /*cerca la pagina nella lista*/
     while(pointer!=0)

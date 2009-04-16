@@ -50,6 +50,7 @@ struct tss
 struct taskStruct
 {
     struct tss TSS;
+    struct pagina *listaPagine;
     unsigned int procID;
     char stato;
     char nome[MAX_TASK_NAME_LEN];
@@ -82,6 +83,7 @@ unsigned int getNewProcID();
 /*ritorna l'id del task*/
 int addTask(char nome[MAX_TASK_NAME_LEN],char privilegi);
 int removeTask(unsigned int procID);
+struct taskStruct *getTask(unsigned int procID);
 
 #endif
 

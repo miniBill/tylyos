@@ -52,7 +52,9 @@ int addTask(char nome[MAX_TASK_NAME_LEN],char privilegi)
 
     newListElement->task=newTask;
     newListElement->next=0;
+    
 
+    newTask->listaPagine=0;
     newTask->procID=getNewProcID();
     newTask->privilegi=privilegi;
     strcpy(nome,newTask->nome);
@@ -166,12 +168,32 @@ int removeTask(unsigned int procID)
             }
             prePointer=pointer;
             pointer=pointer->next;
-        }
-        while(pointer!=0);
+        }while(pointer!=0);
     }
 
 
     return 0;
+}
+
+struct taskStruct *getTask(unsigned int procID)
+{
+   struct taskListElement *pointer=taskListRoot;
+
+    if(pointer!=0)
+    {
+        do
+        {
+            if(pointer->task->procID==procID)
+            {
+                /*trovato*/
+                return pointer->task;
+            }
+            pointer=pointer->next;
+       }while(pointer!=0);
+    }
+
+
+    return 0; 
 }
 
 /*ritorna un id non utilizzato*/
