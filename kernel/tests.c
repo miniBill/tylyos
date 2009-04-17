@@ -2,6 +2,7 @@
 
 #include <lib/string.h>
 #include <memory/memory.h>
+#include <fs/iso/iso.h>
 #include "multiboot.h"
 
 #define FAST_TESTS
@@ -110,6 +111,11 @@ int dinamictestTwo(void){
 	char first;
 }*/
 
+int isoTest(void){
+	test_iso();
+	return 1;
+}
+
 void run(test tests[]){
     int i;
     int t=row()+1;
@@ -129,14 +135,15 @@ void doTests(void){
 #ifdef FAST_TESTS
         test tests[2]={
 #else
-        test tests[6]={
+        test tests[7]={
             putreadtest,
             pointertest,
             itoatest,
             printftest,
 #endif
-            dinamictestOne,
-            /*dinamictestTwo*/
+            /*dinamictestOne,*/
+            /*dinamictestTwo,*/
+	    isoTest
         };
         run(tests);
 }
