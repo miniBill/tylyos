@@ -134,7 +134,7 @@ void run(test tests[]){
 void doTests(void){
         /*REMEMBER TO KEEP SIZE=ITEMS+1!!!*/
 #ifdef FAST_TESTS
-        test tests[2]={
+        test tests[3]={
 #else
         test tests[7]={
             putreadtest,
