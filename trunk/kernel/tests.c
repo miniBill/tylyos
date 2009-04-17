@@ -5,7 +5,7 @@
 #include <fs/iso/iso.h>
 #include "multiboot.h"
 
-#define FAST_TESTS
+/*#define FAST_TESTS*/
 
 typedef int (*test)(void);
 
@@ -42,9 +42,10 @@ int itoatest(void){
 }
 
 int printftest(void){
-    char output[13]="10,CA,a,ciao";
+    char output[16]="10,CA,a,ciao,13";
+    int test=13;
     write("Prova printf:");
-    printf("%d,%x,%c,%s",10,0xCA,'a',"ciao");
+    printf("%d,%x,%c,%s,%d",10,0xCA,'a',"ciao",test);
     printf(" base stack: %x end: %x",getEBP(),getESP());
     return check(output,13);
 }
@@ -141,9 +142,9 @@ void doTests(void){
             itoatest,
             printftest,
 #endif
-            /*dinamictestOne,*/
+	    isoTest,
+            dinamictestOne,
             /*dinamictestTwo,*/
-	    isoTest
         };
         run(tests);
 }
