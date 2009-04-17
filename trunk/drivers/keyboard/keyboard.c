@@ -233,7 +233,10 @@ void keypress(void){
         printf("(!)|%d|",c);/*should NEVER happen*/
     /*se e' un tasto modificatore es: shitf*/
     if(modifier(c,released))
+    {
+        escape=0;/*HACK: in modo da gestire ugualemente sia alt destro che sinistro*/
         return;
+    }
     /*
       se e' stato notificato una scancode a due byte precedentemente
       viene letto il secondo scancode ed interpretato
@@ -254,28 +257,28 @@ void keypress(void){
                 if(alt)
                     scroll(-20);
                 return;
-            case '4':
+            case '4': /* freccia sx */
                 gotoi(pos()-1);
                 return;
             case '5':
                 return;
-            case '6':
+            case '6': /* freccia dx */
                 gotoi(pos()+1);
                 return;
             case '1':
                 gotoxy(COLUMNS-1,row());
                 return;
-            case '2':
+            case '2': /* greccia giu' */
                 gotoi(pos()+COLUMNS);
                 return;
-            case '3':
+            case '3': /* pag giu' */
                 if(alt)
                     scroll(20);
                 return;
             case '0':
                 /*TODO*/
                 return;
-            case '.':
+            case '.': /* canc */
                 put(' ');
                 gotoi(pos()-1);
                 return;
@@ -291,15 +294,22 @@ void keypress(void){
             }
         }
         else{
-            if(shift){
-                ch=shift_map[c];
-                if(capslock&&ch>='A'&&ch<='Z')
-                    ch-='A'-'a';
+            if(alt){
+                ch=altgr_map[c];
             }
             else{
-                ch=key_map[c];
-                if(capslock&&ch>='a'&&ch<='z')
-                    ch+='A'-'a';
+                /* se e' premuto shift */
+                if(shift){
+                    ch=shift_map[c];
+                    if(capslock&&ch>='A'&&ch<='Z')
+                        ch-='A'-'a';
+                }
+                else{
+                /*se non e' attivo nessun modificatore*/
+                    ch=key_map[c];
+                    if(capslock&&ch>='a'&&ch<='z')
+                        ch+='A'-'a';
+                }
             }
         }
     }
@@ -312,7 +322,7 @@ void keypress(void){
 #endif
     }
     else
-        printf("(%d,%x)",c,c);
+        printf("(%d,0x%x)",c,c);
 }
 
 char getch(){
