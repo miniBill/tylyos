@@ -22,7 +22,11 @@ else
     GCC="${GCC}LD=i686-pc-linux-gnu-ld"
   else
     echo "none found"
-    echo "error: no compatilbe gcc found"
+    echo "error: no compatilbe gcc found, if you have one edit Makefile.in"
+    echo "and specify the correct gcc with:"
+    echo "CC=your-gcc"
+    echo "AS=your-as"
+    echo "LD=your-ld"
     exit 1
   fi
 fi
