@@ -151,17 +151,26 @@ static int pointer=0;
 
 int modifier(char c,int released){
     if(c==0x36||c==0x2A){
-        shift=1-shift;
+        if(released)
+            shift=0;
+        else
+            shift=1;
         putxy(1,ROWS-1,shift?'S':'s');
         return 1;
     }
     if(c==0x1D){
-        ctrl=1-ctrl;
+        if(released)
+            ctrl=0;
+        else
+            ctrl=1;
         putxy(4,ROWS-1,ctrl?'C':'c');
         return 1;
     }
     if(c==0x38){
-        alt=1-alt;
+        if(released)
+            alt=0;
+        else
+            alt=1;
         putxy(7,ROWS-1,alt?'A':'a');
         return 1;
     }
@@ -209,10 +218,12 @@ void keypress(void){
         for(init=0;init<KEYBUFSIZE;init++)
             buffer[init]=0;
     }
+    /*identifica l'inizio di uno scancode a due byte*/
     if(c==0xE0){
         escape=1;
         return;
     }
+    /*se e' un evento: tasto rilasciato*/
     if(c&0x80){
         c&=~0x80;
         released=1;
@@ -220,8 +231,13 @@ void keypress(void){
     }
     if(c>0x80)
         printf("(!)|%d|",c);/*should NEVER happen*/
+    /*se e' un tasto modificatore es: shitf*/
     if(modifier(c,released))
         return;
+    /*
+      se e' stato notificato una scancode a due byte precedentemente
+      viene letto il secondo scancode ed interpretato
+    */
     if(escape){
         escape=0;
         if(released)
@@ -231,10 +247,10 @@ void keypress(void){
             case '7':
                 gotoxy(0,row());
                 return;
-            case '8':
+            case '8': /* freccia su */
                 gotoi(pos()-COLUMNS);
                 return;
-            case '9':
+            case '9': /* pag su */
                 if(alt)
                     scroll(-20);
                 return;
