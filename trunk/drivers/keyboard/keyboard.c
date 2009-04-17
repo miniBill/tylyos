@@ -149,6 +149,8 @@ static int pointer=0;
 
 #define KEYBUFSIZE 100
 
+
+
 int modifier(char c,int released){
     if(c==0x36||c==0x2A){
         if(released)
