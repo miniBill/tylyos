@@ -1,1 +1,1 @@
-void test(void);
+void test_iso(void);
