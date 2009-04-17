@@ -43,7 +43,10 @@ void itoa(int a,char buff[11]){
 
 void itobase(int a,unsigned short base,char * buff){
     if(a==0)
+    {
         buff[0]='0';
+        buff[1]=0;
+    }
     else{
         int i,l;
         char temp[MAXN]={0};
@@ -58,6 +61,7 @@ void itobase(int a,unsigned short base,char * buff){
         for(i=l-1,l=buff[0]=='-';i>=0;i--)
             buff[l++]=temp[i];
         buff[l]=0;
+        
     }
 }
 

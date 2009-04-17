@@ -23,3 +23,4 @@ int isHddPresent(int controller,int hdd);
 void readSector(int controller, int hdd, int sector, unsigned char buffer[256]);
 
 void writeSector(int controller, int hdd, int sector, unsigned char buffer[256]);
+
