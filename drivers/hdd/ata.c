@@ -52,17 +52,15 @@ void readSector(int controller, int hdd, int sector, unsigned char buffer[512]){
 	outb(port+5,(unsigned char)(sector >> 16));/*next 8 bits*/
 	outb(port+6,0xE0|(hdd<<4)|((sector>>24)&0x0F));/*last 4 bits + drive + some magic*/
 	outb(port+7,0x20);/*read!*/
-	printf("a");
 	/*wait till it's ready*/
 	/*while(!(inb(port+7)&0x08)){sleep(100);}*/
-	sleep(50000);/*HACK*/
-	printf("b");
-	for(i=0;i<512;i++){
+	sleep(5000);/*HACK*/
+	for(i=0;i<256;i++){
 		word=inw(port);
 		buffer[i*2]=(unsigned char)word;
 		buffer[i*2+1]=(unsigned char)(word>>8);
+        
 	}
-	printf("c");
 }
 
 void writeSector(int controller, int hdd, int sector, unsigned char buffer[512]){
