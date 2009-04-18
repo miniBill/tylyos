@@ -62,6 +62,7 @@ void initIdt(void){
         addIdtSeg(c,isr_32,INTERRUPT_PRESENT,0x08);
     addIdtSeg(32,isr_32,INTERRUPT_PRESENT,0x08);
     addIdtSeg(33,isr_33,INTERRUPT_PRESENT,0x08);
+    addIdtSeg(46,isr_46,INTERRUPT_PRESENT,0x08);
     addIdtSeg(47,isr_47,INTERRUPT_PRESENT,0x08);
 
     idt_pointer.limit=0xFFFF;
