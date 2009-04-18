@@ -79,6 +79,7 @@ extern void isr_17(void);
 extern void isr_18(void);
 extern void isr_32(void);
 extern void isr_33(void);
+extern void isr_46(void);
 extern void isr_47(void);
 
 #endif
