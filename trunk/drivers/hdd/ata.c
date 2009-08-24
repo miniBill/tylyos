@@ -21,6 +21,8 @@
 #include <kernel/kernel.h>
 #include <lib/string.h>
 
+#define BochsBreak() outw(0x8A00,0x8A00); outw(0x8A00,0x08AE0);
+
 int isControllerPresent(int controller){
 	int port=controller?0x173:0x1F3;
 	outb(port,0x88);
@@ -45,21 +47,27 @@ void readSector(int controller, int hdd, int sector, unsigned char buffer[512]){
 	int port=controller?0x170:0x1F0;
 	int i=0;
 	short word=0;
-	outb(port+1,0x00);/*NULL byte*/
+	/*char byte,pbyte;*/
+	outb(port+6,0xE0|(hdd<<4)|((sector>>24)&0x0F));/*last 4 bits + drive + some magic*/
+	/*outb(port+1,0x00);*//*NULL byte*//*commented, cause 't should be useless*/
 	outb(port+2,0x01);/*sector count*/
 	outb(port+3,(unsigned char)sector);/*low 8 bits*/
 	outb(port+4,(unsigned char)(sector >> 8));/*next 8 bits*/
 	outb(port+5,(unsigned char)(sector >> 16));/*next 8 bits*/
-	outb(port+6,0xE0|(hdd<<4)|((sector>>24)&0x0F));/*last 4 bits + drive + some magic*/
 	outb(port+7,0x20);/*read!*/
 	/*wait till it's ready*/
-	/*while(!(inb(port+7)&0x08)){sleep(100);}*/
+	/*while(!((byte=inb(port+7))&0x80)){
+		sleep(1000);
+		if(byte!=pbyte){
+			printf("%d,",byte);
+			pbyte=byte;
+		}
+	}*/
 	sleep(5000);/*HACK*/
 	for(i=0;i<256;i++){
 		word=inw(port);
 		buffer[i*2]=(unsigned char)word;
 		buffer[i*2+1]=(unsigned char)(word>>8);
-        
 	}
 }
 

@@ -155,15 +155,21 @@ void interrupt_handler(
         if(isr==33)
             keypress();
         else{
-            printf("interruzione, interrupt: %d, count: %d.\n",isr,xtemp);
+            if(isr==46||isr==47){
+                /* TODO: disk interrupt */
+                /*printf("{i%d}",isr);*/
+            }
+            else{
+                printf("interruzione, interrupt: %d, count: %d.\n",isr,xtemp);
 #ifdef PRINT_REGISTERS
-            printf("EAX: %d,EBX: %d,ECX: %d,EDX: %d,",eax,ebx,ecx,edx);
-            printf("EBP: %d,ESI: %d,EDI: %d,",ebp,esi,edi);
-            printf("DS: %d,ES: %d,FS: %d,GS: %d,",ds,es,fs,gs);
-            printf("EIP: %d,CS: %d,EFLAGS: %d,ERROR: %d\n",eip,cs,eflags,error);
+                printf("EAX: %d,EBX: %d,ECX: %d,EDX: %d,",eax,ebx,ecx,edx);
+                printf("EBP: %d,ESI: %d,EDI: %d,",ebp,esi,edi);
+                printf("DS: %d,ES: %d,FS: %d,GS: %d,",ds,es,fs,gs);
+                printf("EIP: %d,CS: %d,EFLAGS: %d,ERROR: %d\n",eip,cs,eflags,error);
 #else
-            c=eax^ebx^ecx^edx^ebp^esi^edi^ds^es^fs^gs^eip^cs^eflags^error;/*HACK*/
+                c=eax^ebx^ecx^edx^ebp^esi^edi^ds^es^fs^gs^eip^cs^eflags^error;/*HACK*/
 #endif
+            }
         }
     }
     /* Send End Of Interrupt to PIC */

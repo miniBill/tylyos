@@ -8,12 +8,26 @@ void test_iso(void){
 	for(hdd=0;hdd<2;hdd++)
 	if(isHddPresent(controller,hdd)){
 		/*mi interessa il 16 settore, per settori da 2048 byte, e per "blocchi" da 256 byte*/
+		/*HACK: intanto prendo il primo settore :)*/
 		int sector=2048*15/512;
+		int counter=0;/*byte non nulli*/
 		unsigned char buffer[512];
-		printf("Testing %x:%x ",controller,hdd);
-		readSector(controller,hdd,sector,buffer);
-		printf("%c%c%c%c%c%c\n",&buffer[0],&buffer[1],&buffer[2],&buffer[3],&buffer[4],&buffer[5]);
- 
+		printf("Testing (%x:%x):\"",controller,hdd);
+		while(1){
+			int i;
+			readSector(controller,hdd,sector,buffer);
+			for(i=0;i<512;i++)
+				if(buffer[i]!=0){
+					counter++;
+					if(counter>8){
+						printf("\"");
+						break;
+					}
+					printf("%x,%x;",512*sector+i,buffer[i]);
+				}
+			sector++;
+			printf(".");
+		}
 	}
 }
 
