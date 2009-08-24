@@ -21,13 +21,20 @@ else
     GCC="${GCC}AS=i686-pc-linux-gnu-as\n"
     GCC="${GCC}LD=i686-pc-linux-gnu-ld"
   else
-    echo "none found"
-    echo "error: no compatilbe gcc found, if you have one edit Makefile.in"
-    echo "and specify the correct gcc with:"
-    echo "CC=your-gcc"
-    echo "AS=your-as"
-    echo "LD=your-ld"
-    exit 1
+    if echo|i586-elf-gcc -march=i386 -E - 2> /dev/null > /dev/null; then
+      echo `which i586-elf-gcc`
+      GCC="CC=i586-elf-gcc\n"
+      GCC="${GCC}AS=i586-elf-as\n"
+      GCC="${GCC}LD=i586-elf-ld"
+    else
+      echo "none found"
+      echo "error: no compatilbe gcc found, if you have one edit Makefile.in"
+      echo "and specify the correct gcc with:"
+      echo "CC=your-gcc"
+      echo "AS=your-as"
+      echo "LD=your-ld"
+      exit 1
+    fi
   fi
 fi
 echo "creating Makefile.in"
