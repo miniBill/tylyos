@@ -72,7 +72,7 @@ clearos: $(OBJ)
 
 .PHONY: clean
 clean:
-	rm -f *\~ */*\~ */*.o */*/*\~ */*/*.o log clearos clearos.iso clearos.iso.sig
+	rm -f *\~ */*\~ */*.o */*/*\~ */*/*.o log clearos clearos.iso clearos.iso.sig Makefile.in
 
 .PHONY: smallclean
 smallclean:

@@ -5,7 +5,7 @@
 #include <fs/iso/iso.h>
 #include "multiboot.h"
 
-/*#define FAST_TESTS*/
+#define FAST_TESTS
 
 typedef int (*test)(void);
 
