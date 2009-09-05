@@ -60,7 +60,15 @@ int identifyHdd(int controller, int hdd){
 			((tmpword & 0x01) == 0))
 			break;
 		if(tmpword & 0x01){
+			tmpword=inb(port-2);
+			if(tmpword == 0x14){ /*probably ATAPI*/
+				tmpword=inb(port-1);
+				if(tmpword == 0xEB)
+					printf("non-ATA ATAPI device [controller %d, hdd %d]\n",controller,hdd);
+					return 0;
+			}
 			printf("Error on hdd identify![controller %d, hdd %d]\n",controller,hdd);
+			
 			return 0;
 		}
 		sleep(1);
