@@ -103,8 +103,14 @@ int checkHdd(int controller,int disk){
 	greendot();
 	present=isHddPresent(controller,disk);
 	printf("Rilevamento presenza   hdd: %s %s\n",disk?"slave     ":"master    ",present?"presente":"assente");
-	if(present)
+	if(present){
 		OK(t);
+		t=row()+1;
+		NO(t);
+		greendot();
+		if(identifyHdd(controller,disk))
+			OK(t);
+	}
 	return present;
 }
 

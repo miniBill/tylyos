@@ -134,15 +134,15 @@ void run(test tests[]){
 void doTests(void){
         /*REMEMBER TO KEEP SIZE=ITEMS+1!!!*/
 #ifdef FAST_TESTS
-        test tests[3]={
+        test tests[2]={
 #else
-        test tests[7]={
+        test tests[6]={
             putreadtest,
             pointertest,
             itoatest,
             printftest,
 #endif
-	    isoTest,
+			/*isoTest,*/
             dinamictestOne,
             /*dinamictestTwo,*/
         };

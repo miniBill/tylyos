@@ -43,6 +43,42 @@ int isHddPresent(int controller, int hdd){
 	return (tmpword & 0x40)>0;
 }
 
+int identifyHdd(int controller, int hdd){
+	short tmpword;
+	int port=controller?0x176:0x1F6;
+	outb(port, hdd?0xB0:0xA0);
+	sleep(1);
+	outb(port+1, 0xEC); /*IDENTIFY*/
+	tmpword=inb(port+1);
+	if((tmpword & 0x40) == 0)
+		return 0;
+	while(1){
+		tmpword=inb(port+1);
+		if(
+			((tmpword & 0x80) == 0) && 
+			((tmpword & 0x08) != 0) &&
+			((tmpword & 0x01) == 0))
+			break;
+		if(tmpword & 0x01){
+			printf("Error on hdd identify![controller %d, hdd %d]\n",controller,hdd);
+			return 0;
+		}
+		sleep(1);
+	}
+	{
+		short data[256];
+		int i=0;
+		for(i=0;i<256;i++)
+			tmpword=inb(port-6);
+		i=(data[60]<<8)+data[61];
+		if(i!=0){
+			printf("%d sectors found on drive %d, controller %d\n",hdd,controller);
+			return 1;
+		}
+		return 0;
+	}
+}
+
 void readSector(int controller, int hdd, int sector, unsigned char buffer[512]){
 	int port=controller?0x170:0x1F0;
 	int i=0;
