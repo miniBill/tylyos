@@ -27,8 +27,6 @@
 #include <interrupt/interrupt.h>
 #include <drivers/timer/timer.h>
 
-#include <drivers/hdd/ata.h>
-
 #include <gui/gui.h>
 
 static int on=1;

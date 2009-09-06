@@ -71,12 +71,12 @@ int identifyHdd(int controller, int hdd){
 			tmpword=inb(port-2);
 			if(tmpword == 0x14){ /*probably ATAPI*/
 				tmpword=inb(port-1);
-				if(tmpword == 0xEB)
-					printf("non-ATA ATAPI device [controller %d, hdd %d]\n",controller,hdd);
+				if(tmpword == 0xEB){
+					printf("ATAPI\n");
 					return 1;
+				}
 			}
-			printf("Error on hdd identify![controller %d, hdd %d]\n",controller,hdd);
-			
+			printf("Errore in hdd identify![controller %d,hdd %d]\n",controller,hdd);
 			return 2;
 		}
 		sleep(1);
@@ -88,9 +88,10 @@ int identifyHdd(int controller, int hdd){
 			tmpword=inb(port-6);
 		i=(data[60]<<8)+data[61];
 		if(i!=0){
-			printf("%d sectors found on drive %d, controller %d\n",hdd,controller);
+			printf("trovati %d settori nel drive %d, controller %d\n",hdd,controller);
 			return 3;
 		}
+		printf("Errore in hdd identify![dopo read][controller %d,hdd %d]\n",controller,hdd);
 		return 4;
 	}
 }
