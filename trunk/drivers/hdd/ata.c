@@ -48,8 +48,9 @@ Returns:
 0 no hdd
 1 atapi
 2 error before read
-3 ok
+3 sata
 4 error after read
+5 ata
 */
 int identifyHdd(int controller, int hdd){
 	short tmpword;
@@ -76,22 +77,39 @@ int identifyHdd(int controller, int hdd){
 					return 1;
 				}
 			}
-			printf("Errore in hdd identify![controller %d,hdd %d]\n",controller,hdd);
+			if(tmpword == 0x3C){ /*probably SATA*/
+				tmpword=inb(port-2);
+				if(tmpword == 0xC3){
+					printf("SATA\n");
+					return 3;
+				}
+			}
+			if(tmpword == 0x00){ /*real error*/
+				printf("Glub!");
+			}
+			printf("Errore![prima read][controller %d,hdd %d]\n",controller,hdd);
 			return 2;
 		}
 		sleep(1);
 	}
 	{
-		short data[256];
+		int data[256];
 		int i=0;
+		long j=0;
 		for(i=0;i<256;i++)
-			tmpword=inb(port-6);
-		i=(data[60]<<8)+data[61];
-		if(i!=0){
-			printf("trovati %d settori nel drive %d, controller %d\n",hdd,controller);
-			return 3;
+			data[i]=inw(port-6);
+		for(i=100;i<104;i++){
+			j|=data[i];
+			if(i!=103)
+				j<<=16;
 		}
-		printf("Errore in hdd identify![dopo read][controller %d,hdd %d]\n",controller,hdd);
+		i=(data[60]<<16)|data[61];
+		if(i!=0){
+			printf("%d settori [controller %d,drive %d] LBA%d UDMA(%x,%x)\n",(j>0)?j:i,controller,hdd,(j>0)?48:28,
+			data[88]&0xFF,(data[88]&0xFF00)>>8);
+			return 5;
+		}
+		printf("Errore![dopo read][controller %d,hdd %d]",controller,hdd);
 		return 4;
 	}
 }
@@ -141,4 +159,3 @@ void writeSector(int controller, int hdd, int sector, unsigned char buffer[512])
 		outw(port,word);
 	}
 }
-
