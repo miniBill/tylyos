@@ -16,3 +16,17 @@
  * along with ClearOS.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#ifndef ATAATAPI_H_
+#define ATAATAPI_H_
+
+#include <lib/string.h>
+
+#define port(q) ((controller?0x170:0x1F0)+q)
+
+int isControllerPresent(int controller);
+
+int isHddPresent(int controller,int hdd);
+
+int identifyHdd(int controller,int hdd);
+
+#endif

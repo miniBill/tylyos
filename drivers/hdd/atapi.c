@@ -17,5 +17,6 @@
  */
 
 #include "atapi.h"
+#include "ataatapi.h"
 #include <kernel/stdio.h>
 

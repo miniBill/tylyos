@@ -18,6 +18,7 @@
 
 #include "kernel.h"
 #include <drivers/hdd/ata.h>
+#include <drivers/hdd/ataatapi.h>
 #include <lib/string.h>
 
 int checkHdd(int controller,int disk){
