@@ -50,6 +50,7 @@ Returns:
 */
 int identifyHdd(int controller, int hdd){
 	short tmpword;
+	short retval=0;
 	outb(port(6), hdd?0xB0:0xA0);
 	sleep(1);
 	outb(port(7), 0xEC); /*IDENTIFY*/
@@ -68,21 +69,22 @@ int identifyHdd(int controller, int hdd){
 			if(tmpword == 0x14){ /*probably ATAPI*/
 				tmpword=inb(port(5));
 				if(tmpword == 0xEB){
-					printf("ATAPI\n");
-					return 1;
+					printf("ATAPI ");
+					retval=1;
+					break;
 				}
 			}
 			if(tmpword == 0x3C){ /*probably SATA*/
 				tmpword=inb(port(4));
 				if(tmpword == 0xC3){
 					printf("SATA\n");
-					return 3;
+					retval=3;
+					break;
 				}
 			}
-			if(tmpword == 0x00){ /*real error*/
+			if(tmpword == 0x00)/*real error*/
 				printf("Glub!");
-			}
-			printf("Errore![prima read][controller %d,hdd %d]\n",controller,hdd);
+			printf("Errore! [prima read] [contr. %d,hdd %d]\n",controller,hdd);
 			return 2;
 		}
 		sleep(1);
@@ -99,12 +101,16 @@ int identifyHdd(int controller, int hdd){
 				j<<=16;
 		}
 		i=(data[60]<<16)|data[61];
-		if(i!=0){
-			printf("%d settori [controller %d,drive %d] LBA%d UDMA(%x,%x)\n",(j>0)?j:i,controller,hdd,(j>0)?48:28,
+		if(i!=0 || j!=0){
+			printf("0x%x settori [contr. %d,drive %d] LBA%d UDMA(%x,%x)\n",(j>0)?j:i,controller,hdd,(j>0)?48:28,
 			data[88]&0xFF,(data[88]&0xFF00)>>8);
-			return 5;
+			return retval != 0 ? retval : 5;
 		}
-		printf("Errore![dopo read][controller %d,hdd %d]",controller,hdd);
+		j=0;
+		for(i=0;i<256;i++)
+			if(data[i]!=0)
+				j++;
+		printf("Errore! [dopo read] [contr. %d,hdd %d] %d nonzero\n",controller,hdd,j);
 		return 4;
 	}
 }
