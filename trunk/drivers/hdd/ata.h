@@ -16,12 +16,6 @@
  * along with ClearOS.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-int isControllerPresent(int controller);
-
-int isHddPresent(int controller,int hdd);
-
-int identifyHdd(int controller,int hdd);
-
 void readSector(int controller, int hdd, int sector, unsigned char buffer[256]);
 
 void writeSector(int controller, int hdd, int sector, unsigned char buffer[256]);

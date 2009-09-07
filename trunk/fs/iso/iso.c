@@ -1,4 +1,5 @@
 #include <drivers/hdd/ata.h>
+#include <drivers/hdd/ataatapi.h>
 #include <lib/string.h>
 
 void test_iso(void){
