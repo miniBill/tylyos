@@ -190,11 +190,11 @@ void _kmain(multiboot_info_t* mbd, unsigned int magicN){
 
     /*here start the true tests*/
 
+    checkHdds();
+
     doTests();
 
     magic();
-
-    checkHdds();
 
     t=row()+1;
 

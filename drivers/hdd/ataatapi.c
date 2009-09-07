@@ -39,15 +39,6 @@ int isHddPresent(int controller, int hdd){
 	return (tmpword & 0x40)>0;
 }
 
-/*
-Returns:
-0 no hdd
-1 atapi
-2 error before read
-3 sata
-4 error after read
-5 ata
-*/
 int identifyHdd(int controller, int hdd){
 	short tmpword;
 	short retval=0;
@@ -113,4 +104,12 @@ int identifyHdd(int controller, int hdd){
 		printf("Errore! [dopo read] [contr. %d,hdd %d] %d nonzero\n",controller,hdd,j);
 		return 4;
 	}
+}
+
+void selectHdd(int controller,int hdd){
+	outb(port(6), hdd<<4);
+}
+
+void setMode(int controller,int dma){
+	outb(port(1),dma);
 }
