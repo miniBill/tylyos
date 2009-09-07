@@ -27,6 +27,15 @@ int isControllerPresent(int controller);
 
 int isHddPresent(int controller,int hdd);
 
+/*
+Returns:
+0 no hdd
+1 atapi
+2 error before read
+3 sata
+4 error after read
+5 ata
+*/
 int identifyHdd(int controller,int hdd);
 
 #endif

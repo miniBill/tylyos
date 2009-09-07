@@ -39,7 +39,7 @@ int checkHdd(int controller,int disk){
 		greendot();
 		printf("Identificazione:");
 		hddtype=identifyHdd(controller,disk);
-		if(hddtype & 1) /*1 o 3, ata or atapi*/
+		if(hddtype & 1) /*1 o 3 or 5: atapi, sata or ata*/
 			OK(t);
 	}
 	return present;
