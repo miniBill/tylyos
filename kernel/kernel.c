@@ -69,12 +69,16 @@ void kwrite(const char * string){
 }
 
 void logo(void){
-
-    writeline("                         ________                ____      ");
-    writeline("                        / ____/ /__  ____  _____/ __ \\____");
-    writeline("                       / /   / / _ \\/ __ \\/ ___/ / / /  _/");
-    writeline("                      / /___/ /  __/ /_/ / /  / /_/ /\\  \\ ");
-    writeline("                      \\____/_/\\___/\\__._/_/   \\____//___/ ");
+	gotoxy(25,row());
+	writeline("________                ____      ");
+	gotoxy(24,row()+1);
+    writeline("/ ____/ /__  ____  _____/ __ \\____");
+	gotoxy(23,row()+1);
+    writeline("/ /   / / _ \\/ __ \\/ ___/ / / /  _/");
+	gotoxy(22,row()+1);
+    writeline("/ /___/ /  __/ /_/ / /  / /_/ /\\  \\ ");
+	gotoxy(22,row()+1);
+    writeline("\\____/_/\\___/\\__._/_/   \\____//___/ ");
 
 /*
     writeline("                       ___ _                  ___  __   "); 

@@ -21,6 +21,12 @@
 #include <drivers/hdd/ataatapi.h>
 #include <lib/string.h>
 
+int readTest(int controller,int hdd){
+	selectHdd(controller,hdd);
+	setMode(controller,0);
+	return 0;
+}
+
 int checkHdd(int controller,int disk){
 	int present=0;
 	int t=row()+1;
@@ -39,8 +45,10 @@ int checkHdd(int controller,int disk){
 		greendot();
 		printf("Identificazione:");
 		hddtype=identifyHdd(controller,disk);
-		if(hddtype & 1) /*1 o 3 or 5: atapi, sata or ata*/
+		if(hddtype & 1){ /*1 o 3 or 5: atapi, sata or ata*/
 			OK(t);
+			readTest(controller,disk);
+		}
 	}
 	return present;
 }

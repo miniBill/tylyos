@@ -38,4 +38,8 @@ Returns:
 */
 int identifyHdd(int controller,int hdd);
 
+void selectHdd(int controller,int hdd);
+
+void setMode(int controller,int dma);
+
 #endif
