@@ -19,11 +19,11 @@
 #include "kernel.h"
 #include <drivers/hdd/ata.h>
 #include <drivers/hdd/ataatapi.h>
+#include <drivers/hdd/atapi.h>
 #include <lib/string.h>
 
 int readTest(int controller,int hdd){
-	selectHdd(controller,hdd);
-	setMode(controller,0);
+	atapiRead(controller,hdd,0,0);
 	return 0;
 }
 

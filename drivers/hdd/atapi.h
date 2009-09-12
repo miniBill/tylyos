@@ -16,3 +16,4 @@
  * along with ClearOS.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+void atapiRead(int controller,int hdd,short * command,int maxByteCount);
