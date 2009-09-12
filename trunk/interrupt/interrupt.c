@@ -29,10 +29,14 @@
 
 int xtemp;
 
+char diskInterrupt[2];
+
 /*riempie la IDT (interrupt descriptor table)*/
 void initIdt(void){
     /* inizializzazione */
     int c;
+    diskInterrupt[0]=0;
+    diskInterrupt[1]=0;
     asm("cli");
     xtemp=0;
     for(c=0;c<256;c++)
@@ -158,6 +162,10 @@ void interrupt_handler(
             if(isr==46||isr==47){
                 /* TODO: disk interrupt */
                 /*printf("{i%d}",isr);*/
+                if(isr==46)
+                    diskInterrupt[0]=1;
+                if(isr==47)
+                    diskInterrupt[1]=1;
             }
             else{
                 printf("interruzione, interrupt: %d, count: %d.\n",isr,xtemp);
@@ -176,3 +184,13 @@ void interrupt_handler(
     if(isr>7)outb(0xA0,0x20);
     outb(0x20,0x20);
 }
+
+char getDiskInterruptState(unsigned int disk)
+{
+    char ret;
+    ret=diskInterrupt[disk];
+    if(ret==1)
+        diskInterrupt[disk]=0;
+    return ret;
+}
+
