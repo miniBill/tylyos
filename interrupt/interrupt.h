@@ -45,6 +45,12 @@ void clearIdt(void);
 void addIdtSeg(short int i, void (*gestore)(), unsigned char options, unsigned int seg_sel);
 
 /*
+ * ritorna 1 se è stato generato un interrupt dal disco specificato, successivamente azzera lo stato
+ * disk: specifica il disco, valori 0 o 1
+ */
+char getDiskInterruptState(unsigned int disk);
+
+/*
  * rimappa i PIC (programmable input controller)
  * offset_1: offset riferito alla IDT delle interruzioni per il primo PIC
  * offset_2: offset riferito alla IDT delle interruzioni per il PIC slave

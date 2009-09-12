@@ -15,7 +15,7 @@
 # You should have received a copy of the GNU General Public License
 # along with ClearOS.  If not, see <http://www.gnu.org/licenses/>.
 
-CFLAGS:= -march=i386 -ffreestanding -Wall -pedantic -Wextra -I. -Werror -fno-stack-protector
+CFLAGS:= -march=i386 -ffreestanding -Wall -pedantic -Wextra -I.  -fno-stack-protector
 ASFLAGS:= -march=i386
 OBJ= bootloader/loader.o \
      kernel/stdio.o kernel/kernel.o kernel/tests.o kernel/hddtest.o\
@@ -24,7 +24,7 @@ OBJ= bootloader/loader.o \
        drivers/screen/screen.o \
        drivers/keyboard/keyboard.o \
        drivers/timer/timer.o \
-       drivers/hdd/ata.o drivers/hdd/atapi.o drivers/hdd/ataatapi.o\
+       drivers/hdd/ata.o drivers/hdd/atapi.o drivers/hdd/ataatapi.o drivers/hdd/mindrvr.o\
      interrupt/interrupt.o interrupt/interruptHandler.o interrupt/ldt.o \
      fs/iso/iso.o \
      gui/gui.o \
