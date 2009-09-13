@@ -21,9 +21,11 @@
 #include <drivers/hdd/ataatapi.h>
 #include <drivers/hdd/atapi.h>
 #include <lib/string.h>
+#include <drivers/hdd/mindrvr.h>
 
 int readTest(int controller,int hdd){
-	atapiRead(controller,hdd,0,0);
+	controller^=hdd; /*HACK*/
+	/*atapiRead(controller,hdd,0,0);*/
 	return 0;
 }
 
@@ -77,5 +79,27 @@ int checkHdds(void){
 	int ret=0;
 	ret|=checkController(0);
 	ret|=checkController(1)<<4;
+	
+	reg_config();
+	{
+		int i;
+		for(i=0;i<2;i++){
+			switch(reg_config_info[i]){
+				case REG_CONFIG_TYPE_NONE:
+					printf("none on %d\n",i);
+					break;
+				case REG_CONFIG_TYPE_UNKN:
+					printf("dunno on %d\n",i);
+					break;
+				case REG_CONFIG_TYPE_ATA:
+					printf("ata on %d\n",i);
+					break;
+				case REG_CONFIG_TYPE_ATAPI:
+					printf("atapi on %d\n",i);
+					break;
+			}
+		}
+	}
+	
 	return ret;
 }
