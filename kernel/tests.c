@@ -55,8 +55,9 @@ int dinamictestOne(void){
     int ret=1;
     write("Test allocazione dinamica: fase1 ");
 
-    printf("heap 0x%x",mallocMemoryStart);
-    printf(" user 0x%x",userMemoryStart);
+    printf("\n    kernel heap start: 0x%x",mallocMemoryStart);
+    printf("\n    kernel heap size:  %dKB",(userMemoryStart-mallocMemoryStart)/1000);
+    printf("\n    user memory start: 0x%x",userMemoryStart);
     pointera=(unsigned int)kmalloc(4);
     pointerb=(unsigned int)kmalloc(4);
     pointerc=(unsigned int)kmalloc(4);
