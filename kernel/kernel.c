@@ -19,7 +19,6 @@
 
 #include "kernel.h"
 #include "tests.h"
-#include "hddtest.h"
 #include "multiboot.h"
 #include <lib/string.h>
 #include <memory/memory.h>
@@ -194,7 +193,6 @@ void _kmain(multiboot_info_t* mbd, unsigned int magicN){
 
     /*here start the true tests*/
 
-    checkHdds();
 
     doTests();
 
