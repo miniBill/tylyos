@@ -21,14 +21,16 @@
 
 #include "gui.h"
 
-void fillRectangle(int x,int y,int width,int height,char color){
+void fillRectangle ( int x,int y,int width,int height,char color )
+{
     int c,i;
-    for(c=x;c<=(width+x);c++)
-        for(i=y;i<=(height+y);i++)
-            cputxy(c,i,color);
+    for ( c=x;c<= ( width+x );c++ )
+        for ( i=y;i<= ( height+y );i++ )
+            cputxy ( c,i,color );
 }
 
-void drawRectangle(int x,int y,int width,int height,char color){
+void drawRectangle ( int x,int y,int width,int height,char color )
+{
     /* 8--1--2
      * |     |
      * 7     3
@@ -36,25 +38,27 @@ void drawRectangle(int x,int y,int width,int height,char color){
      * 6--5--4
      */
     int c;
-    for(c=(x+1);c<(width+x);c++){
+    for ( c= ( x+1 );c< ( width+x );c++ )
+    {
         /*1*/
-        putxy(c,y,(char)BORDER_ORIZONTAL);
+        putxy ( c,y, ( char ) BORDER_ORIZONTAL );
         /*5*/
-        putxy(c,y+height,(char)BORDER_ORIZONTAL);
+        putxy ( c,y+height, ( char ) BORDER_ORIZONTAL );
     }
     /*2*/
-    putxy(x+width,y,(char)BORDER_CORNER_HI_RIGHT);
-    for(c=(y+1);c<(height+y);c++){
+    putxy ( x+width,y, ( char ) BORDER_CORNER_HI_RIGHT );
+    for ( c= ( y+1 );c< ( height+y );c++ )
+    {
         /*3*/
-        putxy(x+width,c,(char)BORDER_VERTICAL);
+        putxy ( x+width,c, ( char ) BORDER_VERTICAL );
         /*7*/
-        putxy(x,c,(char)BORDER_VERTICAL);
+        putxy ( x,c, ( char ) BORDER_VERTICAL );
     }
     /*4*/
-    putxy(x+width,y+height,(char)BORDER_CORNER_LOW_RIGHT);
+    putxy ( x+width,y+height, ( char ) BORDER_CORNER_LOW_RIGHT );
     /*6*/
-    putxy(x,y+height,(char)BORDER_CORNER_LOW_LEFT);
+    putxy ( x,y+height, ( char ) BORDER_CORNER_LOW_LEFT );
     /*8*/
-    putxy(x,y,(char)BORDER_CORNER_HI_LEFT);
-    fillRectangle(x,y,width,height,color);
+    putxy ( x,y, ( char ) BORDER_CORNER_HI_LEFT );
+    fillRectangle ( x,y,width,height,color );
 }
