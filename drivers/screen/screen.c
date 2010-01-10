@@ -32,6 +32,10 @@ static char * pointer       =(char *)consoleAddr;
 static char videoMemory[PAGES*ROWS*COLUMNS*2]={0};
 static int baseline         =0;
 
+void setConsoleColor(unsigned char color)
+{
+   consoleColor=color;
+}
 
 void setCursorPos(unsigned int x, unsigned int y){
    asm(
@@ -203,6 +207,17 @@ void clearScreen(){
     gotoi(0);
     for(;pos()<total();)
         put(' ');
+    gotoi(0);
+}
+
+void clearScreenAndColor(unsigned char color){
+    clearScreen();
+    gotoi(0);
+    for(;pos()<total();)
+    {
+	cput(color);
+        pointer+=2;
+    }
     gotoi(0);
 }
 
