@@ -21,20 +21,22 @@
 #include <kernel/stdio.h>
 #include <kernel/kernel.h>
 
-void atapiRead(int controller,int hdd,short * command,int maxByteCount){
-	short tmpword=0;
-	selectHdd(controller,hdd);
-	setMode(controller,0);
-	
-	/*send byte count*/
-	outb(port(4),maxByteCount & 0xff);
-	outb(port(5),maxByteCount >> 8);
-	tmpword=inw(port(7));
-	while((tmpword & 0x40) || !(tmpword & 0x20)){
-		printf("BSY ");
-		sleep(1000);
-	}
-	outb(port(7),0xA0);/*PACKET*/
-	for(tmpword=0;tmpword<6;tmpword++)
-		outw(port(0),command[tmpword]);
+void atapiRead ( int controller,int hdd,short * command,int maxByteCount )
+{
+    short tmpword=0;
+    selectHdd ( controller,hdd );
+    setMode ( controller,0 );
+
+    /*send byte count*/
+    outb ( port ( 4 ),maxByteCount & 0xff );
+    outb ( port ( 5 ),maxByteCount >> 8 );
+    tmpword=inw ( port ( 7 ) );
+    while ( ( tmpword & 0x40 ) || ! ( tmpword & 0x20 ) )
+    {
+        printf ( "BSY " );
+        sleep ( 1000 );
+    }
+    outb ( port ( 7 ),0xA0 );/*PACKET*/
+    for ( tmpword=0;tmpword<6;tmpword++ )
+        outw ( port ( 0 ),command[tmpword] );
 }
