@@ -158,7 +158,7 @@ void doTests(void){
 			/*isoTest,*/
             dinamictestOne,
             /*dinamictestTwo,*/
-			vatest,
+/*			vatest,*/
         };
         run(tests);
 }

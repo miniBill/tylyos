@@ -207,7 +207,6 @@ void _kmain(multiboot_info_t* mbd, unsigned int magicN){
 
     /*drawRectangle(0,t,COLUMNS-1,ROWS-t-2,(char)(Yellow|Back_Blue));*/
     gotoxy(1,t+1);
-    setCursorPos(79,24);
     asm("sti");
     writexy(0,ROWS-1,"[s][c][a][n][k] Time:");
     on=1;
