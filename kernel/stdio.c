@@ -18,23 +18,23 @@
 
 #include "stdio.h"
 
-inline unsigned char inb(int portnum){
+unsigned char inb(int portnum){
     unsigned char data=0;
     asm("inb %%dx, %%al" : "=a" (data) : "d" (portnum));
     return data;
 }
 
-inline unsigned short inw(unsigned short portnum){
+unsigned short inw(unsigned short portnum){
     unsigned short _v;
     asm("inw %1,%0" : "=a" (_v) : "d" (portnum));
     return _v;
 }
 
-inline void outb(int portnum, int data){
+void outb(int portnum, int data){
     asm("outb %%al, %%dx" :: "a" (data),"d" (portnum));
 }
 
-inline void outw(unsigned short portnum, unsigned short data){
+void outw(unsigned short portnum, unsigned short data){
     asm("outw %%ax,%%dx" :: "a" (data), "d" (portnum));
 }
 
