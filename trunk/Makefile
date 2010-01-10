@@ -15,7 +15,7 @@
 # You should have received a copy of the GNU General Public License
 # along with ClearOS.  If not, see <http://www.gnu.org/licenses/>.
 
-CFLAGS:= -march=i386 -ffreestanding -Wall -pedantic -Wextra -I. -Werror -fno-stack-protector -std=c99
+CFLAGS:= -march=i386 -ffreestanding -Wall -pedantic -Wextra -I. -fno-stack-protector -std=gnu99
 ASFLAGS:= -march=i386
 OBJ= bootloader/loader.o \
      kernel/stdio.o kernel/kernel.o kernel/tests.o \
