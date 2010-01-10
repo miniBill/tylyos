@@ -10,4 +10,6 @@ void tick(void);
 
 unsigned long int time(void);
 
+void sleep(unsigned int i);
+
 #endif

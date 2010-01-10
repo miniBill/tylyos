@@ -240,12 +240,12 @@ void initPaging(void){
 
 
     mallocMemoryStart=(unsigned int)pageDir+(((1024*1024)+1)*4);/*indirizzo base dell heap*/
-    addMem=(double)memoriaFisica/4.0;/*un quarto della memoria fisica e' riservata al kernel*/
+    addMem=memoriaFisica/4;/*un quarto della memoria fisica e' riservata al kernel*/
     if(addMem<MIN_HEAP_SIZE)/*se un quarto della memoria non e' abbastanza e' meglio garantirsi un minimo*/
         addMem=MIN_HEAP_SIZE;
     /*printf("addMem: %d ",addMem);*/
     userMemoryStart=mallocMemoryStart+addMem;
-    userMemoryStart+= 0x1000-(userMemoryStart%0x1000);
+    userMemoryStart+= 0x1000-(userMemoryStart%0x1000);/* in modo da allineare l' indirizzo a 0x1000 (dimensione di una pagina) */
 
 
     for(c=0;c<(1024*1024)+1;c++)

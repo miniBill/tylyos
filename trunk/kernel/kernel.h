@@ -18,4 +18,6 @@ void NO(int i);
 
 void greendot(void);
 
+void kernelPanic(char *sender,char *message);
+
 #endif

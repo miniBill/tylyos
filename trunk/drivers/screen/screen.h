@@ -63,6 +63,7 @@ enum{
 #define PAGES       4
 #define ROWS        25
 
+void setConsoleColor(unsigned char color);
 
 void setCursorPos(unsigned int x, unsigned int y);
 
@@ -93,6 +94,7 @@ void writexy(int x,int y,const char * string);
 void writeline(const char* string);
 
 void clearScreen(void);
+void clearScreenAndColor(unsigned char color);
 
 /*This six methods are equal to those without the c, but they read/write the color byte*/
 char cread(void);

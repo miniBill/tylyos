@@ -33,3 +33,9 @@ void tick(void){
 unsigned long int time(void){
     return timeCount;
 }
+
+void sleep(unsigned int i)
+{
+    unsigned long int temp=time();
+    while(time()-temp<i); 
+}

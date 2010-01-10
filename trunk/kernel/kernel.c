@@ -211,6 +211,7 @@ void _kmain(multiboot_info_t* mbd, unsigned int magicN){
     asm("sti");
     writexy(0,ROWS-1,"[s][c][a][n][k] Time:");
     on=1;
+    /*kernelPanic("_kmain()","this is a test message");*/
     while(on);
     {
         /*wait 3 seconds before halting*/
@@ -222,8 +223,20 @@ void _kmain(multiboot_info_t* mbd, unsigned int magicN){
     }
 }
 
-void sleep(unsigned int i)
+
+void kernelPanic(char *sender,char *message)
 {
-    unsigned long int temp=time();
-    while(time()-temp<i); 
+   
+   asm("cli");
+   clearScreenAndColor(Yellow|Back_Red);
+   setConsoleColor(Yellow|Back_Red);
+   gotoxy(0,3);
+   printf("RED SCREEN OF DOOM");
+   gotoxy(0,7);
+   printf("Dear user,\n");
+   printf("I am very sorry I haven't written for so long. ");
+   printf("I am writing to tell you that \n%s\n",message);
+   printf("Much love, %s",sender);
+   setCursorPos(100,100);
+   while(1);
 }
