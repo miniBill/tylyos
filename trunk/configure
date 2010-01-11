@@ -1,4 +1,6 @@
-#!/bin/bash
+#!/bin/sh
+echo "Creating project file..."
+cat .kdev4/trunk.kdev4.orig | sed "s/MARKER/"`pwd|sed "s/\//\\\\\//g"`"/" > .kdev4/trunk.kdev4
 GCC=""
 echo -n "checking for gcc... "
 if [ -x `which gcc` ]; then

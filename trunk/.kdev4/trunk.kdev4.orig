@@ -1,0 +1,28 @@
+[Buildset]
+BuildItems=@Variant(\x00\x00\x00\t\x00\x00\x00\x00\x01\x00\x00\x00\x0b\x00\x00\x00\x00\x02\x00\x00\x00\x0e\x00c\x00l\x00e\x00a\x00r\x00o\x00s\x00\x00\x00\x06\x00a\x00l\x00l)
+
+[Launch]
+Launch Configurations=Launch Configuration 0
+
+[Launch][Launch Configuration 0]
+Configured Launch Modes=execute
+Configured Launchers=nativeAppLauncher
+Name=Test in Bochs
+Type=Native Application
+
+[Launch][Launch Configuration 0][Data]
+Arguments=-qf bochs.conf
+Dependencies=@Variant(\x00\x00\x00\t\x00\x00\x00\x00\x00)
+Dependency Action=Build
+EnvironmentGroup=
+Executable=file:///usr/bin/bochs
+Use External Terminal=false
+Working Directory=MARKER
+isExecutable=true
+
+[MakeBuilder]
+Number Of Jobs=4
+Run Multiple Jobs=true
+
+[Project]
+VersionControlSupport=kdevsubversion
