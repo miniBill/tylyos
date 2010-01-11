@@ -246,7 +246,7 @@ void kfree ( void *pointer )
         tempPrePointer=tempPointer;
         tempPointer= ( unsigned int ) ( * ( struct memoryArea* ) tempPointer ).next;
     }
-    kernelPanic("kfree()","a kernel function is trying to deallocate something but i can't find that in the allocation list, sorry.");
+    kernelPanic("kfree()","a kernel function is trying to deallocate something but i can't find it in the allocation list, sorry.");
 }
 
 
@@ -454,7 +454,7 @@ unsigned int removePaginaFromList ( unsigned int procID,unsigned int indirizzoLo
     return 0;
 }
 
-/*ritorna un indirizzo fisico libero, pronto per lallocazione di una nuova pagina*/
+/*ritorna un indirizzo fisico libero, pronto per l' allocazione di una nuova pagina*/
 /*NON MODIFICA LA BITMAP*/
 unsigned int getFreePage()
 {
@@ -502,7 +502,11 @@ struct pagina *allocaNuovaPagina ( unsigned int procID,unsigned int indirizzoLog
     temp->indirizzoLog=indirizzoLog;
 
     temp->indirizzoFis=getFreePage();/*cerca una pagina fisica libera*/
-    /*TODO: implementare il controllo nel caso in cui la memoria fisica sia piena*/
+    /*TODO: verificare che il controllo funzioni*/
+    if(temp->indirizzoFis==0)
+    {
+        kernelPanic("allocaNuovaPagina()","the fisic memory is full. I can't allocate a new page, sorry.");
+    }
     setPaginaFisica ( convertFisAddrToBitmapIndex ( temp->indirizzoFis ),1 );/*segna la pagina come utilizzata*/
 
     /*aggiunge alla lista delle pagine*/
@@ -526,7 +530,10 @@ unsigned int deallocaPagina ( unsigned int procID,unsigned int indirizzoLog )
     }
 
     if ( pointer==0 ) /*se non ha trovato la pagina*/
+    {
+        kernelPanic("deallocaPagina","I can't find the page to delete.");
         return 0;
+    }
 
     /*aggiorna la bitmap se necessario*/
     if ( pointer->indirizzoFis!=0 ) /*se la pagina e' in memoria RAM*/
@@ -536,6 +543,7 @@ unsigned int deallocaPagina ( unsigned int procID,unsigned int indirizzoLog )
     else/*se la pagina non e' in memoria RAM*/
     {
         /*TODO: implementare la deallocazione nel caso la pagina sia swappata sull hard disk*/
+	kernelPanic("deallocaPagina()","I can't remove a swapped page.");
     }
 
     /*rimuove la pagina dalla lista e dealloca la struttura*/
