@@ -26,6 +26,7 @@
 #include <drivers/screen/screen.h>
 #include <drivers/timer/timer.h>
 #include <drivers/keyboard/keyboard.h>
+#include <kernel/kernel.h>
 
 int xtemp;
 
