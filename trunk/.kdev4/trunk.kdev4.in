@@ -17,12 +17,3 @@ Dependency Action=Build
 EnvironmentGroup=
 Executable=file:///usr/bin/bochs
 Use External Terminal=false
-Working Directory=MARKER
-isExecutable=true
-
-[MakeBuilder]
-Number Of Jobs=4
-Run Multiple Jobs=true
-
-[Project]
-VersionControlSupport=kdevsubversion

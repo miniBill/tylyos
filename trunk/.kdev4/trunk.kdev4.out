@@ -1,0 +1,8 @@
+isExecutable=true
+
+[MakeBuilder]
+Number Of Jobs=4
+Run Multiple Jobs=true
+
+[Project]
+VersionControlSupport=kdevsubversion

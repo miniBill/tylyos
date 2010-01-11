@@ -1,6 +1,6 @@
-#!/bin/sh
+#!/bin/bash
 echo "Creating project file..."
-cat .kdev4/trunk.kdev4.orig | sed "s/MARKER/"`pwd|sed "s/\//\\\\\//g"`"/" > .kdev4/trunk.kdev4
+echo "Working Directory=file://"`pwd` | cat .kdev4/trunk.kdev4.in - .kdev4/trunk.kdev4.out > .kdev4/trunk.kdev4
 GCC=""
 echo -n "checking for gcc... "
 if [ -x `which gcc` ]; then
