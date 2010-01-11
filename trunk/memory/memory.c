@@ -22,6 +22,7 @@
 #include <drivers/screen/screen.h>
 #include <lib/string.h>
 #include <task/task.h>
+#include <kernel/kernel.h>
 
 /*ritorna il valore del registro EBP*/
 unsigned int getEBP()
@@ -125,7 +126,7 @@ void *calloc ( unsigned int num, unsigned int size )
 
 void* kmalloc ( unsigned int byte )
 {
-    /*TODO:inserire controllo per non sforare nella memoria user*/
+    /*TODO:verificare che il controllo per non sforare nella memoria user funzioni*/
     struct memoryArea *pre,*next;
 
     if ( kmallocList!=0 )
@@ -176,13 +177,21 @@ void* kmalloc ( unsigned int byte )
         /*non � stato trovato spazio negli spazi liberi fra le allocazioni*/
         /*verr� quindi allocato alla fine della lista*/
         next= ( struct memoryArea* ) ( ( unsigned int ) pre+pre->size+sizeof ( struct memoryArea ) );
-        pre->next=next;
-        next->next=0;
-        next->size=byte;
+        /*controlla di non sforare nella memoria user*/
+        if((unsigned int)next+sizeof(struct memoryArea)+byte<(unsigned int)userMemoryStart)
+        {
+            pre->next=next;
+            next->next=0;
+            next->size=byte;
 
-        /*printf("alla fine\n");*/
+            /*printf("alla fine\n");*/
 
-        return ( void* ) ( ( unsigned int ) next+sizeof ( struct memoryArea ) );
+            return ( void* ) ( ( unsigned int ) next+sizeof ( struct memoryArea ) );
+        }
+        else
+        {
+            kernelPanic("kmalloc()","the KERNEL HEAP IS FULL.");
+        }
     }
     else
     {
@@ -195,7 +204,7 @@ void* kmalloc ( unsigned int byte )
 
         return ( void* ) ( ( unsigned int ) kmallocList+sizeof ( struct memoryArea ) );
     }
-
+    return 0;/*in ogni caso qui' non ci deve arrivare*/
 }
 
 void kfree ( void *pointer )
@@ -215,6 +224,7 @@ void kfree ( void *pointer )
             {
                 /*� il primo elemento della lista*/
                 kmallocList= ( * ( struct memoryArea* ) tempPointer ).next;
+                return;
             }
             else
             {
@@ -222,11 +232,13 @@ void kfree ( void *pointer )
                 {
                     /*se non � l'ultimo elemento bypassalo*/
                     ( * ( struct memoryArea* ) tempPrePointer ).next= ( * ( struct memoryArea* ) tempPointer ).next;
+                    return;
                 }
                 else
                 {
                     /*se � l'ultimo elemento metti a 0 il puntatore preedente*/
                     ( * ( struct memoryArea* ) tempPrePointer ).next=0;
+                    return;
                 }
 
             }
@@ -234,6 +246,7 @@ void kfree ( void *pointer )
         tempPrePointer=tempPointer;
         tempPointer= ( unsigned int ) ( * ( struct memoryArea* ) tempPointer ).next;
     }
+    kernelPanic("kfree()","a kernel function is trying to deallocate something but i can't find that in the allocation list, sorry.");
 }
 
 
