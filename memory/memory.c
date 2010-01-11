@@ -262,7 +262,7 @@ void initPaging ( void )
     /*mappa fino a USER_START le pagin 1:1 con la memoria fisica*/
     fisicPointer=KERNEL_START;
     pageDir= ( unsigned int* ) KERNEL_MEMORY_START;
-    pointer= ( unsigned int ) pageDir;
+    pointer= ( unsigned int ) pageDir+0x1000;
 
 
     mallocMemoryStart= ( unsigned int ) pageDir+ ( ( ( 1024*1024 ) +1 ) *4 );/*indirizzo base dell heap*/
@@ -298,7 +298,7 @@ void initPaging ( void )
         }
     }
 
-
+    setPageTableSelector ( ( unsigned int* ) ( ( unsigned int ) pageDir+ ( pageTableIndex*4 ) ),pointer>>12,flags );
 
     /*segmento codice user mode*/
     gdtSet ( 3, userMemoryStart, ( 0xFFFFFFFF-userMemoryStart ) /0x1000,MEM_GRANULAR|MEM_32,
@@ -531,7 +531,7 @@ unsigned int deallocaPagina ( unsigned int procID,unsigned int indirizzoLog )
 
     if ( pointer==0 ) /*se non ha trovato la pagina*/
     {
-        kernelPanic("deallocaPagina","I can't find the page to delete.");
+        kernelPanic("deallocaPagina()","I can't find the page to delete.");
         return 0;
     }
 

@@ -227,6 +227,12 @@ void _kmain ( multiboot_info_t* mbd, unsigned int magicN )
     asm ( "sti" );
     writexy ( 0,ROWS-1,"[s][c][a][n][k] Time:" );
     on=1;
+    /*
+    test kernel panic
+    while(1)
+    {
+       unsigned int test=(unsigned int) kmalloc(1024*1024); 
+    }*/
     /*kernelPanic("_kmain()","this is a test message");*/
     while ( on );
     {
