@@ -1,4 +1,5 @@
 #!/bin/bash
+cp trunk.kdev4.* trunk.kdev4
 echo "Creating project file..."
 echo "Working Directory=file://"`pwd` | cat .kdev4/trunk.kdev4.in - .kdev4/trunk.kdev4.out > .kdev4/trunk.kdev4
 GCC=""
