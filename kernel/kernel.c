@@ -234,23 +234,6 @@ void _kmain ( multiboot_info_t* mbd, unsigned int magicN )
        kmalloc(1024*1024); 
     }*/
     /*kernelPanic("_kmain()","this is a test message");*/
-init_graph_vga(400,300,0);
-{
-int x=0;
-int boh=0;
-char *addr=0xA0000;
-while(1)
-{
-	for(x=boh*2;x<320*200;x++)
-	{
-		addr[x]=(char)boh;
-	}
-	
-	boh++;
-	if(boh==256)
-		break;
-}
-
 
 
 
