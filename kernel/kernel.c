@@ -25,7 +25,7 @@
 #include <task/task.h>
 #include <interrupt/interrupt.h>
 #include <drivers/timer/timer.h>
-#include <drivers/vga/vga.h>
+
 #include <gui/gui.h>
 
 static int on=1;
@@ -253,7 +253,7 @@ while(1)
 
 
 
-}
+
     while ( on );
     {
         /*wait 3 seconds before halting*/
