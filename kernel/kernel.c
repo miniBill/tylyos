@@ -234,7 +234,7 @@ void _kmain ( multiboot_info_t* mbd, unsigned int magicN )
        kmalloc(1024*1024); 
     }*/
     /*kernelPanic("_kmain()","this is a test message");*/
-init_graph_vga(320,200,0);
+init_graph_vga(400,300,0);
 {
 int x=0;
 int boh=0;
