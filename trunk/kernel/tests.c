@@ -7,105 +7,114 @@
 
 #define FAST_TESTS
 
-typedef int (*test)(void);
+typedef int ( *test ) ( void );
 
-int putreadtest(void) {
-  char output[16] = "Prova put/read.";
-  int i;
-  put('P');
-  for (i = COLUMNS + 1;i < COLUMNS + 6;i++)
-    put(readi(i));
-  write("put/read.");
-  return check(output, 0);
+int putreadtest ( void )
+{
+    char output[16] = "Prova put/read.";
+    int i;
+    put ( 'P' );
+    for ( i = COLUMNS + 1;i < COLUMNS + 6;i++ )
+        put ( readi ( i ) );
+    write ( "put/read." );
+    return check ( output, 0 );
 }
 
-int pointertest(void) {
-  char pointer[17] = "Prova puntatore.";
-  write(pointer);
-  return check(pointer, 0);
+int pointertest ( void )
+{
+    char pointer[17] = "Prova puntatore.";
+    write ( pointer );
+    return check ( pointer, 0 );
 }
 
-int itoatest(void) {
-  char conversion[4] = {0};
-  char output[8] = "123,-A0";
-  int i;
-  write("Prova itoa:");
-  for (i = 0;i < 4;i++)
-    conversion[i] = 0;
-  itoa(123, conversion);
-  write(conversion);
-  write(",");
-  itobase(-160, 16, conversion);
-  write(conversion);
-  write(".");
-  return check(output, 11);
+int itoatest ( void )
+{
+    char conversion[4] = {0};
+    char output[8] = "123,-A0";
+    int i;
+    write ( "Prova itoa:" );
+    for ( i = 0;i < 4;i++ )
+        conversion[i] = 0;
+    itoa ( 123, conversion );
+    write ( conversion );
+    write ( "," );
+    itobase ( -160, 16, conversion );
+    write ( conversion );
+    write ( "." );
+    return check ( output, 11 );
 }
 
-int printftest(void) {
-  char output[16] = "10,CA,a,ciao,13";
-  int test = 13;
-  write("Prova printf:");
-  printf("%d,%x,%c,%s,%d", 10, 0xCA, 'a', "ciao", test);
-  printf(" base stack: %x end: %x", getEBP(), getESP());
-  return check(output, 13);
+int printftest ( void )
+{
+    char output[16] = "10,CA,a,ciao,13";
+    int test = 13;
+    write ( "Prova printf:" );
+    printf ( "%d,%x,%c,%s,%d", 10, 0xCA, 'a', "ciao", test );
+    printf ( " base stack: %x end: %x", getEBP(), getESP() );
+    return check ( output, 13 );
 }
 
-int dinamictestOne(void) {
-  unsigned int pointera, pointerb, pointerc;
-  int ret = 1;
-  write("Test allocazione dinamica: fase1 ");
+int dinamictestOne ( void )
+{
+    unsigned int pointera, pointerb, pointerc;
+    int ret = 1;
+    write ( "Test allocazione dinamica: fase1 " );
 
-  printf("\n    kernel heap start: 0x%x", mallocMemoryStart);
-  printf("\n    reserved kernel heap size:  %dMB and %dKB", (userMemoryStart - mallocMemoryStart) / 1000000, ((userMemoryStart - mallocMemoryStart) % 1000000) / 1000);
-  printf("\n    user memory start: 0x%x", userMemoryStart);
-  pointera = (unsigned int) kmalloc(4);
-  pointerb = (unsigned int) kmalloc(4);
-  pointerc = (unsigned int) kmalloc(4);
-  /*
-  printf("\n%d %d %d\n",pointera,pointerb,pointerc);
-  */
-  if (!(pointerc - pointerb == 12 &&
-        pointerb - pointera == 12))
-    ret = 0;
+    printf ( "\n    kernel heap start: 0x%x", mallocMemoryStart );
+    printf ( "\n    reserved kernel heap size:  %dMB and %dKB", ( userMemoryStart - mallocMemoryStart ) / 1000000, ( ( userMemoryStart - mallocMemoryStart ) % 1000000 ) / 1000 );
+    printf ( "\n    user memory start: 0x%x", userMemoryStart );
+    pointera = ( unsigned int ) kmalloc ( 4 );
+    pointerb = ( unsigned int ) kmalloc ( 4 );
+    pointerc = ( unsigned int ) kmalloc ( 4 );
+    /*
+    printf("\n%d %d %d\n",pointera,pointerb,pointerc);
+    */
+    if ( ! ( pointerc - pointerb == 12 &&
+             pointerb - pointera == 12 ) )
+        ret = 0;
 
-  kfree((void*) pointera);
-  if (!(pointera == (unsigned int) kmalloc(4))) {
-      printf("a\n");
-      ret = 0;
+    kfree ( ( void* ) pointera );
+    if ( ! ( pointera == ( unsigned int ) kmalloc ( 4 ) ) )
+    {
+        printf ( "a\n" );
+        ret = 0;
     }
-  kfree((void*) pointerb);
-  if (!(pointerb == (unsigned int) kmalloc(4))) {
-      printf("b\n");
-      ret = 0;
+    kfree ( ( void* ) pointerb );
+    if ( ! ( pointerb == ( unsigned int ) kmalloc ( 4 ) ) )
+    {
+        printf ( "b\n" );
+        ret = 0;
     }
-  kfree((void*) pointerc);
-  if (!(pointerc == (unsigned int) kmalloc(4))) {
-      printf("c\n");
-      ret = 0;
+    kfree ( ( void* ) pointerc );
+    if ( ! ( pointerc == ( unsigned int ) kmalloc ( 4 ) ) )
+    {
+        printf ( "c\n" );
+        ret = 0;
     }
-  kfree((void*) pointera);
-  kfree((void*) pointerb);
-  kfree((void*) pointerc);
-  return ret;
+    kfree ( ( void* ) pointera );
+    kfree ( ( void* ) pointerb );
+    kfree ( ( void* ) pointerc );
+    return ret;
 }
 
-int dinamictestTwo(void) {
-  char *dinamicFirst, *dinamicSecond;
-  int i;
-  for (i = 0;i < 27;i++)
-    put(' ');
-  write("fase2 ");
-  dinamicFirst = (char*) kmalloc(4);
-  printf("0x%x=", (unsigned int) dinamicFirst);
+int dinamictestTwo ( void )
+{
+    char *dinamicFirst, *dinamicSecond;
+    int i;
+    for ( i = 0;i < 27;i++ )
+        put ( ' ' );
+    write ( "fase2 " );
+    dinamicFirst = ( char* ) kmalloc ( 4 );
+    printf ( "0x%x=", ( unsigned int ) dinamicFirst );
 
-  dinamicSecond = dinamicFirst;
-  kfree(dinamicFirst);
+    dinamicSecond = dinamicFirst;
+    kfree ( dinamicFirst );
 
-  dinamicFirst = (char*) kmalloc(4);
+    dinamicFirst = ( char* ) kmalloc ( 4 );
 
-  printf("=0x%x.", (unsigned int) dinamicFirst);
+    printf ( "=0x%x.", ( unsigned int ) dinamicFirst );
 
-  return dinamicFirst == dinamicSecond;
+    return dinamicFirst == dinamicSecond;
 }
 
 /*int hddTest(void){
@@ -113,55 +122,62 @@ int dinamictestTwo(void) {
  char first;
 }*/
 
-int isoTest(void) {
-  test_iso();
-  return 1;
+int isoTest ( void )
+{
+    test_iso();
+    return 1;
 }
 
-int vatest(void) {
-  int i = 10, l = 0;
-  for (;i<100;i+=7) {
-      int t[i];
-      for (l=0;l<i;l++)
-        t[i]=l*l;
-      for (l = (t[i]+1)%10;l < i;l+=t[l]+1)
-        t[l] = t[i-l];
-      i+=t[t[0]%i];
+int vatest ( void )
+{
+    int i = 10, l = 0;
+    for ( ;i<100;i+=7 )
+    {
+        int t[i];
+        for ( l=0;l<i;l++ )
+            t[i]=l*l;
+        for ( l = ( t[i]+1 ) %10;l < i;l+=t[l]+1 )
+            t[l] = t[i-l];
+        i+=t[t[0]%i];
     }
-  printf("%d",l);
-  return 1;
+    printf ( "%d",l );
+    return 1;
 }
 
-void run(test tests[]) {
-  int i;
-  int t = row() + 1;
-  for (i = 0;tests[i] != 0;i++) {
-      NO(t);
-      greendot();
-      if ((*tests[i])())
-        OK(t++);
-      else
-        t++;
-      writeline("");
+void run ( test tests[] )
+{
+    int i;
+    int t = row() + 1;
+    for ( i = 0;tests[i] != 0;i++ )
+    {
+        NO ( t );
+        greendot();
+        if ( ( *tests[i] ) () )
+            OK ( t++ );
+        else
+            t++;
+        writeline ( "" );
     }
 }
 
-void doTests(void) {
-  /*REMEMBER TO KEEP SIZE=ITEMS+1!!!*/
+void doTests ( void )
+{
+    /*REMEMBER TO KEEP SIZE=ITEMS+1!!!*/
 #ifdef FAST_TESTS
-  test tests[3] = {
+    test tests[3] =
+    {
 #else
-  test tests[7] = {
-    putreadtest,
-    pointertest,
-    itoatest,
-    printftest,
+    test tests[7] = {
+        putreadtest,
+        pointertest,
+        itoatest,
+        printftest,
 #endif
-    /*isoTest,*/
-    dinamictestOne,
-    /*dinamictestTwo,*/
-       vatest,
-  };
-  run(tests);
+        /*isoTest,*/
+        dinamictestOne,
+        /*dinamictestTwo,*/
+        vatest,
+    };
+    run ( tests );
 }
 

@@ -21,71 +21,73 @@
 
 #define INTERRUPT_PRESENT 0x80
 
-struct idt_entry{
+struct idt_entry
+{
     unsigned short base_lo;
     unsigned short sel;
     unsigned char always0;
     unsigned char flags;
     unsigned short base_hi;
-} __attribute__((packed));
+} __attribute__ ( ( packed ) );
 
-struct idt_ptr{
+struct idt_ptr
+{
     unsigned short limit;
     unsigned int base;
-} __attribute__((packed));
+} __attribute__ ( ( packed ) );
 
 struct idt_entry idt[256];
 struct idt_ptr idt_pointer;
 
-extern void idt_load(void);
+extern void idt_load ( void );
 
-void initIdt(void);
-void clearIdt(void);
+void initIdt ( void );
+void clearIdt ( void );
 
-void addIdtSeg(short int i, void (*gestore)(), unsigned char options, unsigned int seg_sel);
+void addIdtSeg ( short int i, void ( *gestore ) (), unsigned char options, unsigned int seg_sel );
 
 /*
  * ritorna 1 se è stato generato un interrupt dal disco specificato, successivamente azzera lo stato
  * disk: specifica il disco, valori 0 o 1
  */
-char getDiskInterruptState(unsigned int disk);
+char getDiskInterruptState ( unsigned int disk );
 
 /*
  * rimappa i PIC (programmable input controller)
  * offset_1: offset riferito alla IDT delle interruzioni per il primo PIC
  * offset_2: offset riferito alla IDT delle interruzioni per il PIC slave
 */
-void irq_remap (unsigned int offset_1, unsigned int offset_2);
+void irq_remap ( unsigned int offset_1, unsigned int offset_2 );
 
-void interrupt_handler (unsigned int eax, unsigned int ebx, unsigned int ecx, unsigned int edx,
-                        unsigned int ebp, unsigned int esi, unsigned int edi, unsigned int ds,
-                        unsigned int es, unsigned int fs, unsigned int gs, unsigned int isr,
-                        unsigned int error, unsigned int eip, unsigned int cs,
-                        unsigned int eflags, ...);
+void interrupt_handler ( unsigned int eax, unsigned int ebx, unsigned int ecx, unsigned int edx,
+                         unsigned int ebp, unsigned int esi, unsigned int edi, unsigned int ds,
+                         unsigned int es, unsigned int fs, unsigned int gs, unsigned int isr,
+                         unsigned int error, unsigned int eip, unsigned int cs,
+                         unsigned int eflags, ... );
 
 /*############### funzioni interruzioni ################*/
-extern void isr_0(void);
-extern void isr_1(void);
-extern void isr_2(void);
-extern void isr_3(void);
-extern void isr_4(void);
-extern void isr_5(void);
-extern void isr_6(void);
-extern void isr_7(void);
-extern void isr_8(void);
-extern void isr_9(void);
-extern void isr_10(void);
-extern void isr_11(void);
-extern void isr_12(void);
-extern void isr_13(void);
-extern void isr_14(void);
-extern void isr_15(void);
-extern void isr_16(void);
-extern void isr_17(void);
-extern void isr_18(void);
-extern void isr_32(void);
-extern void isr_33(void);
-extern void isr_46(void);
-extern void isr_47(void);
+extern void isr_0 ( void );
+extern void isr_1 ( void );
+extern void isr_2 ( void );
+extern void isr_3 ( void );
+extern void isr_4 ( void );
+extern void isr_5 ( void );
+extern void isr_6 ( void );
+extern void isr_7 ( void );
+extern void isr_8 ( void );
+extern void isr_9 ( void );
+extern void isr_10 ( void );
+extern void isr_11 ( void );
+extern void isr_12 ( void );
+extern void isr_13 ( void );
+extern void isr_14 ( void );
+extern void isr_15 ( void );
+extern void isr_16 ( void );
+extern void isr_17 ( void );
+extern void isr_18 ( void );
+extern void isr_32 ( void );
+extern void isr_33 ( void );
+extern void isr_46 ( void );
+extern void isr_47 ( void );
 
 #endif
