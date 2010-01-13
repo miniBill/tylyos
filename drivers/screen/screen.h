@@ -1,4 +1,5 @@
 /* Copyright (C) 2008 Leonardo Taglialegne <leonardotaglialegne+clearos@gmail.com>
+ * Copyright (C) 2008 Luca Salmin
  * Copyright (C) 2008 Roberto Domenella
  *
  * This file is part of ClearOS.

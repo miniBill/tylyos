@@ -28,14 +28,14 @@
 unsigned int getEBP()
 {
     unsigned int data=0;
-    asm volatile ( "mov %%ebp, %0":"=r" ( data ) );
+asm volatile ( "mov %%ebp, %0":"=r" ( data ) );
     return data;
 }
 /*ritorna il valore del registro ESP*/
 unsigned int getESP()
 {
     unsigned int data=0;
-    asm volatile ( "mov %%esp, %0":"=r" ( data ) );
+asm volatile ( "mov %%esp, %0":"=r" ( data ) );
     return data;
 }
 
@@ -178,7 +178,7 @@ void* kmalloc ( unsigned int byte )
         /*verr� quindi allocato alla fine della lista*/
         next= ( struct memoryArea* ) ( ( unsigned int ) pre+pre->size+sizeof ( struct memoryArea ) );
         /*controlla di non sforare nella memoria user*/
-        if((unsigned int)next+sizeof(struct memoryArea)+byte<(unsigned int)userMemoryStart)
+        if ( ( unsigned int ) next+sizeof ( struct memoryArea ) +byte< ( unsigned int ) userMemoryStart )
         {
             pre->next=next;
             next->next=0;
@@ -190,7 +190,7 @@ void* kmalloc ( unsigned int byte )
         }
         else
         {
-            kernelPanic("kmalloc()","the KERNEL HEAP IS FULL.");
+            kernelPanic ( "kmalloc()","the KERNEL HEAP IS FULL." );
         }
     }
     else
@@ -246,7 +246,7 @@ void kfree ( void *pointer )
         tempPrePointer=tempPointer;
         tempPointer= ( unsigned int ) ( * ( struct memoryArea* ) tempPointer ).next;
     }
-    kernelPanic("kfree()","a kernel function is trying to deallocate something but i can't find it in the allocation list, sorry.");
+    kernelPanic ( "kfree()","a kernel function is trying to deallocate something but i can't find it in the allocation list, sorry." );
 }
 
 
@@ -259,13 +259,13 @@ void initPaging ( void )
     int c=0;
     asm ( "cli" );
 
-    /*mappa fino a USER_START le pagin 1:1 con la memoria fisica*/
+    /*mappa fino a USER_START le pagine 1:1 con la memoria fisica*/
     fisicPointer=KERNEL_START;
     pageDir= ( unsigned int* ) KERNEL_MEMORY_START;
     pointer= ( unsigned int ) pageDir+0x1000;
 
 
-    mallocMemoryStart= ( unsigned int ) pageDir+ ( ( ( 1024*1024 ) +1 ) *4 );/*indirizzo base dell heap*/
+    
     addMem=memoriaFisica/4;/*un quarto della memoria fisica e' riservata al kernel*/
     if ( addMem<MIN_HEAP_SIZE ) /*se un quarto della memoria non e' abbastanza e' meglio garantirsi un minimo*/
         addMem=MIN_HEAP_SIZE;
@@ -503,9 +503,9 @@ struct pagina *allocaNuovaPagina ( unsigned int procID,unsigned int indirizzoLog
 
     temp->indirizzoFis=getFreePage();/*cerca una pagina fisica libera*/
     /*TODO: verificare che il controllo funzioni*/
-    if(temp->indirizzoFis==0)
+    if ( temp->indirizzoFis==0 )
     {
-        kernelPanic("allocaNuovaPagina()","the fisic memory is full. I can't allocate a new page, sorry.");
+        kernelPanic ( "allocaNuovaPagina()","the fisic memory is full. I can't allocate a new page, sorry." );
     }
     setPaginaFisica ( convertFisAddrToBitmapIndex ( temp->indirizzoFis ),1 );/*segna la pagina come utilizzata*/
 
@@ -531,7 +531,7 @@ unsigned int deallocaPagina ( unsigned int procID,unsigned int indirizzoLog )
 
     if ( pointer==0 ) /*se non ha trovato la pagina*/
     {
-        kernelPanic("deallocaPagina()","I can't find the page to delete.");
+        kernelPanic ( "deallocaPagina()","I can't find the page to delete." );
         return 0;
     }
 
@@ -543,7 +543,7 @@ unsigned int deallocaPagina ( unsigned int procID,unsigned int indirizzoLog )
     else/*se la pagina non e' in memoria RAM*/
     {
         /*TODO: implementare la deallocazione nel caso la pagina sia swappata sull hard disk*/
-	kernelPanic("deallocaPagina()","I can't remove a swapped page.");
+        kernelPanic ( "deallocaPagina()","I can't remove a swapped page." );
     }
 
     /*rimuove la pagina dalla lista e dealloca la struttura*/

@@ -4,20 +4,20 @@
 #include "multiboot.h"
 #include <drivers/screen/screen.h>
 
-void reboot(void);
+void reboot ( void );
 
-void sleep(unsigned int time);
+void sleep ( unsigned int time );
 
-void _kmain(multiboot_info_t* mbd, unsigned int magic);
+void _kmain ( multiboot_info_t* mbd, unsigned int magic );
 
-int check(const char * output,int offset);
+int check ( const char * output,int offset );
 
-void OK(int i);
+void OK ( int i );
 
-void NO(int i);
+void NO ( int i );
 
-void greendot(void);
+void greendot ( void );
 
-void kernelPanic(char *sender,char *message);
+void kernelPanic ( char *sender,char *message );
 
 #endif

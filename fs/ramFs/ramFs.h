@@ -1,4 +1,5 @@
 /* Copyright (C) 2008 Luca Salmin
+ * Copyright (C) 2008 Leonardo Taglialegne <leonardotaglialegne+clearos@gmail.com>
  *
  * This file is part of ClearOS.
  *
@@ -16,33 +17,19 @@
  * along with ClearOS.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "stdio.h"
+#ifndef RAMFS_H
+#define RAMFS_H
 
-unsigned char inb ( int portnum )
-{
-    unsigned char data=0;
-asm ( "inb %%dx, %%al" : "=a" ( data ) : "d" ( portnum ) );
-    return data;
-}
 
-unsigned short inw ( unsigned short portnum )
-{
-    unsigned short _v;
-asm ( "inw %1,%0" : "=a" ( _v ) : "d" ( portnum ) );
-    return _v;
-}
 
-void outb ( int portnum, int data )
-{
-    asm ( "outb %%al, %%dx" :: "a" ( data ),"d" ( portnum ) );
-}
+#define RAMFS_BLOCK_SIZE 512
 
-void outw ( unsigned short portnum, unsigned short data )
+/*struttura he rappresenta un blocco in memoria, i blocchi sono concetenati e rappresentano i dati di un file*/
+struct ramfs_block
 {
-    asm ( "outw %%ax,%%dx" :: "a" ( data ), "d" ( portnum ) );
-}
+    struct ramfs_block *next;/*prossimo blocco*/
+    unsigned short used;/*numero di byte contenuti nel blocco*/
+    char dati[RAMFS_BLOCK_SIZE];/*buffer che contiene i dati*/
+} __attribute__ ( ( packed ) );
 
-void io_wait ( void )
-{
-    asm ( "jmp 1f;1:jmp 1f;1:" );
-}
+#endif
