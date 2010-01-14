@@ -26,6 +26,8 @@ OBJ= bootloader/loader.o \
        drivers/timer/timer.o \
        drivers/hdd/ata.o drivers/hdd/atapi.o drivers/hdd/ataatapi.o \
      interrupt/interrupt.o interrupt/interruptHandler.o interrupt/ldt.o \
+     fs/fs.o \
+     fs/ramFs/ramFs.o \
      fs/iso/iso.o \
      gui/gui.o \
      task/task.o

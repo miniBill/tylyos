@@ -17,19 +17,11 @@
  * along with ClearOS.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef RAMFS_H
-#define RAMFS_H
+/*
+file contenente tutte le funzioni base per accedere al file system indipendentemente dal dispositivo fisico e dal tipo di file system
+la strutture fs_node_descriptor verrà usata per identificare un file od una artella aperta, ne verrà quindi passato l'id alle funzioni write,read ecc.
+a loro volta le funzioni base richiameranno le funzioni del device specifico passando l'inode che identifica il nodo su quel device.
+per trovare il device e l'inode a partire da un path verrà usata la funzione getNode del rootDevice che seguirà il path e se necessario richiamerà a sua volta la stessa funzione dei davice montati fintanto che una non ritorni l'inode ed il puntatore del device che lo gestisce.
+*/
 
-#include <fs/fs.h>
-
-#define RAMFS_BLOCK_SIZE 512
-
-/*struttura he rappresenta un blocco in memoria, i blocchi sono concetenati e rappresentano i dati di un file*/
-struct ramfs_block
-{
-    struct ramfs_block *next;/*prossimo blocco*/
-    unsigned short used;/*numero di byte contenuti nel blocco*/
-    char dati[RAMFS_BLOCK_SIZE];/*buffer che contiene i dati*/
-} __attribute__ ( ( packed ) );
-
-#endif
+#include "ramFs.h"
