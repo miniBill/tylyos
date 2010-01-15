@@ -34,11 +34,14 @@ per trovare il device e l'inode a partire da un path verrà usata la funzione ge
 #define FS_PIPE       0x04 /* 0100*/
 #define FS_MOUNTPOINT 0x08 /* 1000 in modo da poter esseere settato in aggiunta agli altri flags*/
 
-struct deviceFs
-{
-  char name[500];/*in modo da mappare il device nella cartella /dev*/
-  /*TODO: inserire i puntatori alle funzioniper lettura scrittura apertura e chiusura*/
-};
+unsigned int openFile(char *path,char mode);/*cerca il device e l'inode su cui si trova il file, alloca la truttura e ne ritorna l'id per i successivi utilizzi*/
+unsigned int openDir(char *path);
+void closeFile(unsigned int file);/*dealloca il fs_node_descriptor allocato con la precedente open*/
+void closeDir(unsigned int dir);
+unsigned int readFile(unsigned int file,char *buffer,unsigned int byteCount);
+unsigned int writeFile(unsigned int file,char *buffer,unsigned int byteCount);
+
+
 
 /*
 struttura contenente tutte le informazioni di un nodo
@@ -66,6 +69,18 @@ struct fs_node_descriptor
   struct deviceFs *device;/*device che è stato identificato come gestore del nodo*/
   unsigned int inode;/*id del nodo sul device, questo id è unico a livello di device, può quindi ripetersi ma su device diversi in quanto insieme al device identifica univocamente un nodo*/
   unsigned int id;/*id univoco del nodo, viene generato automaticamente all apertura del file o della directory*/
+};
+
+struct deviceFs
+{
+  char name[500];/*in modo da mappare il device nella cartella /dev*/
+  void *additionalDataStruct;/*puntatore ad una struttura aggiuntiva usata per salvare i dati in base al tipo di device*/
+ 
+  void (*getNodeDescriptor)(struct fs_node_descriptor *descriptor,char *path);/*scrive nella struttura il device e l'inode richiamando se necessario la stessa funzione di altri device*/
+  unsigned int (*readFile)(struct fs_node_descriptor descriptor,char *buffer,unsigned int byteCount);
+  unsigned int (*writeFile)(struct fs_node_descriptor descriptor,char *buffer,unsigned int byteCount);
+  unsigned int (*createFile)(char *name,struct fs_node_descriptor fatherNodeDescriptor);/*ritorna l'inode del file appena creato*/
+  void (*deleteFile)(struct fs_node_descriptor descriptor);
 };
 
 #endif
