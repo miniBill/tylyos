@@ -48,7 +48,7 @@ struttura contenente tutte le informazioni di un nodo
 deve essere usata solo temporaneamente come valore di ritorno delle funzioni
 il device infatti ha le proprie strutture in cui tiene i dati dei propri nodi e non c'è qundi bisogno di tenere questa struttura in ram
 */
-struct fs_node
+struct fs_node_info
 {
   char name[FS_FILENAME_MAX_LENGTH];/*nome del file*/
   char permissions[3];/*i permessi relativi al proprietario, al gruppo ed agli altri utenti*/
@@ -68,19 +68,29 @@ struct fs_node_descriptor
 {
   struct deviceFs *device;/*device che è stato identificato come gestore del nodo*/
   unsigned int inode;/*id del nodo sul device, questo id è unico a livello di device, può quindi ripetersi ma su device diversi in quanto insieme al device identifica univocamente un nodo*/
+  char mode;/*il modo con cui e' stato aperto*/
   unsigned int id;/*id univoco del nodo, viene generato automaticamente all apertura del file o della directory*/
 };
 
+/*ogni device allochera' un istanza di questa struttura inserendo i puntatori alle proprie funzioni*/
 struct deviceFs
 {
   char name[500];/*in modo da mappare il device nella cartella /dev*/
   void *additionalDataStruct;/*puntatore ad una struttura aggiuntiva usata per salvare i dati in base al tipo di device*/
  
-  void (*getNodeDescriptor)(struct fs_node_descriptor *descriptor,char *path);/*scrive nella struttura il device e l'inode richiamando se necessario la stessa funzione di altri device*/
+  void (*getNodeDescriptor)(struct deviceFs *device,struct fs_node_descriptor *descriptor,char *path);/*scrive nella struttura il device e l'inode*/
+  struct fs_node_info (*getNodeInfo)(struct fs_node_descriptor descriptor);/*ritorna le informazioni riguardanti ad un nodo*/
   unsigned int (*readFile)(struct fs_node_descriptor descriptor,char *buffer,unsigned int byteCount);
   unsigned int (*writeFile)(struct fs_node_descriptor descriptor,char *buffer,unsigned int byteCount);
   unsigned int (*createFile)(char *name,struct fs_node_descriptor fatherNodeDescriptor);/*ritorna l'inode del file appena creato*/
   void (*deleteFile)(struct fs_node_descriptor descriptor);
+};
+
+/*struttura usata per matchare i path e trovare al primo colpo il device che gestisce un nodo avendone il path, verrà caricata in fase di boot da un file*/
+struct mountPoint
+{
+  char path[5000];
+  struct deviceFs *device;
 };
 
 #endif
