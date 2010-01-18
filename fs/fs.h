@@ -55,7 +55,7 @@ struct fs_node_info
   unsigned int userId;/*lo user id del proprietario del file*/
   unsigned int groupId;/*l' id del gruppo a cui appartiene il file*/
   char type;/*il tipo del nodo, vedere le definizioni*/
-  unsigned int inode;/*numero univoco utilizzato dal device per identificare il nodo*/
+  void *inodeInfo;/*puntatore alla struttura allocata dal device contenente le informazioni del nodo*/
   unsigned int size;/*dimensione del file in bytes*/
   struct deviceFs *device;/*device che è stato identificato come gestore del nodo*/
 };
@@ -67,7 +67,7 @@ l'identificazione univoca è data dalla coppia device:inode che forniscono al ke
 struct fs_node_descriptor
 {
   struct deviceFs *device;/*device che è stato identificato come gestore del nodo*/
-  unsigned int inode;/*id del nodo sul device, questo id è unico a livello di device, può quindi ripetersi ma su device diversi in quanto insieme al device identifica univocamente un nodo*/
+  void *inodeInfo;/*puntatore alla struttura allocata dal device contenente le informazioni del nodo*/
   char mode;/*il modo con cui e' stato aperto*/
   unsigned int id;/*id univoco del nodo, viene generato automaticamente all apertura del file o della directory*/
 };
@@ -82,7 +82,7 @@ struct deviceFs
   struct fs_node_info (*getNodeInfo)(struct fs_node_descriptor descriptor);/*ritorna le informazioni riguardanti ad un nodo*/
   unsigned int (*readFile)(struct fs_node_descriptor descriptor,char *buffer,unsigned int byteCount);
   unsigned int (*writeFile)(struct fs_node_descriptor descriptor,char *buffer,unsigned int byteCount);
-  unsigned int (*createFile)(char *name,struct fs_node_descriptor fatherNodeDescriptor);/*ritorna l'inode del file appena creato*/
+  void (*createFile)(char *name,struct fs_node_descriptor *output,struct fs_node_descriptor fatherNodeDescriptor);/*scrive nel parametro output le informazioni del nodo*/
   void (*deleteFile)(struct fs_node_descriptor descriptor);
 };
 
