@@ -19,9 +19,6 @@
 
 /*
 file contenente tutte le funzioni base per accedere al file system indipendentemente dal dispositivo fisico e dal tipo di file system
-la strutture fs_node_descriptor verrà usata per identificare un file od una artella aperta, ne verrà quindi passato l'id alle funzioni write,read ecc.
-a loro volta le funzioni base richiameranno le funzioni del device specifico passando l'inode che identifica il nodo su quel device.
-per trovare il device e l'inode a partire da un path verrà usata la funzione getNode del rootDevice che seguirà il path e se necessario richiamerà a sua volta la stessa funzione dei davice montati fintanto che una non ritorni l'inode ed il puntatore del device che lo gestisce.
 */
 
 #include <fs/fs.h>
@@ -86,11 +83,11 @@ struct deviceFs *getDeviceFromPath ( char *path )/*TODO: testare il funzionament
     }
     else
     {
-        return rootDeviceFs;
+        return rootDeviceFs;/*se nessun mount point fa riferimento a quel path utilizza il device della directory root*/
     }
 }
 
-unsigned int openFile ( char *path,char mode )
+unsigned int openFile ( char *path,char mode )/*TODO: inserire un controllo sulla modalita' di apertura*/
 {
     unsigned int id;
     id=getUnusedOpenNodeId();
@@ -102,9 +99,38 @@ unsigned int openFile ( char *path,char mode )
     nuovoNodo->id=id;
     nuovoNodo->mode=mode;
     nuovoNodo->device=getDeviceFromPath ( path );/*cerca nei mount points quale device gestisce il path*/
-
+    
+    nuovoNodo->device->getNodeDescriptor(nuovoNodo->device,nuovoNodo,path);/*carica in nuovoNodo il puntatore alle informazioni dell inode*/
+    
+    /*salva il nodo appena aperto nella lista*/
     openNodes[openNodeNumber]=nuovoNodo;
     openNodeNumber++;
 
-    return id;
+    return id;/*ritorna l'id in modo che possa essere usato per richiamare read write e close*/
+}
+
+void closeFile(unsigned int file)/*TODO: testare*/
+{
+    struct fs_node_descriptor *pointer=0;
+    
+    for(unsigned int c=0;c<openNodeNumber;c++)/*passa tutti i nodi aperti*/
+    {
+        if(openNodes[c]->id == file)/*se l'id corrisponde*/
+        {
+            pointer=openNodes[c];/*salva il puntatore per dopo*/
+            /*cancella dalla lista*/
+            while(c+1<openNodeNumber)
+            {
+                openNodes[c]=openNodes[c+1];
+                c++;
+            }
+            openNodeNumber--;
+        }
+    }
+    
+    if(pointer==0)
+        return;
+    
+    pointer->device->freeInodeInfoPointer(pointer->inodeInfo);/*dealloca la struttura dell inode*/
+    kfree(pointer);/*dealloca il descrittore*/
 }

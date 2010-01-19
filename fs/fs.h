@@ -19,9 +19,6 @@
 
 /*
 file contenente tutte le funzioni base per accedere al file system indipendentemente dal dispositivo fisico e dal tipo di file system
-la strutture fs_node_descriptor verrà usata per identificare un file od una artella aperta, ne verrà quindi passato l'id alle funzioni write,read ecc.
-a loro volta le funzioni base richiameranno le funzioni del device specifico passando l'inode che identifica il nodo su quel device.
-per trovare il device e l'inode a partire da un path verrà usata la funzione getNode del rootDevice che seguirà il path e se necessario richiamerà a sua volta la stessa funzione dei davice montati fintanto che una non ritorni l'inode ed il puntatore del device che lo gestisce.
 */
 #ifndef FS_H
 #define FS_H
@@ -90,6 +87,7 @@ struct deviceFs
   unsigned int (*writeFile)(struct fs_node_descriptor descriptor,char *buffer,unsigned int byteCount);
   void (*createFile)(char *name,struct fs_node_descriptor *output,struct fs_node_descriptor fatherNodeDescriptor);/*scrive nel parametro output le informazioni del nodo*/
   void (*deleteFile)(struct fs_node_descriptor descriptor);
+  void (*freeInodeInfoPointer)(void *inodeInfo);/*dealloca la struttura che era stata allocata in getNodeDescriptor, serve in quanto ogni deviceFs usa strutture di dimensione diversa*/
 };
 
 struct deviceFs *rootDeviceFs;/*puntatore al device che monta la root del file system */
