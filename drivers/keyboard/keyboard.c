@@ -93,16 +93,15 @@ void input(char ch, int released) {
       backspace();
       return;
     }
+  if (ch == '\n') {
+      nl();
+      return;
+    }
 #endif
+
   if (!released) {
       buffer[pointer++] = ch;
       pointer %= KEYBUFSIZE;
-    }
-  if (ch == '\n') {
-#ifdef FREEROAMING
-      nl();
-#endif
-      return;
     }
 #ifdef FREEROAMING
   put(ch);
@@ -234,8 +233,10 @@ void keypress(void) {
   if (!released) {
       if (ch != 0)
         input(ch, released);
+#ifdef FREEROAMING
       else
         printf("(%d)", c);
+#endif
     }
 #ifdef PUT_ON_KEY_RELEASE
   else
@@ -245,9 +246,9 @@ void keypress(void) {
   /*int i;
   for (i = 0;i < COLUMNS;i++)
     putxy(0, i, ' ');*/
-  int p=pos();
-  gotoxy(0, ROWS - 2);
-  printf("%s", buffer);
+  int p = pos();
+  gotoxy(0, ROWS - 3);
+  printf("%S", buffer);
   gotoi(p);
 #endif
 }
