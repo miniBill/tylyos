@@ -3,7 +3,7 @@
 
 #define MAXN 32 /*lunghezza massima in cifre di un numero*/
 
-int strlen ( const char * string );
+unsigned int strlen ( const char * string );
 
 void strcpy ( char *source,char *dest );
 
