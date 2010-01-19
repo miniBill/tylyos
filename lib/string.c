@@ -22,9 +22,9 @@
 #include <drivers/screen/screen.h>
 #include <memory/memory.h>
 
-int strlen ( const char * string )
+unsigned int strlen ( const char * string )
 {
-    int ret = 0;
+    unsigned int ret = 0;
     while ( string[ret] != 0 )
         ret++;
     return ret;
@@ -32,7 +32,7 @@ int strlen ( const char * string )
 
 void strcpy ( char *source, char *dest )
 {
-    int c;
+    unsigned int c;
     for ( c = 0;c < strlen ( source );c++ )
         dest[c] = source[c];
     dest[c] = 0;
@@ -75,7 +75,7 @@ int printf ( const char* format, ... )
     int size = 0;
     char ** arg = ( char** ) & format;
     char buf[33];
-    int i;
+    unsigned int i;
     arg++;/*jump "format"*/
     for ( i = 0;i < strlen ( format );i++ )
     {

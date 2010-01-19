@@ -100,7 +100,7 @@ void logo ( void )
 
 int check ( const char * output,int offset )
 {
-    int retval=1,i;
+    unsigned int retval=1,i;
     for ( i=0;i<strlen ( output );i++ )
         if ( readxy ( i+3+offset,row() ) !=output[i] )
         {

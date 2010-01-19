@@ -72,6 +72,12 @@ struct fs_node_descriptor
   unsigned int id;/*id univoco del nodo, viene generato automaticamente all apertura del file o della directory*/
 };
 
+#define MAX_OPEN_NODES 50
+
+
+struct fs_node_descriptor *openNodes[MAX_OPEN_NODES];
+unsigned int openNodeNumber;/*il numero di nodi aperti contenuti nell array openNodes*/
+
 /*ogni device allochera' un istanza di questa struttura inserendo i puntatori alle proprie funzioni*/
 struct deviceFs
 {
@@ -86,11 +92,23 @@ struct deviceFs
   void (*deleteFile)(struct fs_node_descriptor descriptor);
 };
 
+struct deviceFs *rootDeviceFs;/*puntatore al device che monta la root del file system */
+
+struct deviceFs *getDeviceFromPath(char *path);/*scorre la lista dei mount points e ritorna il device che gestisce il path*/
+
 /*struttura usata per matchare i path e trovare al primo colpo il device che gestisce un nodo avendone il path, verrà caricata in fase di boot da un file*/
 struct mountPoint
 {
   char path[5000];
   struct deviceFs *device;
 };
+
+#define MAX_MOUNT 20
+
+struct mountPoint *mountPoints[MAX_MOUNT];
+unsigned int mountPointsNumber;/*numero di mount presenti nell array mountPoints*/
+
+void initDeviceFsManager();
+unsigned int getUnusedOpenNodeId();
 
 #endif
