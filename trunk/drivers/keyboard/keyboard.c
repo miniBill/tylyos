@@ -155,8 +155,6 @@ static int pointer = 0;
 
 #define KEYBUFSIZE COLUMNS
 
-
-
 int modifier(char c, int released) {
   if (c == 0x36 || c == 0x2A) {
       if (released)
@@ -200,22 +198,17 @@ int modifier(char c, int released) {
 }
 
 void backspace(void) {
-#ifdef FREEROAMING
   gotoi(pos() - 1);
   puti(pos(), ' ');
-#else
-  pointer--;
-  if (pointer < 0)
-    pointer += KEYBUFSIZE;
-  buffer[pointer] = ' ';
-#endif
 }
 
 void input(char ch, int released) {
+#ifdef FREEROAMING
   if (ch == '\b') {
       backspace();
       return;
     }
+#endif
   if (!released) {
       buffer[pointer++] = ch;
       pointer %= KEYBUFSIZE;
