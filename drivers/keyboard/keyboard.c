@@ -26,7 +26,7 @@
 
 unsigned char kmode = 0;
 
-#include keymaps.in
+#include "keymaps.in"
 
 unsigned short escape = 0;
 unsigned short shift = 0;
