@@ -128,22 +128,6 @@ int isoTest ( void )
     return 1;
 }
 
-int vatest ( void )
-{
-    int i = 10, l = 0;
-    for ( ;i<100;i+=7 )
-    {
-        int t[i];
-        for ( l=0;l<i;l++ )
-            t[i]=l*l;
-        for ( l = ( t[i]+1 ) %10;l < i;l+=t[l]+1 )
-            t[l] = t[i-l];
-        i+=t[t[0]%i];
-    }
-    printf ( "%d",l );
-    return 1;
-}
-
 void run ( test tests[] )
 {
     int i;
@@ -164,10 +148,10 @@ void doTests ( void )
 {
     /*REMEMBER TO KEEP SIZE=ITEMS+1!!!*/
 #ifdef FAST_TESTS
-    test tests[3] =
+    test tests[2] =
     {
 #else
-    test tests[7] = {
+    test tests[6] = {
         putreadtest,
         pointertest,
         itoatest,
@@ -176,7 +160,6 @@ void doTests ( void )
         /*isoTest,*/
         dinamictestOne,
         /*dinamictestTwo,*/
-        vatest,
     };
     run ( tests );
 }
