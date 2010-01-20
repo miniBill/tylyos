@@ -102,6 +102,12 @@ unsigned int openFile ( char *path,char mode )/*TODO: inserire un controllo sull
     
     nuovoNodo->device->getNodeDescriptor(nuovoNodo->device,nuovoNodo,path);/*carica in nuovoNodo il puntatore alle informazioni dell inode*/
     
+    if(nuovoNodo->inodeInfo==0)/*se il nodo non e' stato trovato*/
+    {
+        kfree(nuovoNodo);
+        return 0;
+    }
+    
     /*salva il nodo appena aperto nella lista*/
     openNodes[openNodeNumber]=nuovoNodo;
     openNodeNumber++;
