@@ -144,7 +144,7 @@ void closeFile(unsigned int file)/*TODO: testare*/
 
 unsigned int readFile(unsigned int file,char *buffer,unsigned int byteCount)
 {
-    fs_node_descriptor *pointer=0;
+    struct fs_node_descriptor *pointer=0;
     /*cerca il descrittore del file aperto*/
     for(unsigned int c=0;c<openNodeNumber;c++)
     {
