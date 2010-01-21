@@ -142,7 +142,7 @@ void closeFile(unsigned int file)/*TODO: testare*/
     kfree(pointer);/*dealloca il descrittore*/
 }
 
-unsigned int readFile(unsigned int file,char *buffer,unsigned int byteCount)
+unsigned int readFile(unsigned int file,char *buffer,unsigned int byteCount)/*TODO: testare*/
 {
     struct fs_node_descriptor *pointer=0;
     /*cerca il descrittore del file aperto*/
@@ -157,5 +157,41 @@ unsigned int readFile(unsigned int file,char *buffer,unsigned int byteCount)
     if(pointer==0 || !(pointer->type&FS_FILE))/*se non e' aperto o non e' un file*/
         return 0;
     
-    /*TODO: implementare la lettura*/
+    return pointer->device->readFile(pointer,buffer,byteCount);
+}
+
+unsigned int writeFile(unsigned int file,char *buffer,unsigned int byteCount)/*TODO: testare*/
+{
+    struct fs_node_descriptor *pointer=0;
+    /*cerca il descrittore del file aperto*/
+    for(unsigned int c=0;c<openNodeNumber;c++)
+    {
+        if(openNodes[c]->id==file)
+        {
+            pointer=openNodes[c];
+        }
+    }
+    
+    if(pointer==0 || !(pointer->type&FS_FILE))/*se non e' aperto o non e' un file*/
+        return 0;
+    
+    return pointer->device->writeFile(pointer,buffer,byteCount);
+}
+
+unsigned int seek(unsigned int file,int offset)/*TODO: testare*/
+{
+    struct fs_node_descriptor *pointer=0;
+    /*cerca il descrittore del file aperto*/
+    for(unsigned int c=0;c<openNodeNumber;c++)
+    {
+        if(openNodes[c]->id==file)
+        {
+            pointer=openNodes[c];
+        }
+    }
+    
+    if(pointer==0 || !(pointer->type&FS_FILE))/*se non e' aperto o non e' un file*/
+        return 0;
+    
+    return pointer->device->seek(pointer,offset);
 }

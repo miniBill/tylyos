@@ -32,13 +32,14 @@ file contenente tutte le funzioni base per accedere al file system indipendentem
 #define FS_MOUNTPOINT 0x08 /* 1000 in modo da poter esseere settato in aggiunta agli altri flags*/
 
 unsigned int openFile(char *path,char mode);/*cerca il device e l'inode su cui si trova il file, alloca la truttura e ne ritorna l'id per i successivi utilizzi*/
-unsigned int openDir(char *path);
 void closeFile(unsigned int file);/*dealloca il fs_node_descriptor allocato con la precedente open*/
-void closeDir(unsigned int dir);
+
 unsigned int readFile(unsigned int file,char *buffer,unsigned int byteCount);
 unsigned int writeFile(unsigned int file,char *buffer,unsigned int byteCount);
+unsigned int seek(unsigned int file,int offset);
 
-
+unsigned int createFile(char *path);
+char createDir(char *path);
 
 /*
 struttura contenente tutte le informazioni di un nodo
@@ -83,10 +84,13 @@ struct deviceFs
  
   void (*getNodeDescriptor)(struct deviceFs *device,struct fs_node_descriptor *descriptor,char *path);/*scrive nella struttura il device e l'inode*/
   struct fs_node_info (*getNodeInfo)(struct fs_node_descriptor *descriptor);/*ritorna le informazioni riguardanti ad un nodo*/
-  unsigned int (*readFile)(struct fs_node_descriptor descriptor,char *buffer,unsigned int byteCount);
-  unsigned int (*writeFile)(struct fs_node_descriptor descriptor,char *buffer,unsigned int byteCount);
+  unsigned int (*readFile)(struct fs_node_descriptor *descriptor,char *buffer,unsigned int byteCount);
+  unsigned int (*writeFile)(struct fs_node_descriptor *descriptor,char *buffer,unsigned int byteCount);
+  unsigned int (*seek)(struct fs_node_descriptor *descriptor,int offset);
   void (*createFile)(char *name,struct fs_node_descriptor *output,struct fs_node_descriptor fatherNodeDescriptor);/*scrive nel parametro output le informazioni del nodo*/
   void (*deleteFile)(struct fs_node_descriptor descriptor);
+  void (*createDir)(char *name,struct fs_node_descriptor *output,struct fs_node_descriptor fatherNodeDescriptor);
+  void (*deleteDir)(struct fs_node_descriptor descriptor);
   void (*freeInodeInfoPointer)(void *inodeInfo);/*dealloca la struttura che era stata allocata in getNodeDescriptor, serve in quanto ogni deviceFs usa strutture di dimensione diversa*/
 };
 
