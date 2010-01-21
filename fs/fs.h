@@ -52,7 +52,6 @@ struct fs_node_info
   unsigned int userId;/*lo user id del proprietario del file*/
   unsigned int groupId;/*l' id del gruppo a cui appartiene il file*/
   char type;/*il tipo del nodo, vedere le definizioni*/
-  void *inodeInfo;/*puntatore alla struttura allocata dal device contenente le informazioni del nodo*/
   unsigned int size;/*dimensione del file in bytes*/
   struct deviceFs *device;/*device che è stato identificato come gestore del nodo*/
 };
@@ -67,6 +66,7 @@ struct fs_node_descriptor
   void *inodeInfo;/*puntatore alla struttura allocata dal device contenente le informazioni del nodo*/
   char mode;/*il modo con cui e' stato aperto*/
   unsigned int id;/*id univoco del nodo, viene generato automaticamente all apertura del file o della directory*/
+  char type;
 };
 
 #define MAX_OPEN_NODES 50
