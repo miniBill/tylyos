@@ -31,15 +31,26 @@ file contenente tutte le funzioni base per accedere al file system indipendentem
 #define FS_PIPE       0x04 /* 0100*/
 #define FS_MOUNTPOINT 0x08 /* 1000 in modo da poter esseere settato in aggiunta agli altri flags*/
 
-unsigned int openFile(char *path,char mode);/*cerca il device e l'inode su cui si trova il file, alloca la truttura e ne ritorna l'id per i successivi utilizzi*/
-void closeFile(unsigned int file);/*dealloca il fs_node_descriptor allocato con la precedente open*/
+typedef char fs_returnCode;
 
-unsigned int readFile(unsigned int file,char *buffer,unsigned int byteCount);
-unsigned int writeFile(unsigned int file,char *buffer,unsigned int byteCount);
-unsigned int seek(unsigned int file,int offset);
+#define FS_OK               0x00
+#define FS_NOT_FOUND        0x01
+#define FS_GENERIC_ERROR    0x02
 
-unsigned int createFile(char *path);
-char createDir(char *path);
+typedef unsigned int File;
+
+File openFile(char *path,char mode);/*cerca il device e l'inode su cui si trova il file, alloca la truttura e ne ritorna l'id per i successivi utilizzi*/
+void closeFile(File file);/*dealloca il fs_node_descriptor allocato con la precedente open*/
+
+unsigned int readFile(File file,char *buffer,unsigned int byteCount);
+unsigned int writeFile(File file,char *buffer,unsigned int byteCount);
+unsigned int seek(File file,int offset);
+
+File createFile(char *path);
+fs_returnCode createDir(char *path);
+
+fs_returnCode deleteFile(char *path);
+fs_returnCode deleteDir(char *path);
 
 /*
 struttura contenente tutte le informazioni di un nodo
@@ -87,10 +98,10 @@ struct deviceFs
   unsigned int (*readFile)(struct fs_node_descriptor *descriptor,char *buffer,unsigned int byteCount);
   unsigned int (*writeFile)(struct fs_node_descriptor *descriptor,char *buffer,unsigned int byteCount);
   unsigned int (*seek)(struct fs_node_descriptor *descriptor,int offset);
-  void (*createFile)(char *name,struct fs_node_descriptor *output,struct fs_node_descriptor fatherNodeDescriptor);/*scrive nel parametro output le informazioni del nodo*/
-  void (*deleteFile)(struct fs_node_descriptor descriptor);
-  void (*createDir)(char *name,struct fs_node_descriptor *output,struct fs_node_descriptor fatherNodeDescriptor);
-  void (*deleteDir)(struct fs_node_descriptor descriptor);
+  fs_returnCode (*createFile)(char *name,struct fs_node_descriptor *output,struct fs_node_descriptor fatherNodeDescriptor);/*scrive nel parametro output le informazioni del nodo*/
+  fs_returnCode (*deleteFile)(struct fs_node_descriptor descriptor);
+  fs_returnCode (*createDir)(char *name,struct fs_node_descriptor *output,struct fs_node_descriptor fatherNodeDescriptor);
+  fs_returnCode (*deleteDir)(struct fs_node_descriptor descriptor);
   void (*freeInodeInfoPointer)(void *inodeInfo);/*dealloca la struttura che era stata allocata in getNodeDescriptor, serve in quanto ogni deviceFs usa strutture di dimensione diversa*/
 };
 
