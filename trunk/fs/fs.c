@@ -116,7 +116,7 @@ unsigned int openFile ( char *path,char mode )/*TODO: inserire un controllo sull
     return id;/*ritorna l'id in modo che possa essere usato per richiamare read write e close*/
 }
 
-void closeFile(unsigned int file)/*TODO: testare*/
+void closeFile(File file)/*TODO: testare*/
 {
     struct fs_node_descriptor *pointer=0;
     
@@ -142,7 +142,7 @@ void closeFile(unsigned int file)/*TODO: testare*/
     kfree(pointer);/*dealloca il descrittore*/
 }
 
-unsigned int readFile(unsigned int file,char *buffer,unsigned int byteCount)/*TODO: testare*/
+unsigned int readFile(File file,char *buffer,unsigned int byteCount)/*TODO: testare*/
 {
     struct fs_node_descriptor *pointer=0;
     /*cerca il descrittore del file aperto*/
@@ -160,7 +160,7 @@ unsigned int readFile(unsigned int file,char *buffer,unsigned int byteCount)/*TO
     return pointer->device->readFile(pointer,buffer,byteCount);
 }
 
-unsigned int writeFile(unsigned int file,char *buffer,unsigned int byteCount)/*TODO: testare*/
+unsigned int writeFile(File file, char* buffer, unsigned int byteCount)/*TODO: testare*/
 {
     struct fs_node_descriptor *pointer=0;
     /*cerca il descrittore del file aperto*/
@@ -178,7 +178,7 @@ unsigned int writeFile(unsigned int file,char *buffer,unsigned int byteCount)/*T
     return pointer->device->writeFile(pointer,buffer,byteCount);
 }
 
-unsigned int seek(unsigned int file,int offset)/*TODO: testare*/
+unsigned int seek(File file,int offset)/*TODO: testare*/
 {
     struct fs_node_descriptor *pointer=0;
     /*cerca il descrittore del file aperto*/
