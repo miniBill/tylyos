@@ -82,7 +82,7 @@ struct deviceFs
   void *additionalDataStruct;/*puntatore ad una struttura aggiuntiva usata per salvare i dati in base al tipo di device*/
  
   void (*getNodeDescriptor)(struct deviceFs *device,struct fs_node_descriptor *descriptor,char *path);/*scrive nella struttura il device e l'inode*/
-  struct fs_node_info (*getNodeInfo)(struct fs_node_descriptor descriptor);/*ritorna le informazioni riguardanti ad un nodo*/
+  struct fs_node_info (*getNodeInfo)(struct fs_node_descriptor *descriptor);/*ritorna le informazioni riguardanti ad un nodo*/
   unsigned int (*readFile)(struct fs_node_descriptor descriptor,char *buffer,unsigned int byteCount);
   unsigned int (*writeFile)(struct fs_node_descriptor descriptor,char *buffer,unsigned int byteCount);
   void (*createFile)(char *name,struct fs_node_descriptor *output,struct fs_node_descriptor fatherNodeDescriptor);/*scrive nel parametro output le informazioni del nodo*/
