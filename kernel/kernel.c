@@ -25,6 +25,7 @@
 #include <task/task.h>
 #include <interrupt/interrupt.h>
 #include <drivers/timer/timer.h>
+#include <fs/fs.h>
 
 #include <gui/gui.h>
 
@@ -189,7 +190,7 @@ void _kmain ( multiboot_info_t* mbd, unsigned int magicN )
     OK ( t++ );
 
     logo();
-    t+=5;
+    t+=4;
 
     NO ( t );
     greendot();
@@ -207,9 +208,14 @@ void _kmain ( multiboot_info_t* mbd, unsigned int magicN )
     writeline ( " Paging" );
     initPaging();
     OK ( t++ );
+    
+    NO ( t );
+    greendot();
+    writeline ( "Inizializzazione gestore devices" );
+    initDeviceFsManager();
+    OK ( t++ );
 
     /*here start the true tests*/
-
 
     doTests();
 
