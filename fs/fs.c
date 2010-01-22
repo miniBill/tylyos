@@ -197,3 +197,18 @@ unsigned int seek(File file,int offset)/*TODO: testare*/
     
     return pointer->device->seek(pointer,offset);
 }
+
+fs_returnCode addMountPoint(char *path,struct deviceFs *device)
+{
+    if(mountPointsNumber==MAX_MOUNT)
+        return FS_GENERIC_ERROR;
+    
+    struct mountPoint *pointer=kmalloc(sizeof(struct mountPoint));
+    strcpy(pointer->path,path);
+    pointer->device=device;
+    
+    mountPoints[mountPointsNumber]=pointer;
+    mountPointsNumber++;
+    
+    return FS_OK;
+}
