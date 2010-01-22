@@ -30,6 +30,7 @@ file contenente tutte le funzioni base per accedere al file system indipendentem
 #define FS_SYMLINK    0x03 /* 0011*/
 #define FS_PIPE       0x04 /* 0100*/
 #define FS_MOUNTPOINT 0x08 /* 1000 in modo da poter esseere settato in aggiunta agli altri flags*/
+#include <drivers/screen/screen.h>
 
 typedef char fs_returnCode;
 
@@ -45,6 +46,11 @@ void closeFile(File file);/*dealloca il fs_node_descriptor allocato con la prece
 unsigned int readFile(File file,char *buffer,unsigned int byteCount);
 unsigned int writeFile(File file,char *buffer,unsigned int byteCount);
 unsigned int seek(File file,int offset);
+
+File openDir(char *path);
+void closeDir(File dir);
+
+struct fs_node_info readDir(File dir);
 
 File createFile(char *path);
 fs_returnCode createDir(char *path);
@@ -98,6 +104,7 @@ struct deviceFs
   unsigned int (*readFile)(struct fs_node_descriptor *descriptor,char *buffer,unsigned int byteCount);
   unsigned int (*writeFile)(struct fs_node_descriptor *descriptor,char *buffer,unsigned int byteCount);
   unsigned int (*seek)(struct fs_node_descriptor *descriptor,int offset);
+  struct fs_node_info (*readDir)(struct fs_node_descriptor *descriptor);
   fs_returnCode (*createFile)(char *name,struct fs_node_descriptor *output,struct fs_node_descriptor fatherNodeDescriptor);/*scrive nel parametro output le informazioni del nodo*/
   fs_returnCode (*deleteFile)(struct fs_node_descriptor descriptor);
   fs_returnCode (*createDir)(char *name,struct fs_node_descriptor *output,struct fs_node_descriptor fatherNodeDescriptor);
