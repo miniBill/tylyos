@@ -22,14 +22,6 @@
 
 #include <fs/fs.h>
 
-#define RAMFS_BLOCK_SIZE 512
-
-/*struttura he rappresenta un blocco in memoria, i blocchi sono concetenati e rappresentano i dati di un file*/
-struct ramfs_block
-{
-    struct ramfs_block *next;/*prossimo blocco*/
-    unsigned short used;/*numero di byte contenuti nel blocco*/
-    char dati[RAMFS_BLOCK_SIZE];/*buffer che contiene i dati*/
-} __attribute__ ( ( packed ) );
+struct deviceFs *newRamFs();/*ritorna un puntatore ad una nuova struttura deviceFs*/
 
 #endif

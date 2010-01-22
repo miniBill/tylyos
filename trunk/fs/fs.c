@@ -22,6 +22,7 @@ file contenente tutte le funzioni base per accedere al file system indipendentem
 */
 
 #include <fs/fs.h>
+#include <fs/ramFs/ramFs.h>
 #include <memory/memory.h>
 #include <lib/string.h>
 
@@ -29,7 +30,8 @@ void initDeviceFsManager()
 {
     openNodeNumber=0;
     mountPointsNumber=0;
-    /*TODO: inizializzare rootDeviceFs*/
+    
+    rootDeviceFs= newRamFs();
 }
 
 unsigned int getUnusedOpenNodeId()/*TODO: testare il funzionamento*/
