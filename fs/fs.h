@@ -41,6 +41,22 @@ typedef char fs_returnCode;
 
 typedef unsigned int File;
 
+/*
+struttura contenente tutte le informazioni di un nodo
+deve essere usata solo temporaneamente come valore di ritorno delle funzioni
+il device infatti ha le proprie strutture in cui tiene i dati dei propri nodi e non c'è qundi bisogno di tenere questa struttura in ram
+*/
+struct fs_node_info
+{
+    char name[FS_FILENAME_MAX_LENGTH];/*nome del file*/
+    char permissions[3];/*i permessi relativi al proprietario, al gruppo ed agli altri utenti*/
+    unsigned int userId;/*lo user id del proprietario del file*/
+    unsigned int groupId;/*l' id del gruppo a cui appartiene il file*/
+    char type;/*il tipo del nodo, vedere le definizioni*/
+    unsigned int size;/*dimensione del file in bytes*/
+    struct deviceFs *device;/*device che è stato identificato come gestore del nodo*/
+};
+
 File openFile(char *path,char mode);/*cerca il device e l'inode su cui si trova il file, alloca la truttura e ne ritorna l'id per i successivi utilizzi*/
 void closeFile(File file);/*dealloca il fs_node_descriptor allocato con la precedente open*/
 
@@ -51,7 +67,7 @@ unsigned int seek(File file,int offset);
 File openDir(char *path);
 void closeDir(File dir);
 
-struct fs_node_info readDir(File dir);
+fs_returnCode readDir(File dir,struct fs_node_info *out);
 
 File createFile(char *path);
 fs_returnCode createDir(char *path);
@@ -59,21 +75,7 @@ fs_returnCode createDir(char *path);
 fs_returnCode deleteFile(char *path);
 fs_returnCode deleteDir(char *path);
 
-/*
-struttura contenente tutte le informazioni di un nodo
-deve essere usata solo temporaneamente come valore di ritorno delle funzioni
-il device infatti ha le proprie strutture in cui tiene i dati dei propri nodi e non c'è qundi bisogno di tenere questa struttura in ram
-*/
-struct fs_node_info
-{
-  char name[FS_FILENAME_MAX_LENGTH];/*nome del file*/
-  char permissions[3];/*i permessi relativi al proprietario, al gruppo ed agli altri utenti*/
-  unsigned int userId;/*lo user id del proprietario del file*/
-  unsigned int groupId;/*l' id del gruppo a cui appartiene il file*/
-  char type;/*il tipo del nodo, vedere le definizioni*/
-  unsigned int size;/*dimensione del file in bytes*/
-  struct deviceFs *device;/*device che è stato identificato come gestore del nodo*/
-};
+
 
 /*
 struttura usata per identificare univocamente un nodo che deve però essere stato già aperto
@@ -101,11 +103,11 @@ struct deviceFs
   void *additionalDataStruct;/*puntatore ad una struttura aggiuntiva usata per salvare i dati in base al tipo di device*/
  
   void (*getNodeDescriptor)(struct deviceFs *device,struct fs_node_descriptor *descriptor,char *path);/*scrive nella struttura il device e l'inode*/
-  struct fs_node_info (*getNodeInfo)(struct fs_node_descriptor *descriptor);/*ritorna le informazioni riguardanti ad un nodo*/
+  fs_returnCode (*getNodeInfo)(struct fs_node_descriptor *descriptor,struct fs_node_info *out);/*ritorna le informazioni riguardanti ad un nodo*/
   unsigned int (*readFile)(struct fs_node_descriptor *descriptor,char *buffer,unsigned int byteCount);
   unsigned int (*writeFile)(struct fs_node_descriptor *descriptor,char *buffer,unsigned int byteCount);
   unsigned int (*seek)(struct fs_node_descriptor *descriptor,int offset);
-  struct fs_node_info (*readDir)(struct fs_node_descriptor *descriptor);
+  fs_returnCode (*readDir)(struct fs_node_descriptor *descriptor,struct fs_node_info *out);
   fs_returnCode (*createFile)(char *name,struct fs_node_descriptor *output,struct fs_node_descriptor fatherNodeDescriptor);/*scrive nel parametro output le informazioni del nodo*/
   fs_returnCode (*deleteFile)(struct fs_node_descriptor descriptor);
   fs_returnCode (*createDir)(char *name,struct fs_node_descriptor *output,struct fs_node_descriptor fatherNodeDescriptor);
