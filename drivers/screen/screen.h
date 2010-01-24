@@ -63,6 +63,7 @@ enum{
 #define COLUMNS     80
 #define PAGES       4
 #define ROWS        25
+#define CONSOLE     6
 
 void setConsoleColor(unsigned char color);
 
@@ -90,7 +91,6 @@ void nl(void);
 void write(const char* string);
 void writei(int pos,const char * string);
 void writexy(int x,int y,const char * string);
-void writeline(const char* string);
 
 void clearScreen(void);
 void clearScreenAndColor(unsigned char color);

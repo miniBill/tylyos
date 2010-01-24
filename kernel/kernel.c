@@ -71,6 +71,11 @@ void kwrite(const char * string) {
     }
 }
 
+static inline void writeline(const char* string) {
+  write(string);
+  nl();
+}
+
 void logo(void) {
   gotoxy(25, row());
   writeline("________                ____      ");

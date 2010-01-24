@@ -27,11 +27,13 @@
 #define vpos()      vaddr(pos())
 #define xy(x,y)     (COLUMNS*(y)+(x))
 #define total()     (COLUMNS*ROWS)
+#define VM(a)       videoMemory[currentConsole][(a)]
 
-static char consoleColor    = White;
-static char * pointer       = (char *) consoleAddr;
-static char videoMemory[PAGES*ROWS*COLUMNS*2] = {0};
-static int baseline         = 0;
+static char consoleColor  = White;
+static char * pointer     = (char *) consoleAddr;
+static char videoMemory[CONSOLE][PAGES*ROWS*COLUMNS*2];
+static int baseline       = 0;
+static int currentConsole = 0;
 
 void setConsoleColor(unsigned char color) {
   consoleColor = color;
@@ -76,14 +78,6 @@ void setCursor(void) {
   setCursorPos(pos() % COLUMNS, pos() / COLUMNS);
 }
 
-void pageUp(void) {
-  scroll(-20);
-}
-
-void pageDown(void) {
-  scroll(20);
-}
-
 void scroll(int lines) {
   int i;
   setCursor();
@@ -93,19 +87,19 @@ void scroll(int lines) {
   if (baseline > (PAGES - 1) *ROWS) {
       int c = baseline - (PAGES - 1) * ROWS;/*righe da tagliare*/
       for (i = 0;i < ((2*PAGES - 1) *ROWS - baseline) *COLUMNS;i++) {
-          videoMemory[i*2] = videoMemory[(i+c*COLUMNS) *2];
-          videoMemory[i*2+1] = videoMemory[(i+c*COLUMNS) *2+1];
+          VM(i*2) = VM((i+c*COLUMNS) *2);
+          VM(i*2+1) = VM((i+c*COLUMNS) *2+1);
         }
       for (;i < PAGES*ROWS*COLUMNS;i++) {
-          videoMemory[i*2] = ' ';
-          videoMemory[i*2+1] = consoleColor;
+          VM(i*2) = ' ';
+          VM(i*2+1) = consoleColor;
         }
       baseline = (PAGES - 1) * ROWS;
     }
   for (i = 0;i < total();i++) {
-      if (videoMemory[vaddr(i)]) {
-          * (char *) addr(i) = videoMemory[vaddr(i)];
-          * (char *)(addr(i) + 1) = videoMemory[vaddr(i) +1];
+      if (VM(vaddr(i))) {
+          * (char *) addr(i) = VM(vaddr(i));
+          * (char *)(addr(i) + 1) = VM(vaddr(i) +1);
         }
       else {
           * (char *) addr(i) = ' ';
@@ -153,8 +147,8 @@ char readxy(int x, int y) {
 void put(char c) {
   if (pos() > total())
     nl();
-  videoMemory[vpos()] = c;
-  videoMemory[vpos() +1] = consoleColor;
+  VM(vpos()) = c;
+  VM(vpos() +1) = consoleColor;
   * (pointer++) = c;
   * (pointer++) = consoleColor;
   setCursor();
@@ -164,8 +158,8 @@ void puti(int i, char c) {
   i = checkscroll(i);
   * (char *) addr(i) = c;
   * (char *)(addr(i) + 1) = consoleColor;
-  videoMemory[vaddr(i)] = c;
-  videoMemory[vaddr(i) +1] = consoleColor;
+  VM(vaddr(i)) = c;
+  VM(vaddr(i) +1) = consoleColor;
 }
 
 void putxy(int x, int y, char c) {
@@ -196,11 +190,6 @@ void writei(int i, const char * string) {
 
 void writexy(int x, int y, const char * string) {
   writei(xy(x, y), string);
-}
-
-void writeline(const char* string) {
-  write(string);
-  nl();
 }
 
 void clearScreen() {
@@ -234,14 +223,14 @@ char creadxy(int x, int y) {
 }
 
 void cput(unsigned char color) {
-  videoMemory[vpos() +1] = color;
+  VM(vpos() +1) = color;
   * (pointer + 1) = color;
 }
 
 void cputi(int i, unsigned char color) {
   i = checkscroll(i);
   * (char*)(addr(i) + 1) = color;
-  videoMemory[vaddr(i) +1] = color;
+  VM(vaddr(i) +1) = color;
 }
 
 void cputxy(int x, int y, unsigned char color) {
