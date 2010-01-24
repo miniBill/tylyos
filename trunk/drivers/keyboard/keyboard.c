@@ -40,6 +40,8 @@ static int pointer = 0;
 
 #define KEYBUFSIZE COLUMNS
 
+//#define FREEROAMING
+
 int modifier(char c, int released) {
   if (c == 0x36 || c == 0x2A) {
       if (released)
@@ -234,8 +236,12 @@ void keypress(void) {
       if (ch != 0)
         input(ch, released);
 #ifdef FREEROAMING
-      else
-        printf("(%d)", c);
+      else{
+        if(escape)
+          printf("(E%d)", c);
+        else
+          printf("(%d)", c);
+      }
 #endif
     }
 #ifdef PUT_ON_KEY_RELEASE
