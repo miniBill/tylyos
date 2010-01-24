@@ -22,143 +22,124 @@
 #include <drivers/screen/screen.h>
 #include <memory/memory.h>
 
-unsigned int strlen ( const char * string )
-{
-    unsigned int ret = 0;
-    while ( string[ret] != 0 )
-        ret++;
-    return ret;
+unsigned int strlen(const char * string) {
+  unsigned int ret = 0;
+  while (string[ret] != 0)
+    ret++;
+  return ret;
 }
 
-void strcpy ( char *source, char *dest )
-{
-    unsigned int c;
-    for ( c = 0;c < strlen ( source );c++ )
-        dest[c] = source[c];
-    dest[c] = 0;
+void strcpy(char *source, char *dest) {
+  unsigned int c;
+  for (c = 0;c < strlen(source);c++)
+    dest[c] = source[c];
+  dest[c] = 0;
 }
 
-void itoa ( int a, char buff[11] )
-{
-    itobase ( a, 10, buff );
+void itoa(int a, char buff[11]) {
+  itobase(a, 10, buff);
 }
 
-void itobase ( int a, unsigned short base, char * buff )
-{
-    if ( a == 0 )
-    {
-        buff[0] = '0';
-        buff[1] = 0;
+void itobase(int a, unsigned short base, char * buff) {
+  if (a == 0) {
+      buff[0] = '0';
+      buff[1] = 0;
     }
-    else
-    {
-        int i, l;
-        char temp[MAXN] = {0};
-        if ( a < 0 )
-        {
-            a = -a;
-            buff[0] = '-';
+  else {
+      int i, l;
+      char temp[MAXN] = {0};
+      if (a < 0) {
+          a = -a;
+          buff[0] = '-';
         }
-        else
-            buff[0] = 0;
-        for ( l = 0;a && ( l < MAXN ) ; a /= base, l++ )
-            temp[l] = "0123456789ABCDEF"[a % base];
-        for ( i = l - 1, l = buff[0] == '-';i >= 0;i-- )
-            buff[l++] = temp[i];
-        buff[l] = 0;
+      else
+        buff[0] = 0;
+      for (l = 0;a && (l < MAXN) ; a /= base, l++)
+        temp[l] = "0123456789ABCDEF"[a % base];
+      for (i = l - 1, l = buff[0] == '-';i >= 0;i--)
+        buff[l++] = temp[i];
+      buff[l] = 0;
 
     }
 }
 
-void Swrite( const char* string){
+//Write a string, with escaped characters
+static void Swrite(const char* string) {
   int k;
-  for (k = 0;string[k] != 0;k++){
-    switch(string[k]){
-      case '\n':
-        write("\\n");
-        break;
-      case '\b':
-        write("\\b");
-        break;
-      case '\\':
-        write("\\\\");
-        break;
-      default:
-        put(string[k]);
+  for (k = 0;string[k] != 0;k++) {
+      switch (string[k]) {
+        case '\n':
+          write("\\n");
+          break;
+        case '\b':
+          write("\\b");
+          break;
+        case '\\':
+          write("\\\\");
+          break;
+        default:
+          put(string[k]);
+        }
     }
-  }
 }
 
-int printf ( const char* format, ... )
-{
-    int size = 0;
-    char ** arg = ( char** ) & format;
-    char buf[33];
-    unsigned int i;
-    arg++;/*jump "format"*/
-    for ( i = 0;i < strlen ( format );i++ )
-    {
-        if ( format[i] == '%' )
-        {
-            switch ( format[i+1] )
-            {
+int printf(const char* format, ...) {
+  int size = 0;
+  char ** arg = (char**) & format;
+  char buf[33];//Longest string will bit a binary int32, so 33 chars are enough
+  unsigned int i;
+  arg++;/*jump "format"*/
+  for (i = 0;i < strlen(format);i++) {
+      if (format[i] == '%') {
+          switch (format[i+1]) {
             case 'd':
-            {
-                itoa ( * ( ( int * ) arg++ ), buf );
-                goto number;
-                break;
-            }
+              itoa(* ((int *) arg++), buf);
+              goto number;
+              break;
             case 'x':
-            {
-                itobase ( * ( ( int * ) arg++ ), 16, buf );
-                goto number;
-                break;
-            }
+              itobase(* ((int *) arg++), 16, buf);
+              goto number;
+              break;
             case 'o':
-            {
-                itobase ( * ( ( int * ) arg++ ), 8, buf );
-                goto number;
-                break;
-            }
+              itobase(* ((int *) arg++), 8, buf);
+              goto number;
+              break;
             case 'b':
-            {
-                itobase ( * ( ( int * ) arg++ ), 2, buf );
-                goto number;
-                break;
-            }
+              itobase(* ((int *) arg++), 2, buf);
+              goto number;
+              break;
             case 'c':
-                put ( * ( ( char * ) arg++ ) );
-                size++;
-                break;
+              put(* ((char *) arg++));
+              size++;
+              break;
             case 's':
-                write ( ( char* ) *arg );/*watch out: Deep Magic*/
-                size += strlen ( ( char * ) * arg++ );
-                break;
+              write((char*) *arg);     /*watch out: Deep Magic*/
+              size += strlen((char *) * arg++);
+              break;
             case 'S':
-                Swrite( ( char* ) *arg );/*some moar Deep Magic*/
-                size += strlen ( ( char * ) * arg++ );
-            number:
-                write ( buf );
-                size += strlen ( buf );
-                break;
+              Swrite((char*) *arg);    /*some moar Deep Magic*/
+              size += strlen((char *) * arg++);
+number:
+              write(buf);
+              size += strlen(buf);
+              break;
             default:
-                itoa ( * ( ( int * ) arg++ ), buf );
-                write ( "Malformed format string!" );
-                goto number;
-                break;
+              itoa(* ((int *) arg++), buf);
+              write("Malformed format string!");
+              goto number;
+              break;
             }
 
-            i++;
+          i++;
         }
-        else
-        {
-            if ( format[i] != '\n' )
-                put ( format[i] );
-            else
-                nl();
-            size++;
+      else {
+          if (format[i] != '\n')
+            put(format[i]);
+          else
+            nl();
+          size++;
         }
     }
-    return size;
+  return size;
 }
 
