@@ -103,7 +103,8 @@ unsigned int openFile ( char *path,char mode )/*TODO: inserire un controllo sull
     nuovoNodo->device=getDeviceFromPath ( path );/*cerca nei mount points quale device gestisce il path*/
     
     nuovoNodo->device->getNodeDescriptor(nuovoNodo->device,nuovoNodo,path);/*carica in nuovoNodo il puntatore alle informazioni dell inode*/
-    struct fs_node_info info = nuovoNodo->device->getNodeInfo(nuovoNodo);
+    struct fs_node_info info;
+    nuovoNodo->device->getNodeInfo(nuovoNodo,&info);
     
     if(nuovoNodo->inodeInfo==0 || !(info.type & FS_FILE) )/*se il nodo non e' stato trovato o non e' un file*/
     {
