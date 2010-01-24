@@ -198,6 +198,24 @@ unsigned int seek(File file,int offset)/*TODO: testare*/
     return pointer->device->seek(pointer,offset);
 }
 
+fs_returnCode readDir(File dir,struct fs_node_info *out)
+{
+    struct fs_node_descriptor *pointer=0;
+    /*cerca il descrittore della cartella*/
+    for(unsigned int c=0;c<openNodeNumber;c++)
+    {
+        if(openNodes[c]->id==dir)
+        {
+            pointer=openNodes[c];
+        }
+    }
+    
+    if(pointer==0 || !(pointer->type&FS_DIRECTORY))/*se non e' aperto o non e' una directory*/
+        return FS_NOT_FOUND;
+    
+    return pointer->device->readDir(pointer,out);
+}
+
 fs_returnCode addMountPoint(char *path,struct deviceFs *device)
 {
     if(mountPointsNumber==MAX_MOUNT)
