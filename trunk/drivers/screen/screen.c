@@ -26,7 +26,7 @@
 #define vaddr(pos)  (2*(pos+baseline*COLUMNS))
 #define vpos()      vaddr(pos())
 #define xy(x,y)     (COLUMNS*(y)+(x))
-#define total()     (COLUMNS*ROWS)
+#define total       (COLUMNS*ROWS)
 #define VM(a)       videoMemory[currentConsole][(a)]
 
 static char consoleColor  = White;
@@ -96,7 +96,7 @@ void scroll(int lines) {
         }
       baseline = (PAGES - 1) * ROWS;
     }
-  for (i = 0;i < total();i++) {
+  for (i = 0;i < total;i++) {
       if (VM(vaddr(i))) {
           * (char *) addr(i) = VM(vaddr(i));
           * (char *)(addr(i) + 1) = VM(vaddr(i) +1);
@@ -114,9 +114,9 @@ int checkscroll(int i) {
       lines = (i + 1) / COLUMNS - 1;
     }
   else {
-      if (i < total())
+      if (i < total)
         return i;
-      lines = (i - total()) / COLUMNS + 1;
+      lines = (i - total) / COLUMNS + 1;
     }
   scroll(lines);
   return i -lines*COLUMNS;
@@ -145,7 +145,7 @@ char readxy(int x, int y) {
 }
 
 void put(char c) {
-  if (pos() > total())
+  if (pos() > total)
     nl();
   VM(vpos()) = c;
   VM(vpos() +1) = consoleColor;
@@ -194,7 +194,7 @@ void writexy(int x, int y, const char * string) {
 
 void clearScreen() {
   gotoi(0);
-  for (;pos() < total();)
+  for (;pos() < total;)
     put(' ');
   gotoi(0);
 }
@@ -202,7 +202,7 @@ void clearScreen() {
 void clearScreenAndColor(unsigned char color) {
   clearScreen();
   gotoi(0);
-  for (;pos() < total();) {
+  for (;pos() < total;) {
       cput(color);
       pointer += 2;
     }

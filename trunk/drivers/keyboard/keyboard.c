@@ -110,6 +110,9 @@ void input(char ch, int released) {
 #endif
 }
 
+void acpiPowerOff(void);
+int initAcpi(void);
+
 void keypress(void) {
   unsigned char c = inb(0x60);
   unsigned char ch = 0;
@@ -206,10 +209,22 @@ void keypress(void) {
   else {
       if (ctrl && alt) {
           ch = altgr_map[c];
-          if (c == 0x13) {
+          switch (c) {
+            case 0x13: /* R for restart */
               ch = 0;
               writexy((COLUMNS - 9) / 2, 0, "Rebooting");
               reboot();
+              break;
+            case 0x23: /* H for halt */
+              ch = 0;
+              writexy((COLUMNS - 7) / 2, 0, "Halting");
+              reboot();//TODO: implement halt
+              break;
+            case 0x20:/*D for doom */
+              ch = 0;
+              writexy((COLUMNS - 7) / 2, 0, "Dooming");
+              kernelPanic("your system","an invalid operation has happened at unknown address!!! PEBKAC!!!");
+              break;
             }
         }
       else {
@@ -236,12 +251,12 @@ void keypress(void) {
       if (ch != 0)
         input(ch, released);
 #ifdef FREEROAMING
-      else{
-        if(escape)
-          printf("(E%d)", c);
-        else
-          printf("(%d)", c);
-      }
+      else {
+          if (escape)
+            printf("(E%d)", c);
+          else
+            printf("(%d)", c);
+        }
 #endif
     }
 #ifdef PUT_ON_KEY_RELEASE
