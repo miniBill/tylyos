@@ -23,13 +23,14 @@ int getdir (string dir)
     struct dirent *dirp;
     if((dp  = opendir(dir.c_str())) == NULL)
     {
-        cout << "Error(" << errno << ") opening " << dir << endl;
+        cerr << "Error(" << errno << ") opening " << dir << endl;
         return errno;
     }
    
     
     string space="";
-    for(int c=0;c<conta(string(dir));c++)
+    int ct=conta(string(dir));//evito di calcolarlo ad ogni ciclo :)
+    for(int c=0;c<ct;c++)
         space=space+"    ";
     
     while ((dirp = readdir(dp)) != NULL)
