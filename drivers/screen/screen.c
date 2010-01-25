@@ -22,217 +22,168 @@
 #include <memory/memory.h>
 #include <lib/string.h>
 
-#define addr(pos)   (consoleAddr+(pos)*2)
-#define vaddr(pos)  (2*(pos+baseline*COLUMNS))
-#define vpos()      vaddr(pos())
-#define xy(x,y)     (COLUMNS*(y)+(x))
-#define total       (COLUMNS*ROWS)
-#define VM(a)       videoMemory[currentConsole][(a)]
-
 static char consoleColor  = White;
-static char * pointer     = (char *) consoleAddr;
-static char videoMemory[CONSOLE][PAGES*ROWS*COLUMNS*2];
-static int baseline       = 0;
+
+static char videoMemory[CONSOLE][ROWS*PAGES][COLUMNS];
+static char colorMemory[CONSOLE][ROWS*PAGES][COLUMNS];
+
+//index of first displayed line
+//static int baseline       = 0;
 static int currentConsole = 0;
 
-void setConsoleColor(unsigned char color) {
-  consoleColor = color;
+static unsigned int x = 0;
+static unsigned int y = 0;
+
+static unsigned int py = 0;
+
+static inline char * addr_xy(unsigned int x,unsigned int y){
+  return (char*)(consoleAddr+2*(x+COLUMNS*y));
 }
 
-void setCursorPos(unsigned int x, unsigned int y) {
+static inline char * addr_x(unsigned int x){
+  return addr_xy(x,py);
+}
+
+static inline void inc(unsigned int * x,unsigned int * y){
+  *x=(*x)+1;
+  if(*x==COLUMNS){
+    *x=0;
+    *y=(*y)+1;
+  }
+}
+
+void clear_physical(void){
+  for(py=0;py<ROWS;py++)
+    for(x=0;x<COLUMNS;x++)
+      put_physical_xy(' ',x,py);
+}
+
+void set_physical_color(unsigned char color){
+  consoleColor=color;
+}
+
+void set_cursor(unsigned int x,unsigned int y){
   asm(
-    "movl  %0, %%eax     \n"
-    "movl  %1, %%ebx     \n"
-    "movl  $0x50, %%ecx  \n"
-    "mul   %%ecx         \n"
-    "addl  %%ebx, %%eax  \n"
-    "movw  $0x03d4, %%dx \n"
-    "pushl %%eax         \n"
-    "movb  $0x0f, %%al   \n"
-    "out   %%al, %%dx    \n"
-    "popl  %%eax         \n"
-    "movw  $0x03d5, %%dx \n"
-    "out   %%al, %%dx    \n"
-    "shr   $0x08,%%eax   \n"
-    "pushl %%eax         \n"
-    "movw  $0x03d4, %%dx \n"
-    "movb  $0x0e, %%al   \n"
-    "out   %%al, %%dx    \n"
-    "pop   %%eax         \n"
-    "movw  $0x03d5, %%dx \n"
-    "out   %%al, %%dx    \n"
+  "movl  %0, %%eax     \n"
+  "movl  %1, %%ebx     \n"
+  "movl  $0x50, %%ecx  \n"
+  "mul   %%ecx         \n"
+  "addl  %%ebx, %%eax  \n"
+  "movw  $0x03d4, %%dx \n"
+  "pushl %%eax         \n"
+  "movb  $0x0f, %%al   \n"
+  "out   %%al, %%dx    \n"
+  "popl  %%eax         \n"
+  "movw  $0x03d5, %%dx \n"
+  "out   %%al, %%dx    \n"
+  "shr   $0x08,%%eax   \n"
+  "pushl %%eax         \n"
+  "movw  $0x03d4, %%dx \n"
+  "movb  $0x0e, %%al   \n"
+  "out   %%al, %%dx    \n"
+  "pop   %%eax         \n"
+  "movw  $0x03d5, %%dx \n"
+  "out   %%al, %%dx    \n"
   :
   : "g"(y), "g"(x)
   );
 }
 
-int pos(void) {
-  return ((int) pointer - consoleAddr) / 2;
+void goto_physical_xy(unsigned int nx,unsigned int ny){
+  x=nx;
+  py=ny;
 }
 
-int row(void) {
-  return (pos() - 1) / COLUMNS;
+int row(void){
+  return y;
 }
 
-void setCursor(void) {
-  setCursorPos(pos() % COLUMNS, pos() / COLUMNS);
+void nl(void){
+  x=0;
+  y++;
+  nl_physical();
 }
 
-void scroll(int lines) {
-  int i;
-  setCursor();
-  baseline += lines;
-  if (baseline < 0)
-    baseline = 0;
-  if (baseline > (PAGES - 1) *ROWS) {
-      int c = baseline - (PAGES - 1) * ROWS;/*righe da tagliare*/
-      for (i = 0;i < ((2*PAGES - 1) *ROWS - baseline) *COLUMNS;i++) {
-          VM(i*2) = VM((i+c*COLUMNS) *2);
-          VM(i*2+1) = VM((i+c*COLUMNS) *2+1);
-        }
-      for (;i < PAGES*ROWS*COLUMNS;i++) {
-          VM(i*2) = ' ';
-          VM(i*2+1) = consoleColor;
-        }
-      baseline = (PAGES - 1) * ROWS;
-    }
-  for (i = 0;i < total;i++) {
-      if (VM(vaddr(i))) {
-          * (char *) addr(i) = VM(vaddr(i));
-          * (char *)(addr(i) + 1) = VM(vaddr(i) +1);
-        }
-      else {
-          * (char *) addr(i) = ' ';
-          * (char *)(addr(i) + 1) = consoleColor;
-        }
-    }
+void nl_physical(void){
+  x=0;
+  py++;
 }
 
-int checkscroll(int i) {
-  int lines = 0;
-  if (i < 0) {
-      lines = (i + 1) / COLUMNS - 1;
-    }
-  else {
-      if (i < total)
-        return i;
-      lines = (i - total) / COLUMNS + 1;
-    }
-  scroll(lines);
-  return i -lines*COLUMNS;
-}
-
-void gotoi(int i) {
-  i = checkscroll(i);
-  pointer = (char *) addr(i);
-  setCursor();
-}
-
-void gotoxy(int x, int y) {
-  gotoi(xy(x, y));
-}
-
-char read() {
-  return * (pointer);
-}
-
-char readi(int i) {
-  return * (int*) addr(i);
-}
-
-char readxy(int x, int y) {
-  return readi(xy(x, y));
-}
-
-void put(char c) {
-  if (pos() > total)
-    nl();
-  VM(vpos()) = c;
-  VM(vpos() +1) = consoleColor;
-  * (pointer++) = c;
-  * (pointer++) = consoleColor;
-  setCursor();
-}
-
-void puti(int i, char c) {
-  i = checkscroll(i);
-  * (char *) addr(i) = c;
-  * (char *)(addr(i) + 1) = consoleColor;
-  VM(vaddr(i)) = c;
-  VM(vaddr(i) +1) = consoleColor;
-}
-
-void putxy(int x, int y, char c) {
-  puti(xy(x, y), c);
-}
-
-void nl() {
-  gotoi(pos() + COLUMNS - pos() % COLUMNS);
-}
-
-void write(const char* string) {
-  int k;
-  for (k = 0;string[k] != 0;k++)
-    if (string[k] != '\n')
+void write(const char* string){
+  for(int k = 0; string[k] != 0; k++)
+    if(string[k] != '\n')
       put(string[k]);
     else
       nl();
 }
 
-void writei(int i, const char * string) {
+void write_xy(const char* string,unsigned int x,unsigned int y){
   int k;
-  for (k = 0;string[k] != 0;k++)
-    if (string[k] != '\n')
-      puti(i + k, string[k]);
+  for (k = 0;string[k] != 0;k++) {
+    put_xy(string[k],x,y);
+    inc(&x,&y);
+  }
+}
+
+void write_physical(const char* string){
+  for(int k = 0; string[k] != 0; k++)
+    if(string[k] != '\n')
+      put_physical(string[k]);
     else
-      i += COLUMNS - i % COLUMNS;
+      nl_physical();
 }
-
-void writexy(int x, int y, const char * string) {
-  writei(xy(x, y), string);
-}
-
-void clearScreen() {
-  gotoi(0);
-  for (;pos() < total;)
-    put(' ');
-  gotoi(0);
-}
-
-void clearScreenAndColor(unsigned char color) {
-  clearScreen();
-  gotoi(0);
-  for (;pos() < total;) {
-      cput(color);
-      pointer += 2;
+void write_physical_xy(const char* string, unsigned int x, unsigned int y){
+  int k;
+  for (k = 0;string[k] != 0;k++) {
+    put_physical_xy(string[k],x,y);
+    x++;
+    if(x==COLUMNS){
+      x=0;
+      y++;
     }
-  gotoi(0);
+  }
 }
 
-/*This three methods are equal to those without the c, but they read the color*/
-char cread() {
-  return * (pointer + 1);
+void put(char c){
+  put_xy(c,x,y);
+  put_color_xy(consoleColor,x,y);
+  inc(&x,&y);
 }
 
-char creadi(int i) {
-  return * (int*)(addr(i) + 1);
+void put_xy(char c, unsigned int x, unsigned int y){
+  videoMemory[currentConsole][y][x]=c;
+  put_physical_xy(c,x,y);
+  put_color_xy(consoleColor,x,y);
 }
 
-char creadxy(int x, int y) {
-  return creadi(xy(x, y));
+void put_physical(char c){
+  *addr_xy(x,py)=c;
+  inc(&x,&py);
 }
 
-void cput(unsigned char color) {
-  VM(vpos() +1) = color;
-  * (pointer + 1) = color;
+void put_physical_xy(char c, unsigned int x, unsigned int y){
+  *addr_xy(x,y)=c;
+  put_physical_color_xy(consoleColor,x,y);
 }
 
-void cputi(int i, unsigned char color) {
-  i = checkscroll(i);
-  * (char*)(addr(i) + 1) = color;
-  VM(vaddr(i) +1) = color;
+void put_color_x(unsigned char color,unsigned int x){
+  colorMemory[currentConsole][y][x]=color;
+  put_physical_color_x(color,x);
 }
 
-void cputxy(int x, int y, unsigned char color) {
-  cputi(xy(x, y), color);
+void put_color_xy(unsigned char color,unsigned int x,unsigned int y){
+  colorMemory[currentConsole][y][x]=color;
+  put_physical_color_xy(color,x,y);
+}
+
+void put_physical_color_x(unsigned char color, unsigned int x){
+  *(addr_x(x)+1)=color;
+}
+
+void put_physical_color_xy(unsigned char color, unsigned int x, unsigned int y){
+  *(addr_xy(x,y)+1)=color;
+}
+
+char read_x(unsigned int x){
+  return videoMemory[currentConsole][y][x];
 }

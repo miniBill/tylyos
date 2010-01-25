@@ -63,26 +63,6 @@ void itobase(int a, unsigned short base, char * buff) {
     }
 }
 
-//Write a string, with escaped characters
-static void Swrite(const char* string) {
-  int k;
-  for (k = 0;string[k] != 0;k++) {
-      switch (string[k]) {
-        case '\n':
-          write("\\n");
-          break;
-        case '\b':
-          write("\\b");
-          break;
-        case '\\':
-          write("\\\\");
-          break;
-        default:
-          put(string[k]);
-        }
-    }
-}
-
 int printf(const char* format, ...) {
   int size = 0;
   char ** arg = (char**) & format;
@@ -116,9 +96,6 @@ int printf(const char* format, ...) {
               write((char*) *arg);     /*watch out: Deep Magic*/
               size += strlen((char *) * arg++);
               break;
-            case 'S':
-              Swrite((char*) *arg);    /*some moar Deep Magic*/
-              size += strlen((char *) * arg++);
 number:
               write(buf);
               size += strlen(buf);

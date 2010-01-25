@@ -37,7 +37,7 @@ static multiboot_info_t * multiBootInfo;
 
 inline void greendot(void) {
   write(" * ");
-  cputxy(1, row(), Light_Green);
+  put_color_xy(Light_Green,1,row());
 }
 
 void reboot(void) {
@@ -45,64 +45,47 @@ void reboot(void) {
 }
 
 void OK(int i) {
-  writexy(COLUMNS - 6, i, "[ ok ]");
-  cputxy(COLUMNS - 6, i, Blue);
-  cputxy(COLUMNS - 4, i, Light_Green);
-  cputxy(COLUMNS - 3, i, Light_Green);
-  cputxy(COLUMNS - 1, i, Blue);
+  write_xy("[ ok ]",COLUMNS - 6, i);
+  put_color_xy(Blue,COLUMNS - 6, i);
+  put_color_xy(Light_Green,COLUMNS - 4, i);
+  put_color_xy(Light_Green,COLUMNS - 3, i);
+  put_color_xy(Blue,COLUMNS - 1, i);
 }
 
 void NO(int i) {
-  writexy(COLUMNS - 6, i, "[ NO ]");
-  cputxy(COLUMNS - 6, i, Blue);
-  cputxy(COLUMNS - 4, i, Light_Red);
-  cputxy(COLUMNS - 3, i, Light_Red);
-  cputxy(COLUMNS - 1, i, Blue);
+  write_xy("[ NO ]",COLUMNS - 6, i);
+  put_color_xy(Blue,COLUMNS - 6, i);
+  put_color_xy(Light_Red,COLUMNS - 4, i);
+  put_color_xy(Light_Red,COLUMNS - 3, i);
+  put_color_xy(Blue,COLUMNS - 1, i);
 }
 
 void kwrite(const char * string) {
   static char * kpointer = (char *) 0xb8000;
   int k;
   for (k = 0;
-       string[k] != 0 && (((int) kpointer - 0xb8000) / 2) < (COLUMNS*ROWS);
+       string[k] != 0 && k < (COLUMNS*ROWS);
        k++) {
       * (kpointer++) = string[k];
       * (kpointer++) = 7;
     }
 }
 
-static inline void writeline(const char* string) {
-  write(string);
-  nl();
-}
-
 void logo(void) {
-  gotoxy(25, row());
-  writeline("________                ____      ");
-  gotoxy(24, row() + 1);
-  writeline("/ ____/ /__  ____  _____/ __ \\____");
-  gotoxy(23, row() + 1);
-  writeline("/ /   / / _ \\/ __ \\/ ___/ / / /  _/");
-  gotoxy(22, row() + 1);
-  writeline("/ /___/ /  __/ /_/ / /  / /_/ /\\  \\ ");
-  gotoxy(22, row() + 1);
-  writeline("\\____/_/\\___/\\__._/_/   \\____//___/ ");
+  write("                       ________                ____\n");
+  write("                      / ____/ /__  ____  _____/ __ \\____\n");
+  write("                     / /   / / _ \\/ __ \\/ ___/ / / /  _/\n");
+  write("                    / /___/ /  __/ /_/ / /  / /_/ /\\  \\\n");
+  write("                    \\____/_/\\___/\\__._/_/   \\____//___/\n");
 
-  /*
-      writeline("                       ___ _                  ___  __   ");
-      writeline("                      / __\\ | ___  __ _ _ __ /___\\/ _\\  ");
-      writeline("                     / /  | |/ _ \\/ _` | '__//  //\\ \\   ");
-      writeline("                    / /___| |  __/ (_| | | / \\_// _\\ \\  ");
-      writeline("                    \\____/|_|\\___|\\__,_|_| \\___/  \\__/  ");
-  */
 }
 
 int check(const char * output, int offset) {
   unsigned int retval = 1, i;
   for (i = 0;i < strlen(output);i++)
-    if (readxy(i + 3 + offset, row()) != output[i]) {
+    if (read_x(i + 3 + offset) != output[i]) {
         retval = 0;
-        cputxy(i + 3 + offset, row(), Light_Red);
+        put_color_x(i + 3 + offset, Light_Red);
       }
   return retval;
 }
@@ -151,16 +134,15 @@ void _kmain(multiboot_info_t* mbd, unsigned int magicN) {
   memoriaFisica = multiBootInfo->mem_lower + multiBootInfo->mem_upper;
   memoriaFisica *= 1024;
 
-
-  clearScreen();
+  clear_physical();
 
   NO(t);
   kwrite("Kernel caricato.");
   OK(t++);
-  writeline("");
+  write("\n");
 
   NO(t);
-  writeline("Prova writeline.");
+  write("Prova writeline.\n");
   OK(t++);
 
   logo();
@@ -179,19 +161,13 @@ void _kmain(multiboot_info_t* mbd, unsigned int magicN) {
   write(" PIT");
   initTimer();
 
-  writeline(" Paging");
+  write(" Paging\n");
   initPaging();
-  OK(t++);
-
-  NO(t);
-  greendot();
-  writeline("Inizializzazione gestore devices");
-  initDeviceFsManager();
   OK(t++);
 
   /*here start the true tests*/
 
-  doTests();
+  doTests(); //from now on printf is ok
 
   magic();
 
@@ -199,13 +175,19 @@ void _kmain(multiboot_info_t* mbd, unsigned int magicN) {
 
   NO(t);
   greendot();
+  printf("Inizializzazione gestore devices\n");
+  initDeviceFsManager();
+  OK(t++);
+
+  NO(t);
+  greendot();
   printf("Kernel pronto!!!\n");
   OK(t++);
 
   /*drawRectangle(0,t,COLUMNS-1,ROWS-t-2,(char)(Yellow|Back_Blue));*/
-  gotoxy(1, t);
+  //gotoxy(1, t);
   asm("sti");
-  writexy(0, ROWS - 1, "[s][c][a][n][k] Time:");
+  write_physical_xy("[s][c][a][n][k] Time:",0, ROWS - 1);
   on = 1;
 
   /* test kernel panic
@@ -232,15 +214,16 @@ void _kmain(multiboot_info_t* mbd, unsigned int magicN) {
 void kernelPanic(char *sender, char *message) {
 
   asm("cli");
-  clearScreenAndColor(Yellow | Back_Red);
-  setConsoleColor(Yellow | Back_Red);
-  gotoxy(0, 3);
-  printf("RED SCREEN OF DOOM");
-  gotoxy(0, 7);
-  printf("Dear user,\n");
-  printf("I am very sorry I haven't written for so long. ");
-  printf("I am writing to tell you that \n%s\n", message);
-  printf("Much love, %s", sender);
-  setCursorPos(100, 100);
+  set_physical_color(Yellow | Back_Red);
+  clear_physical();
+  write_physical_xy("RED SCREEN OF DOOM",0,3);
+  goto_physical_xy(0, 7);
+  write_physical("Dear user,\n");
+  write_physical("I am very sorry I haven't written for so long. ");
+  write_physical("I am writing to tell you that \n");
+  write_physical(message);
+  write_physical("\nMuch love, ");
+  write_physical(sender);
+  set_cursor(100, 100);
   while (1);
 }

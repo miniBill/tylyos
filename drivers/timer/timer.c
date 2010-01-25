@@ -27,7 +27,7 @@ void tick ( void )
         itoa ( timeCount/1000,timestring );
         while ( timestring[COLUMNS-print]!=0 )
             print--;
-        writexy ( print,ROWS-1,timestring );
+        write_physical_xy(timestring,print,ROWS-1);
     }
 }
 

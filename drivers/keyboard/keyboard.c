@@ -48,7 +48,7 @@ int modifier(char c, int released) {
         shift = 0;
       else
         shift = 1;
-      putxy(1, ROWS - 1, shift ? 'S' : 's');
+      put_physical_xy(1, ROWS - 1, shift ? 'S' : 's');
       return 1;
     }
   if (c == 0x1D) {
@@ -56,7 +56,7 @@ int modifier(char c, int released) {
         ctrl = 0;
       else
         ctrl = 1;
-      putxy(4, ROWS - 1, ctrl ? 'C' : 'c');
+      put_physical_xy(4, ROWS - 1, ctrl ? 'C' : 'c');
       return 1;
     }
   if (c == 0x38) {
@@ -64,30 +64,30 @@ int modifier(char c, int released) {
         alt = 0;
       else
         alt = 1;
-      putxy(7, ROWS - 1, alt ? 'A' : 'a');
+      put_physical_xy(7, ROWS - 1, alt ? 'A' : 'a');
       return 1;
     }
   if (c == 0x45) {
       if (!released) {
           numlock = 1 - numlock;
-          putxy(10, ROWS - 1, numlock ? 'N' : 'n');
+          put_physical_xy(10, ROWS - 1, numlock ? 'N' : 'n');
         }
       return 1;
     }
   if (c == 0x3A) {
       if (!released) {
           capslock = 1 - capslock;
-          putxy(13, ROWS - 1, capslock ? 'K' : 'k');
+          put_physical_xy(13, ROWS - 1, capslock ? 'K' : 'k');
         }
       return 1;
     }
   return 0;
 }
 
-void backspace(void) {
+/*void backspace(void) {
   gotoi(pos() - 1);
   puti(pos(), ' ');
-}
+}*/
 
 void input(char ch, int released) {
 #ifdef FREEROAMING
@@ -112,6 +112,30 @@ void input(char ch, int released) {
 
 void acpiPowerOff(void);
 int initAcpi(void);
+
+#define inc() x++;if(x==COLUMNS){x=0;y++;}
+#define slashwrite(a) write_xy("\\",x,y);inc();write_xy(a,x,y);inc();
+
+//Write a string, with escaped characters
+static void Swrite_xy(const char* string,unsigned int x, unsigned int y) {
+  int k;
+  for (k = 0;string[k] != 0;k++) {
+    switch (string[k]) {
+      case '\n':
+        slashwrite("n");
+        break;
+      case '\b':
+        slashwrite("b");
+        break;
+      case '\\':
+        slashwrite("\\");
+        break;
+      default:
+        put_xy(string[k],x,y);
+        inc();
+    }
+  }
+}
 
 void keypress(void) {
   unsigned char c = inb(0x60);
@@ -212,17 +236,17 @@ void keypress(void) {
           switch (c) {
             case 0x13: /* R for restart */
               ch = 0;
-              writexy((COLUMNS - 9) / 2, 0, "Rebooting");
+              write_physical_xy("Rebooting", (COLUMNS - 9) / 2, 0);
               reboot();
               break;
             case 0x23: /* H for halt */
               ch = 0;
-              writexy((COLUMNS - 7) / 2, 0, "Halting");
+              write_physical_xy("Halting", (COLUMNS - 7) / 2, 0);
               reboot();//TODO: implement halt
               break;
             case 0x20:/*D for doom */
               ch = 0;
-              writexy((COLUMNS - 7) / 2, 0, "Dooming");
+              write_physical_xy("Dooming", (COLUMNS - 7) / 2, 0);
               kernelPanic("your system","an invalid operation has happened at unknown address!!! PEBKAC!!!");
               break;
             }
@@ -267,10 +291,7 @@ void keypress(void) {
   /*int i;
   for (i = 0;i < COLUMNS;i++)
     putxy(0, i, ' ');*/
-  int p = pos();
-  gotoxy(0, ROWS - 3);
-  printf("%S", buffer);
-  gotoi(p);
+  Swrite_xy(buffer,0,ROWS-3);
 #endif
 }
 

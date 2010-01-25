@@ -65,43 +65,36 @@ enum{
 #define ROWS        25
 #define CONSOLE     6
 
-void setConsoleColor(unsigned char color);
+void clear_physical(void);
 
-void setCursorPos(unsigned int x, unsigned int y);
+void set_physical_color(unsigned char color);
+void set_cursor(unsigned int x,unsigned int y);
 
-/* *signed* int, for backscrolling */
-void scroll(int lines);
+void goto_physical_xy(unsigned int x,unsigned int y);
 
-int pos(void);
 int row(void);
 
-void gotoi(int pos);
-void gotoxy(int x,int y);
-
-char read(void);
-char readi(int pos);
-char readxy(int x,int y);
-
-void put(char c);
-void puti(int pos, char c);
-void putxy(int x,int y,char c);
-
 void nl(void);
+void nl_physical(void);
 
 void write(const char* string);
-void writei(int pos,const char * string);
-void writexy(int x,int y,const char * string);
+void write_xy(const char* string,unsigned int x,unsigned int y);
 
-void clearScreen(void);
-void clearScreenAndColor(unsigned char color);
+void write_physical(const char* string);
+void write_physical_xy(const char* string, unsigned int x, unsigned int y);
 
-/*This six methods are equal to those without the c, but they read/write the color byte*/
-char cread(void);
-char creadi(int pos);
-char creadxy(int x,int y);
+void put(char c);
+void put_xy(char c, unsigned int x, unsigned int y);
 
-void cput(unsigned char color);
-void cputi(int pos,unsigned char color);
-void cputxy(int x,int y,unsigned char color);
+void put_physical(char c);
+void put_physical_xy(char c, unsigned int x, unsigned int y);
+
+void put_color_x(unsigned char color,unsigned int x);
+void put_color_xy(unsigned char color,unsigned int x,unsigned int y);
+
+void put_physical_color_x(unsigned char color, unsigned int x);
+void put_physical_color_xy(unsigned char color, unsigned int x, unsigned int y);
+
+char read_x(unsigned int x);
 
 #endif
