@@ -26,41 +26,13 @@
 
 #define FAST_TESTS
 
-typedef int ( *test ) ( void );
-
-int putreadtest ( void )
-{
-    char output[16] = "Prova put/read.";
-    int i;
-    put ( 'P' );
-    for ( i = COLUMNS + 1;i < COLUMNS + 6;i++ )
-        put ( readi ( i ) );
-    write ( "put/read." );
-    return check ( output, 0 );
-}
+typedef int (*test)(void);
 
 int pointertest ( void )
 {
     char pointer[17] = "Prova puntatore.";
     write ( pointer );
     return check ( pointer, 0 );
-}
-
-int itoatest ( void )
-{
-    char conversion[4] = {0};
-    char output[8] = "123,-A0";
-    int i;
-    write ( "Prova itoa:" );
-    for ( i = 0;i < 4;i++ )
-        conversion[i] = 0;
-    itoa ( 123, conversion );
-    write ( conversion );
-    write ( "," );
-    itobase ( -160, 16, conversion );
-    write ( conversion );
-    write ( "." );
-    return check ( output, 11 );
 }
 
 int printftest ( void )
@@ -121,7 +93,7 @@ int dinamictestTwo ( void )
     char *dinamicFirst, *dinamicSecond;
     int i;
     for ( i = 0;i < 27;i++ )
-        put ( ' ' );
+        printf ( " " );
     printf ( "fase2 " );
     dinamicFirst = ( char* ) kmalloc ( 4 );
     printf ( "0x%x=", ( unsigned int ) dinamicFirst );
@@ -169,10 +141,8 @@ void doTests ( void )
 #ifdef FAST_TESTS
     test tests[2] = {
 #else
-    test tests[6] = {
-        putreadtest,
+    test tests[4] = {
         pointertest,
-        itoatest,
         printftest,
 #endif
         /*isoTest,*/
