@@ -159,7 +159,7 @@ int getdir (string dir,unsigned int parent)
         }
         else
         {
-            if(string(dirp->d_name)!="." && string(dirp->d_name)!="..")
+            if(string(dirp->d_name)!="." && string(dirp->d_name)!=".." && string(dirp->d_name)!=".svn")
             {
                 /*se e' una directory*/
                 cout<<space<<"["<<string(dirp->d_name)<<"]"<<endl;
