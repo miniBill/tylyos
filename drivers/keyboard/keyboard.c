@@ -40,9 +40,9 @@ static int pointer = 0;
 
 #define KEYBUFSIZE COLUMNS
 
-#define FREEROAMING
+//#define FREEROAMING
 
-static int stop_output = 0;
+static int stop_output;
 
 int modifier(char c, int released) {
   if (c == 0x36 || c == 0x2A) {
@@ -51,7 +51,7 @@ int modifier(char c, int released) {
       else
         shift = 1;
       if (!stop_output)
-        put_physical_xy(1, ROWS - 1, shift ? 'S' : 's');
+        put_physical_xy(shift ? 'S' : 's',1, ROWS - 1);
       return 1;
     }
   if (c == 0x1D) {
@@ -60,7 +60,7 @@ int modifier(char c, int released) {
       else
         ctrl = 1;
       if (!stop_output)
-        put_physical_xy(4, ROWS - 1, ctrl ? 'C' : 'c');
+        put_physical_xy(ctrl ? 'C' : 'c',4, ROWS - 1);
       return 1;
     }
   if (c == 0x38) {
@@ -69,14 +69,14 @@ int modifier(char c, int released) {
       else
         alt = 1;
       if (!stop_output)
-        put_physical_xy(7, ROWS - 1, alt ? 'A' : 'a');
+        put_physical_xy(alt ? 'A' : 'a',7, ROWS - 1);
       return 1;
     }
   if (c == 0x45) {
       if (!released) {
           numlock = 1 - numlock;
           if (!stop_output)
-            put_physical_xy(10, ROWS - 1, numlock ? 'N' : 'n');
+            put_physical_xy(numlock ? 'N' : 'n',10, ROWS - 1);
         }
       return 1;
     }
@@ -84,7 +84,7 @@ int modifier(char c, int released) {
       if (!released) {
           capslock = 1 - capslock;
           if (!stop_output)
-            put_physical_xy(13, ROWS - 1, capslock ? 'K' : 'k');
+            put_physical_xy(capslock ? 'K' : 'k',13, ROWS - 1);
         }
       return 1;
     }
@@ -218,6 +218,7 @@ void keypress(void) {
       buffer = (char *) kmalloc(KEYBUFSIZE * sizeof(buffer) + 1);/*always reserve a byte for \0 */
       for (init = 0;init <= KEYBUFSIZE;init++)
         buffer[init] = 0;
+      stop_output=0;
     }
   /*identifica l'inizio di uno scancode a due byte*/
   if (c == 0xE0) {
