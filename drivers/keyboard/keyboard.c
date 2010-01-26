@@ -159,7 +159,8 @@ static inline int freeroaming(char ch) {
       return 1;
     case '8': /* freccia su */
 #ifdef FREEROAMING
-      goto_y(row()-1);
+      if(row()>0)
+        goto_y(row()-1);
 #endif
       return 1;
     case '9': /* pag su */
@@ -189,7 +190,8 @@ static inline int freeroaming(char ch) {
       return 1;
     case '2': /* freccia giu' */
 #ifdef FREEROAMING
-      goto_y(row()+1);
+      if(row()<ROWS*PAGES-1)
+        goto_y(row()+1);
 #endif
       return 1;
     case '3': /* pag giu' */

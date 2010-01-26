@@ -68,6 +68,7 @@ enum{
 //index is zero-based
 void switch_console(unsigned int console);
 
+void clear_all(void);
 void clear_physical(void);
 
 void set_physical_color(unsigned char color);

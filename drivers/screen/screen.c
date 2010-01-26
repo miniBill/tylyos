@@ -66,6 +66,17 @@ void update(void){
     }
 }
 
+void clear_all(void){
+  for(int c=0;c<CONSOLE;c++)
+    for(int y=0;y<ROWS*PAGES;y++)
+      for(int x=0;x<COLUMNS;x++){
+        videoMemory[c][y][x]=' ';
+        colorMemory[c][y][x]=consoleColor;
+      }
+  baseline=0;
+  clear_physical();
+}
+
 void clear_physical(void){
   for(int y=0;y<ROWS;y++)
     for(int x=0;x<COLUMNS;x++)
@@ -113,7 +124,7 @@ void scroll(int d){
 
 void goto_x(unsigned int nx){
   if(nx>=COLUMNS)
-    goto_xy(nx-COLUMNS,y+1);
+    goto_xy(nx-COLUMNS,baseline+y+1);
   else{
     x=nx;
     set_cursor(x,y);
@@ -123,8 +134,8 @@ void goto_x(unsigned int nx){
 void goto_y(unsigned int ny){
   if(ny<baseline)
     scroll(ny-baseline);
-  if(ny>baseline+ROWS)
-    scroll(ny-baseline+ROWS);
+  else if(ny>baseline+ROWS-2)
+    scroll(ny-baseline-ROWS+2);
   y=ny-baseline;
   set_cursor(x,y);
 }
@@ -135,7 +146,7 @@ void goto_xy(unsigned int nx,unsigned int ny){
 }
 
 int row(void){
-  return y;
+  return y+baseline;
 }
 
 int col(void){
@@ -155,7 +166,6 @@ void write(const char* string){
 }
 
 void write_xy(const char* string,unsigned int px,unsigned int py){
-  int k;
   unsigned int ox=x;
   unsigned int oy=y;
   goto_xy(px,py);
@@ -202,7 +212,7 @@ void put_xy(char c, unsigned int x, unsigned int y){
 
 void put_physical(char c){
   *addr_xy(x,y)=c;
-  goto_xy(x+1,y);
+  goto_x(x+1);
 }
 
 void put_physical_x(char c, unsigned int x){
@@ -216,7 +226,7 @@ void put_physical_xy(char c, unsigned int x, unsigned int y){
 }
 
 void put_color_x(unsigned char color,unsigned int x){
-  colorMemory[currentConsole][y][x]=color;
+  colorMemory[currentConsole][y+baseline][x]=color;
   put_physical_color_x(color,x);
 }
 
@@ -234,5 +244,5 @@ void put_physical_color_xy(unsigned char color, unsigned int x, unsigned int y){
 }
 
 char read_x(unsigned int x){
-  return videoMemory[currentConsole][y][x];
+  return videoMemory[currentConsole][y+baseline][x];
 }
