@@ -36,4 +36,26 @@ fs_returnCode ramFs_createDir(char *name,struct fs_node_descriptor *output,struc
 fs_returnCode ramFs_deleteDir(struct fs_node_descriptor descriptor);
 void ramFs_freeInodeInfoPointer(void *inodeInfo);/*dealloca la struttura che era stata allocata in getNodeDescriptor, serve in quanto ogni deviceFs usa strutture di dimensione diversa*/
 
+#define RAMFS_FILENAME_MAX_LENGTH 128
+#define RAMFS_FAT_EMPTY 0xFFFFFFFF
+#define RAMFS_FAT_END   0xFFFFFFFE
+
+struct ramFs_node
+{
+    char name[RAMFS_FILENAME_MAX_LENGTH];/*nome del file*/
+    char permissions[3];/*i permessi relativi al proprietario, al gruppo ed agli altri utenti*/
+    unsigned int userId;/*lo user id del proprietario del file*/
+    unsigned int groupId;/*l' id del gruppo a cui appartiene il file*/
+    char type;/*il tipo del nodo, vedere le definizioni*/
+    unsigned int size;/*dimensione del file in bytes*/
+    
+    unsigned int cluster;/*indice che specifica i cluster con cui inizia il nodo*/
+};
+
+unsigned int *ramFs_start;/*indirizzo di partenza del ramFs*/
+unsigned int ramFs_clusterNumber;
+unsigned int ramFs_clusterSize;
+unsigned int *ramFs_FAT;/*indirizzo della FAT*/
+char *ramFs_clusters;/*indirizzo dove partono i clusters*/
+
 #endif

@@ -29,8 +29,7 @@ file contenente tutte le funzioni base per accedere al file system indipendentem
 #define FS_DIRECTORY  0x02 /* 0010*/
 #define FS_SYMLINK    0x03 /* 0011*/
 #define FS_PIPE       0x04 /* 0100*/
-#define FS_EOF        0x05 /* 0101 usato durante il listing delle directory*/
-#define FS_MOUNTPOINT 0x08 /* 1000 in modo da poter esseere settato in aggiunta agli altri flags*/
+
 #include <drivers/screen/screen.h>
 
 typedef char fs_returnCode;
@@ -38,6 +37,7 @@ typedef char fs_returnCode;
 #define FS_OK               0x00
 #define FS_NOT_FOUND        0x01
 #define FS_GENERIC_ERROR    0x02
+#define FS_END              0x03/*usato per readDir*/
 
 typedef unsigned int File;
 
