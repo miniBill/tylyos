@@ -40,7 +40,7 @@ static int pointer = 0;
 
 #define KEYBUFSIZE COLUMNS
 
-//#define FREEROAMING
+#define FREEROAMING
 
 static int stop_output;
 
@@ -99,8 +99,8 @@ int modifier(char c, int released) {
 void input(char ch, int released) {
 #ifdef FREEROAMING
   if (ch == '\b') {
-      goto_physical_x(col()-1);
-      put_physical_x(' ',col());
+      goto_x(col()-1);
+      put_x(' ',col());
       return;
     }
   if (ch == '\n') {
@@ -154,46 +154,48 @@ static inline int freeroaming(char ch) {
   switch (ch) {
     case '7':
 #ifdef FREEROAMING
-      goto_physical_x(0);
+      goto_x(0);
 #endif
       return 1;
     case '8': /* freccia su */
 #ifdef FREEROAMING
-      goto_physical_y(row_physical()-1);
+      goto_y(row()-1);
 #endif
       return 1;
     case '9': /* pag su */
 #ifdef FREEROAMING
       if (alt)
-        //scroll(-20); //HACK
+        scroll(-20);
 #endif
       return 1;
     case '4': /* freccia sx */
 #ifdef FREEROAMING
-      goto_physical_x(col() - 1);
+      if(col()>0)
+        goto_x(col() - 1);
 #endif
       return 1;
     case '5':
       return 1;
     case '6': /* freccia dx */
 #ifdef FREEROAMING
-      goto_physical_x(col() + 1);
+      if(col()<COLUMNS-1)
+        goto_x(col() + 1);
 #endif
       return 1;
     case '1':
 #ifdef FREEROAMING
-      goto_physical_x(COLUMNS - 1);
+      goto_x(COLUMNS - 1);
 #endif
       return 1;
     case '2': /* freccia giu' */
 #ifdef FREEROAMING
-      goto_physical_y(row_physical()+1);
+      goto_y(row()+1);
 #endif
       return 1;
     case '3': /* pag giu' */
 #ifdef FREEROAMING
       if (alt)
-        //scroll(20); //HACK
+        scroll(20);
 #endif
       return 1;
     case '0':
@@ -202,7 +204,7 @@ static inline int freeroaming(char ch) {
     case '.': /* canc */
 #ifdef FREEROAMING
       put(' ');
-      goto_physical_x(col()-1);
+      goto_x(col()-1);
 #endif
       return 1;
     }

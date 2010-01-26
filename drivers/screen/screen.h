@@ -66,16 +66,18 @@ enum{
 #define CONSOLE     6
 
 //index is zero-based
-void switch_console(int console);
+void switch_console(unsigned int console);
 
 void clear_physical(void);
 
 void set_physical_color(unsigned char color);
 void set_cursor(unsigned int x,unsigned int y);
 
-void goto_physical_x(unsigned int x);
-void goto_physical_y(unsigned int y);
-void goto_physical_xy(unsigned int x,unsigned int y);
+void scroll(int n);
+
+void goto_x(unsigned int x);
+void goto_y(unsigned int y);
+void goto_xy(unsigned int x,unsigned int y);
 
 int row(void);
 int row_physical(void);
@@ -88,10 +90,11 @@ void nl_physical(void);
 void write(const char* string);
 void write_xy(const char* string,unsigned int x,unsigned int y);
 
-void write_physical(const char* string);
+//void write_physical(const char* string);
 void write_physical_xy(const char* string, unsigned int x, unsigned int y);
 
 void put(char c);
+void put_x(char c, unsigned int x);
 void put_xy(char c, unsigned int x, unsigned int y);
 
 void put_physical(char c);
