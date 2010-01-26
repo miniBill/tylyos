@@ -270,13 +270,16 @@ void keypress(void) {
               write_physical_xy("Dooming", (COLUMNS - 7) / 2, 0);
               kernelPanic("your system", "an invalid operation has happened at unknown address!!! PEBKAC!!!");
               break;
-            case 0x38:/*L for life*/
+            case 0x2C:/*Z for life*/
               ch = 0;
               write_physical_xy("r for \"randomize\", p for pause", 0, ROWS - 1);
               stop_output = 1;
               do_life();
               break;
-            }
+            /*default:
+              printf("(%x]",c);
+              break;*/
+          }
         }
       else {
           if (alt) {
