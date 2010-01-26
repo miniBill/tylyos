@@ -113,7 +113,7 @@ int mbdtest(void) {
 }
 
 void magic(void) {
-  int t = row() + 1;
+  int t = row();
   NO(t);
   greendot();
   if (magictest())
@@ -152,7 +152,7 @@ void _kmain(multiboot_info_t* mbd, unsigned int magicN) {
   OK(t++);
 
   logo();
-  t += 4;
+  t += 5;
 
   NO(t);
   greendot();
@@ -177,7 +177,7 @@ void _kmain(multiboot_info_t* mbd, unsigned int magicN) {
 
   magic();
 
-  t = row() + 1;
+  t = row();
 
   NO(t);
   greendot();

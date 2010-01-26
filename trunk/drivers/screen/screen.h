@@ -65,14 +65,22 @@ enum{
 #define ROWS        25
 #define CONSOLE     6
 
+//index is zero-based
+void switch_console(int console);
+
 void clear_physical(void);
 
 void set_physical_color(unsigned char color);
 void set_cursor(unsigned int x,unsigned int y);
 
+void goto_physical_x(unsigned int x);
+void goto_physical_y(unsigned int y);
 void goto_physical_xy(unsigned int x,unsigned int y);
 
 int row(void);
+int row_physical(void);
+
+int col(void);
 
 void nl(void);
 void nl_physical(void);
@@ -87,6 +95,7 @@ void put(char c);
 void put_xy(char c, unsigned int x, unsigned int y);
 
 void put_physical(char c);
+void put_physical_x(char c, unsigned int x);
 void put_physical_xy(char c, unsigned int x, unsigned int y);
 
 void put_color_x(unsigned char color,unsigned int x);

@@ -36,10 +36,12 @@ static unsigned int y = 0;
 
 static unsigned int py = 0;
 
+//physical implicit
 static inline char * addr_xy(unsigned int x,unsigned int y){
   return (char*)(consoleAddr+2*(x+COLUMNS*y));
 }
 
+//physical implicit
 static inline char * addr_x(unsigned int x){
   return addr_xy(x,py);
 }
@@ -50,6 +52,17 @@ static inline void inc(unsigned int * x,unsigned int * y){
     *x=0;
     *y=(*y)+1;
   }
+}
+
+void switch_console(int console){
+  if(console==currentConsole)
+    return;
+  currentConsole=console;
+  for(py=0;py<ROWS-1;py++)
+    for(x=0;x<COLUMNS;x++){
+      put_physical_xy(videoMemory[currentConsole][py][x],x,py);
+      put_physical_color_xy(colorMemory[currentConsole][py][x],x,py);
+    }
 }
 
 void clear_physical(void){
@@ -89,6 +102,14 @@ void set_cursor(unsigned int x,unsigned int y){
   );
 }
 
+void goto_physical_x(unsigned int nx){
+  x=nx;
+}
+
+void goto_physical_y(unsigned int ny){
+  py=ny;
+}
+
 void goto_physical_xy(unsigned int nx,unsigned int ny){
   x=nx;
   py=ny;
@@ -96,6 +117,14 @@ void goto_physical_xy(unsigned int nx,unsigned int ny){
 
 int row(void){
   return y;
+}
+
+int row_physical(void){
+  return py;
+}
+
+int col(void){
+  return x;
 }
 
 void nl(void){
@@ -159,6 +188,11 @@ void put_xy(char c, unsigned int x, unsigned int y){
 void put_physical(char c){
   *addr_xy(x,py)=c;
   inc(&x,&py);
+}
+
+void put_physical_x(char c, unsigned int x){
+  *addr_x(x)=c;
+  put_physical_color_x(consoleColor,x);
 }
 
 void put_physical_xy(char c, unsigned int x, unsigned int y){

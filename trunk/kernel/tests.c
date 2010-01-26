@@ -122,7 +122,7 @@ int isoTest ( void )
 void run ( test tests[] )
 {
     int i;
-    int t = row() + 1;
+    int t = row();
     for ( i = 0;tests[i] != 0;i++ )
     {
         NO ( t );
