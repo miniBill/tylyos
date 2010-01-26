@@ -33,6 +33,12 @@ static int on = 1;
 
 static int magicNumber = 0;
 
+static int live=0;
+
+void do_life(void){
+  live=1-live;
+}
+
 static multiboot_info_t * multiBootInfo;
 
 inline void greendot(void) {
@@ -197,17 +203,14 @@ void _kmain(multiboot_info_t* mbd, unsigned int magicN) {
    }*/
   /*kernelPanic("_kmain()","this is a test message");*/
 
+  while (on){if(live)life();}
+  
+  /*wait 3 seconds before halting*/
+  sleep(3000);
 
-
-  while (on);
-  {
-    /*wait 3 seconds before halting*/
-    sleep(3000);
-
-    asm("cli");
-    clearIdt();
-    asm("int $1");
-  }
+  asm("cli");
+  clearIdt();
+  asm("int $1");
 }
 
 

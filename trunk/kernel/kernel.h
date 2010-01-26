@@ -20,4 +20,6 @@ void greendot ( void );
 
 void kernelPanic ( char *sender,char *message );
 
+void do_life(void);
+
 #endif
