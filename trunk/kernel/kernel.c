@@ -191,7 +191,7 @@ void _kmain(multiboot_info_t* mbd, unsigned int magicN) {
   OK(t++);
 
   /*drawRectangle(0,t,COLUMNS-1,ROWS-t-2,(char)(Yellow|Back_Blue));*/
-  //gotoxy(1, t);
+  goto_xy(1, t);
   asm("sti");
   write_physical_xy("[s][c][a][n][k] Time:",0, ROWS - 1);
   on = 1;
@@ -202,7 +202,7 @@ void _kmain(multiboot_info_t* mbd, unsigned int magicN) {
       kmalloc(1024*1024);
    }*/
   /*kernelPanic("_kmain()","this is a test message");*/
-
+  void life();
   while (on){if(live)life();}
   
   /*wait 3 seconds before halting*/
@@ -219,14 +219,15 @@ void kernelPanic(char *sender, char *message) {
   asm("cli");
   set_physical_color(Yellow | Back_Red);
   clear_physical();
-  write_physical_xy("RED SCREEN OF DOOM",0,3);
-  goto_physical_xy(0, 7);
-  write_physical("Dear user,\n");
-  write_physical("I am very sorry I haven't written for so long. ");
-  write_physical("I am writing to tell you that \n");
-  write_physical(message);
-  write_physical("\nMuch love, ");
-  write_physical(sender);
+  goto_xy(0,3);
+  write("RED SCREEN OF DOOM");
+  goto_xy(0, 7);
+  write("Dear user,\n");
+  write("I am very sorry I haven't written for so long. ");
+  write("I am writing to tell you that \n");
+  write(message);
+  write("\nMuch love, ");
+  write(sender);
   set_cursor(100, 100);
   while (1);
 }

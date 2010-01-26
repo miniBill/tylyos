@@ -49,7 +49,7 @@ void step(void){
 }
 
 static void print(void){
-  goto_physical_xy(0,0);
+  goto_xy(0,0);
   set_cursor(0,0);
   for(int y=0;y<ROWS-1;y++)
     for(int x=0;x<COLUMNS;x++)
