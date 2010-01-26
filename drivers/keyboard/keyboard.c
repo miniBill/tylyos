@@ -42,13 +42,16 @@ static int pointer = 0;
 
 //#define FREEROAMING
 
+static int stop_output=0;
+
 int modifier(char c, int released) {
   if (c == 0x36 || c == 0x2A) {
       if (released)
         shift = 0;
       else
         shift = 1;
-      put_physical_xy(1, ROWS - 1, shift ? 'S' : 's');
+      if(!stop_output)
+	put_physical_xy(1, ROWS - 1, shift ? 'S' : 's');
       return 1;
     }
   if (c == 0x1D) {
@@ -56,7 +59,8 @@ int modifier(char c, int released) {
         ctrl = 0;
       else
         ctrl = 1;
-      put_physical_xy(4, ROWS - 1, ctrl ? 'C' : 'c');
+      if(!stop_output)
+        put_physical_xy(4, ROWS - 1, ctrl ? 'C' : 'c');
       return 1;
     }
   if (c == 0x38) {
@@ -64,20 +68,23 @@ int modifier(char c, int released) {
         alt = 0;
       else
         alt = 1;
-      put_physical_xy(7, ROWS - 1, alt ? 'A' : 'a');
+      if(!stop_output)
+       put_physical_xy(7, ROWS - 1, alt ? 'A' : 'a');
       return 1;
     }
   if (c == 0x45) {
       if (!released) {
           numlock = 1 - numlock;
-          put_physical_xy(10, ROWS - 1, numlock ? 'N' : 'n');
+	  if(!stop_output)
+           put_physical_xy(10, ROWS - 1, numlock ? 'N' : 'n');
         }
       return 1;
     }
   if (c == 0x3A) {
       if (!released) {
           capslock = 1 - capslock;
-          put_physical_xy(13, ROWS - 1, capslock ? 'K' : 'k');
+	  if(!stop_output)
+            put_physical_xy(13, ROWS - 1, capslock ? 'K' : 'k');
         }
       return 1;
     }
@@ -102,16 +109,19 @@ void input(char ch, int released) {
 #endif
 
   if (!released) {
+    #ifndef FREEROAMING
+       if(pointer==KEYBUFSIZE)
+	return;
+    #endif
       buffer[pointer++] = ch;
+      #ifdef FREEROAMING
       pointer %= KEYBUFSIZE;
+      #endif
     }
 #ifdef FREEROAMING
   put(ch);
 #endif
 }
-
-void acpiPowerOff(void);
-int initAcpi(void);
 
 #define inc() x++;if(x==COLUMNS){x=0;y++;}
 #define slashwrite(a) write_xy("\\",x,y);inc();write_xy(a,x,y);inc();
@@ -119,6 +129,8 @@ int initAcpi(void);
 //Write a string, with escaped characters
 static void Swrite_xy(const char* string,unsigned int x, unsigned int y) {
   int k;
+  if(stop_output)
+    return;
   for (k = 0;string[k] != 0;k++) {
     switch (string[k]) {
       case '\n':
@@ -249,6 +261,12 @@ void keypress(void) {
               write_physical_xy("Dooming", (COLUMNS - 7) / 2, 0);
               kernelPanic("your system","an invalid operation has happened at unknown address!!! PEBKAC!!!");
               break;
+	    case 0x38:/*L for life*/
+	      ch = 0;
+	      write_physical_xy("r for \"randomize\", p for pause",0,ROWS-1);
+	      stop_output=1;
+	      do_life();
+	      break;
             }
         }
       else {
@@ -296,8 +314,12 @@ void keypress(void) {
 }
 
 char getch() {
+  if(pointer==0)
+    return '\0';
   pointer--;
-  return buffer[pointer];
+  char toret=buffer[pointer];
+  buffer[pointer]=0;
+  return toret;
 }
 
 char fetchch() {

@@ -19,7 +19,7 @@ CFLAGS:= -march=i386 -ffreestanding -Wall -pedantic -Wextra -I. -fno-stack-prote
 ASFLAGS:= -march=i386
 OBJ= bootloader/loader.o \
      kernel/stdio.o kernel/kernel.o kernel/tests.o \
-     lib/string.o \
+     lib/string.o lib/life.o \
      memory/memory.o memory/gdt.o memory/paging.o \
        drivers/screen/screen.o \
        drivers/keyboard/keyboard.o \
