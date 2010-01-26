@@ -40,9 +40,9 @@ static int pointer = 0;
 
 #define KEYBUFSIZE COLUMNS
 
-//#define FREEROAMING
+#define FREEROAMING
 
-static int stop_output=0;
+static int stop_output = 0;
 
 int modifier(char c, int released) {
   if (c == 0x36 || c == 0x2A) {
@@ -50,8 +50,8 @@ int modifier(char c, int released) {
         shift = 0;
       else
         shift = 1;
-      if(!stop_output)
-	put_physical_xy(1, ROWS - 1, shift ? 'S' : 's');
+      if (!stop_output)
+        put_physical_xy(1, ROWS - 1, shift ? 'S' : 's');
       return 1;
     }
   if (c == 0x1D) {
@@ -59,7 +59,7 @@ int modifier(char c, int released) {
         ctrl = 0;
       else
         ctrl = 1;
-      if(!stop_output)
+      if (!stop_output)
         put_physical_xy(4, ROWS - 1, ctrl ? 'C' : 'c');
       return 1;
     }
@@ -68,22 +68,22 @@ int modifier(char c, int released) {
         alt = 0;
       else
         alt = 1;
-      if(!stop_output)
-       put_physical_xy(7, ROWS - 1, alt ? 'A' : 'a');
+      if (!stop_output)
+        put_physical_xy(7, ROWS - 1, alt ? 'A' : 'a');
       return 1;
     }
   if (c == 0x45) {
       if (!released) {
           numlock = 1 - numlock;
-	  if(!stop_output)
-           put_physical_xy(10, ROWS - 1, numlock ? 'N' : 'n');
+          if (!stop_output)
+            put_physical_xy(10, ROWS - 1, numlock ? 'N' : 'n');
         }
       return 1;
     }
   if (c == 0x3A) {
       if (!released) {
           capslock = 1 - capslock;
-	  if(!stop_output)
+          if (!stop_output)
             put_physical_xy(13, ROWS - 1, capslock ? 'K' : 'k');
         }
       return 1;
@@ -99,7 +99,8 @@ int modifier(char c, int released) {
 void input(char ch, int released) {
 #ifdef FREEROAMING
   if (ch == '\b') {
-      backspace();
+      goto_physical_x(col()-1);
+      put_physical_x(' ',col());
       return;
     }
   if (ch == '\n') {
@@ -109,14 +110,14 @@ void input(char ch, int released) {
 #endif
 
   if (!released) {
-    #ifndef FREEROAMING
-       if(pointer==KEYBUFSIZE)
-	return;
-    #endif
+#ifndef FREEROAMING
+      if (pointer == KEYBUFSIZE)
+        return;
+#endif
       buffer[pointer++] = ch;
-      #ifdef FREEROAMING
+#ifdef FREEROAMING
       pointer %= KEYBUFSIZE;
-      #endif
+#endif
     }
 #ifdef FREEROAMING
   put(ch);
@@ -127,26 +128,85 @@ void input(char ch, int released) {
 #define slashwrite(a) write_xy("\\",x,y);inc();write_xy(a,x,y);inc();
 
 //Write a string, with escaped characters
-static void Swrite_xy(const char* string,unsigned int x, unsigned int y) {
+static void Swrite_xy(const char* string, unsigned int x, unsigned int y) {
   int k;
-  if(stop_output)
+  if (stop_output)
     return;
   for (k = 0;string[k] != 0;k++) {
-    switch (string[k]) {
-      case '\n':
-        slashwrite("n");
-        break;
-      case '\b':
-        slashwrite("b");
-        break;
-      case '\\':
-        slashwrite("\\");
-        break;
-      default:
-        put_xy(string[k],x,y);
-        inc();
+      switch (string[k]) {
+        case '\n':
+          slashwrite("n");
+          break;
+        case '\b':
+          slashwrite("b");
+          break;
+        case '\\':
+          slashwrite("\\");
+          break;
+        default:
+          put_xy(string[k], x, y);
+          inc();
+        }
     }
-  }
+}
+
+static inline int freeroaming(char ch) {
+  switch (ch) {
+    case '7':
+#ifdef FREEROAMING
+      goto_physical_x(0);
+#endif
+      return 1;
+    case '8': /* freccia su */
+#ifdef FREEROAMING
+      goto_physical_y(row_physical()-1);
+#endif
+      return 1;
+    case '9': /* pag su */
+#ifdef FREEROAMING
+      if (alt)
+        //scroll(-20); //HACK
+#endif
+      return 1;
+    case '4': /* freccia sx */
+#ifdef FREEROAMING
+      goto_physical_x(col() - 1);
+#endif
+      return 1;
+    case '5':
+      return 1;
+    case '6': /* freccia dx */
+#ifdef FREEROAMING
+      goto_physical_x(col() + 1);
+#endif
+      return 1;
+    case '1':
+#ifdef FREEROAMING
+      goto_physical_x(COLUMNS - 1);
+#endif
+      return 1;
+    case '2': /* freccia giu' */
+#ifdef FREEROAMING
+      goto_physical_y(row_physical()+1);
+#endif
+      return 1;
+    case '3': /* pag giu' */
+#ifdef FREEROAMING
+      if (alt)
+        //scroll(20); //HACK
+#endif
+      return 1;
+    case '0':
+      /*TODO*/
+      return 1 ;
+    case '.': /* canc */
+#ifdef FREEROAMING
+      put(' ');
+      goto_physical_x(col()-1);
+#endif
+      return 1;
+    }
+    return 0;
 }
 
 void keypress(void) {
@@ -186,61 +246,9 @@ void keypress(void) {
       if (released)
         return;
       ch = key_map[c];
-      switch (ch) {
-        case '7':
-#ifdef FREEROAMING
-          gotoxy(0, row());
-#endif
-          return;
-        case '8': /* freccia su */
-#ifdef FREEROAMING
-          gotoi(pos() - COLUMNS);
-#endif
-          return;
-        case '9': /* pag su */
-#ifdef FREEROAMING
-          if (alt)
-            scroll(-20);
-#endif
-          return;
-        case '4': /* freccia sx */
-#ifdef FREEROAMING
-          gotoi(pos() - 1);
-#endif
-          return;
-        case '5':
-          return;
-        case '6': /* freccia dx */
-#ifdef FREEROAMING
-          gotoi(pos() + 1);
-#endif
-          return;
-        case '1':
-#ifdef FREEROAMING
-          gotoxy(COLUMNS - 1, row());
-#endif
-          return;
-        case '2': /* freccia giu' */
-#ifdef FREEROAMING
-          gotoi(pos() + COLUMNS);
-#endif
-          return;
-        case '3': /* pag giu' */
-#ifdef FREEROAMING
-          if (alt)
-            scroll(20);
-#endif
-          return;
-        case '0':
-          /*TODO*/
-          return;
-        case '.': /* canc */
-#ifdef FREEROAMING
-          put(' ');
-          gotoi(pos() - 1);
-#endif
-          return;
-        }
+      //checks wheter a special key was pressed
+      if(freeroaming(ch))
+        return;
     }
   else {
       if (ctrl && alt) {
@@ -259,14 +267,14 @@ void keypress(void) {
             case 0x20:/*D for doom */
               ch = 0;
               write_physical_xy("Dooming", (COLUMNS - 7) / 2, 0);
-              kernelPanic("your system","an invalid operation has happened at unknown address!!! PEBKAC!!!");
+              kernelPanic("your system", "an invalid operation has happened at unknown address!!! PEBKAC!!!");
               break;
-	    case 0x38:/*L for life*/
-	      ch = 0;
-	      write_physical_xy("r for \"randomize\", p for pause",0,ROWS-1);
-	      stop_output=1;
-	      do_life();
-	      break;
+            case 0x38:/*L for life*/
+              ch = 0;
+              write_physical_xy("r for \"randomize\", p for pause", 0, ROWS - 1);
+              stop_output = 1;
+              do_life();
+              break;
             }
         }
       else {
@@ -292,14 +300,20 @@ void keypress(void) {
   if (!released) {
       if (ch != 0)
         input(ch, released);
-#ifdef FREEROAMING
       else {
-          if (escape)
-            printf("(E%d)", c);
-          else
-            printf("(%d)", c);
+        if(c>=59 && c<= 68)
+          switch_console(c-59);
+        else if(c==87)
+          switch_console(10);
+        else if(c==88)
+          switch_console(11);
+        #ifdef FREEROAMING
+         else if (escape)
+           printf("(E%d)", c);
+         else
+           printf("(%d)", c);
+         #endif
         }
-#endif
     }
 #ifdef PUT_ON_KEY_RELEASE
   else
@@ -309,16 +323,16 @@ void keypress(void) {
   /*int i;
   for (i = 0;i < COLUMNS;i++)
     putxy(0, i, ' ');*/
-  Swrite_xy(buffer,0,ROWS-3);
+  Swrite_xy(buffer, 0, ROWS - 3);
 #endif
 }
 
 char getch() {
-  if(pointer==0)
+  if (pointer == 0)
     return '\0';
   pointer--;
-  char toret=buffer[pointer];
-  buffer[pointer]=0;
+  char toret = buffer[pointer];
+  buffer[pointer] = 0;
   return toret;
 }
 
