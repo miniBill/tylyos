@@ -140,7 +140,8 @@ void _kmain(multiboot_info_t* mbd, unsigned int magicN) {
   memoriaFisica = multiBootInfo->mem_lower + multiBootInfo->mem_upper;
   memoriaFisica *= 1024;
 
-  clear_physical();
+  set_physical_color(White|Back_Black);
+  clear_all();
 
   NO(t);
   kwrite("Kernel caricato.");
