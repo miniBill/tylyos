@@ -51,6 +51,18 @@ int conta(string s)
     return n;
 }
 
+#include <sys/types.h> 
+
+#include <sys/stat.h> 
+
+int FileSize( string szFileName ) 
+{ 
+    struct stat fileStat; 
+    int err = stat( szFileName.c_str(), &fileStat ); 
+    if (0 != err) return 0; 
+    return fileStat.st_size; 
+}
+
 /*scrive nella directory il numero di files che contiene*/
 void writeDirectoryHeader(unsigned int cluster,unsigned int numFile)
 {
@@ -114,6 +126,12 @@ void addNodeToDirectory(unsigned int cluster,struct ramFs_node nodeStruct)
     }
 }
 
+void writeFile(unsigned int startCluster,string path)
+{
+    ifstream fileIn;
+    fileIn.open(path.c_str());
+}
+
 int getdir (string dir,unsigned int parent)
 {
     DIR *dp;
@@ -135,7 +153,7 @@ int getdir (string dir,unsigned int parent)
         if(dirp->d_type!=DT_DIR)
         {
             /*se e' un file*/
-            cout<< space <<string(dirp->d_name)<<endl;   
+           
             
             /*alloca un nuovo nodo di tipo file*/
             unsigned int newFile;
@@ -148,8 +166,10 @@ int getdir (string dir,unsigned int parent)
             strcpy(newFileStruct.name,dirp->d_name);
             newFileStruct.groupId=0;
             newFileStruct.userId=0;
-            newFileStruct.size=0;/*TODO: inserire la dimensione*/
+            newFileStruct.size= FileSize(dir+"/"+string(dirp->d_name)) ;
             newFileStruct.type=FS_FILE;
+            
+            cout<< space <<string(dirp->d_name)<<" "<< newFileStruct.size <<" bytes"<<endl;
             
             /*TODO: scrivere i dati contenuti nel file*/
             
