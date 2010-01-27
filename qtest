@@ -1,2 +1,2 @@
 #!/bin/sh
-qemu -cdrom clearos.iso
+qemu -cdrom tylyos.iso

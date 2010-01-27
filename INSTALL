@@ -1,10 +1,11 @@
-Compiling ClearOS
-========================================
-Run "make" to compile ClearOS.
+Compiling TylyOS
+================
+Run "make" to compile TylyOS.
 
-Running ClearOS
-===============
-Run "sh test" to run ClearOS.
+Running TylyOS
+==============
+Run "sh test" to run TylyOS using bochs.
+Run "sh qtest" if you prefer qemu.
 
 Clean up
 ========
@@ -12,5 +13,5 @@ Run "make clean" to clean up all the object and intermediate files.
 
 Notes
 =====
-make clean *does* delete clearos.iso and Makefile.in
-make smallclean is the same as make clean, but it does *not* delete clearos.iso, nor Makefile.in
+make clean *does* delete tylyos.iso and Makefile.in
+make smallclean is the same as make clean, but it does *not* delete tylyos.iso, nor Makefile.in

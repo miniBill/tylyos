@@ -351,3 +351,18 @@ char fetchch() {
     return '\0';
   return buffer[cur][outpointer[cur]];
 }
+
+void readline(char * buff,int count){
+  int c=0;
+  char t=getch();
+  do{
+    buff[c]=t;
+    c++;
+  }while(c<count && t!='\0' && t!='\n');
+  if(c==count){
+    buff[c-1]='\0';
+    return;
+  }
+  if(buff[c-1]!='\0')
+    buff[c]='0';
+}
