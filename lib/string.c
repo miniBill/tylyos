@@ -1,4 +1,4 @@
-/* Copyright (C) 2008 Leonardo Taglialegne <leonardotaglialegne+clearos@gmail.com>
+/* Copyright (C) 2008 Leonardo Taglialegne <leonardotaglialegne+tylyos@gmail.com>
  * Copyright (C) 2008 Roberto Domenella
  * Copyright (C) 2008 Giordano Cristini
  *
