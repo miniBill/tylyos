@@ -2,6 +2,8 @@
 #include <drivers/hdd/ataatapi.h>
 #include <lib/string.h>
 
+//pHACK : passing 0 as console argument to printf, not good
+
 void test_iso ( void )
 {
     unsigned int controller, hdd;
@@ -15,7 +17,7 @@ void test_iso ( void )
                     int sector=2048*15/512;
                     int counter=0;/*byte non nulli*/
                     unsigned char buffer[512];
-                    printf ( "Testing (%x:%x):\"",controller,hdd );
+                    printf (0, "Testing (%x:%x):\"",controller,hdd );//pHACK
                     while ( 1 )
                     {
                         int i;
@@ -26,13 +28,13 @@ void test_iso ( void )
                                 counter++;
                                 if ( counter>8 )
                                 {
-                                    printf ( "\"" );
+                                    printf (0, "\"" );//pHACK
                                     break;
                                 }
-                                printf ( "%x,%x;",512*sector+i,buffer[i] );
+                                printf (0, "%x,%x;",512*sector+i,buffer[i] );//pHACK
                             }
                         sector++;
-                        printf ( "." );
+                        printf (0, "." );//pHACK
                     }
                 }
 }

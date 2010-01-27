@@ -31,7 +31,7 @@ typedef int (*test)(void);
 int pointertest ( void )
 {
     char pointer[17] = "Prova puntatore.";
-    write ( pointer );
+    write ( pointer ,0);
     return check ( pointer, 0 );
 }
 
@@ -39,9 +39,9 @@ int printftest ( void )
 {
     char output[16] = "10,CA,a,ciao,13";
     int test = 13;
-    write ( "Prova printf:" );
-    printf ( "%d,%x,%c,%s,%d", 10, 0xCA, 'a', "ciao", test );
-    printf ( " base stack: %x end: %x", getEBP(), getESP() );
+    write ("Prova printf:" ,0);
+    printf (0, "%d,%x,%c,%s,%d", 10, 0xCA, 'a', "ciao", test );
+    printf (0, " base stack: %x end: %x", getEBP(), getESP() );
     return check ( output, 13 );
 }
 
@@ -49,11 +49,11 @@ int dinamictestOne ( void )
 {
     unsigned int pointera, pointerb, pointerc;
     int ret = 1;
-    printf ( "Test allocazione dinamica: fase1 " );
+    printf (0, "Test allocazione dinamica: fase1 " );
 
-    printf ( "\n    kernel heap start: 0x%x", mallocMemoryStart );
-    printf ( "\n    reserved kernel heap size:  %dMB and %dKB", ( userMemoryStart - mallocMemoryStart ) / 1000000, ( ( userMemoryStart - mallocMemoryStart ) % 1000000 ) / 1000 );
-    printf ( "\n    user memory start: 0x%x", userMemoryStart );
+    printf (0, "\n    kernel heap start: 0x%x", mallocMemoryStart );
+    printf (0, "\n    reserved kernel heap size:  %dMB and %dKB", ( userMemoryStart - mallocMemoryStart ) / 1000000, ( ( userMemoryStart - mallocMemoryStart ) % 1000000 ) / 1000 );
+    printf (0, "\n    user memory start: 0x%x", userMemoryStart );
     pointera = ( unsigned int ) kmalloc ( 4 );
     pointerb = ( unsigned int ) kmalloc ( 4 );
     pointerc = ( unsigned int ) kmalloc ( 4 );
@@ -67,19 +67,19 @@ int dinamictestOne ( void )
     kfree ( ( void* ) pointera );
     if ( ! ( pointera == ( unsigned int ) kmalloc ( 4 ) ) )
     {
-        printf ( "a\n" );
+        printf (0, "a\n" );
         ret = 0;
     }
     kfree ( ( void* ) pointerb );
     if ( ! ( pointerb == ( unsigned int ) kmalloc ( 4 ) ) )
     {
-        printf ( "b\n" );
+        printf (0, "b\n" );
         ret = 0;
     }
     kfree ( ( void* ) pointerc );
     if ( ! ( pointerc == ( unsigned int ) kmalloc ( 4 ) ) )
     {
-        printf ( "c\n" );
+        printf (0, "c\n" );
         ret = 0;
     }
     kfree ( ( void* ) pointera );
@@ -93,17 +93,17 @@ int dinamictestTwo ( void )
     char *dinamicFirst, *dinamicSecond;
     int i;
     for ( i = 0;i < 27;i++ )
-        printf ( " " );
-    printf ( "fase2 " );
+        printf (0, " " );
+    printf (0, "fase2 " );
     dinamicFirst = ( char* ) kmalloc ( 4 );
-    printf ( "0x%x=", ( unsigned int ) dinamicFirst );
+    printf (0, "0x%x=", ( unsigned int ) dinamicFirst );
 
     dinamicSecond = dinamicFirst;
     kfree ( dinamicFirst );
 
     dinamicFirst = ( char* ) kmalloc ( 4 );
 
-    printf ( "=0x%x.", ( unsigned int ) dinamicFirst );
+    printf (0, "=0x%x.", ( unsigned int ) dinamicFirst );
 
     return dinamicFirst == dinamicSecond;
 }
@@ -122,7 +122,7 @@ int isoTest ( void )
 void run ( test tests[] )
 {
     int i;
-    int t = row();
+    int t = row(0);
     for ( i = 0;tests[i] != 0;i++ )
     {
         NO ( t );
@@ -131,7 +131,7 @@ void run ( test tests[] )
             OK ( t++ );
         else
             t++;
-        nl();
+        nl(0);
     }
 }
 

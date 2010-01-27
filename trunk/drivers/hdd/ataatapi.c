@@ -16,6 +16,8 @@
  * along with ClearOS.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+//pHACK : passing 0 as console argument to printf, not good
+
 #include "ataatapi.h"
 #include <kernel/stdio.h>
 #include <kernel/kernel.h>
@@ -67,7 +69,7 @@ int identifyHdd ( int controller, int hdd )
                 tmpword=inb ( port ( 5 ) );
                 if ( tmpword == 0xEB )
                 {
-                    printf ( "ATAPI " );
+                    printf (0, "ATAPI " );//pHACK
                     retval=1;
                     break;
                 }
@@ -77,14 +79,14 @@ int identifyHdd ( int controller, int hdd )
                 tmpword=inb ( port ( 4 ) );
                 if ( tmpword == 0xC3 )
                 {
-                    printf ( "SATA\n" );
+                    printf (0, "SATA\n" );//pHACK
                     retval=3;
                     break;
                 }
             }
             if ( tmpword == 0x00 ) /*real error*/
-                printf ( "Glub!" );
-            printf ( "Errore! [prima read] [contr. %d,hdd %d]\n",controller,hdd );
+                printf (0, "Glub!" );//pHACK
+            printf (0,"Errore! [prima read] [contr. %d,hdd %d]\n",controller,hdd );//pHACK
             return 2;
         }
         sleep ( 1 );
@@ -104,15 +106,15 @@ int identifyHdd ( int controller, int hdd )
         i= ( data[60]<<16 ) |data[61];
         if ( i!=0 || j!=0 )
         {
-            printf ( "0x%x settori [contr. %d,drive %d] LBA%d UDMA(%x,%x)\n", ( j>0 ) ?j:i,controller,hdd, ( j>0 ) ?48:28,
-                     data[88]&0xFF, ( data[88]&0xFF00 ) >>8 );
+            printf (0, "0x%x settori [contr. %d,drive %d] LBA%d UDMA(%x,%x)\n", ( j>0 ) ?j:i,controller,hdd, ( j>0 ) ?48:28,
+                    data[88]&0xFF, ( data[88]&0xFF00 ) >>8 );//pHACK
             return retval != 0 ? retval : 5;
         }
         j=0;
         for ( i=0;i<256;i++ )
             if ( data[i]!=0 )
                 j++;
-        printf ( "Errore! [dopo read] [contr. %d,hdd %d] %d nonzero\n",controller,hdd,j );
+            printf (0, "Errore! [dopo read] [contr. %d,hdd %d] %d nonzero\n",controller,hdd,j );//pHACK
         return 4;
     }
 }

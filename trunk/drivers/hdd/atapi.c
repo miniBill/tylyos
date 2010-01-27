@@ -33,7 +33,7 @@ void atapiRead ( int controller,int hdd,short * command,int maxByteCount )
     tmpword=inw ( port ( 7 ) );
     while ( ( tmpword & 0x40 ) || ! ( tmpword & 0x20 ) )
     {
-        printf ( "BSY " );
+        printf (0, "BSY " );//HACK
         sleep ( 1000 );
     }
     outb ( port ( 7 ),0xA0 );/*PACKET*/

@@ -3,13 +3,13 @@
 
 #define MAXN 32 /*lunghezza massima in cifre di un numero*/
 
-unsigned int strlen ( const char * string );
+unsigned int strlen(const char * string);
 
-void strcpy ( char *source,char *dest );
+void strcpy(const char *source, char *dest);
 
-void itoa ( int a,char buff[11] );
+void itoa(int a, char buff[11]);
 
-void itobase ( int a,unsigned short base,char * buff );
+void itobase(int a, unsigned short base, char * buff);
 
-int printf ( const char* format,... );
+int printf(unsigned int console, const char* format, ...);
 #endif

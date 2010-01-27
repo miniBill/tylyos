@@ -24,6 +24,6 @@
 #define BORDER_CORNER_LOW_LEFT 200
 #define BORDER_CORNER_LOW_RIGHT 188
 
-void fillRectangle ( int x,int y,int width,int height,char color );
-void drawRectangle ( int x,int y,int width,int height,char color );
+void fillRectangle (unsigned int console, int x,int y,int width,int height,char color );
+void drawRectangle (unsigned int console, int x,int y,int width,int height,char color );
 
