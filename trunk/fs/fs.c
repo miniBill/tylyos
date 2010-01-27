@@ -1,5 +1,5 @@
 /* Copyright (C) 2008 Luca Salmin
- * Copyright (C) 2008 Leonardo Taglialegne <leonardotaglialegne+clearos@gmail.com>
+ * Copyright (C) 2008 Leonardo Taglialegne <leonardotaglialegne+tylyos@gmail.com>
  *
  * This file is part of TylyOS.
  *
