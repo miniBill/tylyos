@@ -68,6 +68,8 @@ enum{
 //index is zero-based
 void switch_console(unsigned int console);
 
+unsigned int current_console(void);
+
 void clear_all(void);
 void clear_physical(void);
 

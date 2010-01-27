@@ -35,12 +35,13 @@ unsigned short alt = 0;
 unsigned short numlock = 0;
 unsigned short capslock = 0;
 
-static char * buffer;
-static int pointer = 0;
-
 #define KEYBUFSIZE COLUMNS
 
-#define FREEROAMING
+static char buffer[CONSOLE][KEYBUFSIZE+1];
+static int inpointer[CONSOLE];
+static int outpointer[CONSOLE];
+
+//#define FREEROAMING
 
 static int stop_output;
 
@@ -51,7 +52,7 @@ int modifier(char c, int released) {
       else
         shift = 1;
       if (!stop_output)
-        put_physical_xy(shift ? 'S' : 's',1, ROWS - 1);
+        put_physical_xy(shift ? 'S' : 's', 1, ROWS - 1);
       return 1;
     }
   if (c == 0x1D) {
@@ -60,7 +61,7 @@ int modifier(char c, int released) {
       else
         ctrl = 1;
       if (!stop_output)
-        put_physical_xy(ctrl ? 'C' : 'c',4, ROWS - 1);
+        put_physical_xy(ctrl ? 'C' : 'c', 4, ROWS - 1);
       return 1;
     }
   if (c == 0x38) {
@@ -69,14 +70,14 @@ int modifier(char c, int released) {
       else
         alt = 1;
       if (!stop_output)
-        put_physical_xy(alt ? 'A' : 'a',7, ROWS - 1);
+        put_physical_xy(alt ? 'A' : 'a', 7, ROWS - 1);
       return 1;
     }
   if (c == 0x45) {
       if (!released) {
           numlock = 1 - numlock;
           if (!stop_output)
-            put_physical_xy(numlock ? 'N' : 'n',10, ROWS - 1);
+            put_physical_xy(numlock ? 'N' : 'n', 10, ROWS - 1);
         }
       return 1;
     }
@@ -84,7 +85,7 @@ int modifier(char c, int released) {
       if (!released) {
           capslock = 1 - capslock;
           if (!stop_output)
-            put_physical_xy(capslock ? 'K' : 'k',13, ROWS - 1);
+            put_physical_xy(capslock ? 'K' : 'k', 13, ROWS - 1);
         }
       return 1;
     }
@@ -96,11 +97,13 @@ int modifier(char c, int released) {
   puti(pos(), ' ');
 }*/
 
+#define cur current_console()
+
 void input(char ch, int released) {
 #ifdef FREEROAMING
   if (ch == '\b') {
-      goto_x(col()-1);
-      put_x(' ',col());
+      goto_x(col() - 1);
+      put_x(' ', col());
       return;
     }
   if (ch == '\n') {
@@ -110,14 +113,10 @@ void input(char ch, int released) {
 #endif
 
   if (!released) {
-#ifndef FREEROAMING
-      if (pointer == KEYBUFSIZE)
-        return;
-#endif
-      buffer[pointer++] = ch;
-#ifdef FREEROAMING
-      pointer %= KEYBUFSIZE;
-#endif
+      if (((inpointer[cur] + 1) % KEYBUFSIZE) == outpointer[cur])
+        return;//no space left for moar
+      buffer[cur][inpointer[cur]] = ch;
+      inpointer[cur]=(inpointer[cur]+1)%KEYBUFSIZE;
     }
 #ifdef FREEROAMING
   put(ch);
@@ -159,8 +158,8 @@ static inline int freeroaming(char ch) {
       return 1;
     case '8': /* freccia su */
 #ifdef FREEROAMING
-      if(row()>0)
-        goto_y(row()-1);
+      if (row() > 0)
+        goto_y(row() - 1);
 #endif
       return 1;
     case '9': /* pag su */
@@ -171,7 +170,7 @@ static inline int freeroaming(char ch) {
       return 1;
     case '4': /* freccia sx */
 #ifdef FREEROAMING
-      if(col()>0)
+      if (col() > 0)
         goto_x(col() - 1);
 #endif
       return 1;
@@ -179,7 +178,7 @@ static inline int freeroaming(char ch) {
       return 1;
     case '6': /* freccia dx */
 #ifdef FREEROAMING
-      if(col()<COLUMNS-1)
+      if (col() < COLUMNS - 1)
         goto_x(col() + 1);
 #endif
       return 1;
@@ -190,8 +189,8 @@ static inline int freeroaming(char ch) {
       return 1;
     case '2': /* freccia giu' */
 #ifdef FREEROAMING
-      if(row()<ROWS*PAGES-1)
-        goto_y(row()+1);
+      if (row() < ROWS*PAGES - 1)
+        goto_y(row() + 1);
 #endif
       return 1;
     case '3': /* pag giu' */
@@ -206,11 +205,11 @@ static inline int freeroaming(char ch) {
     case '.': /* canc */
 #ifdef FREEROAMING
       put(' ');
-      goto_x(col()-1);
+      goto_x(col() - 1);
 #endif
       return 1;
     }
-    return 0;
+  return 0;
 }
 
 void keypress(void) {
@@ -219,10 +218,13 @@ void keypress(void) {
   unsigned char released = 0;
   static int init = 0;
   if (!init) {
-      buffer = (char *) kmalloc(KEYBUFSIZE * sizeof(buffer) + 1);/*always reserve a byte for \0 */
-      for (init = 0;init <= KEYBUFSIZE;init++)
-        buffer[init] = 0;
-      stop_output=0;
+      for (int c = 0; c < CONSOLE;c++) {
+          for (init = 0;init <= KEYBUFSIZE;init++)
+            buffer[c][init] = 0;
+          inpointer[c] = 0;
+          outpointer[c] = 0;
+        }
+      stop_output = 0;
     }
   /*identifica l'inizio di uno scancode a due byte*/
   if (c == 0xE0) {
@@ -252,7 +254,7 @@ void keypress(void) {
         return;
       ch = key_map[c];
       //checks wheter a special key was pressed
-      if(freeroaming(ch))
+      if (freeroaming(ch))
         return;
     }
   else {
@@ -280,10 +282,10 @@ void keypress(void) {
               stop_output = 1;
               do_life();
               break;
-            /*default:
-              printf("(%x]",c);
-              break;*/
-          }
+              /*default:
+                printf("(%x]",c);
+                break;*/
+            }
         }
       else {
           if (alt) {
@@ -309,18 +311,18 @@ void keypress(void) {
       if (ch != 0)
         input(ch, released);
       else {
-        if(c>=59 && c<= 68)
-          switch_console(c-59);
-        else if(c==87)
-          switch_console(10);
-        else if(c==88)
-          switch_console(11);
-        #ifdef FREEROAMING
-         else if (escape)
-           printf("(E%d)", c);
-         else
-           printf("(%d)", c);
-         #endif
+          if (c >= 59 && c <= 68)
+            switch_console(c - 59);
+          else if (c == 87)
+            switch_console(10);
+          else if (c == 88)
+            switch_console(11);
+#ifdef FREEROAMING
+          else if (escape)
+            printf("(E%d)", c);
+          else
+            printf("(%d)", c);
+#endif
         }
     }
 #ifdef PUT_ON_KEY_RELEASE
@@ -328,22 +330,24 @@ void keypress(void) {
     printf("(R%d)", ch);
 #endif
 #ifndef FREEROAMING
-  /*int i;
-  for (i = 0;i < COLUMNS;i++)
-    putxy(0, i, ' ');*/
-  Swrite_xy(buffer, 0, ROWS - 3);
+  Swrite_xy(buffer[cur], 0, ROWS - 3);
 #endif
 }
 
 char getch() {
-  if (pointer == 0)
+  if (inpointer[cur] == outpointer[cur])
     return '\0';
-  pointer--;
-  char toret = buffer[pointer];
-  buffer[pointer] = 0;
+  char toret = buffer[cur][outpointer[cur]];
+  buffer[cur][outpointer[cur]] = ' ';
+  outpointer[cur] = ((outpointer[cur]) + 1) % KEYBUFSIZE;
+#ifndef FREEROAMING
+  Swrite_xy(buffer[cur], 0, ROWS - 3);
+#endif
   return toret;
 }
 
 char fetchch() {
-  return buffer[pointer-1];
+  if (inpointer[cur] == outpointer[cur])
+    return '\0';
+  return buffer[cur][outpointer[cur]];
 }
