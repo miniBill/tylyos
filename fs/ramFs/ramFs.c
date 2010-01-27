@@ -46,27 +46,28 @@ struct deviceFs *newRamFs()
 void ramFs_getNodeDescriptor(struct deviceFs *device,struct fs_node_descriptor *descriptor,char *path)
 {
     descriptor->device=device;
-    descriptor->inodeInfo=0;/*TODO: cercare il path, allocare la struttura e passarne il puntatore*/
+    descriptor->inodeInfo=0;//TODO: cercare il path, allocare la struttura e passarne il puntatore
+    path[0]=0;//HACK
 }
 fs_returnCode ramFs_getNodeInfo(struct fs_node_descriptor *descriptor,struct fs_node_info *out)
 {
-    /*TODO: usare il puntatore contenuto in descriptor per trovare il nodo e caricare le informazioni in out*/
+    //TODO: usare il puntatore contenuto in descriptor per trovare il nodo e caricare le informazioni in out
 }
 unsigned int ramFs_readFile(struct fs_node_descriptor *descriptor,char *buffer,unsigned int byteCount)
 {
-    /*TODO: leggere i dati contenuti nel nodo, scriverli in buffer e ritornare il numero di bytes scritti*/
+    //TODO: leggere i dati contenuti nel nodo, scriverli in buffer e ritornare il numero di bytes scritti
 }
 unsigned int ramFs_writeFile(struct fs_node_descriptor *descriptor,char *buffer,unsigned int byteCount)
 {
-    /*TODO: scrivere i dati contenuti in buffer nell' area dati del nodo e ritornare il numero di bytes scritti*/
+    //TODO: scrivere i dati contenuti in buffer nell' area dati del nodo e ritornare il numero di bytes scritti
 }
 unsigned int ramFs_seek(struct fs_node_descriptor *descriptor,int offset)
 {
-    /*TODO: spostare il puntatore al byte da leggere/scrivere contenuto nella struttura inodeInfo*/
+    //TODO: spostare il puntatore al byte da leggere/scrivere contenuto nella struttura inodeInfo
 }
 fs_returnCode ramFs_readDir(struct fs_node_descriptor *descriptor,struct fs_node_info *out)
 {
-    /*TODO: scrivere in out i dati del prossimo nodo figlio del nodo descriptor*/
+    //TODO: scrivere in out i dati del prossimo nodo figlio del nodo descriptor
 }
 fs_returnCode ramFs_createFile(char *name,struct fs_node_descriptor *output,struct fs_node_descriptor fatherNodeDescriptor)
 {

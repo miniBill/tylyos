@@ -182,12 +182,12 @@ void interrupt_handler (
             {
                 char message[1000];
                 /*TODO: implementare sprintf e far scrivere il messaggio per il kernel panic*/
-                printf ( "interruzione, interrupt: %d, count: %d.\n",isr,xtemp );
+                printf (0, "interruzione, interrupt: %d, count: %d.\n",isr,xtemp );
 #ifdef PRINT_REGISTERS
-                printf ( "EAX: %d,EBX: %d,ECX: %d,EDX: %d,",eax,ebx,ecx,edx );
-                printf ( "EBP: %d,ESI: %d,EDI: %d,",ebp,esi,edi );
-                printf ( "DS: %d,ES: %d,FS: %d,GS: %d,",ds,es,fs,gs );
-                printf ( "EIP: %d,CS: %d,EFLAGS: %d,ERROR: %d\n",eip,cs,eflags,error );
+                printf (0, "EAX: %d,EBX: %d,ECX: %d,EDX: %d,",eax,ebx,ecx,edx );
+                printf (0, "EBP: %d,ESI: %d,EDI: %d,",ebp,esi,edi );
+                printf (0, "DS: %d,ES: %d,FS: %d,GS: %d,",ds,es,fs,gs );
+                printf (0, "EIP: %d,CS: %d,EFLAGS: %d,ERROR: %d\n",eip,cs,eflags,error );
 #else
                 c=eax^ebx^ecx^edx^ebp^esi^edi^ds^es^fs^gs^eip^cs^eflags^error;/*HACK*/
 #endif

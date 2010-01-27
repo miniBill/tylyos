@@ -29,7 +29,7 @@ unsigned int strlen(const char * string) {
   return ret;
 }
 
-void strcpy(char *source, char *dest) {
+void strcpy(const char *source, char *dest) {
   unsigned int c;
   for (c = 0;c < strlen(source);c++)
     dest[c] = source[c];
@@ -63,7 +63,7 @@ void itobase(int a, unsigned short base, char * buff) {
     }
 }
 
-int printf(const char* format, ...) {
+int printf(unsigned int console, const char* format, ...) {
   int size = 0;
   char ** arg = (char**) & format;
   char buf[33];//Longest string will bit a binary int32, so 33 chars are enough
@@ -89,20 +89,20 @@ int printf(const char* format, ...) {
               goto number;
               break;
             case 'c':
-              put(* ((char *) arg++));
+              put(* ((char *) arg++),console);
               size++;
               break;
             case 's':
-              write((char*) *arg);     /*watch out: Deep Magic*/
+              write((char*) *arg,console);     /*watch out: Deep Magic*/
               size += strlen((char *) * arg++);
               break;
 number:
-              write(buf);
+              write(buf,console);
               size += strlen(buf);
               break;
             default:
               itoa(* ((int *) arg++), buf);
-              write("Malformed format string!");
+              write("Malformed format string!",console);
               goto number;
               break;
             }
@@ -111,9 +111,9 @@ number:
         }
       else {
           if (format[i] != '\n')
-            put(format[i]);
+            put(format[i],console);
           else
-            nl();
+            nl(console);
           size++;
         }
     }

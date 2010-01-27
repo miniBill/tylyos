@@ -124,10 +124,10 @@ void input(char ch, int released) {
 }
 
 #define inc() x++;if(x==COLUMNS){x=0;y++;}
-#define slashwrite(a) write_xy("\\",x,y);inc();write_xy(a,x,y);inc();
+#define slashwrite(a) write_xy("\\",console,x,y);inc();write_xy(a,console,x,y);inc();
 
 //Write a string, with escaped characters
-static void Swrite_xy(const char* string, unsigned int x, unsigned int y) {
+static void Swrite_xy(const char* string, unsigned int console, unsigned int x, unsigned int y) {
   int k;
   if (stop_output)
     return;
@@ -143,7 +143,7 @@ static void Swrite_xy(const char* string, unsigned int x, unsigned int y) {
           slashwrite("\\");
           break;
         default:
-          put_xy(string[k], x, y);
+          put_xy(string[k],console, x, y);
           inc();
         }
     }
@@ -238,7 +238,7 @@ void keypress(void) {
       ch = 0;
     }
   if (c > 0x80)
-    printf("(!)|%d|", c);   /*should NEVER happen*/
+    printf(current_console(),"(!)|%d|", c);   /*should NEVER happen*/
   /*se e' un tasto modificatore es: shitf*/
   if (modifier(c, released)) {
       escape = 0;/*HACK: in modo da gestire ugualemente sia alt destro che sinistro*/
@@ -330,7 +330,7 @@ void keypress(void) {
     printf("(R%d)", ch);
 #endif
 #ifndef FREEROAMING
-  Swrite_xy(buffer[cur], 0, ROWS - 3);
+  Swrite_xy(buffer[cur],cur, 0, ROWS - 3);
 #endif
 }
 
@@ -341,7 +341,7 @@ char getch() {
   buffer[cur][outpointer[cur]] = ' ';
   outpointer[cur] = ((outpointer[cur]) + 1) % KEYBUFSIZE;
 #ifndef FREEROAMING
-  Swrite_xy(buffer[cur], 0, ROWS - 3);
+  Swrite_xy(buffer[cur],cur, 0, ROWS - 3);
 #endif
   return toret;
 }

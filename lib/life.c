@@ -49,11 +49,10 @@ void step(void){
 }
 
 static void print(void){
-  goto_xy(0,0);
   set_cursor(0,0);
   for(int y=0;y<ROWS-1;y++)
     for(int x=0;x<COLUMNS;x++)
-      put_physical(G(y,x));
+      put_xy(G(y,x),0,x,y);
 }
 
 static void randomize(void){
