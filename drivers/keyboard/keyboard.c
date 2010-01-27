@@ -131,7 +131,7 @@ static void Swrite_xy(const char* string, unsigned int console, unsigned int x, 
   int k;
   if (stop_output)
     return;
-  for (k = 0;string[k] != 0;k++) {
+  for (k = 0;string[k] != 0 && k<KEYBUFSIZE;k++) {
       switch (string[k]) {
         case '\n':
           slashwrite("n");
@@ -220,7 +220,8 @@ void keypress(void) {
   if (!init) {
       for (int c = 0; c < CONSOLE;c++) {
           for (init = 0;init <= KEYBUFSIZE;init++)
-            buffer[c][init] = 0;
+            buffer[c][init] = ' ';//HACK: set to 0 when it gets real
+          buffer[c][init] = 0;//HACK: delete when it gets real
           inpointer[c] = 0;
           outpointer[c] = 0;
         }
@@ -338,7 +339,7 @@ char getch() {
   if (inpointer[cur] == outpointer[cur])
     return '\0';
   char toret = buffer[cur][outpointer[cur]];
-  buffer[cur][outpointer[cur]] = ' ';
+  //buffer[cur][outpointer[cur]] = ' ';
   outpointer[cur] = ((outpointer[cur]) + 1) % KEYBUFSIZE;
 #ifndef FREEROAMING
   Swrite_xy(buffer[cur],cur, 0, ROWS - 3);
@@ -354,15 +355,20 @@ char fetchch() {
 
 void readline(char * buff,int count){
   int c=0;
-  char t=getch();
-  do{
+  char t;
+  while(1){
+    t=getch();
+    while(t=='\0')
+      t=getch();
+    if(t=='\n')
+      break;
     buff[c]=t;
     c++;
-  }while(c<count && t!='\0' && t!='\n');
-  if(c==count){
-    buff[c-1]='\0';
-    return;
+    if(c==count-1){
+      buff[c]=0;
+      break;
+    }
   }
   if(buff[c-1]!='\0')
-    buff[c]='0';
+    buff[c]='\0';
 }

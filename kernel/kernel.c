@@ -23,6 +23,7 @@
 #include <lib/string.h>
 #include <memory/memory.h>
 #include <task/task.h>
+#include <drivers/keyboard/keyboard.h>
 #include <interrupt/interrupt.h>
 #include <drivers/timer/timer.h>
 #include <fs/fs.h>
@@ -203,7 +204,13 @@ void _kmain(multiboot_info_t* mbd, unsigned int magicN) {
    }*/
   /*kernelPanic("_kmain()","this is a test message");*/
   void life();
-  while (on){if(live)life();}
+  char buff[50];
+  while (on){
+    readline(buff,50);
+    write_current(buff);
+    if(live)
+      life();
+  }
   
   /*wait 3 seconds before halting*/
   sleep(3000);
