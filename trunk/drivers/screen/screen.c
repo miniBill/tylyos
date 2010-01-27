@@ -49,6 +49,8 @@ static inline char * addr_x(unsigned int x){
 void switch_console(unsigned int console){
   if(console==currentConsole)
     return;
+  if(console>=CONSOLE)
+    return;
   currentConsole=console;
   baseline=0;
   for(int y=0;y<ROWS-1;y++)
@@ -56,6 +58,10 @@ void switch_console(unsigned int console){
       put_physical_xy(videoMemory[currentConsole][y+baseline][x],x,y);
       put_physical_color_xy(colorMemory[currentConsole][y+baseline][x],x,y);
     }
+}
+
+unsigned int current_console(void){
+  return currentConsole;
 }
 
 void update(void){
