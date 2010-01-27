@@ -41,7 +41,7 @@ static char buffer[CONSOLE][KEYBUFSIZE+1];
 static int inpointer[CONSOLE];
 static int outpointer[CONSOLE];
 
-//#define FREEROAMING
+#define FREEROAMING
 
 static int stop_output;
 
@@ -102,12 +102,12 @@ int modifier(char c, int released) {
 void input(char ch, int released) {
 #ifdef FREEROAMING
   if (ch == '\b') {
-      goto_x(col() - 1);
-      put_x(' ', col());
+      goto_x(cur, col(cur) - 1);
+      put_x(' ', cur, col(cur));
       return;
     }
   if (ch == '\n') {
-      nl();
+      nl(cur);
       return;
     }
 #endif
@@ -116,10 +116,10 @@ void input(char ch, int released) {
       if (((inpointer[cur] + 1) % KEYBUFSIZE) == outpointer[cur])
         return;//no space left for moar
       buffer[cur][inpointer[cur]] = ch;
-      inpointer[cur]=(inpointer[cur]+1)%KEYBUFSIZE;
+      inpointer[cur] = (inpointer[cur] + 1) % KEYBUFSIZE;
     }
 #ifdef FREEROAMING
-  put(ch);
+  put(ch,cur);
 #endif
 }
 
@@ -131,7 +131,7 @@ static void Swrite_xy(const char* string, unsigned int console, unsigned int x, 
   int k;
   if (stop_output)
     return;
-  for (k = 0;string[k] != 0 && k<KEYBUFSIZE;k++) {
+  for (k = 0;string[k] != 0 && k < KEYBUFSIZE;k++) {
       switch (string[k]) {
         case '\n':
           slashwrite("n");
@@ -143,7 +143,7 @@ static void Swrite_xy(const char* string, unsigned int console, unsigned int x, 
           slashwrite("\\");
           break;
         default:
-          put_xy(string[k],console, x, y);
+          put_xy(string[k], console, x, y);
           inc();
         }
     }
@@ -153,50 +153,50 @@ static inline int freeroaming(char ch) {
   switch (ch) {
     case '7':
 #ifdef FREEROAMING
-      goto_x(0);
+      goto_x(cur,0);
 #endif
       return 1;
     case '8': /* freccia su */
 #ifdef FREEROAMING
-      if (row() > 0)
-        goto_y(row() - 1);
+      if (row(cur) > 0)
+        goto_y(cur,row(cur) - 1);
 #endif
       return 1;
     case '9': /* pag su */
 #ifdef FREEROAMING
       if (alt)
-        scroll(-20);
+        scroll(cur,-20);
 #endif
       return 1;
     case '4': /* freccia sx */
 #ifdef FREEROAMING
-      if (col() > 0)
-        goto_x(col() - 1);
+      if (col(cur) > 0)
+        goto_x(cur,col(cur) - 1);
 #endif
       return 1;
     case '5':
       return 1;
     case '6': /* freccia dx */
 #ifdef FREEROAMING
-      if (col() < COLUMNS - 1)
-        goto_x(col() + 1);
+      if (col(cur) < COLUMNS - 1)
+        goto_x(cur,col(cur) + 1);
 #endif
       return 1;
     case '1':
 #ifdef FREEROAMING
-      goto_x(COLUMNS - 1);
+      goto_x(cur,COLUMNS - 1);
 #endif
       return 1;
     case '2': /* freccia giu' */
 #ifdef FREEROAMING
-      if (row() < ROWS*PAGES - 1)
-        goto_y(row() + 1);
+      if (row(cur) < ROWS*PAGES - 1)
+        goto_y(cur,row(cur) + 1);
 #endif
       return 1;
     case '3': /* pag giu' */
 #ifdef FREEROAMING
       if (alt)
-        scroll(20);
+        scroll(cur,20);
 #endif
       return 1;
     case '0':
@@ -204,8 +204,8 @@ static inline int freeroaming(char ch) {
       return 1 ;
     case '.': /* canc */
 #ifdef FREEROAMING
-      put(' ');
-      goto_x(col() - 1);
+      put(' ',cur);
+      goto_x(cur,col(cur) - 1);
 #endif
       return 1;
     }
@@ -239,7 +239,7 @@ void keypress(void) {
       ch = 0;
     }
   if (c > 0x80)
-    printf(current_console(),"(!)|%d|", c);   /*should NEVER happen*/
+    printf(current_console(), "(!)|%d|", c);  /*should NEVER happen*/
   /*se e' un tasto modificatore es: shitf*/
   if (modifier(c, released)) {
       escape = 0;/*HACK: in modo da gestire ugualemente sia alt destro che sinistro*/
@@ -320,9 +320,9 @@ void keypress(void) {
             switch_console(11);
 #ifdef FREEROAMING
           else if (escape)
-            printf("(E%d)", c);
+            printf(cur,"(E%d)", c);
           else
-            printf("(%d)", c);
+            printf(cur,"(%d)", c);
 #endif
         }
     }
@@ -331,7 +331,7 @@ void keypress(void) {
     printf("(R%d)", ch);
 #endif
 #ifndef FREEROAMING
-  Swrite_xy(buffer[cur],cur, 0, ROWS - 3);
+  Swrite_xy(buffer[cur], cur, 0, ROWS - 3);
 #endif
 }
 
@@ -342,7 +342,7 @@ char getch() {
   //buffer[cur][outpointer[cur]] = ' ';
   outpointer[cur] = ((outpointer[cur]) + 1) % KEYBUFSIZE;
 #ifndef FREEROAMING
-  Swrite_xy(buffer[cur],cur, 0, ROWS - 3);
+  Swrite_xy(buffer[cur], cur, 0, ROWS - 3);
 #endif
   return toret;
 }
@@ -353,22 +353,22 @@ char fetchch() {
   return buffer[cur][outpointer[cur]];
 }
 
-void readline(char * buff,int count){
-  int c=0;
+void readline(char * buff, int count) {
+  int c = 0;
   char t;
-  while(1){
-    t=getch();
-    while(t=='\0')
-      t=getch();
-    if(t=='\n')
-      break;
-    buff[c]=t;
-    c++;
-    if(c==count-1){
-      buff[c]=0;
-      break;
+  while (1) {
+      t = getch();
+      while (t == '\0')
+        t = getch();
+      if (t == '\n')
+        break;
+      buff[c] = t;
+      c++;
+      if (c == count - 1) {
+          buff[c] = 0;
+          break;
+        }
     }
-  }
-  if(buff[c-1]!='\0')
-    buff[c]='\0';
+  if (buff[c-1] != '\0')
+    buff[c] = '\0';
 }
