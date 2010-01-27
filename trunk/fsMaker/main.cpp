@@ -6,6 +6,7 @@
 #include <iostream>
 #include <stdlib.h>
 #include <stdio.h>
+#include <fstream>
 
 #define RAMFS_FILENAME_MAX_LENGTH 128
 
@@ -130,6 +131,25 @@ void writeFile(unsigned int startCluster,string path)
 {
     ifstream fileIn;
     fileIn.open(path.c_str());
+    
+    char *data=new char[clusterSize];
+    
+    unsigned int oldCluster=startCluster;
+    while(!fileIn.eof())
+    {
+        fileIn.read(data,clusterSize);
+        for(int c=0;c<clusterSize;c++)
+        {
+            clusters[(oldCluster*clusterSize) + c]=data[c];
+        }
+        if(!fileIn.eof())
+        {
+            unsigned int newCluster=getFreeCluster();
+            FAT[oldCluster]=newCluster;/*concatena*/
+            oldCluster=newCluster;
+        }
+    }
+    fileIn.close();
 }
 
 int getdir (string dir,unsigned int parent)
@@ -171,7 +191,8 @@ int getdir (string dir,unsigned int parent)
             
             cout<< space <<string(dirp->d_name)<<" "<< newFileStruct.size <<" bytes"<<endl;
             
-            /*TODO: scrivere i dati contenuti nel file*/
+            /*scrive i dati contenuti nel file*/
+            writeFile(newFile,dir+"/"+string(dirp->d_name));
             
             addNodeToDirectory(parent,newFileStruct);
             
