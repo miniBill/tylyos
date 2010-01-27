@@ -1,19 +1,19 @@
-# Copyright (C) 2008 Leonardo Taglialegne <leonardotaglialegne+clearos@gmail.com>
+# Copyright (C) 2008 Leonardo Taglialegne <leonardotaglialegne+tylyos@gmail.com>
 #
-# This file is part of ClearOS.
+# This file is part of TylyOS.
 #
 # ClearOS is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 #
-# ClearOS is distributed in the hope that it will be useful,
+# TylyOS is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with ClearOS.  If not, see <http://www.gnu.org/licenses/>.
+# along with TylyOS.  If not, see <http://www.gnu.org/licenses/>.
 
 CFLAGS:= -march=i386 -ffreestanding -Wall -pedantic -Wextra -I. -fno-stack-protector -std=gnu99
 ASFLAGS:= -march=i386
@@ -37,17 +37,17 @@ MK=Makefile.in
 
 -include Makefile.in
 
-all:clearos.iso 
+all:tylyos.iso
 
-clearos.iso: clearos Makefile.in
+tylyos.iso: tylyos Makefile.in
 	@echo "Preparing iso..."
 	@mkdir iso && \
 	mkdir -p iso/boot/grub && \
 	cp stage2_eltorito iso/boot/grub && \
 	echo "timeout 1">>iso/boot/grub/menu.lst && \
-	echo "title   ClearOS">>iso/boot/grub/menu.lst && \
-	echo "kernel  /boot/clearos">>iso/boot/grub/menu.lst && \
-	cp clearos iso/boot/clearos && \
+	echo "title   TylyOS">>iso/boot/grub/menu.lst && \
+	echo "kernel  /boot/tylyos">>iso/boot/grub/menu.lst && \
+	cp tylyos iso/boot/tylyos && \
 	mkisofs -quiet -R -b boot/grub/stage2_eltorito -no-emul-boot \
 	-boot-load-size 4 -boot-info-table -o $@ iso && \
 	echo "Iso created" && \
@@ -57,7 +57,7 @@ Makefile.in:
 	@echo "Configuring..."
 	@./configure
 
-clearos: $(OBJ)
+tylyos: $(OBJ)
 	@echo "LD" $@
 	@$(LD) $(LDFLAGS) $^ -o $@
 
@@ -75,9 +75,9 @@ clearos: $(OBJ)
 
 .PHONY: clean
 clean:
-	rm -f *\~ */*\~ */*.o */*/*\~ */*/*.o log clearos clearos.iso clearos.iso.sig Makefile.in
+	rm -f *\~ */*\~ */*.o */*/*\~ */*/*.o log tylyos tylyos.iso tylyos.iso.sig Makefile.in
 
 .PHONY: smallclean
 smallclean:
-	rm -f *\~ */*\~ */*.o */*/*\~ */*/*.o log clearos clearos.iso.sig
+	rm -f *\~ */*\~ */*.o */*/*\~ */*/*.o log tylyos tylyos.iso.sig
 
