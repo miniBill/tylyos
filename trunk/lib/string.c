@@ -2,20 +2,20 @@
  * Copyright (C) 2008 Roberto Domenella
  * Copyright (C) 2008 Giordano Cristini
  *
- * This file is part of ClearOS.
+ * This file is part of TylyOS.
  *
- * ClearOS is free software: you can redistribute it and/or modify
+ * TylyOS is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * ClearOS is distributed in the hope that it will be useful,
+ * TylyOS is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with ClearOS.  If not, see <http://www.gnu.org/licenses/>.
+ * along with TylyOS.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include "string.h"
