@@ -26,6 +26,8 @@ void keypress(void);
 char getch();
 char fetchch();
 
+void readline(char * buff,int count);
+
 /* tastiera italiana */
 #define KBD_IT
 
