@@ -78,12 +78,11 @@ void kwrite(const char * string) {
 }
 
 void logo(void) {
-  write("                       ________                ____\n",0);
-  write("                      / ____/ /__  ____  _____/ __ \\____\n",0);
-  write("                     / /   / / _ \\/ __ \\/ ___/ / / /  _/\n",0);
-  write("                    / /___/ /  __/ /_/ / /  / /_/ /\\  \\\n",0);
-  write("                    \\____/_/\\___/\\__._/_/   \\____//___/\n",0);
-
+    write("                           ___              _    _ \n",0);
+    write("                            |       |      / \\  (  \n",0);
+    write("                            |   \\/  |  \\/  \\_/  _) \n",0);
+    write("                                /      /           \n",0);
+    write("\n",0);
 }
 
 int check(const char * output, int offset) {
