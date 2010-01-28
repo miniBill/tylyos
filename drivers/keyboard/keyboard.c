@@ -41,7 +41,7 @@ static char buffer[CONSOLE][KEYBUFSIZE+1];
 static int inpointer[CONSOLE];
 static int outpointer[CONSOLE];
 
-#define FREEROAMING
+//#define FREEROAMING
 
 static int stop_output;
 
