@@ -24,6 +24,12 @@
 #include <task/task.h>
 #include <kernel/kernel.h>
 
+void memcpy(char * source, unsigned int count, char * dest){
+  char * p;
+  for(p=source;p-source < count; p++)
+    *(dest++)=*p;
+}
+
 /*ritorna il valore del registro EBP*/
 unsigned int getEBP()
 {
