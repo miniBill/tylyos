@@ -24,10 +24,19 @@
 #include <task/task.h>
 #include <kernel/kernel.h>
 
-void memcpy(char * source, unsigned int count, char * dest){
-  char * p;
-  for(p=source;p-source < count; p++)
-    *(dest++)=*p;
+void memcpy ( char * source, unsigned int count, char * dest )  /*TODO: testare*/
+{
+    int p;
+    if ( dest<source ) /*evita di sovrascrivere il buffer durante la copia*/
+    {
+        for ( p=0;p < count; p++ )
+            dest[p]=source[p];;
+    }
+    else
+    {
+        for ( p=count-1;p>=0; p-- )
+            dest[count-p]=source[count-p];
+    }
 }
 
 /*ritorna il valore del registro EBP*/
@@ -271,7 +280,7 @@ void initPaging ( void )
     pointer= ( unsigned int ) pageDir+0x1000;
 
 
-    
+
     addMem=memoriaFisica/4;/*un quarto della memoria fisica e' riservata al kernel*/
     if ( addMem<MIN_HEAP_SIZE ) /*se un quarto della memoria non e' abbastanza e' meglio garantirsi un minimo*/
         addMem=MIN_HEAP_SIZE;

@@ -79,14 +79,16 @@ void kwrite(const char * string) {
 }
 
 void logo(void) {
+    /*
     write("                           ___              _    _ \n",0);
     write("                            |       |      / \\  (  \n",0);
     write("a)                          |   \\/  |  \\/  \\_/  _) \n",0);
     write("                                /      /           \n",0);
     write("\n",0);
+    */
     write("                           _._      .            __\n",0);
     write("                            |       |      /^\\  (_ \n",0);
-    write("b)                          |   \\/  |  \\/  \\_/  __) \n",0);
+    write("                            |   \\/  |  \\/  \\_/  __) \n",0);
     write("                                /      /           \n",0);
     write("\n",0);
 }
