@@ -19,6 +19,8 @@
 #ifndef MEMORY_H_
 #define MEMORY_H_
 
+void memcpy(char * source, unsigned int count, char * dest);
+
 unsigned int getEBP();
 unsigned int getESP();
 
