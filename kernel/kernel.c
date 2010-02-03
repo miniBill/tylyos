@@ -162,6 +162,15 @@ void _kmain(multiboot_info_t* mbd, unsigned int magicN) {
 
   logo();
   t += 10;
+  
+  NO(t);
+  greendot();
+  printf(0,"Cerco l'initrd: ");
+  int found=hunt(multiBootInfo);
+  if(found)
+      OK(t++);
+  else
+      t++;
 
   NO(t);
   greendot();
@@ -194,14 +203,7 @@ void _kmain(multiboot_info_t* mbd, unsigned int magicN) {
   initDeviceFsManager();
   OK(t++);
 
-  NO(t);
-  greendot();
-  printf(0,"Cerco l'initrd: ");
-  int found=hunt(multiBootInfo);
-  if(found)
-    OK(t++);
-  else
-    t++;
+  
 
   NO(t);
   greendot();
