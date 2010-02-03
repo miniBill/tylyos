@@ -161,16 +161,7 @@ void _kmain(multiboot_info_t* mbd, unsigned int magicN) {
   OK(t++);
 
   logo();
-  t += 10;
-  
-  NO(t);
-  greendot();
-  printf(0,"Cerco l'initrd: ");
-  int found=hunt(multiBootInfo);
-  if(found)
-      OK(t++);
-  else
-      t++;
+  t += 5;
 
   NO(t);
   greendot();
@@ -182,10 +173,22 @@ void _kmain(multiboot_info_t* mbd, unsigned int magicN) {
   write(" IDT",0);
   initIdt();
 
-  write(" PIT",0);
+  write(" PIT\n",0);
   initTimer();
+  OK(t++);
+  
+  NO(t);
+  greendot();
+  write("Cerco l'initrd: ",0);
+  int found=hunt(multiBootInfo);
+  if(found)
+    OK(t++);
+  else
+    t++;
 
-  write(" Paging\n",0);
+  NO(t);
+  greendot();
+  write("Inizializzazione Paging\n",0);
   initPaging();
   OK(t++);
 
@@ -202,8 +205,6 @@ void _kmain(multiboot_info_t* mbd, unsigned int magicN) {
   printf(0,"Inizializzazione gestore devices\n");
   initDeviceFsManager();
   OK(t++);
-
-  
 
   NO(t);
   greendot();

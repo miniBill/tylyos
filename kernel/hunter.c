@@ -18,17 +18,16 @@
 */
 
 #include "hunter.h"
+#include <drivers/screen/screen.h>
 #include <lib/string.h>
 
 int hunt(multiboot_info_t * info){
-  module_t * mod=(module_t*)info->mods_addr;
-  printf(0,"%d modules",info->mods_count);
-  if(info->mods_count==0){
-    printf(0,"\n");
+  if(info->mods_count==0){ //no modules, something is wrong, so use write
+    write("niente\n",0);
     return 0;
   }
-  printf(0," first at 0x%x",mod->mod_start);
-  char * m=(char*)mod->mod_start;
-  printf(0," [%s]\n",m);
+  module_t * mod=(module_t*)info->mods_addr; //structure containing first module info
+    char * m=(char*)mod->mod_start; //get a pointer to the actual module
+  printf(0,"%s caricato a 0x%x [%s]\n",mod->string,mod->mod_start,m);
   return 1;
 }
