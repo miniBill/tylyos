@@ -20,24 +20,15 @@
 #include "hunter.h"
 #include <lib/string.h>
 
-#define START (char*)0x70000
-#define LIMIT (char*)0x80000
-
-static int check(char * p){
-  if(p[0]=='I' && p[1]=='o')
-    return 1;
-  return 0;
-}
-
-int hunt(void){
-  char * p=START;
-  while(1 || p<LIMIT)
-    if(check(p)){
-      printf(0,"trovato a 0x%x [%s]\n",p,p);
-      return 1;
-    }
-    else
-      p++;
-  printf(0,"non trovato!\n");
-  return 0;
+int hunt(multiboot_info_t * info){
+  module_t * mod=(module_t*)info->mods_addr;
+  printf(0,"%d modules",info->mods_count);
+  if(info->mods_count==0){
+    printf(0,"\n");
+    return 0;
+  }
+  printf(0," first at 0x%x",mod->mod_start);
+  char * m=(char*)mod->mod_start;
+  printf(0," [%s]\n",m);
+  return 1;
 }
