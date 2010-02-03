@@ -47,7 +47,9 @@ tylyos.iso: tylyos Makefile.in
 	echo "timeout 1">>iso/boot/grub/menu.lst && \
 	echo "title   TylyOS">>iso/boot/grub/menu.lst && \
 	echo "kernel  /boot/tylyos">>iso/boot/grub/menu.lst && \
-	cat tylyos c.img > iso/boot/tylyos && \
+	echo "module /boot/c.img">>iso/boot/grub/menu.lst && \
+	cp tylyos iso/boot/tylyos && \
+	cp c.img iso/boot/c.img && \
 	mkisofs -quiet -R -b boot/grub/stage2_eltorito -no-emul-boot \
 	-boot-load-size 4 -boot-info-table -o $@ iso && \
 	echo "Iso created" && \

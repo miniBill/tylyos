@@ -197,7 +197,7 @@ void _kmain(multiboot_info_t* mbd, unsigned int magicN) {
   NO(t);
   greendot();
   printf(0,"Cerco l'initrd: ");
-  int found=hunt();
+  int found=hunt(multiBootInfo);
   if(found)
     OK(t++);
   else
