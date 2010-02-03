@@ -18,7 +18,7 @@
 CFLAGS:= -march=i386 -ffreestanding -Wall -pedantic -Wextra -I. -fno-stack-protector -std=gnu99
 ASFLAGS:= -march=i386
 OBJ= bootloader/loader.o \
-     kernel/stdio.o kernel/kernel.o kernel/tests.o \
+     kernel/stdio.o kernel/kernel.o kernel/tests.o kernel/hunter.o \
      lib/string.o lib/life.o \
      memory/memory.o memory/gdt.o memory/paging.o \
        drivers/screen/screen.o \
@@ -47,7 +47,7 @@ tylyos.iso: tylyos Makefile.in
 	echo "timeout 1">>iso/boot/grub/menu.lst && \
 	echo "title   TylyOS">>iso/boot/grub/menu.lst && \
 	echo "kernel  /boot/tylyos">>iso/boot/grub/menu.lst && \
-	cp tylyos iso/boot/tylyos && \
+	cat tylyos test > iso/boot/tylyos && \
 	mkisofs -quiet -R -b boot/grub/stage2_eltorito -no-emul-boot \
 	-boot-load-size 4 -boot-info-table -o $@ iso && \
 	echo "Iso created" && \

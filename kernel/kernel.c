@@ -18,6 +18,7 @@
  */
 
 #include "kernel.h"
+#include "hunter.h"
 #include "tests.h"
 #include "multiboot.h"
 #include <lib/string.h>
@@ -195,6 +196,15 @@ void _kmain(multiboot_info_t* mbd, unsigned int magicN) {
 
   NO(t);
   greendot();
+  printf(0,"Cerco l'initrd: ");
+  int found=hunt();
+  if(found)
+    OK(t++);
+  else
+    t++;
+
+  NO(t);
+  greendot();
   printf(0,"Kernel pronto!!!\n");
   OK(t++);
 
@@ -211,7 +221,7 @@ void _kmain(multiboot_info_t* mbd, unsigned int magicN) {
    }*/
   /*kernelPanic("_kmain()","this is a test message");*/
   void life();
-  char buff[50];
+//  char buff[50];
   while (on){
 //    readline(buff,50);
 //    write_current(buff);
