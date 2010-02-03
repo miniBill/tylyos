@@ -17,9 +17,12 @@
  * along with TylyOS.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <config.txt>
 #include <memory/memory.h>
 #include <lib/string.h>
 #include "ramFs.h"
+
+#ifdef RAMFS
 
 struct deviceFs *newRamFs()
 {
@@ -84,3 +87,5 @@ fs_returnCode ramFs_deleteDir(struct fs_node_descriptor descriptor)
 void ramFs_freeInodeInfoPointer(void *inodeInfo)
 {
 }
+
+#endif

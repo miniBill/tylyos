@@ -1,0 +1,4 @@
+#ifndef CONFIG_TXT_
+#define CONFIG_TXT_
+//#define RAMFS
+#endif

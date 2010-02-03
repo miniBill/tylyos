@@ -26,14 +26,15 @@
 
 void memcpy ( char * source, unsigned int count, char * dest )  /*TODO: testare*/
 {
-    int p;
     if ( dest<source ) /*evita di sovrascrivere il buffer durante la copia*/
     {
+      unsigned int p;
         for ( p=0;p < count; p++ )
             dest[p]=source[p];;
     }
     else
     {
+      int p;
         for ( p=count-1;p>=0; p-- )
             dest[count-p]=source[count-p];
     }

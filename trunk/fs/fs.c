@@ -21,6 +21,7 @@
 file contenente tutte le funzioni base per accedere al file system indipendentemente dal dispositivo fisico e dal tipo di file system
 */
 
+#include <config.txt>
 #include <fs/fs.h>
 #include <fs/ramFs/ramFs.h>
 #include <memory/memory.h>
@@ -30,8 +31,9 @@ void initDeviceFsManager()
 {
     openNodeNumber=0;
     mountPointsNumber=0;
-    
+#ifdef RAMFS
     rootDeviceFs= newRamFs();
+#endif
 }
 
 unsigned int getUnusedOpenNodeId()/*TODO: testare il funzionamento*/
