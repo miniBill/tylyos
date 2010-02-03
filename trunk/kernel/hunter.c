@@ -20,11 +20,11 @@
 #include "hunter.h"
 #include <lib/string.h>
 
-#define START (char*)60000
-#define LIMIT (char*)100000
+#define START (char*)0x70000
+#define LIMIT (char*)0x80000
 
 static int check(char * p){
-  if(p[0]=='b' && p[1]=='o' && p[2]=='c' && p[3]=='h' && p[4]=='s')
+  if(p[0]=='I' && p[1]=='o')
     return 1;
   return 0;
 }
@@ -33,7 +33,7 @@ int hunt(void){
   char * p=START;
   while(1 || p<LIMIT)
     if(check(p)){
-      printf(0,"trovato a 0x%x [] %s",p,p);
+      printf(0,"trovato a 0x%x [%s]\n",p,p);
       return 1;
     }
     else
