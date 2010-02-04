@@ -20,14 +20,25 @@
 #include "hunter.h"
 #include <drivers/screen/screen.h>
 #include <lib/string.h>
+#include <memory/memory.h>
 
-int hunt(multiboot_info_t * info){
+/*ritorna l'indirizzo dell array contenente le struct dei moduli caricati da grub*/
+module_t *hunt_getArray(multiboot_info_t * info){
   if(info->mods_count==0){ //no modules, something is wrong, so use write
     write("niente\n",0);
     return 0;
   }
   module_t * mod=(module_t*)info->mods_addr; //structure containing first module info
     char * m=(char*)mod->mod_start; //get a pointer to the actual module
-  printf(0,"%s caricato a 0x%x [%s]\n",mod->string,mod->mod_start,m);
-  return 1;
+  printf(0,"%s trovato a 0x%x [%s]\n",mod->string,mod->mod_start,m);
+  return mod;
+}
+
+/*copia il modulo in un area adeguata*/
+void hunt_load(module_t *modulo)
+{
+    loadedModuleSize=modulo->mod_end-modulo->mod_start;
+    loadedModule=(char*)kernelHeapStart;
+    memcpy((char*)modulo->mod_start,loadedModuleSize,loadedModule);
+    printf(0,"    modulo caricato in memoria, %dByte [%s]\n",loadedModuleSize,loadedModule);
 }
