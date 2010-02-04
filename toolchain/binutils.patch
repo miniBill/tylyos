@@ -41,7 +41,7 @@ diff -rupN binutils-2.20-orig/ld/configure.tgt binutils-2.20/ld/configure.tgt
  # architecture variants should be kept together even if their names
  # break the alpha sorting.
  case "${targ}" in
-+i[3-7]86-*-myos*)       targ_emul=tylyos_i386 ;;
++i[3-7]86-*-tylyos*)       targ_emul=tylyos_i386 ;;
  alpha*-*-freebsd* | alpha*-*-kfreebsd*-gnu)
  		        targ_emul=elf64alpha_fbsd
  			targ_extra_emuls="elf64alpha alpha"
