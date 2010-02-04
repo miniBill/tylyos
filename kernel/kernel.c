@@ -140,7 +140,9 @@ void magic(void) {
 
 void _kmain(multiboot_info_t* mbd, unsigned int magicN) {
   int t = 0;/*test number*/
+  module_t *moduloGrub;
 
+  loadedModuleSize=0;
 
   magicNumber = magicN;
   multiBootInfo = mbd;
@@ -180,9 +182,14 @@ void _kmain(multiboot_info_t* mbd, unsigned int magicN) {
   NO(t);
   greendot();
   write("Cerco l'initrd: ",0);
-  int found=hunt(multiBootInfo);
-  if(found)
-    OK(t++);
+  moduloGrub=hunt_getArray(multiBootInfo);
+  if(moduloGrub)
+  {
+      OK(t++);
+      NO(t);
+      hunt_load(moduloGrub);
+      OK(t++);
+  }
   else
     t++;
 

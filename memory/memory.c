@@ -30,14 +30,19 @@ void memcpy ( char * source, unsigned int count, char * dest )  /*TODO: testare*
     {
       unsigned int p;
         for ( p=0;p < count; p++ )
-            dest[p]=source[p];;
+        {
+            dest[p]=source[p];
+        }
     }
     else
     {
       int p;
-        for ( p=count-1;p>=0; p-- )
+        for ( p=count;p>=0; p-- )
+        {
             dest[count-p]=source[count-p];
+        }
     }
+   
 }
 
 /*ritorna il valore del registro EBP*/
@@ -274,6 +279,8 @@ void initPaging ( void )
     char flags=PAG_PRESENT|PAG_READWRITE|PAG_SUPERVISOR|PAG_4KPAGE;
     int c=0;
     asm ( "cli" );
+    
+    mallocMemoryStart = kernelHeapStart+loadedModuleSize;
 
     /*mappa fino a USER_START le pagine 1:1 con la memoria fisica*/
     fisicPointer=KERNEL_START;

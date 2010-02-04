@@ -75,8 +75,10 @@ extern void gdtFlush ( unsigned short selettoreSegmentoCodice,unsigned short sel
 
 #define MIN_HEAP_SIZE 0x98A000 /* 10MB circa di heap a cui verrà sommato il valore calcolato in base allla memoria fisica */
 
-
-#define mallocMemoryStart (KERNEL_MEMORY_START + ( ( ( 1024*1024 ) +1 ) *4 ))/*indirizzo base dell heap*/
+unsigned int loadedModuleSize;/*dimensione del modulo caricato in memoria, il valore viene usato per calcolare mallocMemoryStart*/
+char *loadedModule;/*indirizzo del modulo caricato dalla funzione hunt_load*/
+#define kernelHeapStart (KERNEL_MEMORY_START + ( ( ( 1024*1024 ) +1 ) *4 ))/*indirizzo dell area in cui inizia l'heap del kernel, l'area conterrà il modulo caricato da hunt_load e le allocazione dinamiche*/
+unsigned int mallocMemoryStart;/*indirizzo base dell heap*/
 unsigned int memoriaFisica; /* byte di memoria fisica */
 
 unsigned int userMemoryStart; /* indirizzo di partenza del segmento user*/
