@@ -29,16 +29,15 @@ module_t *hunt_getArray(multiboot_info_t * info){
     return 0;
   }
   module_t * mod=(module_t*)info->mods_addr; //structure containing first module info
-    char * m=(char*)mod->mod_start; //get a pointer to the actual module
-  printf(0,"%s trovato a 0x%x [%s]\n",mod->string,mod->mod_start,m);
+  printf(0,"%s trovato a 0x%x \n",mod->string,mod->mod_start);
   return mod;
 }
 
-/*copia il modulo in un area adeguata*/
+/*copia il modulo all indirizzo specificato da kernelHeapStart e setta loadedModuleSize in modo da non aver problemi con l'inizializzazione della memoria*/
 void hunt_load(module_t *modulo)
 {
     loadedModuleSize=modulo->mod_end-modulo->mod_start;
     loadedModule=(char*)kernelHeapStart;
     memcpy((char*)modulo->mod_start,loadedModuleSize,loadedModule);
-    printf(0,"    modulo caricato in memoria, %dByte [%s]\n",loadedModuleSize,loadedModule);
+    printf(0,"    modulo caricato in memoria, %dByte [%d,%d]\n",loadedModuleSize,*((unsigned int*)loadedModule),*((unsigned int*)(loadedModule+4)));
 }

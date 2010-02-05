@@ -289,6 +289,12 @@ int main()
         
     }
     
+    /*scrive il buffer su file*/
+    ofstream out("out.img",ios::out|ios::binary);
+    out.write(fileSystem,imageSize);
+    out.close();
+    
+    
    
 
     return 0;
