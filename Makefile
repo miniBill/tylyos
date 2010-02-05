@@ -24,6 +24,7 @@ OBJ= bootloader/loader.o \
        drivers/screen/screen.o \
        drivers/keyboard/keyboard.o \
        drivers/timer/timer.o \
+       drivers/sound/sound.o \
        drivers/hdd/ata.o drivers/hdd/atapi.o drivers/hdd/ataatapi.o \
      interrupt/interrupt.o interrupt/interruptHandler.o interrupt/ldt.o \
      gui/gui.o \
