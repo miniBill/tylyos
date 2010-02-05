@@ -47,6 +47,6 @@ void nosound()
 void beep()
 {
     sound(1000);
-    sleep(250);
+    sleep(1000);
     nosound();
 }

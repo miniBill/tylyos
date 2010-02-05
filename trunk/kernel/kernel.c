@@ -28,6 +28,7 @@
 #include <interrupt/interrupt.h>
 #include <drivers/timer/timer.h>
 #include <fs/fs.h>
+#include <drivers/sound/sound.h>
 
 #include <gui/gui.h>
 
@@ -223,6 +224,7 @@ void _kmain(multiboot_info_t* mbd, unsigned int magicN) {
   asm("sti");
   write_physical_xy("[s][c][a][n][k] Time:",0, ROWS - 1);
   on = 1;
+  
 
   /* test kernel panic
    while(1)
