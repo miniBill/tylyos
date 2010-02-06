@@ -51,6 +51,15 @@ int findchartest(void){
   return check(output,16);
 }
 
+int substrtest(void){
+  char output[5]="lisa";
+  char buff[5]={0};
+  substr("casali",buff,4,4,-1);
+  substr("casali",buff+2,2,2,2);
+  printf(0,"Prova substr: %s",buff);
+  return check(output,14);
+}
+
 int dinamictestOne ( void )
 {
     unsigned int pointera, pointerb, pointerc;
@@ -145,12 +154,13 @@ void doTests ( void )
 {
     /*REMEMBER TO KEEP SIZE=ITEMS+1!!!*/
 #ifdef FAST_TESTS
-    test tests[3] = {
+    test tests[4] = {
 #else
-    test tests[5] = {
+    test tests[6] = {
         pointertest,
         printftest,
 #endif
+        substrtest,
         findchartest,
         /*isoTest,*/
         dinamictestOne,
