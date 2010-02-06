@@ -60,6 +60,27 @@ int substrtest(void){
   return check(output,14);
 }
 
+int splittest(void){
+  char output[28]="1:\"r\"2:\"ot\"2:\"ol\"1:\"o\"-1:\"\"";
+  char buff[4]={0};
+  int i=0;
+  i=split("rotolo",buff,3,'o',0);
+  printf(0,"Prova splittest: %d:\"%s\"",i,buff);
+  buff[0]=buff[1]=buff[2]=buff[3]==0;
+  i=split("rotolo",buff,3,'o',1);
+  printf(0,"%d:\"%s\"",i,buff);
+  buff[0]=buff[1]=buff[2]=buff[3]==0;
+  i=split("rotolo",buff,3,'o',2);
+  printf(0,"%d:\"%s\"",i,buff);
+  buff[0]=buff[1]=buff[2]=buff[3]==0;
+  i=split("rotolo",buff,3,'o',3);
+  printf(0,"%d:\"%s\"",i,buff);
+  buff[0]=buff[1]=buff[2]=buff[3]=0;
+  i=split("rotolo",buff,3,'o',4);
+  printf(0,"%d:\"%s\"",i,buff);
+  return check(output,17);
+}
+
 int dinamictestOne ( void )
 {
     unsigned int pointera, pointerb, pointerc;
@@ -154,14 +175,15 @@ void doTests ( void )
 {
     /*REMEMBER TO KEEP SIZE=ITEMS+1!!!*/
 #ifdef FAST_TESTS
-    test tests[4] = {
+    test tests[5] = {
 #else
-    test tests[6] = {
+    test tests[7] = {
         pointertest,
         printftest,
 #endif
         substrtest,
         findchartest,
+        splittest,
         /*isoTest,*/
         dinamictestOne,
         /*dinamictestTwo,*/
