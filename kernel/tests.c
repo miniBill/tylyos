@@ -45,6 +45,12 @@ int printftest ( void )
     return check ( output, 13 );
 }
 
+int findchartest(void){
+  char output[7]="0 5 -1";
+  printf(0,"Prova findchar: %d %d %d",findchar("ottavo",'o',0),findchar("ottavo",'o',1),findchar("ottavo",'o',2));
+  return check(output,16);
+}
+
 int dinamictestOne ( void )
 {
     unsigned int pointera, pointerb, pointerc;
@@ -139,12 +145,13 @@ void doTests ( void )
 {
     /*REMEMBER TO KEEP SIZE=ITEMS+1!!!*/
 #ifdef FAST_TESTS
-    test tests[2] = {
+    test tests[3] = {
 #else
-    test tests[4] = {
+    test tests[5] = {
         pointertest,
         printftest,
 #endif
+        findchartest,
         /*isoTest,*/
         dinamictestOne,
         /*dinamictestTwo,*/
