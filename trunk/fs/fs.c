@@ -31,9 +31,7 @@ void initDeviceFsManager()
 {
     openNodeNumber=0;
     mountPointsNumber=0;
-#ifdef RAMFS
     rootDeviceFs= newRamFs();
-#endif
 }
 
 unsigned int getUnusedOpenNodeId()/*TODO: testare il funzionamento*/

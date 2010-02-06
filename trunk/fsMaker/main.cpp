@@ -250,7 +250,7 @@ int main()
     header[1]=clusterSize;
     
     cout<<"inizializzazione FAT"<<endl;
-    FAT=&header[3];
+    FAT=&header[2];
     for(int c=0;c<clusterNumber;c++)
         FAT[c]=RAMFS_FAT_EMPTY;
     
