@@ -22,8 +22,8 @@
 
 #include <fs/fs.h>
 
-#include <config.txt>
-#ifdef RAMFS
+
+
 
 struct deviceFs *newRamFs();/*ritorna un puntatore ad una nuova struttura deviceFs*/
 
@@ -61,6 +61,7 @@ unsigned int ramFs_clusterSize;
 unsigned int *ramFs_FAT;/*indirizzo della FAT*/
 char *ramFs_clusters;/*indirizzo dove partono i clusters*/
 
-#endif
+
+
 
 #endif

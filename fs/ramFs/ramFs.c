@@ -22,7 +22,11 @@
 #include <lib/string.h>
 #include "ramFs.h"
 
-#ifdef RAMFS
+unsigned int ramFs_private_getNodeCount(unsigned int directory)/*prendendo come parametro il primo cluster di una directory legge l'header e ritorna il numero di nodi che contiene*/
+{
+    unsigned int *ret=(unsigned int*)(&ramFs_clusters[ramFs_clusterSize*directory]);
+    return *ret;
+}
 
 struct deviceFs *newRamFs()
 {
@@ -42,15 +46,29 @@ struct deviceFs *newRamFs()
     pointer->deleteDir = ramFs_deleteDir;
     pointer->freeInodeInfoPointer = ramFs_freeInodeInfoPointer;
     
+   
+    ramFs_start=(unsigned int*)loadedModule;
+    ramFs_FAT=loadedModule+(4*2);
+    
+    ramFs_clusterNumber=ramFs_start[0];
+    ramFs_clusterSize=ramFs_start[1];
+    
+    ramFs_clusters=(char*)&ramFs_FAT[ramFs_clusterNumber];
+    
+    printf(1,"ramFs DEBUG:\n  clusters count: %d\n  clusters size: %d Byte\n",ramFs_clusterNumber,ramFs_clusterSize);  
+    printf(1,"  numero nodi in '/': %d",ramFs_private_getNodeCount(0));
     
     return pointer;
 }
+
+
 
 void ramFs_getNodeDescriptor(struct deviceFs *device,struct fs_node_descriptor *descriptor,char *path)
 {
     descriptor->device=device;
     descriptor->inodeInfo=0;//TODO: cercare il path, allocare la struttura e passarne il puntatore
-    path[0]=0;//HACK
+    
+    unsigned int directory=0;/*0 rappresenta la root directory*/
 }
 fs_returnCode ramFs_getNodeInfo(struct fs_node_descriptor *descriptor,struct fs_node_info *out)
 {
@@ -88,4 +106,3 @@ void ramFs_freeInodeInfoPointer(void *inodeInfo)
 {
 }
 
-#endif

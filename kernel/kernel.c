@@ -194,6 +194,7 @@ void _kmain(multiboot_info_t* mbd, unsigned int magicN) {
   else
     t++;
 
+
   NO(t);
   greendot();
   write("Inizializzazione Paging\n",0);
