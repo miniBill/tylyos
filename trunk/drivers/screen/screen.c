@@ -57,6 +57,7 @@ void switch_console(unsigned int console) {
   currentConsole = console;
   update();
   set_cursor(x[console],y[console]);
+  put_physical_xy(console+'1', 26, ROWS - 1);
 }
 
 unsigned int current_console(void) {
