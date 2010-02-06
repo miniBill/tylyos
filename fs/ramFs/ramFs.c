@@ -28,6 +28,43 @@ unsigned int ramFs_private_getNodeCount(unsigned int directory)/*prendendo come 
     return *ret;
 }
 
+struct ramFs_node ramFs_private_getNode(unsigned int directory,unsigned int i)/*ritorna una struttura contenente i dati del nodo i*/
+{
+    struct ramFs_node ret;
+    ret.cluster=0;/*indica errore*/
+    
+    if(i>=ramFs_private_getNodeCount(directory))/*ritorna se l'indice è troppo alto*/
+        return ret;
+    else
+    {
+        if( i<(ramFs_clusterSize/(sizeof(struct ramFs_node)+4)) )/*se si trova nel primo cluster*/
+        {
+            char *temp=&ramFs_clusters[ramFs_clusterSize*directory];
+            temp+=4;/*dimensione dell header contenuto nel primo cluster*/
+            temp+=sizeof(struct ramFs_node)*i;
+            
+            struct ramFs_node *pointer=temp;
+            
+            ret.cluster=pointer->cluster;
+            ret.groupId=pointer->groupId;
+            strcpy(pointer->name,ret.name);
+            ret.permissions[0]=pointer->permissions[0];
+            ret.permissions[1]=pointer->permissions[1];
+            ret.permissions[2]=pointer->permissions[2];
+            ret.size=pointer->size;
+            ret.type=pointer->type;
+            ret.userId=pointer->userId;
+            
+            return ret;
+        }
+        else
+        {
+            /*TODO: scorrere i clusters in modo da trovare la posizione*/
+            return ret;
+        }
+    }
+}
+
 struct deviceFs *newRamFs()
 {
     struct deviceFs *pointer=kmalloc(sizeof(struct deviceFs));
@@ -56,8 +93,12 @@ struct deviceFs *newRamFs()
     ramFs_clusters=(char*)&ramFs_FAT[ramFs_clusterNumber];
     
     printf(1,"ramFs DEBUG:\n  clusters count: %d\n  clusters size: %d Byte\n",ramFs_clusterNumber,ramFs_clusterSize);  
-    printf(1,"  numero nodi in '/': %d",ramFs_private_getNodeCount(0));
-    
+    printf(1,"  numero nodi in '/': %d\n",ramFs_private_getNodeCount(0));
+    for(unsigned int c=0;c<ramFs_private_getNodeCount(0);c++)
+    {
+        struct ramFs_node nodo=ramFs_private_getNode(0,c);
+        printf(1,"    %s %d Bytes\n",nodo.name,nodo.size);
+    }
     return pointer;
 }
 
