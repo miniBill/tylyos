@@ -139,6 +139,8 @@ void substr(char *in,char *out,unsigned int max,unsigned int start,int count){
   unsigned int l=strlen(in);
   if(count<0)
     count=l-start;
+  if(start>=l)
+    return;//these aren't the droids you're looking for
   if(count>max)//again, prevention >> debug
     count=max;
   unsigned int i;
