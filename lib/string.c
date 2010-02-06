@@ -124,7 +124,7 @@ int findchar(const char *str,char c,unsigned int i){
   unsigned int l=strlen(str);
   i++;
   if(l==0)//prevention >> debug
-    return -2;
+    return -1;
   unsigned int x=0;
   do{
     if(str[x++]==c)
@@ -135,4 +135,13 @@ int findchar(const char *str,char c,unsigned int i){
   return x-1;
 }
 
-//void substr(char *in,char *out,unsigned int max,unsigned int start,int count);
+void substr(char *in,char *out,unsigned int max,unsigned int start,int count){
+  unsigned int l=strlen(in);
+  if(count<0)
+    count=l-start;
+  if(count>max)//again, prevention >> debug
+    count=max;
+  unsigned int i;
+  for(i=0;count>0;i++,count--)
+    out[i]=in[start + i];
+}
