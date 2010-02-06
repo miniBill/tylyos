@@ -120,3 +120,19 @@ number:
   return size;
 }
 
+int findchar(const char *str,char c,unsigned int i){
+  unsigned int l=strlen(str);
+  i++;
+  if(l==0)//prevention >> debug
+    return -2;
+  unsigned int x=0;
+  do{
+    if(str[x++]==c)
+      i--;
+  }while(x<l /*don't go over*/ && i!=0 /*returns on the (i+1)th occurence*/);
+  if(i!=0)
+    return -1;
+  return x-1;
+}
+
+//void substr(char *in,char *out,unsigned int max,unsigned int start,int count);
