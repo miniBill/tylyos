@@ -24,7 +24,7 @@
 #include <fs/iso/iso.h>
 #include "multiboot.h"
 
-#define FAST_TESTS
+#include <config.txt>
 
 typedef int (*test)(void);
 

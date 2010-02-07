@@ -1,4 +1,24 @@
 #ifndef CONFIG_TXT_
 #define CONFIG_TXT_
-//#define RAMFS
+
+// *-------------*
+// |Code maturity|
+// *-------------*
+
+#define RAMFS_STUBS //don't compile ramfs stubs
+
+// *----------------------*
+// |Speed-safety tradeoffs|
+// *----------------------*
+
+#define FAST_TESTS //skip tests on "safe" functions
+
+// *----------------*
+// |Debug facilities|
+// *----------------*
+
+//#define PRINT_REGISTERS //print registers' status on interrupt
+//#define FREEROAMING //allow cursor to move freely
+//#define PUT_ON_KEY_RELEASE //print to screen even on key release
+
 #endif
