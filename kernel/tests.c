@@ -61,7 +61,7 @@ int substrtest(void){
 }
 
 int splittest(void){
-  char output[28]="1:\"r\"2:\"ot\"2:\"ol\"1:\"o\"-1:\"\"";
+  char output[25]="1:\"r\"1:\"t\"1:\"l\"0:\"\"-1:\"\"";
   char buff[4]={0};
   int i=0;
   i=split("rotolo",buff,3,'o',0);
@@ -175,15 +175,15 @@ void doTests ( void )
 {
     /*REMEMBER TO KEEP SIZE=ITEMS+1!!!*/
 #ifdef FAST_TESTS
-    test tests[5] = {
+    test tests[2] = {
 #else
     test tests[7] = {
         pointertest,
         printftest,
-#endif
         substrtest,
         findchartest,
         splittest,
+#endif
         /*isoTest,*/
         dinamictestOne,
         /*dinamictestTwo,*/
