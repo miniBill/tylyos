@@ -88,7 +88,7 @@ struct ramFs_node ramFs_private_getNodeFromName(unsigned int directory,char *nam
 unsigned int ramFs_private_getCluster(unsigned int baseCluster,unsigned int i)/*segue la concatenazione dei clusters ritornando l'indice dell i esimo cluster*/
 {/*TODO: testare*/
     unsigned int ret=baseCluster;
-    for(int c=0;c<i;c++)
+    for(unsigned int c=0;c<i;c++)
     {
         if(ramFs_FAT[ret]==RAMFS_FAT_EMPTY || ramFs_FAT[ret]==RAMFS_FAT_END)
         {
