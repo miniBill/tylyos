@@ -140,7 +140,10 @@ void substr(char *in,char *out,unsigned int max,unsigned int start,int count){
   if(count<0)
     count=l-start;
   if(start>=l)
+  {
+    out[0]=0;
     return;//these aren't the droids you're looking for
+  }
   if((unsigned int)count>max)//again, prevention >> debug
     count=max;
   unsigned int i;
@@ -159,10 +162,21 @@ int split(char *in,char *out,unsigned int max,char c,unsigned int i){
   }
   int index=findchar(in,c,i-1);
   if(index<0)
+  {
+    out[0]=0;
     return index;
+  }
   int medius=findchar(in,c,i);
   if(medius<0)
     medius++;
-  substr(in,out,max,index,medius-index);
+  substr(in,out,max,index+1,medius-index-1);
   return strlen(out);
+}
+
+int strcmp(char *s, char *t)
+{
+    for ( ; *s == *t; s++, t++)
+        if (*s == '\0')
+        return 0;
+    return *s - *t;
 }
