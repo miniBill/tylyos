@@ -92,6 +92,7 @@ struct deviceFs *newRamFs()
     
     pointer->getNodeDescriptor = ramFs_getNodeDescriptor;
     pointer->getNodeInfo = ramFs_getNodeInfo;
+#ifdef RAMFS_STUBS
     pointer->readFile = ramFs_readFile;
     pointer->writeFile = ramFs_writeFile;
     pointer->seek = ramFs_seek;
@@ -100,6 +101,7 @@ struct deviceFs *newRamFs()
     pointer->deleteFile = ramFs_deleteFile;
     pointer->createDir = ramFs_createDir;
     pointer->deleteDir = ramFs_deleteDir;
+#endif
     pointer->freeInodeInfoPointer = ramFs_freeInodeInfoPointer;
     
    
@@ -195,7 +197,11 @@ fs_returnCode ramFs_getNodeInfo(struct fs_node_descriptor *descriptor,struct fs_
     out->size=tmp.size;
     out->type=tmp.type;
     out->userId=tmp.userId;
+#ifndef RAMFS_STUBS
+    return 0;
+#endif
 }
+#ifdef RAMFS_STUBS
 unsigned int ramFs_readFile(struct fs_node_descriptor *descriptor,char *buffer,unsigned int byteCount)
 {
     //TODO: leggere i dati contenuti nel nodo, scriverli in buffer e ritornare il numero di bytes scritti
@@ -224,6 +230,7 @@ fs_returnCode ramFs_createDir(char *name,struct fs_node_descriptor *output,struc
 fs_returnCode ramFs_deleteDir(struct fs_node_descriptor descriptor)
 {
 }
+#endif
 void ramFs_freeInodeInfoPointer(void *inodeInfo)
 {
     kfree(inodeInfo);
