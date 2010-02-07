@@ -202,6 +202,36 @@ unsigned int seek(File file,int offset)/*TODO: testare*/
     return pointer->device->seek(pointer,offset);
 }
 
+File openDir(char *path)
+{
+    unsigned int id;
+    id=getUnusedOpenNodeId();
+    
+    if ( id==0 ) /*raggiunto il numero massimo di nodi aperti*/
+        return 0;
+    
+    struct fs_node_descriptor *nuovoNodo=kmalloc ( sizeof ( struct fs_node_descriptor ) );/*alloca un nuovo descrittore*/
+    nuovoNodo->id=id;
+    nuovoNodo->device=getDeviceFromPath ( path );/*cerca nei mount points quale device gestisce il path*/
+    
+    nuovoNodo->device->getNodeDescriptor(nuovoNodo->device,nuovoNodo,path);/*carica in nuovoNodo il puntatore alle informazioni dell inode*/
+    struct fs_node_info info;
+    nuovoNodo->device->getNodeInfo(nuovoNodo,&info);
+    /*TODO: ATTENZIONEEEE, RICORDARSI DI SPLITTARE IL PATH IN QUALCHE MODO IN BASE AL MOUNT POINT!!!!!!*/
+    
+    if(nuovoNodo->inodeInfo==0 || info.type != FS_DIRECTORY )/*se il nodo non e' stato trovato o non e' un file*/
+    {
+        kfree(nuovoNodo);
+        return 0;
+    }
+    
+    /*salva il nodo appena aperto nella lista*/
+    openNodes[openNodeNumber]=nuovoNodo;
+    openNodeNumber++;
+    
+    return id;/*ritorna l'id in modo che possa essere usato per richiamare read write e close*/
+}
+
 fs_returnCode readDir(File dir,struct fs_node_info *out)
 {
     struct fs_node_descriptor *pointer=0;
@@ -214,7 +244,7 @@ fs_returnCode readDir(File dir,struct fs_node_info *out)
         }
     }
     
-    if(pointer==0 || !(pointer->type&FS_DIRECTORY))/*se non e' aperto o non e' una directory*/
+    if(pointer==0 || pointer->type!=FS_DIRECTORY)/*se non e' aperto o non e' una directory*/
         return FS_NOT_FOUND;
     
     return pointer->device->readDir(pointer,out);
