@@ -107,11 +107,12 @@ struct deviceFs *newRamFs()
     
     pointer->getNodeDescriptor = ramFs_getNodeDescriptor;
     pointer->getNodeInfo = ramFs_getNodeInfo;
+    pointer->readDir = ramFs_readDir;
 #ifdef RAMFS_STUBS
     pointer->readFile = ramFs_readFile;
     pointer->writeFile = ramFs_writeFile;
     pointer->seek = ramFs_seek;
-    pointer->readDir = ramFs_readDir;
+    
     pointer->createFile = ramFs_createFile;
     pointer->deleteFile = ramFs_deleteFile;
     pointer->createDir = ramFs_createDir;
@@ -128,13 +129,13 @@ struct deviceFs *newRamFs()
     
     ramFs_clusters=(char*)&ramFs_FAT[ramFs_clusterNumber];
     
-    printf(1,"ramFs DEBUG:\n  clusters count: %d\n  clusters size: %d Byte\n",ramFs_clusterNumber,ramFs_clusterSize);  
+    /*printf(1,"ramFs DEBUG:\n  clusters count: %d\n  clusters size: %d Byte\n",ramFs_clusterNumber,ramFs_clusterSize);  
     printf(1,"  numero nodi in '/': %d\n",ramFs_private_getNodeCount(0));
     for(unsigned int c=0;c<ramFs_private_getNodeCount(0);c++)
     {
         struct ramFs_node nodo=ramFs_private_getNode(0,c);
         printf(1,"    %s %d Bytes cluster: %d tipo: %d\n",nodo.name,nodo.size,nodo.cluster,nodo.type);
-    }
+    }*/
     return pointer;
 }
 
@@ -165,24 +166,32 @@ void ramFs_getNodeDescriptor(struct deviceFs *device,struct fs_node_descriptor *
         else
             return;
         
-        if(tmp.type==FS_FILE)
+        
+        char tmpChar[1];
+        if(split(path,tmpChar,1,'/',depth)==-1)/*se e' l' ultimo pezzo del path*/
         {
-            char tmpChar[1];
-            if(split(path,tmpChar,1,'/',depth+1)==-1)/*se e' l' ultimo pezzo del path*/
+            /*alloca l'inode info e lo ritorna*/
+            printf(1,"YEAHHHHHHHHH!!!!!!!\n");
+                
+            struct ramFs_inodeInfo *info=kmalloc(sizeof(struct ramFs_inodeInfo));
+            info->directoryCluster=directory;
+            info->cluster=tmp.cluster;
+            strcpy(nodeName,info->name);
+            info->position=0;
+            
+            descriptor->inodeInfo=(void*)info;
+            descriptor->type=tmp.type;
+           
+            return;
+        }
+        else/*se non e' l'ultimo nodo del path*/
+        {
+            if(tmp.type==FS_DIRECTORY)/*se e' una directory*/
             {
-                /*alloca l'inode info e lo ritorna*/
-                printf(1,"YEAHHHHHHHHH!!!!!!!\n");
-                
-                struct ramFs_inodeInfo *info=kmalloc(sizeof(struct ramFs_inodeInfo));
-                info->directoryCluster=directory;
-                info->cluster=tmp.cluster;
-                strcpy(nodeName,info->name);
-                info->position=0;
-                
-                descriptor->inodeInfo=(void*)info;
-                descriptor->type=tmp.type;
-                
-                return;
+                /*entra nella directory per la prossima iterazione*/
+                directory=tmp.cluster;
+                ret=split(path,nodeName,RAMFS_FILENAME_MAX_LENGTH,'/',depth);
+                depth++;
             }
             else
             {
@@ -191,13 +200,7 @@ void ramFs_getNodeDescriptor(struct deviceFs *device,struct fs_node_descriptor *
             }
         }
         
-        if(tmp.type==FS_DIRECTORY)
-        {
-            directory=tmp.cluster;
-            ret=split(path,nodeName,RAMFS_FILENAME_MAX_LENGTH,'/',depth);
-            depth++;
-            /*TODO: implementare l'apertura di un nodo di tipo directory*/
-        }
+        
     }
 }
 fs_returnCode ramFs_getNodeInfo(struct fs_node_descriptor *descriptor,struct fs_node_info *out)
@@ -226,7 +229,6 @@ fs_returnCode ramFs_getNodeInfo(struct fs_node_descriptor *descriptor,struct fs_
 
 unsigned int ramFs_readFile(struct fs_node_descriptor *descriptor,char *buffer,unsigned int byteCount)
 {
-    //TODO: leggere i dati contenuti nel nodo, scriverli in buffer e ritornare il numero di bytes scritti
     struct ramFs_inodeInfo *info=(struct ramFs_inodeInfo*)descriptor->inodeInfo;
     unsigned int daLeggere=byteCount;
     unsigned int dimensione=ramFs_private_getNodeFromName(info->directoryCluster,info->name).size;
@@ -264,7 +266,7 @@ unsigned int ramFs_readFile(struct fs_node_descriptor *descriptor,char *buffer,u
         }
         
     }
-    
+    info->position+=i;
     return i;
     
 }
@@ -277,10 +279,35 @@ unsigned int ramFs_seek(struct fs_node_descriptor *descriptor,int offset)
 {
     //TODO: spostare il puntatore al byte da leggere/scrivere contenuto nella struttura inodeInfo
 }
+#endif
 fs_returnCode ramFs_readDir(struct fs_node_descriptor *descriptor,struct fs_node_info *out)
 {
     //TODO: scrivere in out i dati del prossimo nodo figlio del nodo descriptor
+    struct ramFs_inodeInfo *info=(struct ramFs_inodeInfo*)descriptor->inodeInfo;
+    struct ramFs_node nodo=ramFs_private_getNode(info->cluster,info->position);
+    
+    if(nodo.cluster!=0)
+    {
+        out->device=descriptor->device;
+        out->groupId=nodo.groupId;
+        strcpy(nodo.name,out->name);
+        out->permissions[0]=nodo.permissions[0];
+        out->permissions[1]=nodo.permissions[1];
+        out->permissions[2]=nodo.permissions[2];
+        out->size=nodo.size;
+        out->type=nodo.type;
+        out->userId=nodo.userId;
+        
+        info->position++;
+        
+        return FS_OK;
+    }
+    else
+    {
+        return FS_END;
+    }
 }
+#ifdef RAMFS_STUBS
 fs_returnCode ramFs_createFile(char *name,struct fs_node_descriptor *output,struct fs_node_descriptor fatherNodeDescriptor)
 {
 }

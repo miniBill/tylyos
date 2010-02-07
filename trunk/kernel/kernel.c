@@ -240,6 +240,16 @@ void _kmain(multiboot_info_t* mbd, unsigned int magicN) {
   readRet=readFile(tFile2,letti,100);
   letti[readRet]=0;
   printf(2,"%d>%s\n",readRet,letti);
+  
+  File tDir=openDir("/directory");
+  printf(1,"open dir id=%d\n",tDir);
+  
+  printf(2,"list directory:\n");
+  struct fs_node_info info;
+  while(readDir(tDir,&info)==FS_OK)
+  {
+      printf(2,"    > %s %d Bytes tipo: %d\n",info.name,info.size,info.type);
+  }
 
   /* test kernel panic
    while(1)
