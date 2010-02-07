@@ -126,29 +126,6 @@ void input(char ch, int released) {
 #define inc() x++;if(x==COLUMNS){x=0;y++;}
 #define slashwrite(a) write_xy("\\",console,x,y);inc();write_xy(a,console,x,y);inc();
 
-//Write a string, with escaped characters
-static void Swrite_xy(const char* string, unsigned int console, unsigned int x, unsigned int y) {
-  int k;
-  if (stop_output)
-    return;
-  for (k = 0;string[k] != 0 && k < KEYBUFSIZE;k++) {
-      switch (string[k]) {
-        case '\n':
-          slashwrite("n");
-          break;
-        case '\b':
-          slashwrite("b");
-          break;
-        case '\\':
-          slashwrite("\\");
-          break;
-        default:
-          put_xy(string[k], console, x, y);
-          inc();
-        }
-    }
-}
-
 static inline int freeroaming(char ch) {
   switch (ch) {
     case '7':
@@ -330,9 +307,6 @@ void keypress(void) {
   else
     printf("(R%d)", ch);
 #endif
-#ifndef FREEROAMING
-  Swrite_xy(buffer[cur], cur, 0, ROWS - 3);
-#endif
 }
 
 char getch() {
@@ -341,9 +315,6 @@ char getch() {
   char toret = buffer[cur][outpointer[cur]];
   //buffer[cur][outpointer[cur]] = ' ';
   outpointer[cur] = ((outpointer[cur]) + 1) % KEYBUFSIZE;
-#ifndef FREEROAMING
-  Swrite_xy(buffer[cur], cur, 0, ROWS - 3);
-#endif
   return toret;
 }
 

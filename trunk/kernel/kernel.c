@@ -248,10 +248,7 @@ void _kmain(multiboot_info_t* mbd, unsigned int magicN) {
    }*/
   /*kernelPanic("_kmain()","this is a test message");*/
   void life();
-//  char buff[50];
   while (on){
-//    readline(buff,50);
-//    write_current(buff);
     if(live)
       life();
   }
