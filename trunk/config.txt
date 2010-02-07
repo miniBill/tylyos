@@ -5,7 +5,7 @@
 // |Code maturity|
 // *-------------*
 
-#define RAMFS_STUBS //don't compile ramfs stubs
+#define RAMFS_STUBS //compile ramfs stubs
 
 // *----------------------*
 // |Speed-safety tradeoffs|
