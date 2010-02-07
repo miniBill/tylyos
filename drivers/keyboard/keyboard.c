@@ -123,9 +123,6 @@ void input(char ch, int released) {
 #endif
 }
 
-#define inc() x++;if(x==COLUMNS){x=0;y++;}
-#define slashwrite(a) write_xy("\\",console,x,y);inc();write_xy(a,console,x,y);inc();
-
 static inline int freeroaming(char ch) {
   switch (ch) {
     case '7':
