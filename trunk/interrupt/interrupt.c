@@ -191,7 +191,7 @@ void interrupt_handler (
 #else
                 c=eax^ebx^ecx^edx^ebp^esi^edi^ds^es^fs^gs^eip^cs^eflags^error;/*HACK*/
 #endif
-                kernelPanic ( "interrupt_handler()",message );
+               // kernelPanic ( "interrupt_handler()",message );
             }
         }
     }
