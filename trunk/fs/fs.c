@@ -106,7 +106,7 @@ unsigned int openFile ( char *path,char mode )/*TODO: inserire un controllo sull
     struct fs_node_info info;
     nuovoNodo->device->getNodeInfo(nuovoNodo,&info);
     
-    if(nuovoNodo->inodeInfo==0 || !(info.type & FS_FILE) )/*se il nodo non e' stato trovato o non e' un file*/
+    if(nuovoNodo->inodeInfo==0 || info.type != FS_FILE )/*se il nodo non e' stato trovato o non e' un file*/
     {
         kfree(nuovoNodo);
         return 0;

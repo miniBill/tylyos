@@ -51,6 +51,7 @@ struct ramFs_node
     unsigned int groupId;/*l' id del gruppo a cui appartiene il file*/
     char type;/*il tipo del nodo, vedere le definizioni*/
     unsigned int size;/*dimensione del file in bytes*/
+    char lock;
     
     unsigned int cluster;/*indice che specifica i cluster con cui inizia il nodo*/
 };
@@ -61,7 +62,13 @@ unsigned int ramFs_clusterSize;
 unsigned int *ramFs_FAT;/*indirizzo della FAT*/
 char *ramFs_clusters;/*indirizzo dove partono i clusters*/
 
-
+struct ramFs_inodeInfo
+{
+    char name[RAMFS_FILENAME_MAX_LENGTH];
+    unsigned int cluster;
+    
+    unsigned int directoryCluster;
+};
 
 
 #endif

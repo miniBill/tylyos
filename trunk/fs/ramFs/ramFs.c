@@ -32,6 +32,8 @@ struct ramFs_node ramFs_private_getNode(unsigned int directory,unsigned int i)/*
 {
     struct ramFs_node ret;
     ret.cluster=0;/*indica errore*/
+    ret.name[0]=0;
+    ret.size=0;
     
     if(i>=ramFs_private_getNodeCount(directory))/*ritorna se l'indice è troppo alto*/
         return ret;
@@ -43,7 +45,7 @@ struct ramFs_node ramFs_private_getNode(unsigned int directory,unsigned int i)/*
             temp+=4;/*dimensione dell header contenuto nel primo cluster*/
             temp+=sizeof(struct ramFs_node)*i;
             
-            struct ramFs_node *pointer=temp;
+            struct ramFs_node *pointer=(struct ramFs_node*)temp;
             
             ret.cluster=pointer->cluster;
             ret.groupId=pointer->groupId;
@@ -63,6 +65,23 @@ struct ramFs_node ramFs_private_getNode(unsigned int directory,unsigned int i)/*
             return ret;
         }
     }
+}
+
+struct ramFs_node ramFs_private_getNodeFromName(unsigned int directory,char *name)/*ritorna una struttura contenente i dati del nodo i*/
+{
+    struct ramFs_node ret;
+    ret.cluster=0;/*indica errore*/
+    ret.name[0]=0;
+    ret.size=0;
+    
+    for(unsigned int i=0;i<ramFs_private_getNodeCount(directory);i++)
+    {
+        if(strcmp(name,ramFs_private_getNode(directory,i).name)==0)
+        {
+            return ramFs_private_getNode(directory,i);
+        }
+    }
+    return ret;
 }
 
 struct deviceFs *newRamFs()
@@ -85,7 +104,7 @@ struct deviceFs *newRamFs()
     
    
     ramFs_start=(unsigned int*)loadedModule;
-    ramFs_FAT=loadedModule+(4*2);
+    ramFs_FAT=(unsigned int*)(loadedModule+(4*2));
     
     ramFs_clusterNumber=ramFs_start[0];
     ramFs_clusterSize=ramFs_start[1];
@@ -97,7 +116,7 @@ struct deviceFs *newRamFs()
     for(unsigned int c=0;c<ramFs_private_getNodeCount(0);c++)
     {
         struct ramFs_node nodo=ramFs_private_getNode(0,c);
-        printf(1,"    %s %d Bytes\n",nodo.name,nodo.size);
+        printf(1,"    %s %d Bytes cluster: %d tipo: %d\n",nodo.name,nodo.size,nodo.cluster,nodo.type);
     }
     return pointer;
 }
@@ -106,14 +125,76 @@ struct deviceFs *newRamFs()
 
 void ramFs_getNodeDescriptor(struct deviceFs *device,struct fs_node_descriptor *descriptor,char *path)
 {
+    char nodeName[RAMFS_FILENAME_MAX_LENGTH];
+    unsigned int depth=1;
+    unsigned int directory=0;/*0 rappresenta la root directory*/
+    int ret;
     descriptor->device=device;
     descriptor->inodeInfo=0;//TODO: cercare il path, allocare la struttura e passarne il puntatore
     
-    unsigned int directory=0;/*0 rappresenta la root directory*/
+    printf(1,"\nGET NODE DESCRIPTOR: %s\n",path);
+    
+    ret=split(path,nodeName,RAMFS_FILENAME_MAX_LENGTH,'/',depth);
+    ret++;
+    
+    while(ret>=0)/*finche' la split non ritorna -1*/
+    {
+        struct ramFs_node tmp=ramFs_private_getNodeFromName(directory,nodeName);/*cerca nella cartella il nodo*/
+        
+        printf(1,"ricerca:%d %s\n",depth,nodeName);
+        
+        if(tmp.cluster!=0)/*controlla se e' stato trovato*/
+            printf(1,"trovato>: %s %d\n",tmp.name,tmp.size);
+        else
+            return;
+        
+        if(tmp.type==FS_FILE)
+        {
+            char tmpChar[1];
+            if(split(path,tmpChar,1,'/',depth+1)==-1)/*se e' l' ultimo pezzo del path*/
+            {
+                /*alloca l'inode info e lo ritorna*/
+                printf(1,"YEAHHHHHHHHH!!!!!!!\n");
+                
+                struct ramFs_inodeInfo *info=kmalloc(sizeof(struct ramFs_inodeInfo));
+                info->directoryCluster=directory;
+                info->cluster=tmp.cluster;
+                strcpy(nodeName,info->name);
+                
+                descriptor->inodeInfo=(void*)info;
+                
+                return;
+            }
+            else
+            {
+                /*errore, un file viene trattato come fosse una directory*/
+                return;
+            }
+        }
+        
+        if(tmp.type==FS_DIRECTORY)
+        {
+            directory=tmp.cluster;
+            ret=split(path,nodeName,RAMFS_FILENAME_MAX_LENGTH,'/',depth);
+            ret++;
+        }
+    }
 }
 fs_returnCode ramFs_getNodeInfo(struct fs_node_descriptor *descriptor,struct fs_node_info *out)
 {
-    //TODO: usare il puntatore contenuto in descriptor per trovare il nodo e caricare le informazioni in out
+    struct ramFs_inodeInfo *info=(struct ramFs_inodeInfo*)descriptor->inodeInfo;
+    
+    struct ramFs_node tmp=ramFs_private_getNodeFromName(info->directoryCluster,info->name);
+    
+    out->device=descriptor->device;
+    out->groupId=tmp.groupId;
+    strcpy(tmp.name,out->name);
+    out->permissions[0]=tmp.permissions[0];
+    out->permissions[1]=tmp.permissions[1];
+    out->permissions[2]=tmp.permissions[3];
+    out->size=tmp.size;
+    out->type=tmp.type;
+    out->userId=tmp.userId;
 }
 unsigned int ramFs_readFile(struct fs_node_descriptor *descriptor,char *buffer,unsigned int byteCount)
 {

@@ -18,6 +18,7 @@ struct ramFs_node
     unsigned int groupId;/*l' id del gruppo a cui appartiene il file*/
     char type;/*il tipo del nodo, vedere le definizioni*/
     unsigned int size;/*dimensione del file in bytes*/
+    char lock;
     
     unsigned int cluster;/*indice che specifica i cluster con cui inizia il nodo*/
 };
@@ -116,6 +117,7 @@ void addNodeToDirectory(unsigned int cluster,struct ramFs_node nodeStruct)
         nuovoNodo->size=nodeStruct.size;
         nuovoNodo->type=nodeStruct.type;
         nuovoNodo->userId=nodeStruct.userId;
+        nuovoNodo->lock=0;
         
         /*aggiorna il numero di nodi*/
         writeDirectoryHeader(cluster,numeroNodi+1);

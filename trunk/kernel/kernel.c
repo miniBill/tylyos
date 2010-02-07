@@ -226,6 +226,8 @@ void _kmain(multiboot_info_t* mbd, unsigned int magicN) {
   write_physical_xy("[s][c][a][n][k] Console: [1] Time:",0, ROWS - 1);
   on = 1;
   
+  printf(1,"open file id=%d\n",openFile("/test.txt",'w'));
+  printf(1,"open file id=%d\n",openFile("/test.txt",'w'));
 
   /* test kernel panic
    while(1)
