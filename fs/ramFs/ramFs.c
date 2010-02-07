@@ -20,6 +20,7 @@
 #include <config.txt>
 #include <memory/memory.h>
 #include <lib/string.h>
+#include <kernel/kernel.h>
 #include "ramFs.h"
 
 unsigned int ramFs_private_getNodeCount(unsigned int directory)/*prendendo come parametro il primo cluster di una directory legge l'header e ritorna il numero di nodi che contiene*/
@@ -84,6 +85,20 @@ struct ramFs_node ramFs_private_getNodeFromName(unsigned int directory,char *nam
     return ret;
 }
 
+unsigned int ramFs_private_getCluster(unsigned int baseCluster,unsigned int i)/*segue la concatenazione dei clusters ritornando l'indice dell i esimo cluster*/
+{/*TODO: testare*/
+    unsigned int ret=baseCluster;
+    for(int c=0;c<i;c++)
+    {
+        if(ramFs_FAT[ret]==RAMFS_FAT_EMPTY || ramFs_FAT[ret]==RAMFS_FAT_END)
+        {
+            kernelPanic("ramFs_private_getCluster()","the FAT table is inconsistent or the i argument wrong");
+        }
+        ret=ramFs_FAT[ret];
+    }
+    return ret;
+}
+
 struct deviceFs *newRamFs()
 {
     struct deviceFs *pointer=kmalloc(sizeof(struct deviceFs));
@@ -139,7 +154,7 @@ void ramFs_getNodeDescriptor(struct deviceFs *device,struct fs_node_descriptor *
     ret=split(path,nodeName,RAMFS_FILENAME_MAX_LENGTH,'/',depth);
     depth++;
     
-    while(ret>=0)/*finche' la split non ritorna -1*/
+    while(ret>=0)/*finche' la split non ritorna -1 scorri il path*/
     {
         struct ramFs_node tmp=ramFs_private_getNodeFromName(directory,nodeName);/*cerca nella cartella il nodo*/
         
@@ -162,8 +177,10 @@ void ramFs_getNodeDescriptor(struct deviceFs *device,struct fs_node_descriptor *
                 info->directoryCluster=directory;
                 info->cluster=tmp.cluster;
                 strcpy(nodeName,info->name);
+                info->position=0;
                 
                 descriptor->inodeInfo=(void*)info;
+                descriptor->type=tmp.type;
                 
                 return;
             }
@@ -179,6 +196,7 @@ void ramFs_getNodeDescriptor(struct deviceFs *device,struct fs_node_descriptor *
             directory=tmp.cluster;
             ret=split(path,nodeName,RAMFS_FILENAME_MAX_LENGTH,'/',depth);
             depth++;
+            /*TODO: implementare l'apertura di un nodo di tipo directory*/
         }
     }
 }
@@ -188,24 +206,69 @@ fs_returnCode ramFs_getNodeInfo(struct fs_node_descriptor *descriptor,struct fs_
     
     struct ramFs_node tmp=ramFs_private_getNodeFromName(info->directoryCluster,info->name);
     
-    out->device=descriptor->device;
-    out->groupId=tmp.groupId;
-    strcpy(tmp.name,out->name);
-    out->permissions[0]=tmp.permissions[0];
-    out->permissions[1]=tmp.permissions[1];
-    out->permissions[2]=tmp.permissions[3];
-    out->size=tmp.size;
-    out->type=tmp.type;
-    out->userId=tmp.userId;
-#ifndef RAMFS_STUBS
-    return 0;
-#endif
+    if(tmp.cluster!=0)
+    {
+        out->device=descriptor->device;
+        out->groupId=tmp.groupId;
+        strcpy(tmp.name,out->name);
+        out->permissions[0]=tmp.permissions[0];
+        out->permissions[1]=tmp.permissions[1];
+        out->permissions[2]=tmp.permissions[3];
+        out->size=tmp.size;
+        out->type=tmp.type;
+        out->userId=tmp.userId;
+        return FS_OK;
+    }
+    else
+        return FS_NOT_FOUND;
+
 }
-#ifdef RAMFS_STUBS
+
 unsigned int ramFs_readFile(struct fs_node_descriptor *descriptor,char *buffer,unsigned int byteCount)
 {
     //TODO: leggere i dati contenuti nel nodo, scriverli in buffer e ritornare il numero di bytes scritti
+    struct ramFs_inodeInfo *info=(struct ramFs_inodeInfo*)descriptor->inodeInfo;
+    unsigned int daLeggere=byteCount;
+    unsigned int dimensione=ramFs_private_getNodeFromName(info->directoryCluster,info->name).size;
+    unsigned int i=0,clusterI=0;;
+    unsigned int cluster=info->cluster;
+    
+    if(info->position+byteCount > dimensione)/*se si stanno leggendo piu' byte di quelli rimasti nel file*/
+    {
+        daLeggere= dimensione - info->position;/*ricalcola i bytes da leggere*/
+    }
+    
+    /*calcola il cluster da cui iniziare ed il clusterI iniziale*/
+    cluster= ramFs_private_getCluster(info->cluster,info->position/ramFs_clusterSize);/*segue la concatenazione dei clusters fino a trovare l' indice del giusto cluster*/
+    clusterI=info->position%ramFs_clusterSize;/*l' indice da cui partire nel cluster*/
+    
+    while(daLeggere>0)
+    {
+        buffer[i]=ramFs_clusters[(cluster*ramFs_clusterSize)+clusterI];
+        i++;
+        clusterI++;
+        daLeggere--;
+        
+        if(clusterI==ramFs_clusterSize)/*se si sono letti tutti i dati del cluster*/
+        {
+            /*continua a leggere il cluster successivo*/
+            if(ramFs_FAT[cluster] != RAMFS_FAT_EMPTY && ramFs_FAT[cluster] != RAMFS_FAT_END)/*se non c'e' un errore nel concatenamento*/
+            {
+                cluster=ramFs_FAT[cluster];
+                clusterI=0;
+            }
+            else
+            {
+                kernelPanic("ramFs_readFile()","the FAT table is inconsistent or the node size is wrong");
+            }
+        }
+        
+    }
+    
+    return i;
+    
 }
+#ifdef RAMFS_STUBS
 unsigned int ramFs_writeFile(struct fs_node_descriptor *descriptor,char *buffer,unsigned int byteCount)
 {
     //TODO: scrivere i dati contenuti in buffer nell' area dati del nodo e ritornare il numero di bytes scritti

@@ -230,6 +230,16 @@ void _kmain(multiboot_info_t* mbd, unsigned int magicN) {
   File tFile2=openFile("/test.txt",'w');
   printf(1,"open file id=%d\n",tFile1);
   printf(1,"open file id=%d\n",tFile2);
+  
+  printf(2,"TEST READ:\n");
+  char letti[100];
+  unsigned int readRet=readFile(tFile1,letti,100);
+  letti[readRet]=0;
+  printf(2,"%d>%s\n",readRet,letti);
+  
+  readRet=readFile(tFile2,letti,100);
+  letti[readRet]=0;
+  printf(2,"%d>%s\n",readRet,letti);
 
   /* test kernel panic
    while(1)

@@ -64,10 +64,12 @@ char *ramFs_clusters;/*indirizzo dove partono i clusters*/
 
 struct ramFs_inodeInfo
 {
-    char name[RAMFS_FILENAME_MAX_LENGTH];
-    unsigned int cluster;
+    char name[RAMFS_FILENAME_MAX_LENGTH];/*nome del nodo*/
+    unsigned int cluster;/*primo del nodo*/
     
-    unsigned int directoryCluster;
+    unsigned int directoryCluster;/*cluster della directory che contiene il nodo*/
+    
+    unsigned int position;/*posizione del cursore di lettura/scrittura*/
 };
 
 
