@@ -106,6 +106,7 @@ unsigned int openFile ( char *path,char mode )/*TODO: inserire un controllo sull
     struct fs_node_info info;
     nuovoNodo->device->getNodeInfo(nuovoNodo,&info);
     
+    
     if(nuovoNodo->inodeInfo==0 || info.type != FS_FILE )/*se il nodo non e' stato trovato o non e' un file*/
     {
         kfree(nuovoNodo);
@@ -157,8 +158,10 @@ unsigned int readFile(File file,char *buffer,unsigned int byteCount)/*TODO: test
         }
     }
     
-    if(pointer==0 || !(pointer->type&FS_FILE))/*se non e' aperto o non e' un file*/
+    if(pointer==0 || pointer->type!=FS_FILE)/*se non e' aperto o non e' un file*/
+    {
         return 0;
+    }
     
     return pointer->device->readFile(pointer,buffer,byteCount);
 }
