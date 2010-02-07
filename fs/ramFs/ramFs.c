@@ -135,7 +135,7 @@ void ramFs_getNodeDescriptor(struct deviceFs *device,struct fs_node_descriptor *
     printf(1,"\nGET NODE DESCRIPTOR: %s\n",path);
     
     ret=split(path,nodeName,RAMFS_FILENAME_MAX_LENGTH,'/',depth);
-    ret++;
+    depth++;
     
     while(ret>=0)/*finche' la split non ritorna -1*/
     {
@@ -176,7 +176,7 @@ void ramFs_getNodeDescriptor(struct deviceFs *device,struct fs_node_descriptor *
         {
             directory=tmp.cluster;
             ret=split(path,nodeName,RAMFS_FILENAME_MAX_LENGTH,'/',depth);
-            ret++;
+            depth++;
         }
     }
 }
