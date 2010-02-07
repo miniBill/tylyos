@@ -141,10 +141,10 @@ void ramFs_getNodeDescriptor(struct deviceFs *device,struct fs_node_descriptor *
     {
         struct ramFs_node tmp=ramFs_private_getNodeFromName(directory,nodeName);/*cerca nella cartella il nodo*/
         
-        printf(1,"ricerca:%d %s\n",depth,nodeName);
+        printf(1,"ricerca:%d %s\n",depth-1,nodeName);
         
         if(tmp.cluster!=0)/*controlla se e' stato trovato*/
-            printf(1,"trovato>: %s %d\n",tmp.name,tmp.size);
+            printf(1,"    trovato>: %s %d\n",tmp.name,tmp.size);
         else
             return;
         
@@ -226,5 +226,6 @@ fs_returnCode ramFs_deleteDir(struct fs_node_descriptor descriptor)
 }
 void ramFs_freeInodeInfoPointer(void *inodeInfo)
 {
+    kfree(inodeInfo);
 }
 
