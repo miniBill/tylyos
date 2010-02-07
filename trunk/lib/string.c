@@ -63,8 +63,8 @@ void itobase(int a, unsigned short base, char * buff) {
     }
 }
 
-int printf(unsigned int console, const char* format, ...) {
-  int size = 0;
+unsigned int printf(unsigned int console, const char* format, ...) {
+  unsigned  int size = 0;
   char ** arg = (char**) & format;
   char buf[33];//Longest string will bit a binary int32, so 33 chars are enough
   unsigned int i;
@@ -89,20 +89,20 @@ int printf(unsigned int console, const char* format, ...) {
               goto number;
               break;
             case 'c':
-              put(* ((char *) arg++),console);
+              put(* ((char *) arg++), console);
               size++;
               break;
             case 's':
-              write((char*) *arg,console);     /*watch out: Deep Magic*/
+              write((char*) *arg, console);    /*watch out: Deep Magic*/
               size += strlen((char *) * arg++);
               break;
 number:
-              write(buf,console);
+              write(buf, console);
               size += strlen(buf);
               break;
             default:
               itoa(* ((int *) arg++), buf);
-              write("Malformed format string!",console);
+              write("Malformed format string!", console);
               goto number;
               break;
             }
@@ -111,7 +111,7 @@ number:
         }
       else {
           if (format[i] != '\n')
-            put(format[i],console);
+            put(format[i], console);
           else
             nl(console);
           size++;
@@ -120,63 +120,116 @@ number:
   return size;
 }
 
-int findchar(const char *str,char c,unsigned int i){
-  unsigned int l=strlen(str);
-  i++;
-  if(l==0)//prevention >> debug
-    return -1;
-  unsigned int x=0;
-  do{
-    if(str[x++]==c)
-      i--;
-  }while(x<l /*don't go over*/ && i!=0 /*returns on the (i+1)th occurence*/);
-  if(i!=0)
-    return -1;
-  return x-1;
-}
-
-void substr(char *in,char *out,unsigned int max,unsigned int start,int count){
-  unsigned int l=strlen(in);
-  if(count<0)
-    count=l-start;
-  if(start>=l)
-  {
-    out[0]=0;
-    return;//these aren't the droids you're looking for
-  }
-  if((unsigned int)count>max)//again, prevention >> debug
-    count=max;
+unsigned int sprintf(char * out, unsigned int max, const char * format, ...) {
+  unsigned int size = 0;
+  char ** arg = (char**) & format;
+  char buf[33];//Longest string will bit a binary int32, so 33 chars are enough
   unsigned int i;
-  for(i=0;count>0;i++,count--)
-    out[i]=in[start + i];
-  out[i]=0;//out could be full of garbage
+  arg++;/*jump "format"*/
+  for (i = 0;size < max && i < strlen(format);i++) {
+      if (format[i] == '%') {
+          switch (format[i+1]) {
+            case 'd':
+              itoa(* ((int *) arg++), buf);
+              goto number;
+              break;
+            case 'x':
+              itobase(* ((int *) arg++), 16, buf);
+              goto number;
+              break;
+            case 'o':
+              itobase(* ((int *) arg++), 8, buf);
+              goto number;
+              break;
+            case 'b':
+              itobase(* ((int *) arg++), 2, buf);
+              goto number;
+              break;
+            case 'c':
+              out[size++] = * ((char *) arg++);
+              break;
+            case 's':
+              if(size+strlen((char *) *arg)<max){
+                strcpy((char*) *arg, out + size);
+                size += strlen((char *) * arg++);
+              }
+              else //no more space, return!
+                return size;
+              break;
+number:
+              if(size+strlen(buf) < max){
+                strcpy(buf, out + size);
+                size += strlen(buf);
+              }
+              else //no more space, return!
+                return size;
+              break;
+            default:
+              break;
+            }
+          i++;
+        }
+      else
+        out[size++] = format[i];
+    }
+  return size;
 }
 
-int split(char *in,char *out,unsigned int max,char c,unsigned int i){
-  if(i==0){
-    int index=findchar(in,c,0);
-    if(index<0)
+int findchar(const char *str, char c, unsigned int i) {
+  unsigned int l = strlen(str);
+  i++;
+  if (l == 0)//prevention >> debug
+    return -1;
+  unsigned int x = 0;
+  do {
+      if (str[x++] == c)
+        i--;
+    }
+  while (x < l /*don't go over*/ && i != 0 /*returns on the (i+1)th occurence*/);
+  if (i != 0)
+    return -1;
+  return x -1;
+}
+
+void substr(char *in, char *out, unsigned int max, unsigned int start, int count) {
+  unsigned int l = strlen(in);
+  if (count < 0)
+    count = l - start;
+  if (start >= l) {
+      out[0] = 0;
+      return;//these aren't the droids you're looking for
+    }
+  if ((unsigned int)count > max)//again, prevention >> debug
+    count = max;
+  unsigned int i;
+  for (i = 0;count > 0;i++, count--)
+    out[i] = in[start + i];
+  out[i] = 0;//out could be full of garbage
+}
+
+int split(char *in, char *out, unsigned int max, char c, unsigned int i) {
+  if (i == 0) {
+      int index = findchar(in, c, 0);
+      if (index < 0)
+        return index;
+      substr(in, out, max, 0, index);
+      return strlen(out);
+    }
+  int index = findchar(in, c, i - 1);
+  if (index < 0) {
+      out[0] = 0;
       return index;
-    substr(in,out,max,0,index);
-    return strlen(out);
-  }
-  int index=findchar(in,c,i-1);
-  if(index<0)
-  {
-    out[0]=0;
-    return index;
-  }
-  int medius=findchar(in,c,i);
-  if(medius<0)
+    }
+  int medius = findchar(in, c, i);
+  if (medius < 0)
     medius++;
-  substr(in,out,max,index+1,medius-index-1);
+  substr(in, out, max, index + 1, medius - index - 1);
   return strlen(out);
 }
 
-int strcmp(char *s, char *t)
-{
-    for ( ; *s == *t; s++, t++)
-        if (*s == '\0')
-        return 0;
-    return *s - *t;
+int strcmp(char *s, char *t) {
+  for (; *s == *t; s++, t++)
+    if (*s == '\0')
+      return 0;
+  return *s - *t;
 }

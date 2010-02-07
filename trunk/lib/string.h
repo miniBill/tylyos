@@ -11,7 +11,9 @@ void itoa(int a, char buff[11]);
 
 void itobase(int a, unsigned short base, char * buff);
 
-int printf(unsigned int console, const char* format, ...);
+unsigned int printf(unsigned int console, const char* format, ...);
+
+unsigned int sprintf(char * out,unsigned int max,const char * format, ...);
 
 int findchar(const char *str,char c,unsigned int i);
 

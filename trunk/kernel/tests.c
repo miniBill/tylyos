@@ -81,6 +81,16 @@ int splittest(void){
   return check(output,17);
 }
 
+int sprintftest(void){
+  char output[16] = "10,CA,a,ciao,13";
+  char buff[16]={0};
+  int test = 13;
+  write ("Prova sprintf:" ,0);
+  sprintf(buff,16, "%d,%x,%c,%s,%d", 10, 0xCA, 'a', "ciao", test );
+  printf(0,"%s",buff);
+  return check ( output, 14 );
+}
+
 int dinamictestOne ( void )
 {
     unsigned int pointera, pointerb, pointerc;
@@ -177,12 +187,13 @@ void doTests ( void )
 #ifdef FAST_TESTS
     test tests[2] = {
 #else
-    test tests[7] = {
+    test tests[8] = {
         pointertest,
         printftest,
         substrtest,
         findchartest,
         splittest,
+        sprintftest,
 #endif
         /*isoTest,*/
         dinamictestOne,
