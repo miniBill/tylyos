@@ -233,6 +233,8 @@ void _kmain(multiboot_info_t* mbd, unsigned int magicN) {
   
   printf(2,"TEST READ:\n");
   char letti[100];
+  seek(tFile1,10);
+  seek(tFile1,-2);
   unsigned int readRet=readFile(tFile1,letti,100);
   letti[readRet]=0;
   printf(2,"%d>%s\n",readRet,letti);
