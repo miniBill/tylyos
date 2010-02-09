@@ -108,8 +108,8 @@ struct deviceFs *newRamFs()
     pointer->getNodeDescriptor = ramFs_getNodeDescriptor;
     pointer->getNodeInfo = ramFs_getNodeInfo;
     pointer->readDir = ramFs_readDir;
-#ifdef RAMFS_STUBS
     pointer->readFile = ramFs_readFile;
+#ifdef RAMFS_STUBS
     pointer->writeFile = ramFs_writeFile;
     pointer->seek = ramFs_seek;
     
@@ -275,11 +275,52 @@ unsigned int ramFs_writeFile(struct fs_node_descriptor *descriptor,char *buffer,
 {
     //TODO: scrivere i dati contenuti in buffer nell' area dati del nodo e ritornare il numero di bytes scritti
 }
+#endif
 unsigned int ramFs_seek(struct fs_node_descriptor *descriptor,int offset)
 {
-    //TODO: spostare il puntatore al byte da leggere/scrivere contenuto nella struttura inodeInfo
+    /*TODO: testare*/
+    struct ramFs_inodeInfo *info=(struct ramFs_inodeInfo*)descriptor->inodeInfo;
+    
+    struct ramFs_node nodo=ramFs_private_getNodeFromName(info->directoryCluster,info->name);
+    if(nodo.cluster==0)
+    {
+        kernelPanic("ramFs_seek()","the descriptor point to an inesistent node");
+    }
+    
+    /*se e' un file e l'indice non sfora dal range*/
+    if(nodo.type==FS_FILE)
+    {
+        if( info->position+offset <= nodo.size && (int)info->position+offset >= 0 )
+        {
+            info->position+=offset;
+        }
+        else
+        {
+            if((int)info->position+offset < 0)
+                info->position=0;
+            else
+                info->position=nodo.size;
+        }
+    }
+    /*se e' una directory e l' indice non sfora dal numero di nodi figli*/
+    else if(nodo.type==FS_DIRECTORY)
+    {
+        if( info->position+offset < ramFs_private_getNodeCount(info->cluster) && (int)info->position+offset >= 0 )
+        {
+            info->position+=offset;
+        }
+        else
+        {
+            if((int)info->position+offset < 0)
+                info->position=0;
+            else
+                info->position=ramFs_private_getNodeCount(info->cluster)-1;
+        }
+    }
+    
+    return info->position;
 }
-#endif
+
 fs_returnCode ramFs_readDir(struct fs_node_descriptor *descriptor,struct fs_node_info *out)
 {
     //TODO: scrivere in out i dati del prossimo nodo figlio del nodo descriptor
