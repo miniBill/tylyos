@@ -71,18 +71,22 @@ extern void gdtFlush ( unsigned short selettoreSegmentoCodice,unsigned short sel
 /* 1 pagina = 4096 byte = 0x1000 */
 
 #define KERNEL_START        0x0 /* indirizzo di inizio kernel*/
-#define KERNEL_MEMORY_START 0x00400000 /* indirizzo inizio zona allocazioni del kernel  NB: deve essere multiplo di 0x1000*/
+#define KERNEL_END          0x989000 /* 10MB circa*/
+#define USER_START          KERNEL_END
+#define HEAP_START          0xB2D05000+KERNEL_END
+char *heapEndPointer;/*puntatore che indica fino a dove si estende l'heap*/
+//#define KERNEL_MEMORY_START 0x00400000 /* indirizzo inizio zona allocazioni del kernel  NB: deve essere multiplo di 0x1000*/
 
-#define MIN_HEAP_SIZE 0x98A000 /* 10MB circa di heap a cui verrà sommato il valore calcolato in base allla memoria fisica */
+//#define MIN_HEAP_SIZE 0x98A000 /* 10MB circa di heap a cui verrà sommato il valore calcolato in base allla memoria fisica */
 
 unsigned int loadedModuleSize;/*dimensione del modulo caricato in memoria, il valore viene usato per calcolare mallocMemoryStart*/
 char *loadedModule;/*indirizzo del modulo caricato dalla funzione hunt_load*/
-#define kernelHeapStart (KERNEL_MEMORY_START + ( ( ( 1024*1024 ) +1 ) *4 ))/*indirizzo dell area in cui inizia l'heap del kernel, l'area conterrà il modulo caricato da hunt_load e le allocazione dinamiche*/
-unsigned int mallocMemoryStart;/*indirizzo base dell heap*/
+//#define kernelHeapStart (KERNEL_MEMORY_START + ( ( ( 1024*1024 ) +1 ) *4 ))/*indirizzo dell area in cui inizia l'heap del kernel, l'area conterrà il modulo caricato da hunt_load e le allocazione dinamiche*/
+//unsigned int mallocMemoryStart;/*indirizzo base dell heap*/
 unsigned int memoriaFisica; /* byte di memoria fisica */
 
-unsigned int userMemoryStart; /* indirizzo di partenza del segmento user*/
-
+//unsigned int userMemoryStart; /* indirizzo di partenza del segmento user*/
+extern unsigned int l_pageDir;
 unsigned int *pageDir; /* area da 4096byte che ospita la pagedir del kernel */
 
 
@@ -165,6 +169,8 @@ struct bitmap
  * NB: le pagine fisiche a cui si riferisce la bitmap sono quelle mappate dopo il kernel
  */
 struct bitmap mappaPagineFisiche;
+
+char mappaPagineFisicheBitmapData[(1024*1024)/8];/*un bit per ogni pagina del sistema*/
 
 /*ritorna l'indice corrispondente ad una pagina fisica da utilizzare nella bitmap delle pagine fisiche*/
 unsigned int convertFisAddrToBitmapIndex ( unsigned int addr );

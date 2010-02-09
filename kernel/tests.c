@@ -97,9 +97,9 @@ int dinamictestOne ( void )
     int ret = 1;
     printf (0, "Test allocazione dinamica: fase1 " );
 
-    printf (0, "\n    kernel heap start: 0x%x", mallocMemoryStart );
-    printf (0, "\n    reserved kernel heap size:  %dMB and %dKB", ( userMemoryStart - mallocMemoryStart ) / 1000000, ( ( userMemoryStart - mallocMemoryStart ) % 1000000 ) / 1000 );
-    printf (0, "\n    user memory start: 0x%x", userMemoryStart );
+    printf (0, "\n    kernel heap start: 0x%x", HEAP_START );
+    //printf (0, "\n    reserved kernel heap size:  %dMB and %dKB", ( userMemoryStart - mallocMemoryStart ) / 1000000, ( ( userMemoryStart - mallocMemoryStart ) % 1000000 ) / 1000 );
+    printf (0, "\n    user memory start: 0x%x", USER_START );
     pointera = ( unsigned int ) kmalloc ( 4 );
     pointerb = ( unsigned int ) kmalloc ( 4 );
     pointerc = ( unsigned int ) kmalloc ( 4 );

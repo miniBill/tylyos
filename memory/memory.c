@@ -155,12 +155,12 @@ void* kmalloc ( unsigned int byte )
 
         /*controlla se vi � spazio prima del primo elemento*/
         if (
-            ( unsigned int ) kmallocList-mallocMemoryStart
+            ( unsigned int ) kmallocList-HEAP_START
             >= byte + sizeof ( struct memoryArea )
         )
         {
             /*printf("prima della lista %d\n", (unsigned int)kmallocList-mallocMemoryStart-sizeof(struct memoryArea));*/
-            pre= ( struct memoryArea* ) mallocMemoryStart;
+            pre= ( struct memoryArea* ) HEAP_START;
             next= ( struct memoryArea* ) kmallocList;
             pre->next=next;
             pre->size=byte;
@@ -199,7 +199,7 @@ void* kmalloc ( unsigned int byte )
         /*verr� quindi allocato alla fine della lista*/
         next= ( struct memoryArea* ) ( ( unsigned int ) pre+pre->size+sizeof ( struct memoryArea ) );
         /*controlla di non sforare nella memoria user*/
-        if ( ( unsigned int ) next+sizeof ( struct memoryArea ) +byte< ( unsigned int ) userMemoryStart )
+        if ( ( unsigned int ) next+sizeof ( struct memoryArea ) +byte< ( unsigned int ) heapEndPointer )
         {
             pre->next=next;
             next->next=0;
@@ -217,7 +217,7 @@ void* kmalloc ( unsigned int byte )
     else
     {
         /*lista allocazioni vuota*/
-        kmallocList= ( struct memoryArea* ) mallocMemoryStart;
+        kmallocList= ( struct memoryArea* ) HEAP_START;
         kmallocList->next=0;
         kmallocList->size=byte;
 
@@ -277,32 +277,25 @@ void initPaging ( void )
     int pageIndex,pageTableIndex;
     unsigned int addMem;
     char flags=PAG_PRESENT|PAG_READWRITE|PAG_SUPERVISOR|PAG_4KPAGE;
-    int c=0;
     asm ( "cli" );
     
-    mallocMemoryStart = kernelHeapStart+loadedModuleSize;
+    pageDir=&l_pageDir;
+   
 
     /*mappa fino a USER_START le pagine 1:1 con la memoria fisica*/
-    fisicPointer=KERNEL_START;
-    pageDir= ( unsigned int* ) KERNEL_MEMORY_START;
-    pointer= ( unsigned int ) pageDir+0x1000;
-
-
-
-    addMem=memoriaFisica/4;/*un quarto della memoria fisica e' riservata al kernel*/
-    if ( addMem<MIN_HEAP_SIZE ) /*se un quarto della memoria non e' abbastanza e' meglio garantirsi un minimo*/
-        addMem=MIN_HEAP_SIZE;
-    /*printf("addMem: %d ",addMem);*/
-    userMemoryStart=mallocMemoryStart+addMem;
-    userMemoryStart+= 0x1000- ( userMemoryStart%0x1000 );/* in modo da allineare l' indirizzo a 0x1000 (dimensione di una pagina) */
-
-
-    for ( c=0;c< ( 1024*1024 ) +1;c++ )
+    /*azzera le page tables e la pagedir*/
+    for (unsigned int c=0;c< ( 1024*1024 ) +1;c++ )
         pageDir[c]=0;
+    
 
-    pageIndex=0;
-    pageTableIndex=0;
-    while ( fisicPointer<userMemoryStart )
+     pageIndex=0;
+     pageTableIndex=0;
+     fisicPointer=0;
+     
+    pointer= ( unsigned int ) pageDir+0x1000;
+    
+     
+    while ( fisicPointer<KERNEL_END )
     {
         /*passa i selettori di pagina della pagetabla puntata da pointer*/
         setPageSelector ( ( unsigned int* ) ( pointer+ ( pageIndex*4 ) ),fisicPointer>>12,flags );
@@ -310,8 +303,8 @@ void initPaging ( void )
         if ( pageIndex==1024 )
             pageIndex=0;
         fisicPointer+=0x1000;
-
-
+        
+        
         if ( pageIndex==0 )
         {
             /*se li ha passati tutti crea una nuova page table*/
@@ -320,32 +313,33 @@ void initPaging ( void )
             pageTableIndex++;
         }
     }
-
+    
     setPageTableSelector ( ( unsigned int* ) ( ( unsigned int ) pageDir+ ( pageTableIndex*4 ) ),pointer>>12,flags );
+    
 
     /*segmento codice user mode*/
-    gdtSet ( 3, userMemoryStart, ( 0xFFFFFFFF-userMemoryStart ) /0x1000,MEM_GRANULAR|MEM_32,
+    gdtSet ( 3, USER_START, ( HEAP_START-USER_START ) /0x1000,MEM_GRANULAR|MEM_32,
              MEM_PRESENT|MEM_CODE_DATA|MEM_RW|MEM_USER|MEM_CODE );
     /*segmento dati user mode*/
-    gdtSet ( 4, userMemoryStart, ( 0xFFFFFFFF-userMemoryStart ) /0x1000,MEM_GRANULAR|MEM_32,
+    gdtSet ( 4, USER_START, ( HEAP_START-USER_START ) /0x1000,MEM_GRANULAR|MEM_32,
              MEM_PRESENT|MEM_CODE_DATA|MEM_RW|MEM_USER|MEM_DATA );
 
-
-
+printf(0,"\ninitPaging(): questo e' un blocco di sicurezza, l' allocazione dinamica non e' ancora pronta ;-)\nla pagedir funziona e si trova qui: 0x%x",(unsigned int)pageDir);
+         while(1);   
 
     kmallocList=0;/*nessuna allocazione*/
-
+   
     write_cr3 ( ( unsigned int ) pageDir ); /* put that page directory address into CR3 */
     write_cr0 ( read_cr0() | 0x80000000 ); /* set the paging bit in CR0 to 1 */
-
+ 
     asm ( "sti" );
 
-
+   
     /*inizializzazione gestione della memoria fisica*/
 
     /*alloca la bitmap per le pagine fisiche*/
-    mappaPagineFisiche.size= ( memoriaFisica-userMemoryStart ) /0x1000;
-    mappaPagineFisiche.data=kmalloc ( ( mappaPagineFisiche.size/8 ) +1 );/*ok, non avevo voglia di fare un controllo sul resto della divizione per 8 ed ho aggiunto +1*/
+    mappaPagineFisiche.size= ( memoriaFisica-KERNEL_END ) /0x1000;
+    mappaPagineFisiche.data=(unsigned int*)mappaPagineFisicheBitmapData;/*ok, non avevo voglia di fare un controllo sul resto della divizione per 8 ed ho aggiunto +1*/
 
 }
 
@@ -362,7 +356,7 @@ void setPageTableSelector ( unsigned int *obj,unsigned int tableAdress,unsigned 
 }
 
 /* obj: indirizzo dell'area su cui scrivere il selettore
- * TableAdress: indirizzo della pagina nella memoria (NB: una pagina occupa 4K
+ * pageAdress: indirizzo della pagina nella memoria (NB: una pagina occupa 4K
  * questo indirizzo indica i 20 bit pi� significativi dell indirizzo)
  */
 void setPageSelector ( unsigned int *obj,unsigned int pageAdress,unsigned int flags )
@@ -495,12 +489,12 @@ unsigned int getFreePage()
 /*ritorna l'indice corrispondente ad una pagina fisica da utilizzare nella bitmap delle pagine fisiche*/
 unsigned int convertFisAddrToBitmapIndex ( unsigned int addr )
 {
-    return ( addr-userMemoryStart ) /0x1000;
+    return ( addr-KERNEL_END ) /0x1000;
 }
 /*ritorna l'indirizzo fisico corrispondente ad un determinato indice della bitmap delle pagine fisiche*/
 unsigned int convertBitmapIndexToFisAddr ( unsigned int index )
 {
-    return ( index*0x1000 ) +userMemoryStart;
+    return ( index*0x1000 ) +KERNEL_END;
 }
 
 /*setta lo stato di una pagina fisica nella bitmap
