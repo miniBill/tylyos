@@ -278,14 +278,12 @@ void initPaging ( void )
     char flags=PAG_PRESENT|PAG_READWRITE|PAG_SUPERVISOR|PAG_4KPAGE;
     asm ( "cli" );
     
-    pageDir=&l_pageDir;
+    pageDir=&l_pageDir;/*legge il parametro passato dal linker*/
     
     
-    user_start=kernel_end+loadedModuleSize;
-    printf(0,"user start: %x\n",user_start);
+    user_start=kernel_end+loadedModuleSize;/*allarga l'area kernel per far spazio al modulo caricato da grub*/
     /*allinea l'indirizzo a 0x1000*/
     user_start+=0x1000-(user_start%0x1000);
-    printf(0,"user start: %x\n",user_start);
    
 
     /*mappa fino a USER_START le pagine 1:1 con la memoria fisica*/
@@ -333,6 +331,7 @@ void initPaging ( void )
 
 
     kmallocList=0;/*nessuna allocazione*/
+    heapEndPointer=HEAP_START;/*nessuna pagina fisica dedicata all heap*/
    
     write_cr3 ( ( unsigned int ) pageDir ); /* put that page directory address into CR3 */
     write_cr0 ( read_cr0() | 0x80000000 ); /* set the paging bit in CR0 to 1 */

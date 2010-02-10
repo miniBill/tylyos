@@ -203,7 +203,7 @@ void _kmain(multiboot_info_t* mbd, unsigned int magicN) {
   initPaging();
   OK(t++);
   
-  printf(0,"\ninitPaging(): questo e' un blocco di sicurezza, l' allocazione dinamica non e' ancora pronta ;-)\nla pagedir funziona e si trova qui: 0x%x",(unsigned int)pageDir);
+  printf(0,"\n questo e' un blocco di sicurezza\n l' allocazione dinamica non e' ancora pronta ;-)\nla pagedir funziona e si trova qui: 0x%x",(unsigned int)pageDir);
   while(1);   
 
   /*here start the true tests*/
