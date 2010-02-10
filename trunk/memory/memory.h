@@ -71,9 +71,9 @@ extern void gdtFlush ( unsigned short selettoreSegmentoCodice,unsigned short sel
 /* 1 pagina = 4096 byte = 0x1000 */
 
 #define KERNEL_START        0x0 /* indirizzo di inizio kernel*/
-#define KERNEL_END          0x989000 /* 10MB circa*/
-#define USER_START          KERNEL_END
-#define HEAP_START          0xB2D05000+KERNEL_END
+unsigned int kernel_end;    /*indirizzo finale dell immagine del kernel*/
+unsigned int user_start;    /*indirizzo iniziale dell area user, viene calcolata sommando a kernel_end la dimensione dell immagine ed alineando l'indirizzo a 0x1000*/
+#define HEAP_START          0xB2D05000+user_start /*per lasciare circa 3GB all area user*/
 char *heapEndPointer;/*puntatore che indica fino a dove si estende l'heap*/
 //#define KERNEL_MEMORY_START 0x00400000 /* indirizzo inizio zona allocazioni del kernel  NB: deve essere multiplo di 0x1000*/
 
@@ -86,7 +86,7 @@ char *loadedModule;/*indirizzo del modulo caricato dalla funzione hunt_load*/
 unsigned int memoriaFisica; /* byte di memoria fisica */
 
 //unsigned int userMemoryStart; /* indirizzo di partenza del segmento user*/
-extern unsigned int l_pageDir;
+extern unsigned int l_pageDir,l_end;
 unsigned int *pageDir; /* area da 4096byte che ospita la pagedir del kernel */
 
 
@@ -145,7 +145,7 @@ struct pagina
 
 /*aggiunge con un insert sort una pagina nella lista delle pagine*/
 /*NON MODIFICA LA BITMAP*/
-void addPaginaToList ( struct pagina *p );
+void addPaginaToTaskPageList ( struct pagina *p );
 
 /*rimuove una pagina dalla lista delle pagine  E DEALLOCA LA STRUTTURA*/
 /*NON MODIFICA LA BITMAP*/
@@ -166,11 +166,11 @@ struct bitmap
  * 0 non usata
  * 1 usata
  *
- * NB: le pagine fisiche a cui si riferisce la bitmap sono quelle mappate dopo il kernel
+ * NB: le pagine fisiche a cui si riferisce la bitmap sono quelle mappate dopo il kernel e vengono usate sia per i processi sia per l'heap del kernel stesso
  */
 struct bitmap mappaPagineFisiche;
 
-char mappaPagineFisicheBitmapData[(1024*1024)/8];/*un bit per ogni pagina del sistema*/
+char mappaPagineFisicheBitmapData[(1024*1024)/8];/*un bit per ogni pagina del sistema, stimato per eccesso in modo di garantire 4GB di ram fisica*/
 
 /*ritorna l'indice corrispondente ad una pagina fisica da utilizzare nella bitmap delle pagine fisiche*/
 unsigned int convertFisAddrToBitmapIndex ( unsigned int addr );
@@ -181,7 +181,7 @@ unsigned int convertBitmapIndexToFisAddr ( unsigned int index );
  * 0 libera
  * 1 allocata
  */
-void setPaginaFisica ( unsigned int index,unsigned int stato );
+void setPaginaFisica ( unsigned int indirizzo,unsigned int stato );
 
 /*funzione da utilizzare per l'allocazione di una nuova pagina per un task*/
 struct pagina *allocaNuovaPagina ( unsigned int procID,unsigned int indirizzoLog );

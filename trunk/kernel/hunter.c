@@ -36,8 +36,8 @@ module_t *hunt_getArray(multiboot_info_t * info){
 /*copia il modulo all indirizzo specificato da kernelHeapStart e setta loadedModuleSize in modo da non aver problemi con l'inizializzazione della memoria*/
 void hunt_load(module_t *modulo)
 {
-    /*loadedModuleSize=modulo->mod_end-modulo->mod_start;
-    loadedModule=(char*)kernelHeapStart;
+    loadedModuleSize=modulo->mod_end-modulo->mod_start;
+    loadedModule=(char*)kernel_end;
     memcpy((char*)modulo->mod_start,loadedModuleSize,loadedModule);
-    printf(0,"    modulo caricato in memoria, %dByte [%d,%d]\n",loadedModuleSize,*((unsigned int*)loadedModule),*((unsigned int*)(loadedModule+4)));*/
+    printf(0,"    modulo caricato in memoria, %dByte [%d,%d]\n",loadedModuleSize,*((unsigned int*)loadedModule),*((unsigned int*)(loadedModule+4)));
 }

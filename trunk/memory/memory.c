@@ -275,11 +275,17 @@ void initPaging ( void )
 {
     unsigned int pointer,fisicPointer;
     int pageIndex,pageTableIndex;
-    unsigned int addMem;
     char flags=PAG_PRESENT|PAG_READWRITE|PAG_SUPERVISOR|PAG_4KPAGE;
     asm ( "cli" );
     
     pageDir=&l_pageDir;
+    
+    
+    user_start=kernel_end+loadedModuleSize;
+    printf(0,"user start: %x\n",user_start);
+    /*allinea l'indirizzo a 0x1000*/
+    user_start+=0x1000-(user_start%0x1000);
+    printf(0,"user start: %x\n",user_start);
    
 
     /*mappa fino a USER_START le pagine 1:1 con la memoria fisica*/
@@ -295,7 +301,7 @@ void initPaging ( void )
     pointer= ( unsigned int ) pageDir+0x1000;
     
      
-    while ( fisicPointer<KERNEL_END )
+    while ( fisicPointer<user_start )
     {
         /*passa i selettori di pagina della pagetabla puntata da pointer*/
         setPageSelector ( ( unsigned int* ) ( pointer+ ( pageIndex*4 ) ),fisicPointer>>12,flags );
@@ -318,14 +324,13 @@ void initPaging ( void )
     
 
     /*segmento codice user mode*/
-    gdtSet ( 3, USER_START, ( HEAP_START-USER_START ) /0x1000,MEM_GRANULAR|MEM_32,
+    gdtSet ( 3, user_start, ( HEAP_START-user_start ) /0x1000,MEM_GRANULAR|MEM_32,
              MEM_PRESENT|MEM_CODE_DATA|MEM_RW|MEM_USER|MEM_CODE );
     /*segmento dati user mode*/
-    gdtSet ( 4, USER_START, ( HEAP_START-USER_START ) /0x1000,MEM_GRANULAR|MEM_32,
+    gdtSet ( 4, user_start, ( HEAP_START-user_start ) /0x1000,MEM_GRANULAR|MEM_32,
              MEM_PRESENT|MEM_CODE_DATA|MEM_RW|MEM_USER|MEM_DATA );
 
-printf(0,"\ninitPaging(): questo e' un blocco di sicurezza, l' allocazione dinamica non e' ancora pronta ;-)\nla pagedir funziona e si trova qui: 0x%x",(unsigned int)pageDir);
-         while(1);   
+
 
     kmallocList=0;/*nessuna allocazione*/
    
@@ -338,7 +343,7 @@ printf(0,"\ninitPaging(): questo e' un blocco di sicurezza, l' allocazione dinam
     /*inizializzazione gestione della memoria fisica*/
 
     /*alloca la bitmap per le pagine fisiche*/
-    mappaPagineFisiche.size= ( memoriaFisica-KERNEL_END ) /0x1000;
+    mappaPagineFisiche.size= ( memoriaFisica-user_start ) /0x1000;
     mappaPagineFisiche.data=(unsigned int*)mappaPagineFisicheBitmapData;/*ok, non avevo voglia di fare un controllo sul resto della divizione per 8 ed ho aggiunto +1*/
 
 }
@@ -389,7 +394,7 @@ void setBitExt ( unsigned int *bitmap,unsigned int x,unsigned int value )
 
 /*aggiunge con un insert sort una pagina nella lista delle pagine*/
 /*NON MODIFICA LA BITMAP*/
-void addPaginaToList ( struct pagina *p )
+void addPaginaToTaskPageList ( struct pagina *p )
 {
     /*TODO: da testare*/
     struct pagina *pointer;
@@ -489,20 +494,21 @@ unsigned int getFreePage()
 /*ritorna l'indice corrispondente ad una pagina fisica da utilizzare nella bitmap delle pagine fisiche*/
 unsigned int convertFisAddrToBitmapIndex ( unsigned int addr )
 {
-    return ( addr-KERNEL_END ) /0x1000;
+    return ( addr-user_start ) /0x1000;
 }
 /*ritorna l'indirizzo fisico corrispondente ad un determinato indice della bitmap delle pagine fisiche*/
 unsigned int convertBitmapIndexToFisAddr ( unsigned int index )
 {
-    return ( index*0x1000 ) +KERNEL_END;
+    return ( index*0x1000 ) +user_start;
 }
 
 /*setta lo stato di una pagina fisica nella bitmap
  * 0 libera
  * 1 allocata
  */
-void setPaginaFisica ( unsigned int index,unsigned int stato )
+void setPaginaFisica ( unsigned int indirizzo,unsigned int stato )
 {
+    unsigned int index=convertFisAddrToBitmapIndex(indirizzo);
     if ( index < mappaPagineFisiche.size )
     {
         setBitExt ( mappaPagineFisiche.data,index,stato );
@@ -524,10 +530,10 @@ struct pagina *allocaNuovaPagina ( unsigned int procID,unsigned int indirizzoLog
     {
         kernelPanic ( "allocaNuovaPagina()","the fisic memory is full. I can't allocate a new page, sorry." );
     }
-    setPaginaFisica ( convertFisAddrToBitmapIndex ( temp->indirizzoFis ),1 );/*segna la pagina come utilizzata*/
+    setPaginaFisica ( temp->indirizzoFis ,1 );/*segna la pagina come utilizzata*/
 
     /*aggiunge alla lista delle pagine*/
-    addPaginaToList ( temp );
+    addPaginaToTaskPageList ( temp );
 
     return temp;
 }
@@ -555,7 +561,7 @@ unsigned int deallocaPagina ( unsigned int procID,unsigned int indirizzoLog )
     /*aggiorna la bitmap se necessario*/
     if ( pointer->indirizzoFis!=0 ) /*se la pagina e' in memoria RAM*/
     {
-        setPaginaFisica ( convertFisAddrToBitmapIndex ( pointer->indirizzoFis ),0 );
+        setPaginaFisica ( pointer->indirizzoFis ,0 );
     }
     else/*se la pagina non e' in memoria RAM*/
     {
