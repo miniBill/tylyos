@@ -20,7 +20,7 @@ ASFLAGS:= -march=i386
 OBJ= bootloader/loader.o \
      kernel/stdio.o kernel/kernel.o kernel/tests.o kernel/hunter.o \
      lib/string.o lib/life.o \
-     memory/memory.o memory/gdt.o memory/paging.o \
+     memory/memory.o memory/gdt.o memory/paging.o memory/heap.o \
        drivers/screen/screen.o \
        drivers/keyboard/keyboard.o \
        drivers/timer/timer.o \

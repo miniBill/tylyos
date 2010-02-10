@@ -19,6 +19,7 @@
 #include "task.h"
 #include <memory/memory.h>
 #include <lib/string.h>
+#include <kernel/kernel.h>
 
 void initTaskManagement()
 {
@@ -230,4 +231,65 @@ unsigned int getNewProcID()
 
         id++;
     }
+}
+
+
+/*funzione da utilizzare per l'allocazione di una nuova pagina per un task*/
+struct pagina *allocaNuovaPagina ( unsigned int procID,unsigned int indirizzoLog )
+{
+    struct pagina *temp=kmalloc ( sizeof ( struct pagina ) );
+    
+    /*setta i valori*/
+    temp->procID=procID;
+    temp->indirizzoLog=indirizzoLog;
+    
+    temp->indirizzoFis=getFreePage();/*cerca una pagina fisica libera*/
+    /*TODO: verificare che il controllo funzioni*/
+    if ( temp->indirizzoFis==0 )
+    {
+        kernelPanic ( "allocaNuovaPagina()","the fisic memory is full. I can't allocate a new page, sorry." );
+    }
+    setPaginaFisica ( temp->indirizzoFis ,1 );/*segna la pagina come utilizzata*/
+    
+    /*aggiunge alla lista delle pagine*/
+    addPaginaToTaskPageList ( temp );
+    
+    return temp;
+}
+
+/*funzione da utilizzare per la deallocazione di una pagina di un task*/
+unsigned int deallocaPagina ( unsigned int procID,unsigned int indirizzoLog )
+{
+    struct pagina *pointer;
+    pointer=getTask ( procID )->listaPagine;
+    
+    /*cerca la pagina nella lista*/
+    while ( pointer!=0 )
+    {
+        if ( pointer->procID==procID && pointer->indirizzoLog==indirizzoLog )
+            break;
+        pointer=pointer->next;
+    }
+    
+    if ( pointer==0 ) /*se non ha trovato la pagina*/
+    {
+        kernelPanic ( "deallocaPagina()","I can't find the page to delete." );
+        return 0;
+    }
+    
+    /*aggiorna la bitmap se necessario*/
+    if ( pointer->indirizzoFis!=0 ) /*se la pagina e' in memoria RAM*/
+    {
+        setPaginaFisica ( pointer->indirizzoFis ,0 );
+    }
+    else/*se la pagina non e' in memoria RAM*/
+    {
+        /*TODO: implementare la deallocazione nel caso la pagina sia swappata sull hard disk*/
+        kernelPanic ( "deallocaPagina()","I can't remove a swapped page." );
+    }
+    
+    /*rimuove la pagina dalla lista e dealloca la struttura*/
+    removePaginaFromList ( procID,indirizzoLog );
+    
+    return 1;
 }

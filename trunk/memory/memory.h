@@ -19,6 +19,8 @@
 #ifndef MEMORY_H_
 #define MEMORY_H_
 
+#include <memory/heap.h>
+
 void memcpy(char * source, unsigned int count, char * dest);
 
 unsigned int getEBP();
@@ -75,17 +77,13 @@ unsigned int kernel_end;    /*indirizzo finale dell immagine del kernel*/
 unsigned int user_start;    /*indirizzo iniziale dell area user, viene calcolata sommando a kernel_end la dimensione dell immagine ed alineando l'indirizzo a 0x1000*/
 #define HEAP_START          0xB2D05000+user_start /*per lasciare circa 3GB all area user*/
 char *heapEndPointer;/*puntatore che indica fino a dove si estende l'heap*/
-//#define KERNEL_MEMORY_START 0x00400000 /* indirizzo inizio zona allocazioni del kernel  NB: deve essere multiplo di 0x1000*/
 
-//#define MIN_HEAP_SIZE 0x98A000 /* 10MB circa di heap a cui verrà sommato il valore calcolato in base allla memoria fisica */
 
 unsigned int loadedModuleSize;/*dimensione del modulo caricato in memoria, il valore viene usato per calcolare mallocMemoryStart*/
 char *loadedModule;/*indirizzo del modulo caricato dalla funzione hunt_load*/
-//#define kernelHeapStart (KERNEL_MEMORY_START + ( ( ( 1024*1024 ) +1 ) *4 ))/*indirizzo dell area in cui inizia l'heap del kernel, l'area conterrà il modulo caricato da hunt_load e le allocazione dinamiche*/
-//unsigned int mallocMemoryStart;/*indirizzo base dell heap*/
+
 unsigned int memoriaFisica; /* byte di memoria fisica */
 
-//unsigned int userMemoryStart; /* indirizzo di partenza del segmento user*/
 extern unsigned int l_pageDir,l_end;
 unsigned int *pageDir; /* area da 4096byte che ospita la pagedir del kernel */
 
@@ -97,13 +95,6 @@ void setPageSelector ( unsigned int *obj,unsigned int pageAdress,unsigned int fl
 
 int getBitExt ( unsigned int *bitmap,unsigned int x );
 void setBitExt ( unsigned int *bitmap,unsigned int x,unsigned int value );
-
-
-
-
-
-void* kmalloc ( unsigned int byte );
-void kfree ( void *pointer );
 
 
 /* ritornano le componenti dell indirizzo logico */
@@ -122,21 +113,13 @@ extern void write_cr0 ( unsigned int data );
 extern unsigned int read_cr3();
 extern void write_cr3 ( unsigned int data );
 
-/*struttura lista allocazioni*/
-struct memoryArea
-{
-    unsigned int size;/*dimensione in byte*/
-    struct memoryArea *next;/*indirizzo header della prossima area*/
-} __attribute__ ( ( packed ) );
-
-struct memoryArea *kmallocList;/*liste aree allocate e libere*/
 
 
 /*descrittore di pagina fisica*/
 struct pagina
 {
     unsigned int procID;
-    unsigned int indirizzoLog;   /*indirizzo logino alla quale èappata la pagina nel processo*/
+    unsigned int indirizzoLog;   /*indirizzo logino alla quale e' mappata la pagina nel processo*/
     unsigned int indirizzoFis;    /*indirizzo fisico, se uguale a 0 e' swappata sull hd */
     struct pagina *next;
 };
@@ -182,11 +165,5 @@ unsigned int convertBitmapIndexToFisAddr ( unsigned int index );
  * 1 allocata
  */
 void setPaginaFisica ( unsigned int indirizzo,unsigned int stato );
-
-/*funzione da utilizzare per l'allocazione di una nuova pagina per un task*/
-struct pagina *allocaNuovaPagina ( unsigned int procID,unsigned int indirizzoLog );
-
-/*funzione da utilizzare per la deallocazione di una pagina di un task*/
-unsigned int deallocaPagina ( unsigned int procID,unsigned int indirizzoLog );
 
 #endif
