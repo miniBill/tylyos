@@ -85,5 +85,11 @@ int addTask(char nome[MAX_TASK_NAME_LEN],char privilegi);
 int removeTask(unsigned int procID);
 struct taskStruct *getTask(unsigned int procID);
 
+/*funzione da utilizzare per l'allocazione di una nuova pagina per un task*/
+struct pagina *allocaNuovaPagina ( unsigned int procID,unsigned int indirizzoLog );
+
+/*funzione da utilizzare per la deallocazione di una pagina di un task*/
+unsigned int deallocaPagina ( unsigned int procID,unsigned int indirizzoLog );
+
 #endif
 
