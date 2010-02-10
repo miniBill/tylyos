@@ -99,7 +99,7 @@ int dinamictestOne ( void )
 
     printf (0, "\n    kernel heap start: 0x%x", HEAP_START );
     //printf (0, "\n    reserved kernel heap size:  %dMB and %dKB", ( userMemoryStart - mallocMemoryStart ) / 1000000, ( ( userMemoryStart - mallocMemoryStart ) % 1000000 ) / 1000 );
-    printf (0, "\n    user memory start: 0x%x", USER_START );
+    printf (0, "\n    user memory start: 0x%x", user_start );
     pointera = ( unsigned int ) kmalloc ( 4 );
     pointerb = ( unsigned int ) kmalloc ( 4 );
     pointerc = ( unsigned int ) kmalloc ( 4 );

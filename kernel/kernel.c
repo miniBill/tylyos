@@ -144,6 +144,8 @@ void _kmain(multiboot_info_t* mbd, unsigned int magicN) {
   module_t *moduloGrub;
 
   loadedModuleSize=0;
+  
+  kernel_end=(unsigned int)&l_end;/*NON togliere da qui'!!!*/
 
   magicNumber = magicN;
   multiBootInfo = mbd;
@@ -200,6 +202,9 @@ void _kmain(multiboot_info_t* mbd, unsigned int magicN) {
   write("Inizializzazione Paging\n",0);
   initPaging();
   OK(t++);
+  
+  printf(0,"\ninitPaging(): questo e' un blocco di sicurezza, l' allocazione dinamica non e' ancora pronta ;-)\nla pagedir funziona e si trova qui: 0x%x",(unsigned int)pageDir);
+  while(1);   
 
   /*here start the true tests*/
 
