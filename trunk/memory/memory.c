@@ -45,6 +45,11 @@ void memcpy ( char * source, unsigned int count, char * dest )  /*TODO: testare*
    
 }
 
+void invalidateLookasideBuffer()/*costringe la cpu ad aggiornare il lookaside buffer*/
+{
+    write_cr3 ( read_cr3() );
+}
+
 /*ritorna il valore del registro EBP*/
 unsigned int getEBP()
 {
@@ -106,9 +111,16 @@ void initGdt()
 /*######################### Paginazione ####################################*/
 
 /* ritorna l'indirizzo che indica un selettore di pagetable o pagina */
-inline unsigned int getFisicAdressFromSelector ( unsigned int sel )
+inline unsigned int fisicAdressFromSelector ( unsigned int sel )
 {
     return sel&0xFFFFF000;
+}
+
+unsigned int fisicAdressFromSelectorExt ( unsigned int tableIndex,unsigned int pageIndex )
+{
+    unsigned int pointer=(unsigned int)pageDir+0x1000;
+    unsigned int *obj=( unsigned int* ) ( pointer+(0x1000*tableIndex) + ( pageIndex*4 ) );
+    return fisicAdressFromSelector(*obj);
 }
 
 /* ritorna l'indirizzo logico prendendo come parametri pagetable pagina e offset */
@@ -148,14 +160,7 @@ void initPaging ( void )
     
     user_start=kernel_end+loadedModuleSize;/*allarga l'area kernel per far spazio al modulo caricato da grub*/
     /*allinea l'indirizzo a 0x1000*/
-    user_start+=0x1000-(user_start%0x1000);
-   
-
-    /*mappa fino a USER_START le pagine 1:1 con la memoria fisica*/
-    /*azzera le page tables e la pagedir*/
-    for (unsigned int c=0;c< ( 1024*1024 ) +1;c++ )
-        pageDir[c]=0;
-    
+    user_start+=0x1000-(user_start%0x1000);    
 
      pageIndex=0;
      pageTableIndex=0;
@@ -163,28 +168,31 @@ void initPaging ( void )
      
     pointer= ( unsigned int ) pageDir+0x1000;
     
-     
-    while ( fisicPointer<user_start )
+    /*setta tutte le pagetables nella pagedir*/
+    for(unsigned int c=0;c<1024;c++)
     {
-        /*passa i selettori di pagina della pagetabla puntata da pointer*/
-        setPageSelector ( ( unsigned int* ) ( pointer+ ( pageIndex*4 ) ),fisicPointer>>12,flags );
-        pageIndex++;
-        if ( pageIndex==1024 )
-            pageIndex=0;
-        fisicPointer+=0x1000;
-        
-        
-        if ( pageIndex==0 )
+        setPageTableSelector (c,pointer+(0x1000*c),flags );
+        /*azzera le tabelle*/
+        for(unsigned int z=0;z<1024;z++)
         {
-            /*se li ha passati tutti crea una nuova page table*/
-            setPageTableSelector ( ( unsigned int* ) ( ( unsigned int ) pageDir+ ( pageTableIndex*4 ) ),pointer>>12,flags );
-            pointer+=0x1000;
-            pageTableIndex++;
+            setPageSelector(c,z,0,PAG_NOTPRESENT);
         }
     }
     
-    setPageTableSelector ( ( unsigned int* ) ( ( unsigned int ) pageDir+ ( pageTableIndex*4 ) ),pointer>>12,flags );
-    
+    /*setta le pagine fino all area user*/
+    while ( fisicPointer<user_start )
+    {
+        setPageSelector ( pageTableIndex, pageIndex,fisicPointer,flags );
+        
+        pageIndex++;
+        fisicPointer+=0x1000;
+        
+        if ( pageIndex==1024 )
+        {        
+            pageIndex=0;
+            pageTableIndex++;
+        }
+    }
 
     /*segmento codice user mode*/
     gdtSet ( 3, user_start, ( HEAP_START-user_start ) /0x1000,MEM_GRANULAR|MEM_32,
@@ -193,8 +201,6 @@ void initPaging ( void )
     gdtSet ( 4, user_start, ( HEAP_START-user_start ) /0x1000,MEM_GRANULAR|MEM_32,
              MEM_PRESENT|MEM_CODE_DATA|MEM_RW|MEM_USER|MEM_DATA );
 
-
-
     kmallocList=0;/*nessuna allocazione*/
     heapEndPointer=(char*)HEAP_START;/*nessuna pagina fisica dedicata all heap*/
    
@@ -202,37 +208,38 @@ void initPaging ( void )
     write_cr0 ( read_cr0() | 0x80000000 ); /* set the paging bit in CR0 to 1 */
  
     asm ( "sti" );
-
    
     /*inizializzazione gestione della memoria fisica*/
-
     /*alloca la bitmap per le pagine fisiche*/
     mappaPagineFisiche.size= ( memoriaFisica-user_start ) /0x1000;
     mappaPagineFisiche.data=(unsigned int*)mappaPagineFisicheBitmapData;/*ok, non avevo voglia di fare un controllo sul resto della divizione per 8 ed ho aggiunto +1*/
-
 }
 
 /*setta il valore di un selettore*/
-/* obj: indirizzo dell'area su cui scrivere il selettore
+/* pageTableIndex: indice che specifica la page table
  * TableAdress: indirizzo della tabella nella memoria (NB: una tabella occupa una pagina da 4K
- * questo indirizzo indica i 20 bit pi� significativi dell indirizzo della tabella)
+ * 
  */
-void setPageTableSelector ( unsigned int *obj,unsigned int tableAdress,unsigned int flags )
+void setPageTableSelector (unsigned int pageTableIndex ,unsigned int tableAdress,unsigned int flags )
 {
+    unsigned int *obj=( unsigned int* ) ( ( unsigned int ) pageDir + ( pageTableIndex*4 ) );
     *obj=0;
     *obj=flags;
-    *obj|=tableAdress<<12;
+    *obj|= ( tableAdress ) & 0xFFFFF000;
 }
 
-/* obj: indirizzo dell'area su cui scrivere il selettore
+/* pageTableIndex: indice che specifica la page table
+ * pageIndex: indice della pagina nella pagetable
  * pageAdress: indirizzo della pagina nella memoria (NB: una pagina occupa 4K
- * questo indirizzo indica i 20 bit pi� significativi dell indirizzo)
+ * 
  */
-void setPageSelector ( unsigned int *obj,unsigned int pageAdress,unsigned int flags )
+void setPageSelector (unsigned int pageTableIndex,unsigned int pageIndex,unsigned int pageAdress,unsigned int flags )
 {
+    unsigned int pointer=(unsigned int)pageDir+0x1000;
+    unsigned int *obj=( unsigned int* ) ( pointer+(0x1000*pageTableIndex) + ( pageIndex*4 ) );
     *obj=0;
     *obj=flags;
-    *obj|= ( pageAdress<<12 ) &0xFFFFF000;
+    *obj|= ( pageAdress ) & 0xFFFFF000;
 }
 
 

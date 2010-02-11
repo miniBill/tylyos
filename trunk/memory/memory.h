@@ -23,6 +23,8 @@
 
 void memcpy(char * source, unsigned int count, char * dest);
 
+void invalidateLookasideBuffer();/*costringe la cpu ad aggiornare il lookaside buffer*/
+
 unsigned int getEBP();
 unsigned int getESP();
 
@@ -75,7 +77,7 @@ extern void gdtFlush ( unsigned short selettoreSegmentoCodice,unsigned short sel
 #define KERNEL_START        0x0 /* indirizzo di inizio kernel*/
 unsigned int kernel_end;    /*indirizzo finale dell immagine del kernel*/
 unsigned int user_start;    /*indirizzo iniziale dell area user, viene calcolata sommando a kernel_end la dimensione dell immagine ed alineando l'indirizzo a 0x1000*/
-#define HEAP_START          0xB2D05000+user_start /*per lasciare circa 3GB all area user*/
+#define HEAP_START          (0xB2D05000+user_start) /*per lasciare circa 3GB all area user*/
 char *heapEndPointer;/*puntatore che indica fino a dove si estende l'heap*/
 
 
@@ -85,13 +87,13 @@ char *loadedModule;/*indirizzo del modulo caricato dalla funzione hunt_load*/
 unsigned int memoriaFisica; /* byte di memoria fisica */
 
 extern unsigned int l_pageDir,l_end;
-unsigned int *pageDir; /* area da 4096byte che ospita la pagedir del kernel */
+unsigned int *pageDir; /* area da 4096byte che ospita la pagedir del kernel seguita dall' area per le page tables*/
 
 
 void initPaging();
 
-void setPageTableSelector ( unsigned int *obj,unsigned int tableAdress,unsigned int flags );
-void setPageSelector ( unsigned int *obj,unsigned int pageAdress,unsigned int flags );
+void setPageTableSelector (unsigned int pageTableIndex ,unsigned int tableAdress,unsigned int flags );
+void setPageSelector (unsigned int pageTableIndex,unsigned int pageIndex,unsigned int pageAdress,unsigned int flags );
 
 int getBitExt ( unsigned int *bitmap,unsigned int x );
 void setBitExt ( unsigned int *bitmap,unsigned int x,unsigned int value );
@@ -107,6 +109,7 @@ unsigned int virtualAdress ( unsigned int table,unsigned int page,unsigned int o
 
 /* ritorna l'indirizzo che indica un selettore di pagetable o pagina */
 unsigned int fisicAdressFromSelector ( unsigned int sel );
+unsigned int fisicAdressFromSelectorExt ( unsigned int tableIndex,unsigned int pageIndex );
 
 extern unsigned int read_cr0();
 extern void write_cr0 ( unsigned int data );
