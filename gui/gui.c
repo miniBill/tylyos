@@ -184,18 +184,10 @@ void write_registers(unsigned char *regs){
 
 
 void VGA_clear_screen(){
-    unsigned int x=0;
-    unsigned int y=0;
-    
+    unsigned int x,y;
     for(y=0; y<VGA_height; y++)
         for(x=0; x<VGA_width; x++)
             VGA_address[VGA_width*y+x]=0x13;
-}
-
-static void draw_mandelbrot(void){
-  unsigned int x=0;
-  unsigned int y=0;
-  VGA_address[VGA_width*y+x]=0x1;
 }
 
 

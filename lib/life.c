@@ -8,7 +8,7 @@ static int round=0;
 #define by 14
 #define bx 40
 
-void init(void){
+static void init(void){
   grid[0][by][bx]=1;
   grid[0][by][bx+1]=1;
   grid[0][by][bx+2]=1;
@@ -24,13 +24,13 @@ void init(void){
   grid[0][by+4][bx+4]=1;
 }
 
-int G(int a,int b){
+static int G(int a,int b){
   if(a<0 || b<0 || a==ROWS-1 || b==COLUMNS)
     return 0;
   return grid[round][a][b];
 }
 
-void step(void){
+static void step(void){
   for(int y=0;y<ROWS-1;y++)
     for(int x=0;x<COLUMNS;x++){
       int neigh=G(y-1,x-1)+G(y-1,x)+G(y-1,x+1)+
