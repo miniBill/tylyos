@@ -278,27 +278,27 @@ void _kmain(multiboot_info_t* mbd, unsigned int magicN) {
   
   char immagine[2000];
   File imm=openFile("/tylyos.bmp",'r');
-  int readed=0;
+  int read=0;
   if(imm==0)
   {printf(1,"doh\n");}
   else
   {
       readFile(imm,immagine,18);
-      readed+=18;
-      struct bmpfile_header *header=immagine+2;
+      read+=18;
+      struct bmpfile_header *header=(struct bmpfile_header*)(immagine+2);
       printf(0,"%d",header->bmp_offset);
-      readFile(imm,immagine,header->bmp_offset-readed);
+      readFile(imm,immagine,header->bmp_offset-read);
       while(readFile(imm,immagine,100)>0)
       {
           for(int c=0;c<100;c++)
           {
-              int x=(readed+c)%80;
-              int y=30-((readed+c)/80);
+              int x=(read+c)%80;
+              int y=30-((read+c)/80);
               VGA_address[(VGA_width)*y+x]=immagine[c];
               
               printf(1,"letto\n");
           }
-          readed+=100;
+          read+=100;
       }
   }
   
