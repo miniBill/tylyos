@@ -187,13 +187,25 @@ void VGA_clear_screen(){
     unsigned int x=0;
     unsigned int y=0;
     
-    for(y=0; y<VGA_height; y++){
-        for(x=0; x<VGA_width; x++){
+    for(y=0; y<VGA_height; y++)
+        for(x=0; x<VGA_width; x++)
             VGA_address[VGA_width*y+x]=0x0;
-        }
+}
+
+static void draw_face(void){
+  unsigned int x=0;
+  unsigned int y=0;
+  for(y=10;y<70;y++)
+    for(x=40;x<100;x++){
+      VGA_address[VGA_width*y+x]=0x11;
+      VGA_address[VGA_width*y+x+180]=0x11;
     }
-    
-    VGA_address[VGA_width*100+100]=0x1;
+  for(y=70;y<130;y++)
+    for(x=230-y;x<90+y;x++)
+      VGA_address[VGA_width*y+x]=0x11;
+  for(y=150;y<190;y++)
+    for(x=40;x<280;x++)
+      VGA_address[VGA_width*y+x]=0x11;
 }
 
 void VGA_setPalette()
@@ -223,4 +235,6 @@ void VGA_init(int width, int height, int bpp){
     
     //clears the screen
     VGA_clear_screen();
+
+    draw_face();
 }
