@@ -24,6 +24,7 @@
 #include <lib/string.h>
 #include <kernel/stdio.h>
 
+#include "mandelbrot.h"
 #include "gui.h"
 #include "palette.h"
 #include "font.h"
@@ -252,7 +253,5 @@ void VGA_init(int width, int height, int bpp){
     //clears the screen
     VGA_clear_screen();
 
-
     draw_mandelbrot();
-
 }
