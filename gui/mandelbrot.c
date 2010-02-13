@@ -24,6 +24,12 @@ static void init(void){
   grid[0][by+4][bx+4]=1;
 }
 
+static int AG(int a,int b){
+  if(a<0 || b<0 || a==200 || b==320)
+    return 0;
+  return grid[1-round][a][b];
+}
+
 static int G(int a,int b){
   if(a<0 || b<0 || a==200 || b==320)
     return 0;
@@ -49,10 +55,10 @@ static void step(void){
 }
 
 static void print(void){
-  set_cursor(0,0);
   for(int y=0;y<200;y++)
     for(int x=0;x<320;x++)
-      VGA_address[VGA_width*y+x]=G(y,x)?1:0;
+      if(G(y,x)!=AG(y,x))//only if different!!!
+        VGA_address[VGA_width*y+x]=G(y,x)?1:0;
 }
 
 static int t;
@@ -61,8 +67,11 @@ static void randomize(void){
   int a=0;
   t+=2;
   for(int y=0;y<200;y++)
-    for(int x=0;x<320;x++,a++)
-      grid[round][y][x]=(x+y+a%t)%2;
+    for(int x=0;x<320;x++,a++){
+      if(a==t)
+        a=0;
+      grid[round][y][x]=(x+y+a)%2;
+    }
 }
 
 static void life(void){
@@ -72,12 +81,11 @@ static void life(void){
   init();
   t=-1;
   int p=0;
+  char g;
   while(1){
     print();
     step();
-    char g;
     do{
-      //sleep(10);
       g=getch();
       if(g=='p')
         p=1-p;
