@@ -1,7 +1,12 @@
 #include "gui.h"
 
-static const short max=100;
 static const int radius=2;
+
+static char convert(char count){
+  if(count<4)
+    return 0x13;
+  return count;
+}
 
 void draw_mandelbrot(void){
   unsigned short ix,iy;
@@ -13,15 +18,15 @@ void draw_mandelbrot(void){
       x0=(x0/VGA_width)*2.8f-2.2f;
       y0=(y0/VGA_height)*2.4f-1.2f;
       x=y=count=0;
-      while(((x*x+y*y) < radius*radius) && count<max){
+      while(((x*x+y*y) < radius*radius) && count<255){
         tx = x*x - y*y + x0;
         y = 2*x*y + y0;
         x = tx;
         count++;
       }
-      if(count==max)
+      if(count==255)
         VGA_address[VGA_width*iy+ix]=0x0;
       else
-        VGA_address[VGA_width*iy+ix]=(char)count;
+        VGA_address[VGA_width*iy+ix]=convert(count);
     }
 }
