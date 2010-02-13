@@ -206,11 +206,7 @@ void _kmain(multiboot_info_t* mbd, unsigned int magicN) {
 
   
 
-  VGA_init(320,200,8);
-  /*VGA_writeString("TyLyOS",10,10);
-  VGA_writeString("- 320x200, 256 colori",15,20);
-  VGA_writeString("- VGA mode: engage!!!!",15,30);
-  VGA_writeString("12345678901234567890123456789012345678901234567890",0,200-8);*/
+  
   
   
   /*here start the true tests*/
@@ -275,32 +271,42 @@ void _kmain(multiboot_info_t* mbd, unsigned int magicN) {
       unsigned int  bmp_offset;
   };
   
+  VGA_init(320,200,8);
+  /*
+  VGA_writeString("12345678901234567890123456789012345678901234567890",0,200-8);*/
   
   char immagine[2000];
   File imm=openFile("/tylyos.bmp",'r');
-  int read=0;
+  int readed=0;
   if(imm==0)
   {printf(1,"doh\n");}
   else
   {
-      readFile(imm,immagine,18);
-      read+=18;
-      struct bmpfile_header *header=(struct bmpfile_header*)(immagine+2);
-      printf(0,"%d",header->bmp_offset);
-      readFile(imm,immagine,header->bmp_offset-read);
-      while(readFile(imm,immagine,100)>0)
+      readFile(imm,immagine,0x36);/*legge l'header*/
+      struct bmpfile_magic *header1=(struct bmpfile_magic*)immagine;
+      struct bmpfile_header *header2=(struct bmpfile_header*)immagine+2;
+      
+      readFile(imm,immagine,256*4);/*salta la palette*/
+      unsigned int ret=readFile(imm,immagine,100);
+      while(ret>0)
       {
-          for(int c=0;c<100;c++)
+          for(unsigned int c=0;c<ret;c++)
           {
-              int x=(read+c)%80;
-              int y=30-((read+c)/80);
+              int x=(readed+c)%80;
+              int y=30-(((readed+c)/80)+1);
+              
               VGA_address[(VGA_width)*y+x]=immagine[c];
+              
               
               printf(1,"letto\n");
           }
-          read+=100;
+          readed+=100;
+          ret=readFile(imm,immagine,100);
       }
   }
+  
+  VGA_writeString("- 320x200, 256 colori",15,40);
+  VGA_writeString("- VGA mode: engage!!!!",15,50);
   
 
   /* test kernel panic

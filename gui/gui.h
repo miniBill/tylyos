@@ -16,6 +16,8 @@
  * You should have received a copy of the GNU General Public License
  * along with TylyOS.  If not, see <http://www.gnu.org/licenses/>.
  */
+#ifndef GUI_H
+#define GUI_H
 
 void VGA_init(int width, int height, int colors);
 void VGA_writeChar(char ch,unsigned int _x,unsigned int _y);
@@ -25,4 +27,9 @@ void VGA_writeString(char *s,unsigned int x,unsigned int y);
 unsigned int VGA_width;
 unsigned int VGA_height;
 unsigned int VGA_bpp;
+
 unsigned char *VGA_address;
+
+#endif
+
+
