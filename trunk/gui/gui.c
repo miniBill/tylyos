@@ -82,11 +82,7 @@ void drawRectangle(unsigned int console, int x, int y, int width, int height, ch
 #define   VGA_NUM_AC_REGS      21
 #define   VGA_NUM_REGS      (1+VGA_NUM_SEQ_REGS+VGA_NUM_CRTC_REGS+VGA_NUM_GC_REGS+VGA_NUM_AC_REGS)
 
-//the vga identifiers
-unsigned int VGA_width;
-unsigned int VGA_height;
-unsigned int VGA_bpp;
-unsigned char *VGA_address;
+
 
 /**
 * CREATE THE REGISTER ARRAY TAKEN FROM http://wiki.osdev.org/VGA_Hardware

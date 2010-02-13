@@ -213,6 +213,8 @@ void initPaging ( void )
     /*alloca la bitmap per le pagine fisiche*/
     mappaPagineFisiche.size= ( memoriaFisica-user_start ) /0x1000;
     mappaPagineFisiche.data=(unsigned int*)mappaPagineFisicheBitmapData;/*ok, non avevo voglia di fare un controllo sul resto della divizione per 8 ed ho aggiunto +1*/
+    
+    increaseHeapSize();
 }
 
 /*setta il valore di un selettore*/

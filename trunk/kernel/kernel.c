@@ -203,25 +203,16 @@ void _kmain(multiboot_info_t* mbd, unsigned int magicN) {
   initPaging();
   OK(t++);
   
-  /*TODO: rimuovere il test*/
-  increaseHeapSize();
-  increaseHeapSize();
-  decreaseHeapSize();
-  unsigned int *testttt;
-  testttt=(unsigned int*)HEAP_START;
-  testttt[0]=0xCACCA;
-  
-  printf(0,"\n questo e' un blocco di sicurezza\n l' allocazione dinamica non e' ancora pronta ;-)\n la pagedir funziona e si trova qui: 0x%x\n l' heap ha una dimensione di: %d bytes\n e sembra mappato correttamente: 0x%x",(unsigned int)pageDir,getHeapSize(),testttt[0]);
+
   
 
   VGA_init(320,200,8);
-  VGA_writeString("TyLyOS",10,10);
+  /*VGA_writeString("TyLyOS",10,10);
   VGA_writeString("- 320x200, 256 colori",15,20);
   VGA_writeString("- VGA mode: engage!!!!",15,30);
-  VGA_writeString("12345678901234567890123456789012345678901234567890",0,200-8);
+  VGA_writeString("12345678901234567890123456789012345678901234567890",0,200-8);*/
   
-  while(1);   
-
+  
   /*here start the true tests*/
 
   doTests(); //from now on printf is ok
@@ -262,7 +253,7 @@ void _kmain(multiboot_info_t* mbd, unsigned int magicN) {
   readRet=readFile(tFile2,letti,100);
   letti[readRet]=0;
   printf(2,"%d>%s\n",readRet,letti);
-  
+
   File tDir=openDir("/directory");
   printf(1,"open dir id=%d\n",tDir);
   
@@ -272,6 +263,45 @@ void _kmain(multiboot_info_t* mbd, unsigned int magicN) {
   {
       printf(2,"    > %s %d Bytes tipo: %d\n",info.name,info.size,info.type);
   }
+  
+  struct bmpfile_magic {
+      unsigned char magic[2];
+  };
+  
+  struct bmpfile_header {
+      unsigned int filesz;
+      unsigned int  creator1;
+      unsigned int  creator2;
+      unsigned int  bmp_offset;
+  };
+  
+  
+  char immagine[2000];
+  File imm=openFile("/tylyos.bmp",'r');
+  int readed=0;
+  if(imm==0)
+  {printf(1,"doh\n");}
+  else
+  {
+      readFile(imm,immagine,18);
+      readed+=18;
+      struct bmpfile_header *header=immagine+2;
+      printf(0,"%d",header->bmp_offset);
+      readFile(imm,immagine,header->bmp_offset-readed);
+      while(readFile(imm,immagine,100)>0)
+      {
+          for(int c=0;c<100;c++)
+          {
+              int x=(readed+c)%80;
+              int y=30-((readed+c)/80);
+              VGA_address[(VGA_width)*y+x]=immagine[c];
+              
+              printf(1,"letto\n");
+          }
+          readed+=100;
+      }
+  }
+  
 
   /* test kernel panic
    while(1)

@@ -198,7 +198,6 @@ unsigned int seek(File file,int offset)/*TODO: testare*/
     
     if(pointer==0 || !(pointer->type&FS_FILE))/*se non e' aperto o non e' un file*/
         return 0;
-    
     return pointer->device->seek(pointer,offset);
 }
 
