@@ -109,10 +109,9 @@ struct deviceFs *newRamFs()
     pointer->getNodeInfo = ramFs_getNodeInfo;
     pointer->readDir = ramFs_readDir;
     pointer->readFile = ramFs_readFile;
-#ifdef RAMFS_STUBS
-    pointer->writeFile = ramFs_writeFile;
     pointer->seek = ramFs_seek;
-    
+#ifdef RAMFS_STUBS
+    pointer->writeFile = ramFs_writeFile;    
     pointer->createFile = ramFs_createFile;
     pointer->deleteFile = ramFs_deleteFile;
     pointer->createDir = ramFs_createDir;

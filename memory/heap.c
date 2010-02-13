@@ -39,7 +39,7 @@ void* kmalloc ( unsigned int byte )
     if ( kmallocList!=0 )
     {
         
-        /*controlla se vi � spazio prima del primo elemento*/
+        /*controlla se vi e' spazio prima del primo elemento*/
         if (
             ( unsigned int ) kmallocList-HEAP_START
             >= byte + sizeof ( struct memoryArea )
@@ -67,7 +67,7 @@ void* kmalloc ( unsigned int byte )
                 >= byte
                 )
             {
-                /*c'� spazio, alloca fra pre e next*/
+                /*c'e' spazio, alloca fra pre e next*/
                 struct memoryArea *temp;
                 pre->next= ( struct memoryArea* ) ( ( unsigned int ) pre+sizeof ( struct memoryArea ) +pre->size );
                 temp=pre->next;
@@ -81,24 +81,29 @@ void* kmalloc ( unsigned int byte )
             pre=next;
             next=next->next;
         }
-        /*non � stato trovato spazio negli spazi liberi fra le allocazioni*/
-        /*verr� quindi allocato alla fine della lista*/
+        /*non e' stato trovato spazio negli spazi liberi fra le allocazioni*/
+        /*verra' quindi allocato alla fine della lista*/
+              
         next= ( struct memoryArea* ) ( ( unsigned int ) pre+pre->size+sizeof ( struct memoryArea ) );
-        /*controlla di non sforare nella memoria user*/
-        if ( ( unsigned int ) next+sizeof ( struct memoryArea ) +byte< ( unsigned int ) heapEndPointer )
+        /*controlla di non sforare*/
+        if ( ( unsigned int ) next+sizeof ( struct memoryArea ) +byte >= ( unsigned int ) heapEndPointer )
         {
-            pre->next=next;
-            next->next=0;
-            next->size=byte;
-            
-            /*printf("alla fine\n");*/
-            
-            return ( void* ) ( ( unsigned int ) next+sizeof ( struct memoryArea ) );
+            if(sizeof ( struct memoryArea ) + byte < 0x1000)
+            {
+                increaseHeapSize();
+            }
+            else
+                kernelPanic ( "kmalloc()","l' allocazione e' troppo grande" );
         }
-        else
-        {
-            kernelPanic ( "kmalloc()","the KERNEL HEAP IS FULL." );
-        }
+        
+        pre->next=next;
+        next->next=0;
+        next->size=byte;
+        
+        /*printf("alla fine\n");*/
+        
+        return ( void* ) ( ( unsigned int ) next+sizeof ( struct memoryArea ) );
+        
     }
     else
     {
