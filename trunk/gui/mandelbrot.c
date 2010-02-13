@@ -3,7 +3,7 @@
 static const short max=1000;
 static const int radius=100;
 
-static void draw_mandelbrot(void){
+void draw_mandelbrot(void){
   unsigned char ix,iy;
   unsigned short count;
   float x0,y0,x,y,tx;
