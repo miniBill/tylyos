@@ -212,6 +212,9 @@ void _kmain(multiboot_info_t* mbd, unsigned int magicN) {
   testttt[0]=0xCACCA;
   
   printf(0,"\n questo e' un blocco di sicurezza\n l' allocazione dinamica non e' ancora pronta ;-)\n la pagedir funziona e si trova qui: 0x%x\n l' heap ha una dimensione di: %d bytes\n e sembra mappato correttamente: 0x%x",(unsigned int)pageDir,getHeapSize(),testttt[0]);
+  
+  VGA_init(320,200,8);
+  
   while(1);   
 
   /*here start the true tests*/
