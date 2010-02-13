@@ -90,6 +90,26 @@ unsigned char *VGA_address;
 /**
 * CREATE THE REGISTER ARRAY TAKEN FROM http://wiki.osdev.org/VGA_Hardware
 */
+unsigned char g_640x480x16[] =
+{
+    /* MISC */
+    0xE3,
+    /* SEQ */
+    0x03, 0x01, 0x08, 0x00, 0x06,
+    /* CRTC */
+    0x5F, 0x4F, 0x50, 0x82, 0x54, 0x80, 0x0B, 0x3E,
+    0x00, 0x40, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0xEA, 0x0C, 0xDF, 0x28, 0x00, 0xE7, 0x04, 0xE3,
+    0xFF,
+    /* GC */
+    0x00, 0x00, 0x00, 0x00, 0x03, 0x00, 0x05, 0x0F,
+    0xFF,
+    /* AC */
+    0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x14, 0x07,
+    0x38, 0x39, 0x3A, 0x3B, 0x3C, 0x3D, 0x3E, 0x3F,
+    0x01, 0x00, 0x0F, 0x00, 0x00
+};
+
 unsigned char mode_320_200_256[]={
     /* MISC
     *
@@ -204,9 +224,9 @@ void VGA_clear_screen(){
     unsigned int x=0;
     unsigned int y=0;
     
-    for(y=0; y<VGA_height; y++){
-        for(x=0; x<VGA_width; x++){
-            VGA_address[VGA_width*y+x]=x;
+    for(y=0; y<VGA_height/2; y++){
+        for(x=0; x<VGA_width/2; x++){
+            VGA_address[VGA_width*y+x]=10;
         }
     }
 }
@@ -223,7 +243,7 @@ void VGA_init(int width, int height, int bpp){
     VGA_address=0xA0000;
     
     //enables the mode 13 state
-    write_registers(mode_320_200_256);
+    write_registers(g_640x480x16);
     
     //clears the screen
     VGA_clear_screen();
