@@ -305,8 +305,8 @@ void _kmain(multiboot_info_t* mbd, unsigned int magicN) {
       }
   }
   
-  VGA_writeString("- 320x200, 256 colori",15,40);
-  VGA_writeString("- VGA mode: engage!!!!",15,50);
+  VGA_writeString("- 320x200, 256 colori",5,170);
+  VGA_writeString("- VGA mode: engage!!!!",5,180);
   
 
   /* test kernel panic
