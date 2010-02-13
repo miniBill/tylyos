@@ -283,8 +283,8 @@ void _kmain(multiboot_info_t* mbd, unsigned int magicN) {
   else
   {
       readFile(imm,immagine,0x36);/*legge l'header*/
-      struct bmpfile_magic *header1=(struct bmpfile_magic*)immagine;
-      struct bmpfile_header *header2=(struct bmpfile_header*)immagine+2;
+      /*struct bmpfile_magic *header1=(struct bmpfile_magic*)immagine;
+      struct bmpfile_header *header2=(struct bmpfile_header*)immagine+2;*/
       
       readFile(imm,immagine,256*4);/*salta la palette*/
       unsigned int ret=readFile(imm,immagine,100);
