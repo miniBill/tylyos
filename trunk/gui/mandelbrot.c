@@ -55,9 +55,10 @@ static void print(void){
       VGA_address[VGA_width*y+x]=G(y,x)?1:0;
 }
 
+static int t;
+
 static void randomize(void){
   int a=0;
-  static int t=1;
   t+=2;
   for(int y=0;y<200;y++)
     for(int x=0;x<320;x++,a++)
@@ -69,6 +70,7 @@ static void life(void){
     for(int x=0;x<320;x++)
       grid[0][y][x]=grid[1][y][x]=0;
   init();
+  t=-1;
   int p=0;
   while(1){
     print();
@@ -80,6 +82,8 @@ static void life(void){
       if(g=='p')
         p=1-p;
     }while(p);
+    if(g=='R')
+      t=-1;
     if(g=='r')
       randomize();
   }
