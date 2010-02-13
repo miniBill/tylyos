@@ -187,11 +187,21 @@ void VGA_clear_screen(){
     unsigned int x=0;
     unsigned int y=0;
     
-    for(y=0; y<VGA_height/2; y++){
-        for(x=0; x<VGA_width/2; x++){
-            VGA_address[VGA_width*y+x]=10;
+    for(y=0; y<VGA_height; y++){
+        for(x=0; x<VGA_width; x++){
+            VGA_address[VGA_width*y+x]=0x0;
         }
     }
+    
+    VGA_address[VGA_width*100+100]=0x1;
+}
+
+void VGA_setPalette()
+{
+    outb(0x3c8,0x00);
+    outb(0x3c9,0x3f);
+    outb(0x3c9,0x3f);
+    outb(0x3c9,0x3f);
 }
 
 /**
@@ -207,6 +217,9 @@ void VGA_init(int width, int height, int bpp){
     
     //enables the mode 13 state
     write_registers(mode_320_200_256);
+    
+    /*modifica la plaette*/
+    VGA_setPalette();
     
     //clears the screen
     VGA_clear_screen();
