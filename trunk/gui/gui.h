@@ -26,8 +26,8 @@
 
 
 void VGA_init(int width, int height, int colors);
-VGA_writeChar(char ch,unsigned int _x,unsigned int _y);
-VGA_writeString(char *s,unsigned int x,unsigned int y);
+void VGA_writeChar(char ch,unsigned int _x,unsigned int _y);
+void VGA_writeString(char *s,unsigned int x,unsigned int y);
 
 //the vga identifiers
 unsigned int VGA_width;
