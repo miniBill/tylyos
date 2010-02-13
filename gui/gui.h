@@ -17,13 +17,4 @@
  * along with TylyOS.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#define BORDER_ORIZONTAL 205
-#define BORDER_VERTICAL 186
-#define BORDER_CORNER_HI_LEFT 201
-#define BORDER_CORNER_HI_RIGHT 187
-#define BORDER_CORNER_LOW_LEFT 200
-#define BORDER_CORNER_LOW_RIGHT 188
-
-void fillRectangle (unsigned int console, int x,int y,int width,int height,char color );
-void drawRectangle (unsigned int console, int x,int y,int width,int height,char color );
-
+void VGA_init(int width, int height, int colors);

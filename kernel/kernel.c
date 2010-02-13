@@ -213,7 +213,7 @@ void _kmain(multiboot_info_t* mbd, unsigned int magicN) {
   
   printf(0,"\n questo e' un blocco di sicurezza\n l' allocazione dinamica non e' ancora pronta ;-)\n la pagedir funziona e si trova qui: 0x%x\n l' heap ha una dimensione di: %d bytes\n e sembra mappato correttamente: 0x%x",(unsigned int)pageDir,getHeapSize(),testttt[0]);
   
-  VGA_init(640,480,16);
+  VGA_init(320,200,256);
   
   while(1);   
 
@@ -236,7 +236,6 @@ void _kmain(multiboot_info_t* mbd, unsigned int magicN) {
   printf(0,"Kernel pronto!!!\n");
   OK(t++);
 
-  /*drawRectangle(0,t,COLUMNS-1,ROWS-t-2,(char)(Yellow|Back_Blue));*/
   goto_xy(0, 1, t);
   asm("sti");
   write_physical_xy("[s][c][a][n][k] Console: [1] Time:",0, ROWS - 1);
