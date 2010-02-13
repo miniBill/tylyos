@@ -17,14 +17,6 @@
  * along with TylyOS.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#define BORDER_ORIZONTAL 205
-#define BORDER_VERTICAL 186
-#define BORDER_CORNER_HI_LEFT 201
-#define BORDER_CORNER_HI_RIGHT 187
-#define BORDER_CORNER_LOW_LEFT 200
-#define BORDER_CORNER_LOW_RIGHT 188
-
-
 void VGA_init(int width, int height, int colors);
 void VGA_writeChar(char ch,unsigned int _x,unsigned int _y);
 void VGA_writeString(char *s,unsigned int x,unsigned int y);
