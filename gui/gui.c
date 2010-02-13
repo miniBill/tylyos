@@ -17,10 +17,48 @@
  * along with TylyOS.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <drivers/screen/screen.h>
-#include <kernel/stdio.h>
+#include "../drivers/screen/screen.h"
 
 #include "gui.h"
+#include "palette.h"
+
+void fillRectangle(unsigned int console, int x, int y, int width, int height, char color) {
+  int c, i;
+  for (c = x;c <= (width + x);c++)
+    for (i = y;i <= (height + y);i++)
+      put_color_xy(color, console, c, i);
+}
+
+void drawRectangle(unsigned int console, int x, int y, int width, int height, char color) {
+  /* 8--1--2
+   * |     |
+   * 7     3
+   * |     |
+   * 6--5--4
+   */
+  int c;
+  for (c = (x + 1);c < (width + x);c++) {
+      /*1*/
+      put_xy((char) BORDER_ORIZONTAL, console, c, y);
+      /*5*/
+      put_xy((char) BORDER_ORIZONTAL, console, c, y + height);
+    }
+  /*2*/
+  put_xy((char) BORDER_CORNER_HI_RIGHT, console, x + width, y);
+  for (c = (y + 1);c < (height + y);c++) {
+      /*3*/
+      put_xy((char) BORDER_VERTICAL, console, x + width, c);
+      /*7*/
+      put_xy((char) BORDER_VERTICAL, console, x, c);
+    }
+  /*4*/
+  put_xy((char) BORDER_CORNER_LOW_RIGHT, console, x + width, y + height);
+  /*6*/
+  put_xy((char) BORDER_CORNER_LOW_LEFT, console, x, y + height);
+  /*8*/
+  put_xy((char) BORDER_CORNER_HI_LEFT, console, x, y);
+  fillRectangle(console, x, y, width, height, color);
+}
 
 //define the ports , taken from http://files.osdev.org/mirrors/geezer/osd/graphics/modes.c
 #define   VGA_AC_INDEX      0x3C0
@@ -189,31 +227,61 @@ void VGA_clear_screen(){
     
     for(y=0; y<VGA_height; y++)
         for(x=0; x<VGA_width; x++)
-            VGA_address[VGA_width*y+x]=0x0;
+            VGA_address[VGA_width*y+x]=13;
 }
 
 static void draw_face(void){
   unsigned int x=0;
   unsigned int y=0;
-  for(y=10;y<70;y++)
+  for(y=40;y<70;y++)
     for(x=40;x<100;x++){
       VGA_address[VGA_width*y+x]=0x11;
       VGA_address[VGA_width*y+x+180]=0x11;
     }
+
   for(y=70;y<130;y++)
     for(x=230-y;x<90+y;x++)
       VGA_address[VGA_width*y+x]=0x11;
   for(y=150;y<190;y++)
     for(x=40;x<280;x++)
       VGA_address[VGA_width*y+x]=0x11;
+
+}
+
+VGA_writeChar(char ch,unsigned int _x,unsigned int _y)
+{
+    unsigned int c=0;
+    for(unsigned int y=0; y<8; y++)
+    {
+        for(unsigned int x=0; x<8; x++)
+        {
+            if( getBitExt(g_8x8_font,((8*8)*ch)+c)==1)
+            {
+                VGA_address[VGA_width*(_y+y)+(_x+(8-x))]=80;
+            }
+            c++;
+        }
+    }
+}
+
+VGA_writeString(char *s,unsigned int x,unsigned int y)
+{
+    unsigned int count=strlen(s);
+    for(int c=0;c<count;c++)
+    {
+        VGA_writeChar(s[c],x+8*c,y);
+    }
 }
 
 void VGA_setPalette()
 {
-    outb(0x3c8,0x00);
-    outb(0x3c9,0x3f);
-    outb(0x3c9,0x3f);
-    outb(0x3c9,0x3f);
+    for(unsigned int c=0;c<256;c++)
+    {
+        outb(0x3c8,c);
+        outb(0x3c9,palette[(c*3)]);
+        outb(0x3c9,palette[(c*3)+1]);
+        outb(0x3c9,palette[(c*3)+2]);
+    }
 }
 
 /**
@@ -225,7 +293,7 @@ void VGA_init(int width, int height, int bpp){
     VGA_width=(unsigned int)width;
     VGA_height=(unsigned int)height;
     VGA_bpp=bpp;
-    VGA_address=(unsigned char*)0xA0000;
+    VGA_address=0xA0000;
     
     //enables the mode 13 state
     write_registers(mode_320_200_256);
