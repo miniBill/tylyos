@@ -218,6 +218,7 @@ void _kmain(multiboot_info_t* mbd, unsigned int magicN) {
   VGA_writeString("TyLyOS",10,10);
   VGA_writeString("- 320x200, 256 colori",15,20);
   VGA_writeString("- VGA mode: engage!!!!",15,30);
+  VGA_writeString("12345678901234567890123456789012345678901234567890",0,200-8);
   
   while(1);   
 

@@ -235,16 +235,16 @@ static void draw_face(void){
   unsigned int y=0;
   for(y=40;y<70;y++)
     for(x=40;x<100;x++){
-      VGA_address[VGA_width*y+x]=0x11;
-      VGA_address[VGA_width*y+x+180]=0x11;
+      VGA_address[VGA_width*y+x]=0x1;
+      VGA_address[VGA_width*y+x+180]=0x1;
     }
 
   for(y=70;y<130;y++)
     for(x=230-y;x<90+y;x++)
-      VGA_address[VGA_width*y+x]=0x11;
+      VGA_address[VGA_width*y+x]=0x1;
   for(y=150;y<190;y++)
     for(x=40;x<280;x++)
-      VGA_address[VGA_width*y+x]=0x11;
+      VGA_address[VGA_width*y+x]=0x1;
 
 }
 
@@ -257,7 +257,8 @@ VGA_writeChar(char ch,unsigned int _x,unsigned int _y)
         {
             if( getBitExt(g_8x8_font,((8*8)*ch)+c)==1)
             {
-                VGA_address[VGA_width*(_y+y)+(_x+(8-x))]=80;
+                if(_x+(8-x)<VGA_width && _y+y<VGA_height)
+                    VGA_address[VGA_width*(_y+y)+(_x+(8-x))]=80;
             }
             c++;
         }
@@ -269,7 +270,7 @@ VGA_writeString(char *s,unsigned int x,unsigned int y)
     unsigned int count=strlen(s);
     for(int c=0;c<count;c++)
     {
-        VGA_writeChar(s[c],x+8*c,y);
+        VGA_writeChar(s[c],x+7*c,y);
     }
 }
 
