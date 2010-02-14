@@ -168,7 +168,7 @@ void _kmain(multiboot_info_t* mbd, unsigned int magicN) {
   OK(t++);
 
   logo();
-  t += 5;
+  t = row(0);
 
   NO(t);
   greendot();
@@ -204,13 +204,7 @@ void _kmain(multiboot_info_t* mbd, unsigned int magicN) {
   write("Inizializzazione Paging\n",0);
   initPaging();
   OK(t++);
-  
 
-  
-
-  
-  
-  
   /*here start the true tests*/
 
   doTests(); //from now on printf is ok
