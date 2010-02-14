@@ -254,7 +254,7 @@ void _kmain(multiboot_info_t* mbd, unsigned int magicN) {
     printf(2,"    > %s %d Bytes tipo: %d\n",info.name,info.size,info.type);
   }
 
-  sleep(500);
+  sleep(1500);
 
   VGA_init(320,200,8);
 
