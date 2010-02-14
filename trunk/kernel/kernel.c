@@ -29,6 +29,7 @@
 #include <drivers/timer/timer.h>
 #include <fs/fs.h>
 #include <drivers/sound/sound.h>
+#include <drivers/screen/vga.h>
 
 #include <gui/gui.h>
 

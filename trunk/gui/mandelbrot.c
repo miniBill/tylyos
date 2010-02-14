@@ -1,6 +1,7 @@
 #include "gui.h"
-#include "kernel/kernel.h"
-#include "drivers/keyboard/keyboard.h"
+#include <kernel/kernel.h>
+#include <drivers/keyboard/keyboard.h>
+#include <drivers/screen/vga.h>
 
 static int grid[2][200][320];
 static int round=0;
