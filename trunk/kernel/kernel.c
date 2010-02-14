@@ -30,6 +30,7 @@
 #include <fs/fs.h>
 #include <drivers/sound/sound.h>
 #include <drivers/screen/vga.h>
+#include <gui/mandelbrot.h>
 
 #include <gui/gui.h>
 
@@ -273,6 +274,8 @@ void _kmain(multiboot_info_t* mbd, unsigned int magicN) {
   };
   
   VGA_init(320,200,8);
+  
+  draw_mandelbrot();
   /*
   VGA_writeString("12345678901234567890123456789012345678901234567890",0,200-8);*/
   
@@ -306,9 +309,13 @@ void _kmain(multiboot_info_t* mbd, unsigned int magicN) {
       }
   }
   
+ 
+  
   VGA_writeString("- 320x200, 256 colori",5,175);
   VGA_writeString("- VGA mode: engage!!!!",5,185);
   
+  sleep(2000);
+  gui_life();
 
   /* test kernel panic
    while(1)

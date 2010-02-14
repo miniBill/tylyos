@@ -234,5 +234,5 @@ void VGA_init(int width, int height, int bpp)
     
     VGA_clear_screen();
     
-    draw_mandelbrot();
+   
 }
