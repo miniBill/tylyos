@@ -42,8 +42,8 @@ static inline char * addr_xy(unsigned int x, unsigned int y) {
   return (char*)(consoleAddr + 2*(x + COLUMNS*y));
 }
 
-static const int ulx=5;
-static const int uly=5;
+static const int ulx=0;
+static const int uly=0;
 static const int drx=315;
 static const int dry=195;
 static const int dx=5;//220/COLUMNS;
