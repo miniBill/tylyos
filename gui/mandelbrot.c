@@ -75,7 +75,7 @@ static void randomize(void){
     }
 }
 
-static void life(void){
+void gui_life(void){
   for(int y=0;y<200;y++)
     for(int x=0;x<320;x++)
       grid[0][y][x]=grid[1][y][x]=0;
@@ -134,6 +134,5 @@ void draw_mandelbrot(void){
           max=count;
       }
     }
-  sleep(2000);
-  life();
+  
 }
