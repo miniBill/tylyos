@@ -22,22 +22,22 @@
 #define SCREEN_H_
 
 enum {
-  Black          = 0x00,
-  Blue           = 0x01,
-  Green          = 0x02,
-  Cyan           = 0x03,
-  Red            = 0x04,
-  Magenta        = 0x05,
-  Brown          = 0x06,
-  Light_Gray     = 0x07,
-  Dark_Gray      = 0x08,
-  Light_Blue     = 0x09,
-  Light_Green    = 0x0A,
-  Light_Cyan     = 0x0B,
-  Light_Red      = 0x0C,
-  Light_Magenta  = 0x0D,
-  Yellow         = 0x0E,
-  White          = 0x0F
+  Black         = 0x00,
+  Blue          = 0x01,
+  Green         = 0x02,
+  Cyan          = 0x03,
+  Red           = 0x04,
+  Magenta       = 0x05,
+  Brown         = 0x06,
+  Light_Gray    = 0x07,
+  Dark_Gray     = 0x08,
+  Light_Blue    = 0x09,
+  Light_Green   = 0x0A,
+  Light_Cyan    = 0x0B,
+  Light_Red     = 0x0C,
+  Light_Magenta = 0x0D,
+  Yellow        = 0x0E,
+  White         = 0x0F
 };
 
 enum {
@@ -65,6 +65,9 @@ enum {
 #define ROWS        25
 #define CONSOLE     6
 
+//activate graphical console
+void go_graphic(void);
+
 //index is zero-based
 void switch_console(unsigned int console);
 
@@ -74,6 +77,7 @@ void clear_all(void);
 void clear_physical(void);
 
 void set_physical_color(unsigned char color);
+///Set cursor physical position
 void set_cursor(unsigned int x, unsigned int y);
 
 void scroll(unsigned int console, int n);

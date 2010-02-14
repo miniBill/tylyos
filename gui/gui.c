@@ -31,32 +31,38 @@
 #include "gui.h"
 #include "font.h"
 
-
-void VGA_writeChar(char ch,unsigned int _x,unsigned int _y)
-{
-    unsigned int c=0;
-    for(unsigned int y=0; y<8; y++)
-    {
-        for(unsigned int x=0; x<8; x++)
-        {
-            if( getBitExt((unsigned int*)g_8x8_font,((8*8)*ch)+c)==1)
-            {
-                if(_x+(8-x)<VGA_width && _y+y<VGA_height)
-                    VGA_address[VGA_width*(_y+y)+(_x+(8-x))]=0;
-            }
-            c++;
-        }
+void VGA_writeChar(char ch, unsigned int _x, unsigned int _y, unsigned char color) {
+  unsigned int c = 0;
+  #ifdef EIGHT
+  for (unsigned int y = 0; y < 8; y++)
+    for (unsigned int x = 0; x < 8; x++){
+      if (_x + (8 - x) < VGA_width && _y + y < VGA_height){
+        if (getBitExt((unsigned int*)g_8x8_font, ((8*8)*ch) + c) == 1)
+           VGA_address[VGA_width*(_y+y)+(_x+(8-x))] = color;
+        else
+           VGA_address[VGA_width*(_y+y)+(_x+(8-x))] = 0x13;
+        c++;
+      }
     }
+  #else
+  for (unsigned int y = 0; y < 4; y++)
+    for (unsigned int x = 0; x < 4; x++){
+      if (_x + (4 - x) < VGA_width && _y + y < VGA_height){
+        if (g_4x4_font[(int)ch] & 1<<c)
+          VGA_address[VGA_width*(_y+y)+(_x+(4-x))] = color;
+        else
+          VGA_address[VGA_width*(_y+y)+(_x+(8-x))] = 0x13;
+      }
+      c++;
+    }
+  #endif
 }
 
-void VGA_writeString(char *s,unsigned int x,unsigned int y)
-{
-    unsigned int count=strlen(s);
-    
-    for(unsigned int c=0;c<count;c++)
-    {
-        VGA_writeChar(s[c],x+7*c,y);
-    }
+void VGA_writeString(char *s, unsigned int x, unsigned int y,unsigned char color) {
+  unsigned int count = strlen(s);
+
+  for(unsigned int c = 0;c < count;c++)
+    VGA_writeChar(s[c], x + 5*c, y,color);
 }
 
 
