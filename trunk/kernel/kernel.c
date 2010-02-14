@@ -146,7 +146,7 @@ void _kmain(multiboot_info_t* mbd, unsigned int magicN) {
   module_t *moduloGrub;
 
   loadedModuleSize=0;
-  
+
   kernel_end=(unsigned int)&l_end;/*NON togliere da qui'!!!*/
 
   magicNumber = magicN;
@@ -183,13 +183,12 @@ void _kmain(multiboot_info_t* mbd, unsigned int magicN) {
   write(" PIT\n",0);
   initTimer();
   OK(t++);
-  
+
   NO(t);
   greendot();
   write("Cerco l'initrd: ",0);
   moduloGrub=hunt_getArray(multiBootInfo);
-  if(moduloGrub)
-  {
+  if(moduloGrub){
       OK(t++);
       NO(t);
       hunt_load(moduloGrub);
@@ -251,74 +250,69 @@ void _kmain(multiboot_info_t* mbd, unsigned int magicN) {
   
   printf(2,"list directory:\n");
   struct fs_node_info info;
-  while(readDir(tDir,&info)==FS_OK)
-  {
-      printf(2,"    > %s %d Bytes tipo: %d\n",info.name,info.size,info.type);
+  while(readDir(tDir,&info)==FS_OK){
+    printf(2,"    > %s %d Bytes tipo: %d\n",info.name,info.size,info.type);
   }
-  
-  struct bmpfile_magic {
-      unsigned char magic[2];
-  };
-  
-  struct bmpfile_header {
-      unsigned int filesz;
-      unsigned int  creator1;
-      unsigned int  creator2;
-      unsigned int  bmp_offset;
-  };
-  
+
+  sleep(500);
+
   VGA_init(320,200,8);
-  
-  draw_mandelbrot();
-  /*
-  VGA_writeString("12345678901234567890123456789012345678901234567890",0,200-8);*/
-  
+
+  struct bmpfile_magic {
+    unsigned char magic[2];
+  };
+
+  struct bmpfile_header {
+    unsigned int filesz;
+    unsigned int  creator1;
+    unsigned int  creator2;
+    unsigned int  bmp_offset;
+  };
+
+  //draw_mandelbrot();
+  /*VGA_writeString("12345678901234567890123456789012345678901234567890",0,200-8);*/
+
   char immagine[2000];
   File imm=openFile("/tylyos.bmp",'r');
-  int readed=0;
   if(imm==0)
-  {printf(1,"doh\n");}
-  else
-  {
-      readFile(imm,immagine,0x36);/*legge l'header*/
-      /*struct bmpfile_magic *header1=(struct bmpfile_magic*)immagine;
-      struct bmpfile_header *header2=(struct bmpfile_header*)immagine+2;*/
-      
-      readFile(imm,immagine,256*4);/*salta la palette*/
-      unsigned int ret=readFile(imm,immagine,100);
-      while(ret>0)
-      {
-          for(unsigned int c=0;c<ret;c++)
-          {
-              int x=(readed+c)%80;
-              int y=30-(((readed+c)/80)+1);
-              
-              VGA_address[(VGA_width)*y+x]=immagine[c];
-              
-              
-              printf(1,"letto\n");
-          }
-          readed+=100;
-          ret=readFile(imm,immagine,100);
-      }
-  }
-  
- 
-  
-  VGA_writeString("- 320x200, 256 colori",5,175);
-  VGA_writeString("- VGA mode: engage!!!!",5,185);
-  
-  sleep(2000);
-  gui_life();
+    printf(1,"doh\n");
+  else{
+    int read=0;
+    readFile(imm,immagine,0x36);/*legge l'header*/
+    /*struct bmpfile_magic *header1=(struct bmpfile_magic*)immagine;
+    struct bmpfile_header *header2=(struct bmpfile_header*)immagine+2;*/
 
-  /* test kernel panic
-   while(1)
-   {
-      kmalloc(1024*1024);
-   }*/
-  /*kernelPanic("_kmain()","this is a test message");*/
+    readFile(imm,immagine,256*4);/*salta la palette*/
+    unsigned int ret=readFile(imm,immagine,100);
+    while(ret>0){
+      for(unsigned int c=0;c<ret;c++){
+        int x=(read+c)%80;
+        int y=30-(((read+c)/80)+1);
+
+        //VGA_address[(VGA_width)*y+x]=immagine[c];
+        printf(1,"letto\n");
+      }
+      read+=100;
+      ret=readFile(imm,immagine,100);
+    }
+  }
+
+  VGA_writeString("- 320x200, 256 colori",5,175,0);
+  VGA_writeString("- VGA mode: engage!!!",5,185,0);
+  for(int y=0;y<ROWS;y++)
+    for(int x=0;x<COLUMNS;x++){
+      put_color_xy(0,0,x,y);
+      put_color_xy(0,1,x,y);
+    }
+
+  switch_console(1);
+  switch_console(0);
+
+  sleep(3000);
+  //gui_life();
+
   while (on);
-  
+
   /*wait 3 seconds before halting*/
   sleep(3000);
 
@@ -327,9 +321,7 @@ void _kmain(multiboot_info_t* mbd, unsigned int magicN) {
   asm("int $1");
 }
 
-
 void kernelPanic(char *sender, char *message) {
-
   asm("cli");
   set_physical_color(Yellow | Back_Red);
   clear_physical();

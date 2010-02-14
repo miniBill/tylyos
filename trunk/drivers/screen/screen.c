@@ -21,6 +21,7 @@
 #include "screen.h"
 #include <memory/memory.h>
 #include <lib/string.h>
+#include <gui/gui.h>
 
 static char consoleColor  = White;
 
@@ -34,19 +35,35 @@ static unsigned int currentConsole = 0;
 static unsigned int x[CONSOLE];
 static unsigned int y[CONSOLE];
 
-//static unsigned int py = 0;
+static unsigned char vga_mode = 0;
 
 //physical implicit
 static inline char * addr_xy(unsigned int x, unsigned int y) {
   return (char*)(consoleAddr + 2*(x + COLUMNS*y));
 }
 
+static const int ulx=5;
+static const int uly=5;
+static const int drx=315;
+static const int dry=195;
+static const int dx=5;//220/COLUMNS;
+static const int dy=5;//100/ROWS;
+
 static inline void update(void) {
   for (int ty = 0;ty < ROWS - 1;ty++)
-    for (int tx = 0;tx < COLUMNS;tx++) {
+    for (int tx = 0;tx < COLUMNS;tx++)
+      if(!vga_mode){
         put_physical_xy(videoMemory[currentConsole][ty+baseline[currentConsole]][tx], tx, ty);
         put_physical_color_xy(colorMemory[currentConsole][ty+baseline[currentConsole]][tx], tx, ty);
       }
+      else
+        VGA_writeChar(videoMemory[currentConsole][ty+baseline[currentConsole]][tx],tx*dx+ulx,ty*dy+uly,
+                      colorMemory[currentConsole][ty+baseline[currentConsole]][tx]);
+}
+
+void go_graphic(void){
+  vga_mode=1;
+  update();
 }
 
 void switch_console(unsigned int console) {
@@ -57,7 +74,8 @@ void switch_console(unsigned int console) {
   currentConsole = console;
   update();
   set_cursor(x[console],y[console]);
-  put_physical_xy(console+'1', 26, ROWS - 1);
+  if(!vga_mode)
+    put_physical_xy(console+'1', 26, ROWS - 1);
 }
 
 unsigned int current_console(void) {
@@ -89,6 +107,8 @@ void set_physical_color(unsigned char color) {
 }
 
 void set_cursor(unsigned int x, unsigned int y) {
+  if(vga_mode)
+    return;
   asm(
     "movl  %0, %%eax     \n"
     "movl  %1, %%ebx     \n"
@@ -218,9 +238,15 @@ void put_xy(char c, unsigned int console, unsigned int x, unsigned int y) {
   put_color_xy(consoleColor, console, x, y);
 }
 
+void reboot(void);
+
 void put_physical_xy(char c, unsigned int x, unsigned int y) {
-  *addr_xy(x, y) = c;
-  put_physical_color_xy(consoleColor, x, y);
+  if(!vga_mode){
+    *addr_xy(x, y) = c;
+    put_physical_color_xy(consoleColor, x, y);
+  }
+  else
+    VGA_writeChar(c,x*dx+ulx,y*dy+uly,consoleColor);
 }
 
 void put_color_x(unsigned char color, unsigned int console, unsigned int x) {
@@ -236,7 +262,10 @@ void put_color_xy(unsigned char color, unsigned int console, unsigned int x, uns
 }
 
 void put_physical_color_xy(unsigned char color, unsigned int x, unsigned int y) {
-  *(addr_xy(x, y) + 1) = color;
+  if(!vga_mode)
+    *(addr_xy(x, y) + 1) = color;
+  else
+    VGA_writeChar(videoMemory[currentConsole][y + baseline[currentConsole]][x],x*dx+ulx,y*dy+uly,color);
 }
 
 char read_x(unsigned int x, unsigned int console) {
