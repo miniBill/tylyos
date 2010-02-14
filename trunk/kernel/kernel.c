@@ -323,11 +323,7 @@ void _kmain(multiboot_info_t* mbd, unsigned int magicN) {
       kmalloc(1024*1024);
    }*/
   /*kernelPanic("_kmain()","this is a test message");*/
-  void life();
-  while (on){
-    if(live)
-      life();
-  }
+  while (on);
   
   /*wait 3 seconds before halting*/
   sleep(3000);
