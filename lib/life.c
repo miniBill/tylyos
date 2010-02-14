@@ -80,7 +80,7 @@ void life(void){
       sleep(100);
       g=getch();
       if(g=='p')
-	p=1-p;
+        p=1-p;
     }while(p);
     if(g=='r')
       randomize();
