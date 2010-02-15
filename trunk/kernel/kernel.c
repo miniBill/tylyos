@@ -169,8 +169,6 @@ void _kmain(multiboot_info_t* mbd, unsigned int magicN) {
   set_physical_color(White|Back_Black);
   clear_all();
 
-  VGA_init(320,200,8);
-
   NO(t);
   kwrite("Kernel caricato.");
   OK(t++);
@@ -210,7 +208,6 @@ void _kmain(multiboot_info_t* mbd, unsigned int magicN) {
   else
     t++;
 
-
   NO(t);
   greendot();
   write("Inizializzazione Paging\n",0);
@@ -240,7 +237,7 @@ void _kmain(multiboot_info_t* mbd, unsigned int magicN) {
   asm("sti");
   write_physical_xy("[s][c][a][n][k] Console: [1] Time:",0, ROWS - 1);
   on = 1;
-  
+
   File tFile1=openFile("/directory/test3.txt",'w');
   File tFile2=openFile("/test.txt",'w');
   printf(1,"open file id=%d\n",tFile1);
@@ -267,7 +264,9 @@ void _kmain(multiboot_info_t* mbd, unsigned int magicN) {
     printf(2,"    > %s %d Bytes tipo: %d\n",info.name,info.size,info.type);
   }
 
-  sleep(500);
+  sleep(5000);
+
+  VGA_init(320,200,8);
 
   struct bmpfile_magic {
     unsigned char magic[2];
