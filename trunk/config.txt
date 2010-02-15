@@ -1,6 +1,11 @@
 #ifndef CONFIG_TXT_
 #define CONFIG_TXT_
 
+//*---------------*
+//|Vga framebuffer|
+//*---------------*
+#define EARLY_VGA
+
 // *-------------*
 // |Code maturity|
 // *-------------*

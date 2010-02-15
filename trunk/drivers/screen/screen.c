@@ -76,7 +76,7 @@ static inline void update(void) {
 
 void go_graphic(void){
   vga_mode=1;
-  consoleColor=Black;
+  consoleColor=White;
   update();
 }
 

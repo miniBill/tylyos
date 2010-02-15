@@ -17,6 +17,7 @@
  * along with TylyOS.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <config.txt>
 #include "kernel.h"
 #include "hunter.h"
 #include "tests.h"
@@ -169,6 +170,10 @@ void _kmain(multiboot_info_t* mbd, unsigned int magicN) {
   set_physical_color(White|Back_Black);
   clear_all();
 
+  #ifdef EARLY_VGA
+  VGA_init(320,200,8);
+  #endif
+  
   NO(t);
   kwrite("Kernel caricato.");
   OK(t++);
@@ -264,9 +269,10 @@ void _kmain(multiboot_info_t* mbd, unsigned int magicN) {
     printf(2,"    > %s %d Bytes tipo: %d\n",info.name,info.size,info.type);
   }
 
+  #ifndef EARLY_VGA
   sleep(500);
-
   VGA_init(320,200,8);
+  #endif
 
   struct bmpfile_magic {
     unsigned char magic[2];
@@ -315,7 +321,6 @@ void _kmain(multiboot_info_t* mbd, unsigned int magicN) {
   "ABCDEFGHIJKLMNOPQRSTUVXYZ\n"
   "[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~\n");
 
-  sleep(3000);
   //gui_life();
 
   while (on);
