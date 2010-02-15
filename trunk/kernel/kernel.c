@@ -318,7 +318,7 @@ void _kmain(multiboot_info_t* mbd, unsigned int magicN) {
 
   printf(0,"!\"#$%%&'()*+,-./\n"
   "0123456789:;<=>?@\n"
-  "ABCDEFGHIJKLMNOPQRSTUVXYZ\n"
+  "ABCDEFGHIJKLMNOPQRSTUVWXYZ\n"
   "[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~\n");
 
   //gui_life();
