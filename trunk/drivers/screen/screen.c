@@ -35,19 +35,19 @@ static unsigned int currentConsole = 0;
 static unsigned int x[CONSOLE];
 static unsigned int y[CONSOLE];
 
-static unsigned char vga_mode = 0;
+unsigned char vga_mode = 0;
 
 //physical implicit
 static inline char * addr_xy(unsigned int x, unsigned int y) {
-  return (char*)(consoleAddr + 2*(x + COLUMNS*y));
+  return (char*)consoleAddr + 2*(x + COLUMNS*y);
 }
 
 static const int ulx=0;
-static const int uly=0;
+static const int uly=35;
 static const int drx=315;
 static const int dry=195;
-static const int dx=5;//220/COLUMNS;
-static const int dy=5;//100/ROWS;
+static const int dx=VGA_dx;//~=220/COLUMNS;
+static const int dy=5;//~=100/ROWS;
 
 static inline void update(void) {
   for (int ty = 0;ty < ROWS - 1;ty++)

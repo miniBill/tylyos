@@ -59,11 +59,16 @@ enum {
   Back_White         = 0xF0
 };
 
-#define consoleAddr 0xb8000
-#define COLUMNS     80
-#define PAGES       4
-#define ROWS        25
-#define CONSOLE     6
+extern unsigned char vga_mode;
+
+enum{
+  consoleAddr = 0xb0000,
+  COLUMNS     = 64,//HACK for vga mode
+  PAGES       =  4,
+  ROWS        = 30,//HACK for vga mode
+  CONSOLE     =  6,
+  VGA_dx      =  5
+};
 
 //activate graphical console
 void go_graphic(void);

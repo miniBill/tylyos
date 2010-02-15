@@ -116,9 +116,9 @@ int mbdtest(void) {
   int l = multiBootInfo->mem_lower;
   int u = multiBootInfo->mem_upper;
   if (multiBootInfo->flags & 1){
-      printf(0,"Lower memory:%dKb. ",l);
-      printf(0,"Upper memory:%dMb. ",u/1024);
-      printf(0,"Total memory:%dMb and %dKb.",(l + u) / 1024,(l + u) % 1024);
+      printf(0,"Low mem:%dK,",l);
+      printf(0,"Up mem:%dM,",u/1024);
+      printf(0,"Tot mem:%dM and %dK.",(l + u) / 1024,(l + u) % 1024);
   }
   return l > 0;
 }
@@ -157,6 +157,8 @@ void _kmain(multiboot_info_t* mbd, unsigned int magicN) {
 
   set_physical_color(White|Back_Black);
   clear_all();
+
+  VGA_init(320,200,8);
 
   NO(t);
   kwrite("Kernel caricato.");
@@ -254,9 +256,7 @@ void _kmain(multiboot_info_t* mbd, unsigned int magicN) {
     printf(2,"    > %s %d Bytes tipo: %d\n",info.name,info.size,info.type);
   }
 
-  sleep(1500);
-
-  VGA_init(320,200,8);
+  sleep(500);
 
   struct bmpfile_magic {
     unsigned char magic[2];
@@ -289,7 +289,7 @@ void _kmain(multiboot_info_t* mbd, unsigned int magicN) {
         int x=(read+c)%80;
         int y=30-(((read+c)/80)+1);
 
-        //VGA_address[(VGA_width)*y+x]=immagine[c];
+        VGA_address[(VGA_width)*y+x]=immagine[c];
         printf(1,"letto\n");
       }
       read+=100;
@@ -297,16 +297,13 @@ void _kmain(multiboot_info_t* mbd, unsigned int magicN) {
     }
   }
 
-  VGA_writeString("- 320x200, 256 colori",5,175,0);
-  VGA_writeString("- VGA mode: engage!!!",5,185,0);
-  for(int y=0;y<ROWS;y++)
-    for(int x=0;x<COLUMNS;x++){
-      put_color_xy(0,0,x,y);
-      put_color_xy(0,1,x,y);
-    }
+  //VGA_writeString("- 320x200, 256 colori",5,175,0);
+  //VGA_writeString("- VGA mode: engage!!!",5,185,0);
 
-  switch_console(1);
-  switch_console(0);
+  printf(0,"!\"#$%%&'()*+,-./\n"
+  "0123456789:;<=>?@\n"
+  "ABCDEFGHIJKLMNOPQRSTUVXYZ\n"
+  "[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~\n");
 
   sleep(3000);
   //gui_life();
