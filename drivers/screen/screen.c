@@ -39,7 +39,7 @@ unsigned char vga_mode = 0;
 
 //physical implicit
 static inline char * addr_xy(unsigned int x, unsigned int y) {
-  return (char*)consoleAddr + 2*(x + COLUMNS*y);
+  return (char*)consoleAddr + 2*(x + 80*y);//COLUMNS hardcoded, because of yes
 }
 
 static const int ulx=0;
@@ -111,8 +111,8 @@ void clear_all(void) {
 }
 
 void clear_physical(void) {
-  for (int y = 0;y < ROWS;y++)
-    for (int x = 0;x < COLUMNS;x++)
+  for (int y = 0;y < 25;y++)
+    for (int x = 0;x < 80;x++)
       put_physical_xy(' ', x, y);
 }
 

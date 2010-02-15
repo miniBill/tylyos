@@ -62,7 +62,7 @@ enum {
 extern unsigned char vga_mode;
 
 enum{
-  consoleAddr = 0xb0000,
+  consoleAddr = 0xB8000,
   COLUMNS     = 64,//HACK for vga mode
   PAGES       =  4,
   ROWS        = 30,//HACK for vga mode
