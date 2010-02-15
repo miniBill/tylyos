@@ -40,7 +40,7 @@ void VGA_writeChar(char ch, unsigned int _x, unsigned int _y, unsigned char colo
         if (getBitExt((unsigned int*)g_8x8_font, ((8*8)*ch) + c) == 1)
            VGA_address[VGA_width*(_y+y)+(_x+(8-x))] = color;
         else
-           VGA_address[VGA_width*(_y+y)+(_x+(8-x))] = 0x13;
+            VGA_address[VGA_width*(_y+y)+(_x+(8-x))] = gui_background;
         c++;
       }
     }
@@ -52,7 +52,7 @@ void VGA_writeChar(char ch, unsigned int _x, unsigned int _y, unsigned char colo
         if(g_4x4_font[(int)ch] & 1<<c)
           VGA_address[VGA_width*(_y+y)+(_x+(4-x))] = color;
         else
-          VGA_address[VGA_width*(_y+y)+(_x+(4-x))] = 0x13;
+            VGA_address[VGA_width*(_y+y)+(_x+(4-x))] = gui_background;
       }
       c++;
     }
@@ -64,7 +64,7 @@ void VGA_writeChar(char ch, unsigned int _x, unsigned int _y, unsigned char colo
         if(g_4x5_font[(int)ch*3+y/2] & 1<<c)
           VGA_address[VGA_width*(_y+y)+(_x+(4-x))] = color;
         else
-          VGA_address[VGA_width*(_y+y)+(_x+(4-x))] = 0x13;
+            VGA_address[VGA_width*(_y+y)+(_x+(4-x))] = gui_background;
       }
       c=(c+1)%8;
     }
