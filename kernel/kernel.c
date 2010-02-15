@@ -82,6 +82,8 @@ void kwrite(const char * string) {
     }
 }
 
+const int s=20;
+
 void logo(void) {
     /*
     write("                           ___              _    _ \n",0);
@@ -90,10 +92,19 @@ void logo(void) {
     write("                                /      /           \n",0);
     write("\n",0);
     */
-    write("                           _._      .            __\n",0);
-    write("                            |       |      /^\\  (_ \n",0);
-    write("                            |   \\/  |  \\/  \\_/  __) \n",0);
-    write("                                /      /           \n",0);
+    int c;
+    for(c=0;c<s;c++)
+      put(' ',0);
+    write("_._      .            __\n",0);
+    for(c=0;c<s;c++)
+      put(' ',0);
+    write(" |       |      /^\\  (_ \n",0);
+    for(c=0;c<s;c++)
+      put(' ',0);
+    write(" |   \\/  |  \\/  \\_/  __) \n",0);
+    for(c=0;c<s;c++)
+      put(' ',0);
+    write("     /      /           \n",0);
     write("\n",0);
 }
 
