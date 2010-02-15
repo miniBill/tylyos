@@ -62,7 +62,7 @@ void VGA_writeString(char *s, unsigned int x, unsigned int y,unsigned char color
   unsigned int count = strlen(s);
 
   for(unsigned int c = 0;c < count;c++)
-    VGA_writeChar(s[c], x + 5*c, y,color);
+    VGA_writeChar(s[c], x + VGA_dx*c, y,color);
 }
 
 
