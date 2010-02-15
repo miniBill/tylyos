@@ -72,6 +72,10 @@ unsigned int printf(unsigned int console, const char* format, ...) {
   for (i = 0;i < strlen(format);i++) {
       if (format[i] == '%') {
           switch (format[i+1]) {
+            case '%':
+              put('%',console);
+              size++;
+              break;
             case 'd':
               itoa(* ((int *) arg++), buf);
               goto number;
