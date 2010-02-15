@@ -47,7 +47,7 @@ static const int uly=35;
 static const int drx=315;
 static const int dry=195;
 static const int dx=VGA_dx;//~=220/COLUMNS;
-static const int dy=5;//~=100/ROWS;
+static const int dy=VGA_dy;//~=100/ROWS;
 
 static inline unsigned char convert(unsigned char color){
   switch(color){
