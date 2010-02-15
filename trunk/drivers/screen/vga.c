@@ -26,6 +26,7 @@
 #include <kernel/kernel.h>
 
 #include <gui/mandelbrot.h>
+#include <gui/gui.h>
 #include "vga.h"
 #include "palette.h"
 
@@ -189,7 +190,7 @@ void VGA_clear_screen(){
     unsigned int x,y;
     for(y=0; y<VGA_height; y++)
         for(x=0; x<VGA_width; x++)
-            VGA_address[VGA_width*y+x]=0x13;
+            VGA_address[VGA_width*y+x]=gui_background;
 }
 
 

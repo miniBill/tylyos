@@ -20,6 +20,8 @@
 #ifndef GUI_H
 #define GUI_H
 
+char gui_background;
+
 void VGA_writeChar(char ch,unsigned int _x,unsigned int _y,unsigned char color);
 void VGA_writeString(char *s,unsigned int x,unsigned int y,unsigned char color);
 
