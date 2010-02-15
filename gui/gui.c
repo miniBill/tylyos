@@ -45,6 +45,7 @@ void VGA_writeChar(char ch, unsigned int _x, unsigned int _y, unsigned char colo
       }
     }
   #else
+   #ifdef FOUR
   for (unsigned int y = 0; y < 4; y++)
     for (unsigned int x = 0; x < 4; x++){
       if (_x + (4 - x) < VGA_width && _y + y < VGA_height){
@@ -55,6 +56,19 @@ void VGA_writeChar(char ch, unsigned int _x, unsigned int _y, unsigned char colo
       }
       c++;
     }
+    #else
+    c=4;
+  for (unsigned int y = 0; y < 5; y++)
+    for (unsigned int x = 0; x < 4; x++){
+      if (_x + (4 - x) < VGA_width && _y + y < VGA_height){
+        if(g_4x5_font[(int)ch*3+y/2] & 1<<c)
+          VGA_address[VGA_width*(_y+y)+(_x+(4-x))] = color;
+        else
+          VGA_address[VGA_width*(_y+y)+(_x+(4-x))] = 0x13;
+      }
+      c=(c+1)%8;
+    }
+    #endif
   #endif
 }
 

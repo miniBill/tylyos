@@ -65,9 +65,10 @@ enum{
   consoleAddr = 0xB8000,
   COLUMNS     = 64,//HACK for vga mode
   PAGES       =  4,
-  ROWS        = 30,//HACK for vga mode
+  ROWS        = 25,//HACK for vga mode
   CONSOLE     =  6,
-  VGA_dx      =  5
+  VGA_dx      =  5,
+  VGA_dy      =  6,
 };
 
 //activate graphical console
