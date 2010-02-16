@@ -31,7 +31,8 @@ unsigned int strlen(const char * string) {
 
 void strcpy(const char *source, char *dest) {
   unsigned int c;
-  for (c = 0;c < strlen(source);c++)
+  unsigned int l=strlen(source);
+  for (c = 0;c < l;c++)
     dest[c] = source[c];
   dest[c] = 0;
 }
@@ -69,7 +70,8 @@ unsigned int printf(unsigned int console, const char* format, ...) {
   char buf[33];//Longest string will bit a binary int32, so 33 chars are enough
   unsigned int i;
   arg++;/*jump "format"*/
-  for (i = 0;i < strlen(format);i++) {
+  unsigned int fl=strlen(format);
+  for (i = 0;i < fl;i++) {
       if (format[i] == '%') {
           switch (format[i+1]) {
             case '%':
@@ -130,7 +132,8 @@ unsigned int sprintf(char * out, unsigned int max, const char * format, ...) {
   char buf[33];//Longest string will bit a binary int32, so 33 chars are enough
   unsigned int i;
   arg++;/*jump "format"*/
-  for (i = 0;size < max && i < strlen(format);i++) {
+  unsigned int fl=strlen(format);
+  for (i = 0;size < max && i < fl;i++) {
       if (format[i] == '%') {
           switch (format[i+1]) {
             case 'd':
