@@ -70,7 +70,7 @@ static inline void update(void) {
         put_physical_color_xy(colorMemory[currentConsole][ty+baseline[currentConsole]][tx], tx, ty);
       }
       else
-        VGA_writeChar(videoMemory[currentConsole][ty+baseline[currentConsole]][tx],tx*dx+ulx,ty*dy+uly,
+        gui_writeChar(videoMemory[currentConsole][ty+baseline[currentConsole]][tx],tx*dx+ulx,ty*dy+uly,
                       vga_mode?convert(colorMemory[currentConsole][ty+baseline[currentConsole]][tx]):colorMemory[currentConsole][ty+baseline[currentConsole]][tx]);
 }
 
@@ -260,7 +260,7 @@ void put_physical_xy(char c, unsigned int x, unsigned int y) {
     put_physical_color_xy(consoleColor, x, y);
   }
   else
-    VGA_writeChar(c,x*dx+ulx,y*dy+uly,convert(consoleColor));
+    gui_writeChar(c,x*dx+ulx,y*dy+uly,convert(consoleColor));
 }
 
 void put_color_x(unsigned char color, unsigned int console, unsigned int x) {
@@ -279,7 +279,7 @@ void put_physical_color_xy(unsigned char color, unsigned int x, unsigned int y) 
   if(!vga_mode)
     *(addr_xy(x, y) + 1) = color;
   else
-    VGA_writeChar(videoMemory[currentConsole][y + baseline[currentConsole]][x],x*dx+ulx,y*dy+uly,vga_mode?convert(color):color);
+    gui_writeChar(videoMemory[currentConsole][y + baseline[currentConsole]][x],x*dx+ulx,y*dy+uly,vga_mode?convert(color):color);
 }
 
 char read_x(unsigned int x, unsigned int console) {
