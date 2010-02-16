@@ -279,7 +279,7 @@ void put_color_x(unsigned char color, unsigned int console, unsigned int x) {
 void put_color_xy(unsigned char color, unsigned int console, unsigned int x, unsigned int y) {
   colorMemory[console][y][x] = color;
   if(console==currentConsole)
-    put_physical_color_xy(color, x, y);
+    put_physical_color_xy(color, x, y-baseline[console]);
 }
 
 void put_physical_color_xy(unsigned char color, unsigned int x, unsigned int y) {
