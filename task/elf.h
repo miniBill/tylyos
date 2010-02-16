@@ -45,6 +45,28 @@ typedef unsigned int Elf32_Word;/*unsigned large integer*/
 #define EV_CURRENT 1 /*Current version*/
 
 
+#define EI_MAG0 0 /*File identification*/
+#define EI_MAG1 1 /*File identification*/
+#define EI_MAG2 2 /*File identification*/
+#define EI_MAG3 3 /*File identification*/
+#define EI_CLASS 4 /*File class*/
+#define EI_DATA 5 /*Data encoding*/
+#define EI_VERSION 6 /*File version*/
+#define EI_PAD 7 /*Start of padding bytes*/
+
+#define ELFMAG0 0x7f /*e_ident[EI_MAG0]*/
+#define ELFMAG1 ’E’ /*e_ident[EI_MAG1]*/
+#define ELFMAG2 ’L’ /*e_ident[EI_MAG2]*/
+#define ELFMAG3 ’F’ /*e_ident[EI_MAG3]*/
+
+#define ELFCLASSNONE 0 /*Invalid class*/
+#define ELFCLASS32 1 /*32-bit objects*/
+#define ELFCLASS64 2 /*64-bit objects*/
+
+#define ELFDATANONE 0 /*Invalid data encoding*/
+#define ELFDATA2LSB 1
+#define ELFDATA2MSB 2
+
 
 #define EI_NIDENT     16
 
