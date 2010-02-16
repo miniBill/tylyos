@@ -41,8 +41,6 @@ static char buffer[CONSOLE][KEYBUFSIZE+1];
 static int inpointer[CONSOLE];
 static int outpointer[CONSOLE];
 
-//#define FREEROAMING
-
 static int stop_output;
 
 int modifier(char c, int released) {
@@ -253,7 +251,7 @@ void keypress(void) {
               break;
             case 0x2C:/*Z for life*/
               ch = 0;
-              write_physical_xy("r for \"randomize\", p for pause", 0, ROWS - 1);
+              write_physical_xy("r for \"randomize\", p for pause    ", 0, ROWS - 1);
               stop_output = 1;
               do_life();
               break;

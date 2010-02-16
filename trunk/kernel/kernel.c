@@ -276,28 +276,19 @@ void _kmain(multiboot_info_t* mbd, unsigned int magicN) {
   VGA_init(320,200,8);
   #endif
 
-gui_printImageFromFile("/tylyos.bmp",2,2);
+  gui_printImageFromFile("/tylyos.bmp",2,2);
 
   //draw_mandelbrot();
-  /*VGA_writeString("12345678901234567890123456789012345678901234567890",0,200-8);*/
-
- 
-  //VGA_writeString("- 320x200, 256 colori",5,175,0);
-  //VGA_writeString("- VGA mode: engage!!!",5,185,0);
-
+  //gui_life();
   printf(0,"!\"#$%%&'()*+,-./\n"
   "0123456789:;<=>?@\n"
   "ABCDEFGHIJKLMNOPQRSTUVWXYZ\n"
   "[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~\n");
 
-  printf(0,"11\n");/*TODO: SISTEMARE LO SCROOLLING!!!!*/
-  printf(0,"22\n");
-  printf(0,"33\n");
-  printf(0,"44\n");
-  printf(0,"55\n");
-  //gui_life();
-
-  while (on);
+  while (on){
+    if(live)
+      gui_life();
+  }
 
   /*wait 3 seconds before halting*/
   sleep(3000);
