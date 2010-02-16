@@ -88,7 +88,7 @@ void switch_console(unsigned int console) {
   currentConsole = console;
   update();
   set_cursor(x[console],y[console]);
-  if(!vga_mode)
+ // if(!vga_mode)
     put_physical_xy(console+'1', 26, ROWS - 1);
 }
 
