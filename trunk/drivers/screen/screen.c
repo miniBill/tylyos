@@ -247,8 +247,8 @@ void put(char c, unsigned int console) {
 
 void put_x(char c, unsigned int console, unsigned int x) {
   videoMemory[console][(baseline[console] + y[console])][x] = c;
-  //if(console==currentConsole)
-    //put_physical_xy(c, x, y[console] + baseline[console]);
+  if(console==currentConsole)
+    put_physical_xy(c, x, y[console] + baseline[console]);
   put_color_x(consoleColor, console, x);
 }
 

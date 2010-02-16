@@ -290,11 +290,11 @@ gui_printImageFromFile("/tylyos.bmp",2,2);
   "ABCDEFGHIJKLMNOPQRSTUVWXYZ\n"
   "[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~\n");
 
-  printf(0,"1\n");/*TODO: SISTEMARE LO SCROOLLING!!!!*/
-  printf(0,"2\n");
-  printf(0,"3\n");
-  printf(0,"4\n");
-  printf(0,"5\n");
+  printf(0,"11\n");/*TODO: SISTEMARE LO SCROOLLING!!!!*/
+  printf(0,"22\n");
+  printf(0,"33\n");
+  printf(0,"44\n");
+  printf(0,"55\n");
   //gui_life();
 
   while (on);
