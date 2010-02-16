@@ -35,8 +35,6 @@
 
 #include <gui/gui.h>
 
-static int on = 1;
-
 static int magicNumber = 0;
 
 static int live=0;
@@ -53,7 +51,8 @@ inline void greendot(void) {
 }
 
 void reboot(void) {
-  on = 0;
+  asm("movw $88,%ax\n\t"
+  "int $0x80\n\t");
 }
 
 void OK(int i) {
@@ -243,7 +242,6 @@ void _kmain(multiboot_info_t* mbd, unsigned int magicN) {
   goto_xy(0, 1, t);
   asm("sti");
   write_physical_xy("[s][c][a][n][k] Console: [1] Time:",0, ROWS - 1);
-  on = 1;
 
   File tFile1=openFile("/directory/test3.txt",'w');
   File tFile2=openFile("/test.txt",'w');
@@ -285,17 +283,11 @@ void _kmain(multiboot_info_t* mbd, unsigned int magicN) {
   "ABCDEFGHIJKLMNOPQRSTUVWXYZ\n"
   "[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~\n");
 
-  while (on){
+  while(1){
     if(live)
       gui_life();
   }
-
-  /*wait 3 seconds before halting*/
-  sleep(3000);
-
-  asm("cli");
-  clearIdt();
-  asm("int $1");
+  //halt now done via interrupt
 }
 
 void kernelPanic(char *sender, char *message) {
