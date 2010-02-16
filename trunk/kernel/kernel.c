@@ -276,45 +276,12 @@ void _kmain(multiboot_info_t* mbd, unsigned int magicN) {
   VGA_init(320,200,8);
   #endif
 
-  struct bmpfile_magic {
-    unsigned char magic[2];
-  };
-
-  struct bmpfile_header {
-    unsigned int filesz;
-    unsigned int  creator1;
-    unsigned int  creator2;
-    unsigned int  bmp_offset;
-  };
+gui_printImageFromFile("/tylyos.bmp",2,2);
 
   //draw_mandelbrot();
   /*VGA_writeString("12345678901234567890123456789012345678901234567890",0,200-8);*/
 
-  char immagine[2000];
-  File imm=openFile("/tylyos.bmp",'r');
-  if(imm==0)
-    printf(1,"doh\n");
-  else{
-    int read=0;
-    readFile(imm,immagine,0x36);/*legge l'header*/
-    /*struct bmpfile_magic *header1=(struct bmpfile_magic*)immagine;
-    struct bmpfile_header *header2=(struct bmpfile_header*)immagine+2;*/
-
-    readFile(imm,immagine,256*4);/*salta la palette*/
-    unsigned int ret=readFile(imm,immagine,100);
-    while(ret>0){
-      for(unsigned int c=0;c<ret;c++){
-        int x=(read+c)%80;
-        int y=30-(((read+c)/80)+1);
-
-        VGA_address[(VGA_width)*y+x]=immagine[c];
-        printf(1,"letto\n");
-      }
-      read+=100;
-      ret=readFile(imm,immagine,100);
-    }
-  }
-
+ 
   //VGA_writeString("- 320x200, 256 colori",5,175,0);
   //VGA_writeString("- VGA mode: engage!!!",5,185,0);
 

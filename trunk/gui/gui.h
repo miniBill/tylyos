@@ -22,8 +22,21 @@
 
 char gui_background;
 
-void VGA_writeChar(char ch,unsigned int _x,unsigned int _y,unsigned char color);
-void VGA_writeString(char *s,unsigned int x,unsigned int y,unsigned char color);
+struct bmpfile_magic {
+    unsigned char magic[2];
+};
+
+struct bmpfile_header {
+    unsigned int filesz;
+    unsigned int  creator1;
+    unsigned int  creator2;
+    unsigned int  bmp_offset;
+};
+
+void gui_writeChar(char ch,unsigned int _x,unsigned int _y,unsigned char color);
+void gui_writeString(char *s,unsigned int x,unsigned int y,unsigned char color);
+
+void gui_printImageFromFile(char *path,int x,int y);
 
 #endif
 
