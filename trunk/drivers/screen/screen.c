@@ -150,10 +150,14 @@ void set_cursor(unsigned int x, unsigned int y) {
 }
 
 void scroll(unsigned int console, int d) {
+  
   if (((int)baseline[console] + d) < 0)
+  {
     baseline[console] = 0;
+  }
   else
     baseline[console] += d;
+ 
   if(console==currentConsole)
     update();
 }
@@ -170,10 +174,13 @@ void goto_x(unsigned int console, unsigned int nx) {
 
 void goto_y(unsigned int console, unsigned int ny) {
   if (ny < baseline[console])
+  {
     scroll(console, ny - baseline[console]);
-  else if (ny > baseline[console] + ROWS - 2)
-    scroll(console, ny - baseline[console] - ROWS + 2);
-  y[console] = ny - baseline[console];
+  }
+  else if (ny > ROWS - 2)
+    scroll(console, ny - ROWS+2);
+  else
+      y[console] = ny - baseline[console];
   if(console==currentConsole)
     set_cursor(x[console], y[console]);
 }
@@ -239,16 +246,16 @@ void put(char c, unsigned int console) {
 }
 
 void put_x(char c, unsigned int console, unsigned int x) {
-  videoMemory[console][baseline[console] + y[console]][x] = c;
-  if(console==currentConsole)
-    put_physical_xy(c, x, y[console] + baseline[console]);
+  videoMemory[console][(baseline[console] + y[console])][x] = c;
+  //if(console==currentConsole)
+    //put_physical_xy(c, x, y[console] + baseline[console]);
   put_color_x(consoleColor, console, x);
 }
 
 void put_xy(char c, unsigned int console, unsigned int x, unsigned int y) {
   videoMemory[console][y][x] = c;
   if(console==currentConsole)
-    put_physical_xy(c, x, y);
+    put_physical_xy(c, x, y-baseline[console]);
   put_color_xy(consoleColor, console, x, y);
 }
 
@@ -264,7 +271,7 @@ void put_physical_xy(char c, unsigned int x, unsigned int y) {
 }
 
 void put_color_x(unsigned char color, unsigned int console, unsigned int x) {
-  colorMemory[console][y[console] + baseline[console]][x] = color;
+  colorMemory[console][(y[console] + baseline[console])][x] = color;
   if(console==currentConsole)
     put_physical_color_xy(color, x, y[console]);
 }
