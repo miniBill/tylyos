@@ -32,7 +32,9 @@ static char colorMemory[CONSOLE][ROWS*PAGES][COLUMNS];
 static unsigned int baseline[CONSOLE];
 static unsigned int currentConsole = 0;
 
+///physical coordinate
 static unsigned int x[CONSOLE];
+///physical coordinate
 static unsigned int y[CONSOLE];
 
 unsigned char vga_mode = 0;
@@ -57,6 +59,8 @@ static inline unsigned char convert(unsigned char color){
       return 0x3D;
     case Light_Red:
       return 0xE0;
+    case Blue:
+      return 0x03;
     default:
       return 0;
   }
@@ -70,8 +74,9 @@ static inline void update(void) {
         put_physical_color_xy(colorMemory[currentConsole][ty+baseline[currentConsole]][tx], tx, ty);
       }
       else
-        gui_writeChar(videoMemory[currentConsole][ty+baseline[currentConsole]][tx],tx*dx+ulx,ty*dy+uly,
-                      vga_mode?convert(colorMemory[currentConsole][ty+baseline[currentConsole]][tx]):colorMemory[currentConsole][ty+baseline[currentConsole]][tx]);
+        gui_writeChar(videoMemory[currentConsole][ty+baseline[currentConsole]][tx],tx*dx+ulx,ty*dy+uly,vga_mode?
+              convert(colorMemory[currentConsole][ty+baseline[currentConsole]][tx])
+                     :colorMemory[currentConsole][ty+baseline[currentConsole]][tx]);
 }
 
 void go_graphic(void){
@@ -97,11 +102,11 @@ unsigned int current_console(void) {
 
 void clear_all(void) {
   for (int c = 0;c < CONSOLE;c++) {
-      for (int ty = 0;ty < ROWS*PAGES;ty++)
-        for (int tx = 0;tx < COLUMNS;tx++) {
-            videoMemory[c][ty][tx] = ' ';
-            colorMemory[c][ty][tx] = consoleColor;
-          }
+    for (int ty = 0;ty < ROWS*PAGES;ty++)
+      for (int tx = 0;tx < COLUMNS;tx++) {
+        videoMemory[c][ty][tx] = ' ';
+        colorMemory[c][ty][tx] = consoleColor;
+      }
       baseline[c] = 0;
       x[c] = 0;
       y[c] = 0;
@@ -149,11 +154,8 @@ void set_cursor(unsigned int x, unsigned int y) {
 }
 
 void scroll(unsigned int console, int d) {
-  
   if (((int)baseline[console] + d) < 0)
-  {
     baseline[console] = 0;
-  }
   else
     baseline[console] += d;
  
@@ -164,22 +166,22 @@ void scroll(unsigned int console, int d) {
 void goto_x(unsigned int console, unsigned int nx) {
   if (nx >= COLUMNS)
     goto_xy(console, nx - COLUMNS, row(console) + 1);
-  else {
-      x[console] = nx;
-      if(console==currentConsole)
-        set_cursor(nx, y[console]);
-    }
+  else{
+    x[console] = nx;
+    if(console==currentConsole)
+      set_cursor(nx, y[console]);
+  }
 }
 
 void goto_y(unsigned int console, unsigned int ny) {
   if (ny < baseline[console])
-  {
     scroll(console, ny - baseline[console]);
-  }
-  else if (ny > ROWS - 2)
-    scroll(console, ny - ROWS+2);
-  else
+  else{
+    if (ny > ROWS - 2)
+      scroll(console, ny - ROWS+2);
+    else
       y[console] = ny - baseline[console];
+  }
   if(console==currentConsole)
     set_cursor(x[console], y[console]);
 }
@@ -194,7 +196,7 @@ void goto_xy(unsigned int console, unsigned int nx, unsigned int ny) {
   goto_y(console, ny);
 }
 
-int row(unsigned int console) {
+inline int row(unsigned int console) {
   return y[console] + baseline[console];
 }
 
@@ -229,13 +231,13 @@ void write_xy(const char* string, unsigned int console, unsigned int px, unsigne
 void write_physical_xy(const char* string, unsigned int x, unsigned int y) {
   int k;
   for (k = 0;string[k] != 0;k++) {
-      put_physical_xy(string[k], x, y);
-      x++;
-      if (x == COLUMNS) {
-          x = 0;
-          y++;
-        }
+    put_physical_xy(string[k], x, y);
+    x++;
+    if (x == COLUMNS){
+      x = 0;
+      y++;
     }
+  }
 }
 
 void put(char c, unsigned int console) {
@@ -289,5 +291,5 @@ void put_physical_color_xy(unsigned char color, unsigned int x, unsigned int y) 
 }
 
 char read_x(unsigned int x, unsigned int console) {
-  return videoMemory[console][y[console] + baseline[console]][x];
+  return videoMemory[console][row(console)][x];
 }
