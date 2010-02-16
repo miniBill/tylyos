@@ -69,6 +69,7 @@ void initIdt(void) {
   addIdtSeg(33, isr_33, INTERRUPT_PRESENT, segmentoCodiceKernel);
   addIdtSeg(46, isr_46, INTERRUPT_PRESENT, segmentoCodiceKernel);
   addIdtSeg(47, isr_47, INTERRUPT_PRESENT, segmentoCodiceKernel);
+  addIdtSeg(0x80, isr_x80, INTERRUPT_PRESENT, segmentoCodiceKernel);
 
   idt_pointer.limit = 0xFFFF;
   idt_pointer.base = (unsigned int) & idt;
@@ -170,6 +171,15 @@ void interrupt_handler(
       break;
     case 0x10:
       printf(0,"Ten");
+      break;
+    case 0x80:
+      switch(eax&0xFF){
+        case 88:
+          asm("cli");
+          clearIdt();
+          asm("int $1");
+          break;
+      }
       break;
     default:
 #ifdef PRINT_REGISTERS

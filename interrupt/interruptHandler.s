@@ -25,6 +25,8 @@
 .globl isr_46
 .globl isr_47
 
+.global isr_x80
+
 isr_0:          # division by zero exception
     cli
     push $0     # Codice di errore fittizio.
@@ -157,6 +159,12 @@ isr_47:         # IRQ 15: canale IDE secondario
     cli
     push $0     # Codice di errore fittizio.
     push $47    # Numero di procedura ISR.
+    jmp isr_common
+
+isr_x80:         # syscall
+    cli
+    push $0      # Codice di errore fittizio.
+    push $0x80    # Numero di procedura ISR.
     jmp isr_common
 
 isr_common:

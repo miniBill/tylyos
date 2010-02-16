@@ -89,5 +89,6 @@ extern void isr_32 ( void );
 extern void isr_33 ( void );
 extern void isr_46 ( void );
 extern void isr_47 ( void );
+extern void isr_x80 ( void );
 
 #endif
