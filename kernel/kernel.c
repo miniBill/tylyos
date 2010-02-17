@@ -184,7 +184,7 @@ void _kmain(multiboot_info_t* mbd, unsigned int magicN) {
   write("Prova writeline.\n",0);
   OK(t++);
 
-  logo();
+  //logo();
   t = row(0);
 
   NO(t);
@@ -274,7 +274,7 @@ void _kmain(multiboot_info_t* mbd, unsigned int magicN) {
   VGA_init(320,200,8);
   #endif
 
-  gui_printImageFromFile("/tylyos.bmp",2,2);
+  gui_printImageFromFile("/tylyos.bmp",0,0);
 
   //draw_mandelbrot();
   //gui_life();
