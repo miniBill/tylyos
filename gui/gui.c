@@ -32,6 +32,8 @@
 #include "gui.h"
 #include "font.h"
 
+
+
 void gui_writeChar(char ch, unsigned int _x, unsigned int _y, unsigned char color) {
   unsigned int c = 0;
   #ifdef EIGHT
@@ -103,7 +105,7 @@ void gui_printImageFromFile(char *path,int x,int y)
                 int _y=heigth-(((read+c)/width)+1);
                 
                 VGA_address[(VGA_width)*(_y+y)+(_x+x)]=immagine[c];
-                printf(1,"letto\n");
+                printf(1,"letto %d %d\n",c,read);
             }
             read+=100;
             ret=readFile(imm,immagine,100);
