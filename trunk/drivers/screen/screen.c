@@ -45,7 +45,7 @@ static inline char * addr_xy(unsigned int x, unsigned int y) {
 }
 
 static const int ulx=0;
-static const int uly=35;
+static const int uly=30;
 static const int drx=315;
 static const int dry=195;
 static const int dx=VGA_dx;//~=220/COLUMNS;
