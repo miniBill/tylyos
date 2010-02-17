@@ -190,7 +190,7 @@ void goto_x(unsigned int console, unsigned int nx) {
 void goto_y(unsigned int console, unsigned int ny) {
  
     if(row(console)>=ROWS*PAGES)
-        clear(console);
+        clear(console);/*HACK*/
     
     if (ny > ROWS - 2)
       scroll(console, ny - ROWS+2);
