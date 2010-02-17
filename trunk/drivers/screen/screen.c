@@ -114,6 +114,20 @@ void clear_all(void) {
   clear_physical();
 }
 
+void clear(unsigned int console) {
+    
+        for (int ty = 0;ty < ROWS*PAGES;ty++)
+            for (int tx = 0;tx < COLUMNS;tx++) {
+                videoMemory[console][ty][tx] = ' ';
+                colorMemory[console][ty][tx] = consoleColor;
+            }
+            baseline[console] = 0;
+        x[console] = 0;
+        y[console] = 0;
+    if(console==currentConsole)
+        clear_physical();
+}
+
 void clear_physical(void) {
   for (int y = 0;y < 25;y++)
     for (int x = 0;x < 80;x++)
@@ -174,14 +188,15 @@ void goto_x(unsigned int console, unsigned int nx) {
 }
 
 void goto_y(unsigned int console, unsigned int ny) {
-  if (ny < baseline[console])
-    scroll(console, ny - baseline[console]);
-  else{
+ 
+    if(row(console)>=ROWS*PAGES)
+        clear(console);
+    
     if (ny > ROWS - 2)
       scroll(console, ny - ROWS+2);
     else
-      y[console] = ny - baseline[console];
-  }
+      y[console] = ny;
+  
   if(console==currentConsole)
     set_cursor(x[console], y[console]);
 }
