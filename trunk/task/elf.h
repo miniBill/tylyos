@@ -55,9 +55,9 @@ typedef unsigned int Elf32_Word;/*unsigned large integer*/
 #define EI_PAD 7 /*Start of padding bytes*/
 
 #define ELFMAG0 0x7f /*e_ident[EI_MAG0]*/
-#define ELFMAG1 ’E’ /*e_ident[EI_MAG1]*/
-#define ELFMAG2 ’L’ /*e_ident[EI_MAG2]*/
-#define ELFMAG3 ’F’ /*e_ident[EI_MAG3]*/
+#define ELFMAG1 'E' /*e_ident[EI_MAG1]*/
+#define ELFMAG2 'L' /*e_ident[EI_MAG2]*/
+#define ELFMAG3 'F' /*e_ident[EI_MAG3]*/
 
 #define ELFCLASSNONE 0 /*Invalid class*/
 #define ELFCLASS32 1 /*32-bit objects*/

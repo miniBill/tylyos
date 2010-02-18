@@ -25,6 +25,7 @@
 void loader_checkHeader(char *path)
 {
     unsigned int dimensione;
+    Elf32_Ehdr *header1;
     File file=openFile(path,'r');
     
     if(file==0)
@@ -39,4 +40,19 @@ void loader_checkHeader(char *path)
     readFile(file,buffer,dimensione);
     
     printf(2,"inizio parsing...\n");
+    header1=buffer;
+    if(
+            header1->e_ident[EI_MAG0] == ELFMAG0 &&
+            header1->e_ident[EI_MAG1] == ELFMAG1 &&
+            header1->e_ident[EI_MAG2] == ELFMAG2 &&
+            header1->e_ident[EI_MAG3] == ELFMAG3
+       )
+    {
+        printf(2,"formato verificato\n");
+    }
+    else
+    {
+        printf(2,"il file non e' un elf\n");
+        return;
+    }
 }
