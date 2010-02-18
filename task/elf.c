@@ -16,3 +16,27 @@
 * along with TylyOS.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include "elf.h"
+#include <drivers/screen/screen.h>
+#include <fs/fs.h>
+#include <lib/string.h>
+#include <kernel/stdio.h>
+#include <memory/memory.h>
+
+void loader_checkHeader(char *path)
+{
+    unsigned int dimensione;
+    File file=openFile(path,'r');
+    
+    if(file==0)
+        return;
+    
+    dimensione=fileSize(file);
+    
+    printf(2,"file aperto: %d Bytes\n",dimensione);
+    
+    char *buffer=kmalloc(dimensione);
+    
+    readFile(file,buffer,dimensione);
+    
+    printf(2,"inizio parsing...\n");
+}

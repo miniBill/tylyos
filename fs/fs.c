@@ -201,6 +201,26 @@ unsigned int seek(File file,int offset)/*TODO: testare*/
     return pointer->device->seek(pointer,offset);
 }
 
+unsigned int fileSize(File file)
+{
+    struct fs_node_descriptor *pointer=0;
+    /*cerca il descrittore del file aperto*/
+    for(unsigned int c=0;c<openNodeNumber;c++)
+    {
+        if(openNodes[c]->id==file)
+        {
+            pointer=openNodes[c];
+        }
+    }
+    
+    if(pointer==0 || !(pointer->type&FS_FILE))/*se non e' aperto o non e' un file*/
+        return 0;
+    
+    struct fs_node_info info;
+    pointer->device->getNodeInfo(pointer,&info);
+    return info.size;
+}
+
 File openDir(char *path)
 {
     unsigned int id;

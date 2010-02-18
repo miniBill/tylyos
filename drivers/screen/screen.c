@@ -189,7 +189,7 @@ void goto_x(unsigned int console, unsigned int nx) {
 
 void goto_y(unsigned int console, unsigned int ny) {
  
-    if(row(console)>=ROWS*PAGES)
+    if(baseline[console]+ny>=ROWS*PAGES)
         clear(console);/*HACK*/
     
     if (ny > ROWS - 2)

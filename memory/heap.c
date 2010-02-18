@@ -88,12 +88,12 @@ void* kmalloc ( unsigned int byte )
         /*controlla di non sforare*/
         if ( ( unsigned int ) next+sizeof ( struct memoryArea ) +byte >= ( unsigned int ) heapEndPointer )
         {
-            if(sizeof ( struct memoryArea ) + byte < 0x1000)
-            {
+            unsigned int n= (sizeof ( struct memoryArea ) + byte) / 0x1000;
+            
+            for(unsigned int c=0;c<n;c++)
                 increaseHeapSize();
-            }
-            else
-                kernelPanic ( "kmalloc()","l' allocazione e' troppo grande" );
+            
+           
         }
         
         pre->next=next;
