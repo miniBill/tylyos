@@ -40,12 +40,15 @@ void loader_checkHeader(char *path)
     readFile(file,buffer,dimensione);
     
     printf(2,"inizio parsing...\n");
-    header1=buffer;
+    header1=(Elf32_Ehdr*)buffer;
     if(
             header1->e_ident[EI_MAG0] == ELFMAG0 &&
-            header1->e_ident[EI_MAG1] == ELFMAG1 &&
-            header1->e_ident[EI_MAG2] == ELFMAG2 &&
-            header1->e_ident[EI_MAG3] == ELFMAG3
+            header1->e_ident[EI_MAG1] == ELFMAG1 && /*E*/
+            header1->e_ident[EI_MAG2] == ELFMAG2 && /*L*/
+            header1->e_ident[EI_MAG3] == ELFMAG3 && /*F*/
+            
+            header1->e_ident[EI_CLASS] == ELFCLASS32 && /*32bit*/
+            header1->e_ident[EI_DATA] == ELFDATA2LSB /*tipo di codifica*/
        )
     {
         printf(2,"formato verificato\n");
