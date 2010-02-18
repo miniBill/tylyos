@@ -51,10 +51,6 @@ inline void greendot(void) {
   put_color_xy(Light_Green,0,1,row(0));
 }
 
-void reboot(void) {
-  asm("int $0x80\n\t"::"a"(88));
-}
-
 void OK(int i) {
   write_xy("[ ok ]",0,COLUMNS - 6, i);
   put_color_xy(Blue,0,COLUMNS - 6, i);

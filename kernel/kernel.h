@@ -2,9 +2,8 @@
 #define KERNEL_H_
 
 #include "multiboot.h"
+#include "syscall.h"
 #include <drivers/screen/screen.h>
-
-void reboot ( void );
 
 void sleep ( unsigned int time );
 
