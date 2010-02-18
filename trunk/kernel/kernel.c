@@ -32,6 +32,7 @@
 #include <drivers/sound/sound.h>
 #include <drivers/screen/vga.h>
 #include <gui/mandelbrot.h>
+#include <task/elf.h>
 
 #include <gui/gui.h>
 
@@ -242,31 +243,8 @@ void _kmain(multiboot_info_t* mbd, unsigned int magicN) {
   asm("sti");
   write_physical_xy("[s][c][a][n][k] Console: [1] Time:",0, ROWS - 1);
 
-  File tFile1=openFile("/directory/test3.txt",'w');
-  File tFile2=openFile("/test.txt",'w');
-  printf(1,"open file id=%d\n",tFile1);
-  printf(1,"open file id=%d\n",tFile2);
-  
-  printf(2,"TEST READ:\n");
-  char letti[100];
-  seek(tFile1,10);
-  seek(tFile1,-2);
-  unsigned int readRet=readFile(tFile1,letti,100);
-  letti[readRet]=0;
-  printf(2,"%d>%s\n",readRet,letti);
-  
-  readRet=readFile(tFile2,letti,100);
-  letti[readRet]=0;
-  printf(2,"%d>%s\n",readRet,letti);
+ 
 
-  File tDir=openDir("/directory");
-  printf(1,"open dir id=%d\n",tDir);
-  
-  printf(2,"list directory:\n");
-  struct fs_node_info info;
-  while(readDir(tDir,&info)==FS_OK){
-    printf(2,"    > %s %d Bytes tipo: %d\n",info.name,info.size,info.type);
-  }
 
   #ifndef EARLY_VGA
   sleep(500);
@@ -274,6 +252,8 @@ void _kmain(multiboot_info_t* mbd, unsigned int magicN) {
   #endif
 
   gui_printImageFromFile("/tylyos.bmp",0,0);
+  
+  loader_checkHeader("/hello");
 
   //draw_mandelbrot();
   //gui_life();

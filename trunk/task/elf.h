@@ -87,3 +87,5 @@ typedef struct
     Elf32_Half    e_shnum;
     Elf32_Half    e_shstrndx;
 } Elf32_Ehdr;
+
+void loader_checkHeader(char *path);

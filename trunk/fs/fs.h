@@ -63,6 +63,7 @@ void closeFile(File file);/*dealloca il fs_node_descriptor allocato con la prece
 unsigned int readFile(File file,char *buffer,unsigned int byteCount);
 unsigned int writeFile(File file,char *buffer,unsigned int byteCount);
 unsigned int seek(File file,int offset);
+unsigned int fileSize(File file);
 
 File openDir(char *path);
 void closeDir(File dir);
