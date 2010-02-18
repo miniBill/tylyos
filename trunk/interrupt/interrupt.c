@@ -179,6 +179,9 @@ void interrupt_handler(
           clearIdt();
           asm("int $1");
           break;
+	case 250:
+	  printf(0, "Write interrupt: [[%s]]" , (char*)ebx);
+	  break;
       }
       break;
     default:
