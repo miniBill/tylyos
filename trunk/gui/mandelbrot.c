@@ -3,7 +3,7 @@
 #include <drivers/keyboard/keyboard.h>
 #include <drivers/screen/vga.h>
 
-static int grid[2][200][320];
+static char grid[2][200][320];
 static int round=0;
 
 #define by 100
@@ -25,7 +25,7 @@ static void init(void){
   grid[0][by+4][bx+4]=1;
 }
 
-static int AG(int a,int b){
+static char AG(int a,int b){
   if(a<0 || b<0 || a==200 || b==320)
     return 0;
   return grid[1-round][a][b];
@@ -37,19 +37,30 @@ static int G(int a,int b){
   return grid[round][a][b];
 }
 
+static char nei[2]={0,0};
+
+#define S(a) if(a>0)nei[a-1]++
+
 static void step(void){
   for(int y=0;y<200;y++)
     for(int x=0;x<320;x++){
-      int neigh=G(y-1,x-1)+G(y-1,x)+G(y-1,x+1)+
-      G(y,x-1)+G(y,x+1)+
-      G(y+1,x-1)+G(y+1,x)+G(y+1,x+1);
-      int n=G(y,x);
+      nei[0]=nei[1]=1;
+      S(G(y-1,x-1));
+      S(G(y-1,x));
+      S(G(y-1,x+1));
+      S(G(y,x-1));
+      S(G(y,x+1));
+      S(G(y+1,x-1));
+      S(G(y+1,x));
+      S(G(y+1,x+1));
+      char n=G(y,x);
+      char neigh=nei[0]+nei[1];
       if(n){
         if(neigh!=2 && neigh!=3)
           n=0;
       }
       else if(neigh==3)
-        n=1;
+        n=nei[0]>nei[1]?1:2;
       grid[1-round][y][x]=n;
     }
     round=1-round;
@@ -59,7 +70,7 @@ static void print(void){
   for(int y=0;y<200;y++)
     for(int x=0;x<320;x++)
       if(G(y,x)!=AG(y,x))//only if different!!!
-        VGA_address[VGA_width*y+x]=G(y,x)?1:0;
+        VGA_address[VGA_width*y+x]=G(y,x);
 }
 
 static int t;
@@ -67,11 +78,16 @@ static int t;
 static void randomize(void){
   int a=0;
   t+=2;
+  char osc=0;
   for(int y=0;y<200;y++)
     for(int x=0;x<320;x++,a++){
       if(a==t)
         a=0;
       grid[round][y][x]=(x+y+a)%2;
+      if(grid[round][y][x]){
+	grid[round][y][x]+=osc;
+	osc=1-osc;
+      }
     }
 }
 
