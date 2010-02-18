@@ -51,8 +51,7 @@ inline void greendot(void) {
 }
 
 void reboot(void) {
-  asm("movw $88,%ax\n\t"
-  "int $0x80\n\t");
+  asm("int $0x80\n\t"::"a"(88));
 }
 
 void OK(int i) {
