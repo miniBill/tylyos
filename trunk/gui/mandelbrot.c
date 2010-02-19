@@ -156,9 +156,14 @@ void gui_life(void){
       case 'e':
         t--;
         randomize();
+        break;
       case 'w':
         t-=2;
         randomize();
+        break;
+      case 'r':
+        randomize();
+        break;
     }
   }
 }
