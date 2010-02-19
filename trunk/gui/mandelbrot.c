@@ -1,4 +1,5 @@
 #include "gui.h"
+#include <config.txt>
 #include <kernel/kernel.h>
 #include <drivers/keyboard/keyboard.h>
 #include <drivers/screen/vga.h>
@@ -37,14 +38,34 @@ static int G(int a,int b){
   return grid[round][a][b];
 }
 
-static char nei[2]={0,0};
+static char nei[MANDELBROT_COLORS]={0};
 
 #define S(a) if(a>0)nei[a-1]++
+
+//maps neigh. color to new color
+static inline char gnu(void){
+  #if MANDELBROT_COLORS == 4
+  for(int i=0;i<MANDELBROT_COLORS;i++)
+    if(nei[i]==2)
+      return i+1;
+  for(int i=0;i<MANDELBROT_COLORS;i++)
+    if(nei[i]==0)
+      return i+1;
+  #else
+    #if MANDELBROT_COLORS == 2
+  return nei[0]>nei[1]?1:2;
+    #else
+  return 1;
+    #endif
+  #endif
+  return 0;
+}
 
 static void step(void){
   for(int y=0;y<200;y++)
     for(int x=0;x<320;x++){
-      nei[0]=nei[1]=1;
+      for(int i=0;i<MANDELBROT_COLORS;i++)
+        nei[i]=0;
       S(G(y-1,x-1));
       S(G(y-1,x));
       S(G(y-1,x+1));
@@ -54,23 +75,41 @@ static void step(void){
       S(G(y+1,x));
       S(G(y+1,x+1));
       char n=G(y,x);
-      char neigh=nei[0]+nei[1];
+      char neigh=0;
+      for(int i=0;i<MANDELBROT_COLORS;i++)
+        neigh+=nei[i];
       if(n){
         if(neigh!=2 && neigh!=3)
           n=0;
       }
       else if(neigh==3)
-        n=nei[0]>nei[1]?1:2;
+        n=gnu();
       grid[1-round][y][x]=n;
     }
     round=1-round;
+}
+
+//maps memory color to vga color
+static inline unsigned char map(char color){
+  switch(color){
+    case 1:
+      return 3;
+    case 2:
+      return 224;
+    case 3:
+      return 28;
+    case 4:
+      return 252;
+    default:
+      return 1;
+  }
 }
 
 static void print(void){
   for(int y=0;y<200;y++)
     for(int x=0;x<320;x++)
       if(G(y,x)!=AG(y,x))//only if different!!!
-        VGA_address[VGA_width*y+x]=G(y,x);
+        VGA_address[VGA_width*y+x]=map(G(y,x));
 }
 
 static int t;
@@ -85,8 +124,10 @@ static void randomize(void){
         a=0;
       grid[round][y][x]=(x+y+a)%2;
       if(grid[round][y][x]){
-	grid[round][y][x]+=osc;
-	osc=1-osc;
+        grid[round][y][x]+=osc;
+        osc++;
+        if(osc==MANDELBROT_COLORS)
+          osc=0;
       }
     }
 }
