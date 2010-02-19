@@ -4,8 +4,8 @@
 //*---------------*
 //|Personalization|
 //*---------------*
-#define MANDELBROT_COLORS 1
-//#define MANDELBROT_COLORS 2
+//#define MANDELBROT_COLORS 1
+#define MANDELBROT_COLORS 2
 //#define MANDELBROT_COLORS 4
 
 //*---------------*

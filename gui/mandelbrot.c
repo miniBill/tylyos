@@ -46,7 +46,7 @@ static char nei[MANDELBROT_COLORS]={0};
 static inline char gnu(void){
   #if MANDELBROT_COLORS == 4
   for(int i=0;i<MANDELBROT_COLORS;i++)
-    if(nei[i]==2)
+    if(nei[i]==2 || nei[i]==3)
       return i+1;
   for(int i=0;i<MANDELBROT_COLORS;i++)
     if(nei[i]==0)
@@ -125,6 +125,7 @@ static void randomize(void){
       grid[round][y][x]=(x+y+a)%2;
       if(grid[round][y][x]){
         grid[round][y][x]+=osc;
+        grid[round][y][x]%=MANDELBROT_COLORS+1;
         osc++;
         if(osc==MANDELBROT_COLORS)
           osc=0;
