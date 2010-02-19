@@ -151,14 +151,14 @@ void gui_life(void){
     }while(p);
     switch(g){
       case 'R':
-        t=-1;
+        t=-2;
         break;
       case 'e':
-        t--;
+        t-=2;
         randomize();
         break;
       case 'w':
-        t-=2;
+        t-=4;
         randomize();
         break;
       case 'r':
