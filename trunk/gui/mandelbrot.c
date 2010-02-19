@@ -149,10 +149,17 @@ void gui_life(void){
       if(g=='p')
         p=1-p;
     }while(p);
-    if(g=='R')
-      t=-1;
-    if(g=='r')
-      randomize();
+    switch(g){
+      case 'R':
+        t=-1;
+        break;
+      case 'e':
+        t--;
+        randomize();
+      case 'w':
+        t-=2;
+        randomize();
+    }
   }
 }
 
