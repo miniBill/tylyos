@@ -194,7 +194,7 @@ void interrupt_handler(
       c = eax ^ ebx ^ ecx ^ edx ^ ebp ^ esi ^ edi ^ ds ^ es ^ fs ^ gs ^ eip ^ cs ^ eflags ^ error ^ xtemp;/*HACK*/
 #endif
       char message[1000];
-      sprintf(message, 1000, "I have recived an interrupt:0x%x", isr);
+      sprintf(message, 1000, "I have recived an interrupt:0x%x, A:%d B:%d C:%d D:%d", isr,eax,ebx,ecx,edx);
       kernelPanic("interrupt_handler()", message);
     }
   /* Send End Of Interrupt to PIC */

@@ -247,7 +247,7 @@ void keypress(void) {
             case 0x20:/*D for doom */
               ch = 0;
               write_physical_xy("Dooming", (COLUMNS - 7) / 2, 0);
-              kernelPanic("your system", "an invalid operation has happened at unknown address!!! PEBKAC!!!");
+              kernelPanic("your system", "an invalid operation has happened at unknown address! PEBKAC!!!");
               break;
             case 0x2C:/*Z for life*/
               ch = 0;
