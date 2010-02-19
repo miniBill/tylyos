@@ -151,7 +151,7 @@ void gui_life(void){
     }while(p);
     switch(g){
       case 'R':
-        t=-2;
+        t=-1;
         break;
       case 'e':
         t-=2;
