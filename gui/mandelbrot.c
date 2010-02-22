@@ -148,6 +148,8 @@ void gui_life(void){
       g=getch();
       if(g=='p')
         p=1-p;
+      if(g=='s')
+        break;
     }while(p);
     switch(g){
       case 'R':
