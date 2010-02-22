@@ -168,11 +168,16 @@ void _kmain(multiboot_info_t* mbd, unsigned int magicN) {
   clear_all();
 
   #ifdef EARLY_VGA
+  #ifndef NO_VGA
   VGA_init(320,200,8);
+  #endif
   #endif
   
   NO(t);
   kwrite("Kernel caricato.");
+  #ifdef NO_VGA
+  put('Y',0);
+  #endif
   OK(t++);
   write("\n",0);
 
@@ -243,8 +248,10 @@ void _kmain(multiboot_info_t* mbd, unsigned int magicN) {
 
 
   #ifndef EARLY_VGA
+  #ifndef NO_VGA
   sleep(500);
   VGA_init(320,200,8);
+  #endif
   #endif
 
   gui_printImageFromFile("/tylyos.bmp",0,0);

@@ -12,6 +12,7 @@
 //|Vga framebuffer|
 //*---------------*
 #define EARLY_VGA
+//#define NO_VGA
 
 // *-------------*
 // |Code maturity|
@@ -23,7 +24,7 @@
 // |Speed-safety tradeoffs|
 // *----------------------*
 
-#define FAST_TESTS //skip tests on "safe" functions
+//#define FAST_TESTS //skip tests on "safe" functions
 
 // *----------------*
 // |Debug facilities|

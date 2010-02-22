@@ -179,11 +179,13 @@ void interrupt_handler(
           clearIdt();
           asm("int $1");
           break;
-	case 250:
-	  printf(0, "Write interrupt: [[%s]]" , (char*)ebx);
-	  break;
+        case 250:
+          printf(0, "Write interrupt: [[%s]]" , (char*)ebx);
+          break;
       }
       break;
+    case 0xE:
+      break;//HEAVY HACK
     default:
 #ifdef PRINT_REGISTERS
       printf(0, "EAX: %d,EBX: %d,ECX: %d,EDX: %d,", eax, ebx, ecx, edx);
@@ -194,7 +196,7 @@ void interrupt_handler(
       c = eax ^ ebx ^ ecx ^ edx ^ ebp ^ esi ^ edi ^ ds ^ es ^ fs ^ gs ^ eip ^ cs ^ eflags ^ error ^ xtemp;/*HACK*/
 #endif
       char message[1000];
-      sprintf(message, 1000, "I have recived an interrupt:0x%x, A:%d B:%d C:%d D:%d", isr,eax,ebx,ecx,edx);
+      sprintf(message, 1000, "I have recived an interrupt:0x%x, A:0x%x B:0x%x C:0x%x D:0x%x IP:0x%x", isr,eax,ebx,ecx,edx,eip);
       kernelPanic("interrupt_handler()", message);
     }
   /* Send End Of Interrupt to PIC */
