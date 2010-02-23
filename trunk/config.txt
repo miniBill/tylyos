@@ -1,5 +1,6 @@
-#ifndef CONFIG_TXT_
-#define CONFIG_TXT_
+#pragma once
+
+#include "version"
 
 //*---------------*
 //|Personalization|
@@ -33,5 +34,3 @@
 //#define PRINT_REGISTERS //print registers' status on interrupt
 //#define FREEROAMING //allow cursor to move freely
 //#define PUT_ON_KEY_RELEASE //print to screen even on key release
-
-#endif

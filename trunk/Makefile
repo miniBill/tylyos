@@ -40,6 +40,17 @@ MK=Makefile.in
 
 all:tylyos.iso
 
+.PHONY:version
+version:
+	@echo "REV" $@
+	@echo -n "#pragma once\n#define REVISION " > version
+	@svn info | grep Revision| grep -o "[0-9]*" >>  version
+
+kernel/kernel.o:version
+	@echo "GCC" $@
+	@$(CC) $(CFLAGS) -c -o $@ kernel/kernel.c
+	
+
 tylyos.iso: tylyos Makefile.in
 	@echo "Preparing iso..."
 	@mkdir iso && \
