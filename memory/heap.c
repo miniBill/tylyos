@@ -33,6 +33,7 @@ void *calloc ( unsigned int num, unsigned int size )
 
 void* kmalloc ( unsigned int byte )
 {
+    
     /*TODO:verificare che il controllo per non sforare nella memoria user funzioni*/
     struct memoryArea *pre,*next;
     

@@ -51,7 +51,57 @@ void loader_checkHeader(char *path)
             header1->e_ident[EI_DATA] == ELFDATA2LSB /*tipo di codifica*/
        )
     {
-        printf(2,"formato verificato\n");
+        printf(2,"formato verificato\n\n");
+        
+        //scorre la program table
+        Elf32_Phdr *header2=&buffer[header1->e_phoff];
+        for(int c=0;c<header1->e_phnum;c++)
+        {
+            if(header2[c].p_type==PT_NOTE)
+            {
+                printf(2,"[section] note section\n");
+            }
+            else if(header2[c].p_type==PT_DYNAMIC)
+            {
+                printf(2,"[section] dinamic linking information\n");
+            }
+            else if(header2[c].p_type==PT_LOAD)
+            {
+                printf(2,"[section] loadable segment\n");
+                if(header2[c].p_flags & PF_R)
+                    printf(2,"    flags: r");
+                else
+                    printf(2,"    flags: -");
+                if(header2[c].p_flags & PF_W)
+                    printf(2,"w");
+                else
+                    printf(2,"-");
+                if(header2[c].p_flags & PF_X)
+                    printf(2,"x\n");
+                else
+                    printf(2,"-\n");
+                printf(2,"    vaddr: 0x%x\n",header2[c].p_vaddr);
+                printf(2,"    file size: %d Bytes\n",header2[c].p_filesz);
+                printf(2,"    segment size: %d Bytes\n",header2[c].p_memsz);
+            }
+            else if(header2[c].p_type==PT_NULL)
+            {
+                printf(2,"[section] NULL\n");
+            }
+            else if(header2[c].p_type==PT_PHDR)
+            {
+                printf(2,"[section] program header\n");
+            }
+            else if(header2[c].p_type==PT_INTERP)
+            {
+                printf(2,"[section] interprete \n    path: %s\n",&buffer[header2[c].p_offset]);
+            }
+            else
+            {
+                printf(2,"[section] Unknown, type: %x\n",header2[c].p_type);
+            }
+        }
+        
     }
     else
     {
