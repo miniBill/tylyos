@@ -15,12 +15,15 @@
 # You should have received a copy of the GNU General Public License
 # along with TylyOS.  If not, see <http://www.gnu.org/licenses/>.
 
-CFLAGS:= -march=i386 -ffreestanding -Wall -pedantic -Wextra -I ../trunk -fno-stack-protector -std=gnu99 -g -Os
+CFLAGS:= -march=i386 -ffreestanding -Wall -pedantic -Wextra -I ../trunk -fno-stack-protector -std=gnu99 -g
 ASFLAGS:= -march=i386
 
 MK=Makefile.in
 
 -include Makefile.in
+
+newhello:newhello.c
+	$(CC) -march=i386 -Wall -pedantic -Wextra -fno-stack-protector -fno-ident $^ -o $@ 
 
 Makefile.in:
 	@echo "Configuring..."
@@ -32,7 +35,7 @@ Makefile.in:
 
 %.o: %.c
 	@echo "GCC" $@
-	$(CC) $(CFLAGS) -c -o $@ $^
+	@$(CC) $(CFLAGS) -c -o $@ $^
 
 %.o: %.asm
 	@echo "NASM" $@
