@@ -237,7 +237,7 @@ void _kmain(multiboot_info_t* mbd, unsigned int magicN) {
 
   NO(t);
   greendot();
-  printf(0,"Kernel pronto!!!\n");
+  printf(0,"Kernel pronto!!! [Rev: %d]\n",REVISION);
   OK(t++);
 
   goto_xy(0, 1, t);
