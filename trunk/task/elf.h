@@ -167,6 +167,10 @@ typedef struct {
 #define PT_LOPROC   0x70000000
 #define PT_HIPROC   0x7fffffff
 
+/*Segment flags: p_flags*/
+#define PF_X        (1 << 0)    /* Segment is executable */
+#define PF_W       (1 << 1)    /* Segment is writable */
+#define PF_R       (1 << 2)    /* Segment is readable */
 
 
 void loader_checkHeader(char *path);
