@@ -4,38 +4,48 @@
 #include <drivers/keyboard/keyboard.h>
 #include <drivers/screen/vga.h>
 
-static char grid[2][200][320];
+#define HISTORY 10
+
+static char Grid[HISTORY][200][320];
 static int round=0;
 
 #define by 100
 #define bx 160
 
 static void init(void){
-  grid[0][by][bx]=1;
-  grid[0][by][bx+1]=1;
-  grid[0][by][bx+2]=1;
-  grid[0][by][bx+4]=1;
-  grid[0][by+1][bx]=1;
-  grid[0][by+2][bx+3]=1;
-  grid[0][by+2][bx+4]=1;
-  grid[0][by+3][bx+1]=1;
-  grid[0][by+3][bx+2]=1;
-  grid[0][by+3][bx+4]=1;
-  grid[0][by+4][bx]=1;
-  grid[0][by+4][bx+2]=1;
-  grid[0][by+4][bx+4]=1;
+  Grid[0][by][bx]=1;
+  Grid[0][by][bx+1]=1;
+  Grid[0][by][bx+2]=1;
+  Grid[0][by][bx+4]=1;
+  Grid[0][by+1][bx]=1;
+  Grid[0][by+2][bx+3]=1;
+  Grid[0][by+2][bx+4]=1;
+  Grid[0][by+3][bx+1]=1;
+  Grid[0][by+3][bx+2]=1;
+  Grid[0][by+3][bx+4]=1;
+  Grid[0][by+4][bx]=1;
+  Grid[0][by+4][bx+2]=1;
+  Grid[0][by+4][bx+4]=1;
+}
+
+int R(int b){
+  while(b>=HISTORY)
+    b-=HISTORY;
+  while(b<0)
+    b+=HISTORY;
+  return b;
 }
 
 static char AG(int a,int b){
   if(a<0 || b<0 || a==200 || b==320)
     return 0;
-  return grid[1-round][a][b];
+  return Grid[R(round-1)][a][b];
 }
 
 static int G(int a,int b){
   if(a<0 || b<0 || a==200 || b==320)
     return 0;
-  return grid[round][a][b];
+  return Grid[round][a][b];
 }
 
 static char nei[MANDELBROT_COLORS]={0};
@@ -84,9 +94,12 @@ static void step(void){
       }
       else if(neigh==3)
         n=gnu();
-      grid[1-round][y][x]=n;
+      Grid[R(round+1)][y][x]=n;
     }
-    round=1-round;
+    if(round==HISTORY-1)
+      round=0;
+    else
+      round++;
 }
 
 //maps memory color to vga color
@@ -100,12 +113,23 @@ static inline unsigned char map(char color){
       return 28;
     case 4:
       return 252;
+    case 5:
+    case 6:
+    case 7:
+    case 8:
+      return 255;
     default:
       return 1;
   }
 }
 
-static void print(void){
+static void printforce(){
+  for(int y=0;y<200;y++)
+    for(int x=0;x<320;x++)
+      VGA_address[VGA_width*y+x]=map(G(y,x));
+}
+
+static void print(){
   for(int y=0;y<200;y++)
     for(int x=0;x<320;x++)
       if(G(y,x)!=AG(y,x))//only if different!!!
@@ -122,10 +146,10 @@ static void randomize(void){
     for(int x=0;x<320;x++,a++){
       if(a==t)
         a=0;
-      grid[round][y][x]=(x+y+a)%2;
-      if(grid[round][y][x]){
-        grid[round][y][x]+=osc;
-        grid[round][y][x]%=MANDELBROT_COLORS+1;
+      Grid[round][y][x]=(x+y+a)%2;
+      if(Grid[round][y][x]){
+        Grid[round][y][x]+=osc;
+        Grid[round][y][x]%=MANDELBROT_COLORS+1;
         osc++;
         if(osc==MANDELBROT_COLORS)
           osc=0;
@@ -133,40 +157,128 @@ static void randomize(void){
     }
 }
 
+void editor(void){
+  int x=160;
+  int y=100;
+  int ox,oy;
+  char g;
+  while(1){
+    ox=x;oy=y;
+    g=getch();
+    switch(g){
+      case '1':
+      case '2':
+      case '3':
+      case '4':
+        Grid[round][y][x]=g-'0';
+        break;
+      case 'w':
+        if(y>0)
+          y--;
+        break;
+      case 'a':
+        if(x>0)
+          x--;
+        break;
+      case 's':
+        if(y<199)
+          y++;
+        break;
+      case 'd':
+        if(x<319)
+          x++;
+        break;
+      case 'q':
+        printforce();
+        return;
+    }
+    VGA_address[VGA_width*oy+ox]=map(G(oy,ox));
+    VGA_address[VGA_width*y+x]=map(G(oy,ox)+5);
+  }
+}
+
 void gui_life(void){
-  for(int y=0;y<200;y++)
-    for(int x=0;x<320;x++)
-      grid[0][y][x]=grid[1][y][x]=0;
+  for(int i=0;i<HISTORY;i++)
+    for(int y=0;y<200;y++)
+      for(int x=0;x<320;x++)
+        Grid[i][y][x]=0;
   init();
   t=-1;
   int p=0;
+  int frameskip=1;
+  int frame=0;
   char g;
+  int nostep;
   while(1){
-    print();
-    step();
+    frame++;
+    if(frame==frameskip){
+      if(frameskip==1)
+        print();
+      else
+        printforce();
+      frame=0;
+    }
+    nostep=0;
     do{
       g=getch();
-      if(g=='p')
-        p=1-p;
-      if(g=='s')
-        break;
+      switch(g){
+        case 0:
+          break;
+        case 'a':
+          editor();
+          break;
+        case '*':
+          frameskip=1;
+          break;
+        case '+':
+          frameskip++;
+          break;
+        case '-':
+          if(frameskip>1)
+            frameskip--;
+          break;
+        case 'c':
+          for(int i=0;i<HISTORY;i++)
+            for(int y=0;y<200;y++)
+              for(int x=0;x<320;x++)
+                Grid[i][y][x]=0;
+        case 'p':
+          p=1-p;
+          printforce();
+          break;
+        case 'f':
+          step();
+          break;
+        case 's':
+          if(round==0)
+            round=HISTORY-1;
+          else
+            round--;
+          nostep=1;
+          break;
+        case 'R':
+          t=-1;
+          break;
+        case 'e':
+          t-=2;
+          randomize();
+          nostep=1;
+          break;
+        case 'w':
+          t-=4;
+          randomize();
+          nostep=1;
+          break;
+        case 'r':
+          randomize();
+          nostep=1;
+          break;
+      }
+      if(nostep)
+        printforce();
     }while(p);
-    switch(g){
-      case 'R':
-        t=-1;
-        break;
-      case 'e':
-        t-=2;
-        randomize();
-        break;
-      case 'w':
-        t-=4;
-        randomize();
-        break;
-      case 'r':
-        randomize();
-        break;
-    }
+    if(!nostep)
+      step();
   }
 }
 
