@@ -79,6 +79,8 @@ void TSSset(int num, unsigned long base, unsigned char access);
 /*ritorna un procID libero*/
 unsigned int getNewProcID();
 
+/*funzione da usare per eseguire un task, il parametro path serve a dafinire il file in formato elf da cui caricare il task*/
+int exec(char *path,char privilegi);
 /*alloca le strutture ed aggiunge il task alla lista dei processi*/
 /*ritorna l'id del task*/
 int addTask(char nome[MAX_TASK_NAME_LEN],char privilegi);
