@@ -158,14 +158,15 @@ static void randomize(void){
 }
 
 void editor(void){
-  int x=160;
-  int y=100;
+  static int x=160;
+  static int y=100;
   int ox,oy;
   char g;
   while(1){
     ox=x;oy=y;
     g=getch();
     switch(g){
+      case '0':
       case '1':
       case '2':
       case '3':
@@ -188,12 +189,28 @@ void editor(void){
         if(x<319)
           x++;
         break;
+      case 'W':
+        if(y>=10)
+          y-=10;
+        break;
+      case 'A':
+        if(x>=10)
+          x-=10;
+        break;
+      case 'S':
+        if(y<189)
+          y+=10;
+        break;
+      case 'D':
+        if(x<309)
+          x+=10;
+        break;
       case 'q':
         printforce();
         return;
     }
     VGA_address[VGA_width*oy+ox]=map(G(oy,ox));
-    VGA_address[VGA_width*y+x]=map(G(oy,ox)+5);
+    VGA_address[VGA_width*y+x]=map(G(y,x)+5);
   }
 }
 
