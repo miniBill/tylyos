@@ -46,6 +46,20 @@ void TSSset ( int num, unsigned long base, unsigned char access )
     gdt[num].access = access;
 }
 
+/*funzione da usare per eseguire un task, il parametro path serve a dafinire il file in formato elf da cui caricare il task*/
+int exec(char *path,char privilegi)
+{
+    struct taskStruct *newTask;
+    int taskId=addTask("test",privilegi);
+    newTask=getTask(taskId);
+    
+    /*TODO: parsare l'ELF e caricare in memoria i vari segmenti*/
+    /*TODO: aggiornare i valori del TSS*/
+    
+    return taskId;
+}
+
+/*funzione che alloca le strutture necessarie per un nuovo task e le prapara per il loader*/
 int addTask ( char nome[MAX_TASK_NAME_LEN],char privilegi )
 {
     /*alloca le strutture necessarie*/

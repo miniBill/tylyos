@@ -54,7 +54,7 @@ void loader_checkHeader(char *path)
         printf(2,"formato verificato\n\n");
         
         //scorre la program table
-        Elf32_Phdr *header2=&buffer[header1->e_phoff];
+        Elf32_Phdr *header2=(Elf32_Phdr*)&buffer[header1->e_phoff];
         for(int c=0;c<header1->e_phnum;c++)
         {
             if(header2[c].p_type==PT_NOTE)
