@@ -20,5 +20,6 @@ void greendot ( void );
 void kernelPanic ( char *sender,char *message );
 
 void do_life(void);
+void do_sierpinski(void);
 
 #endif
