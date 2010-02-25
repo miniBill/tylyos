@@ -39,6 +39,11 @@
 static int magicNumber = 0;
 
 static int live=0;
+static int sier=0;
+
+void do_sierpinski(void){
+  sier=1-sier;
+}
 
 void do_life(void){
   live=1-live;
@@ -244,9 +249,6 @@ void _kmain(multiboot_info_t* mbd, unsigned int magicN) {
   asm("sti");
   write_physical_xy("[s][c][a][n][k] Console: [1] Time:",0, ROWS - 1);
 
- 
-
-
   #ifndef EARLY_VGA
   #ifndef NO_VGA
   sleep(500);
@@ -268,6 +270,10 @@ void _kmain(multiboot_info_t* mbd, unsigned int magicN) {
   while(1){
     if(live)
       gui_life();
+    if(sier){
+      gui_sierpinski(210);
+      sier=1-sier;
+    }
   }
   //halt now done via interrupt
 }

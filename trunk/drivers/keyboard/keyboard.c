@@ -244,6 +244,10 @@ void keypress(void) {
               write_physical_xy("Halting", (COLUMNS - 7) / 2, 0);
               reboot();//TODO: implement halt
               break;
+            case 0x1F: /* S for sierpinski */
+              ch = 0;
+              do_sierpinski();
+              break;
             case 0x20:/*D for doom */
               ch = 0;
               write_physical_xy("Dooming", (COLUMNS - 7) / 2, 0);
