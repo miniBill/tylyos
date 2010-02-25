@@ -235,8 +235,8 @@ void gui_life(void){
         printforce();
       frame=0;
     }
-    nostep=0;
     do{
+      nostep=0;
       g=getch();
       switch(g){
         case 0:
@@ -265,6 +265,7 @@ void gui_life(void){
           break;
         case 'f':
           step();
+          nostep=1;
           break;
         case 's':
           if(round==0)
