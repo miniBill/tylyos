@@ -26,13 +26,14 @@
 
 void memcpy ( char * source, unsigned int count, char * dest )  /*TODO: testare*/
 {
-    if ( dest<source ) /*evita di sovrascrivere il buffer durante la copia*/
+    if ( (unsigned int)dest < (unsigned int)source ) /*evita di sovrascrivere il buffer durante la copia*/
     {
       unsigned int p;
         for ( p=0;p < count; p++ )
-        {
+        {   
             dest[p]=source[p];
         }
+        printf(3,"testB.\n");
     }
     else
     {
@@ -41,6 +42,7 @@ void memcpy ( char * source, unsigned int count, char * dest )  /*TODO: testare*
         {
             dest[count-p]=source[count-p];
         }
+        
     }
    
 }

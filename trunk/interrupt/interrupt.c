@@ -184,8 +184,9 @@ void interrupt_handler(
           break;
       }
       break;
-    case 0xE:
+   /* case 0xE:
       break;//HEAVY HACK
+      */
     default:
 #ifdef PRINT_REGISTERS
       printf(0, "EAX: %d,EBX: %d,ECX: %d,EDX: %d,", eax, ebx, ecx, edx);

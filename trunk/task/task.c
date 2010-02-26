@@ -21,6 +21,7 @@
 #include <memory/memory.h>
 #include <lib/string.h>
 #include <kernel/kernel.h>
+#include <task/elf.h>
 
 void initTaskManagement()
 {
@@ -52,10 +53,18 @@ int exec(char *path,char privilegi)
     struct taskStruct *newTask;
     int taskId=addTask("test",privilegi);
     newTask=getTask(taskId);
-    
-    /*TODO: parsare l'ELF e caricare in memoria i vari segmenti*/
-    /*TODO: aggiornare i valori del TSS*/
-    
+    printf(3,"caricamento elf...\n");
+    /*parsa l'ELF e carica in memoria i vari segmenti*/
+    if(loader_loadElf(path,taskId)==LOADER_OK)
+    {
+        printf(3,"elf caricato\n");
+    }
+    else
+    {
+        printf(3,"errore nel caricamento dell elf\n");
+    }
+   
+  
     return taskId;
 }
 
@@ -249,9 +258,15 @@ unsigned int getNewProcID()
 }
 
 
-/*funzione da utilizzare per l'allocazione di una nuova pagina per un task*/
+/*funzione da utilizzare per l'allocazione di una nuova pagina per un task
+la pagina fisica viene allocata e viene ritornata l'istanza aggiunta alla lista delle pagine del task*/
 struct pagina *allocaNuovaPagina ( unsigned int procID,unsigned int indirizzoLog )
 {
+    /*prima controlla che la pagina fisica non esista gia'*/
+    struct pagina *check=getPagina(procID,indirizzoLog);
+    if(check!=0)
+        return check;
+    
     struct pagina *temp=kmalloc ( sizeof ( struct pagina ) );
     
     /*setta i valori*/
@@ -307,4 +322,40 @@ unsigned int deallocaPagina ( unsigned int procID,unsigned int indirizzoLog )
     removePaginaFromList ( procID,indirizzoLog );
     
     return 1;
+}
+
+struct pagina *getPagina(unsigned int procID,unsigned int indirizzoLog)
+{
+    struct pagina *pointer;
+    pointer=getTask ( procID )->listaPagine;
+    
+    /*cerca la pagina nella lista*/
+    while ( pointer!=0 )
+    {
+        if ( pointer->procID==procID && pointer->indirizzoLog==indirizzoLog )
+            break;
+        pointer=pointer->next;
+    }
+    
+    if ( pointer==0 ) /*se non ha trovato la pagina*/
+    {
+        return 0;
+    }
+    else
+    {
+        return pointer;
+    }
+}
+
+/*funzione che si assicura che nel range definito da parametro un processo abbia delle pagine utilizzabili*/
+unsigned int allocMemory(unsigned int procID, unsigned int baseLogicAddr,unsigned int size)
+{
+    /*TODO: aggiungere un controllo sul range*/
+    unsigned int c;
+    for(c=0;c<=size;c+=0x1000)
+    {
+        allocaNuovaPagina (procID,(baseLogicAddr & 0xFFFFF000)+c);/*alloca la pagina, in caso esista già la funzione non esegue niente*/
+    }
+    
+    return c;
 }
