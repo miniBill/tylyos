@@ -160,6 +160,7 @@ void _kmain(multiboot_info_t* mbd, unsigned int magicN) {
   loadedModuleSize=0;
 
   kernel_end=(unsigned int)&l_end;/*NON togliere da qui'!!!*/
+  tempPage=(char*)&l_tempPage;
 
   magicNumber = magicN;
   multiBootInfo = mbd;

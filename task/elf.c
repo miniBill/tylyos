@@ -159,9 +159,7 @@ loader_returnCode loader_loadElf(char *path,int procId)
                 /*loadable segment*/
                 /*mappa l'area nel processo e copia i dati dentro*/
                 allocMemory(procId,header2[c].p_vaddr,header2[c].p_memsz);
-                /*TODO:trovare un modo di scrivere sulle pagine anche se non sono mappate in memoria!!!*/
-                memcpy(&buffer[header2[c].p_offset],header2[c].p_filesz,(char*)header2[c].p_vaddr);
-               
+                memcpyToTask(&buffer[header2[c].p_offset],header2[c].p_filesz,(char*)header2[c].p_vaddr,procId);  
                 /*TODO: settare il relativo selettore di segmento*/
                 if(header2[c].p_flags & PF_R)
                 {

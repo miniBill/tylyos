@@ -99,5 +99,8 @@ struct pagina *getPagina(unsigned int procID,unsigned int indirizzoLog);
 /*funzione che si assicura che nel range definito da parametro un processo abbia delle pagine utilizzabili*/
 unsigned int allocMemory(unsigned int procID, unsigned int baseLogicAddr,unsigned int size);
 
+/*funzione per copiare dei dati in memoria ad un task non correntemente mappato*/
+void memcpyToTask( char * source, unsigned int count, char * dest, unsigned int procID );
+
 #endif
 

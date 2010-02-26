@@ -18,12 +18,14 @@ SECTIONS{
        
     }
        
-     . = ALIGN (0x1000);
-      l_pageDir = . ;
-      . += 0x1000;
-      
-      . += 0x400000;
-    
+    . = ALIGN (0x1000);
+    l_pageDir = . ;
+    . += 0x1000;/*pageDir*/
+
+    . += 0x400000;/*page tables*/
+
+    l_tempPage = . ;
+    . += 0x1000; 
 
     .bss : {
         _sbss = .;

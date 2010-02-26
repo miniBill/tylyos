@@ -86,9 +86,9 @@ char *loadedModule;/*indirizzo del modulo caricato dalla funzione hunt_load*/
 
 unsigned int memoriaFisica; /* byte di memoria fisica */
 
-extern unsigned int l_pageDir,l_end;
+extern unsigned int l_pageDir,l_end,l_tempPage;
 unsigned int *pageDir; /* area da 4096byte che ospita la pagedir del kernel seguita dall' area per le page tables*/
-
+char *tempPage;
 
 void initPaging();
 
