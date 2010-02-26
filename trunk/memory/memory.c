@@ -300,6 +300,7 @@ void addPaginaToTaskPageList ( struct pagina *p )
                 pointer->next=p;
                 return;
             }
+            pointer=pointer->next;
         }
 
         /*se arriva qui' l'elemento e' da inserire in fondo alla lista*/

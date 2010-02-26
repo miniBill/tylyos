@@ -280,10 +280,9 @@ struct pagina *allocaNuovaPagina ( unsigned int procID,unsigned int indirizzoLog
         kernelPanic ( "allocaNuovaPagina()","the fisic memory is full. I can't allocate a new page, sorry." );
     }
     setPaginaFisica ( temp->indirizzoFis ,1 );/*segna la pagina come utilizzata*/
-    
     /*aggiunge alla lista delle pagine*/
     addPaginaToTaskPageList ( temp );
-    
+
     return temp;
 }
 
@@ -351,11 +350,54 @@ struct pagina *getPagina(unsigned int procID,unsigned int indirizzoLog)
 unsigned int allocMemory(unsigned int procID, unsigned int baseLogicAddr,unsigned int size)
 {
     /*TODO: aggiungere un controllo sul range*/
-    unsigned int c;
-    for(c=0;c<=size;c+=0x1000)
+    unsigned int c=0;
+    unsigned int startMem=(unsigned int)baseLogicAddr & 0xFFFFF000;
+    while(startMem<=(unsigned int)baseLogicAddr+size)
     {
-        allocaNuovaPagina (procID,(baseLogicAddr & 0xFFFFF000)+c);/*alloca la pagina, in caso esista già la funzione non esegue niente*/
+        allocaNuovaPagina (procID,startMem);/*alloca la pagina, in caso esista già la funzione non esegue niente*/
+        startMem+=0x1000;
+        c+=0x1000;
     }
-    
     return c;
+}
+
+/*funzione per copiare dei dati in memoria ad un task non correntemente mappato*/
+void memcpyToTask( char * source, unsigned int count, char * dest, unsigned int procID )
+{
+    /*usa una pagina temporanea per mappare gli indirizzi fisici e scriverci i dati*/
+    char flags=PAG_PRESENT|PAG_READWRITE|PAG_SUPERVISOR|PAG_4KPAGE;
+    unsigned int tempTableI,tempPageI;
+    tempTableI=getTableFromVirtualAdress((unsigned int)tempPage);
+    tempPageI=getPageFromVirtualAdress((unsigned int)tempPage);
+    
+    unsigned int startMem= (unsigned int)dest & 0xFFFFF000;/*l' indirizzo logico della prima pagina su cui scrivere*/
+    unsigned int offset=getOffsetFromVirtualAdress((unsigned int)dest);
+    unsigned int pointer=offset;/*indice usato per la destinazione, la prima volta pointer vale offset mentre i cicli successivi viene settato a zero*/
+    unsigned int sourcePointer=0;/*indice usato per l'origine, non viene mai azzerato*/
+    /*passa tutte le pagine da scrivere*/
+    while(startMem<=(unsigned int)dest+count)/*finche' non si sono passate tutte le pagine sotto l' area da scrivere*/
+    {
+
+        /*recupera l'indirizzo fisico della pagina logica*/
+        struct pagina *pg=getPagina(procID,startMem);
+        if(pg==0)
+        {
+            printf(4,"huston we have a problem at 0x%x max:0x%x\n",startMem,(unsigned int)dest+count);
+        }
+        unsigned int fisicAddr= pg->indirizzoFis;
+        /*prepara la pagina temporanea*/
+        printf(3,"    mappato indirizzo fisico: 0x%x\n",fisicAddr);
+        setPageSelector ( tempTableI, tempPageI,fisicAddr,flags );
+        invalidateLookasideBuffer();
+        /*scrivi i dati*/
+        while(pointer<0x1000 && sourcePointer < count)
+        {
+            tempPage[pointer]=source[sourcePointer];
+            pointer++;
+            sourcePointer++;
+        }
+        startMem+=0x1000;
+        pointer=0;
+
+    }
 }
