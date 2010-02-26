@@ -21,6 +21,7 @@
 #include <lib/string.h>
 #include <kernel/stdio.h>
 #include <memory/memory.h>
+#include <task/task.h>
 
 void loader_checkHeader(char *path)
 {
@@ -108,4 +109,96 @@ void loader_checkHeader(char *path)
         printf(2,"il file non e' un elf\n");
         return;
     }
+}
+
+/*funzione che carica nella memoria di un task i relativi dati leggendoli da un file elf*/
+loader_returnCode loader_loadElf(char *path,int procId)
+{
+    
+    /*TODO: aggiornare i valori del TSS*/
+    
+    unsigned int dimensione;
+    Elf32_Ehdr *header1;
+    File file=openFile(path,'r');
+    
+    if(file==0)
+        return LOADER_NOT_FOUND;
+    
+    dimensione=fileSize(file);
+    
+    char *buffer=kmalloc(dimensione);
+    
+    readFile(file,buffer,dimensione);
+    
+    header1=(Elf32_Ehdr*)buffer;
+    /*controlla che sia un elf valido*/
+    if(
+        header1->e_ident[EI_MAG0] == ELFMAG0 &&
+        header1->e_ident[EI_MAG1] == ELFMAG1 && /*E*/
+        header1->e_ident[EI_MAG2] == ELFMAG2 && /*L*/
+        header1->e_ident[EI_MAG3] == ELFMAG3 && /*F*/
+        
+        header1->e_ident[EI_CLASS] == ELFCLASS32 && /*32bit*/
+        header1->e_ident[EI_DATA] == ELFDATA2LSB /*tipo di codifica*/
+        )
+    {        
+        //scorre la program table
+        Elf32_Phdr *header2=(Elf32_Phdr*)&buffer[header1->e_phoff];
+        for(int c=0;c<header1->e_phnum;c++)
+        {
+            if(header2[c].p_type==PT_NOTE)
+            {
+                /*note section*/
+            }
+            else if(header2[c].p_type==PT_DYNAMIC)
+            {
+                /*dinamic linking information*/
+            }
+            else if(header2[c].p_type==PT_LOAD)
+            {
+                /*loadable segment*/
+                /*mappa l'area nel processo e copia i dati dentro*/
+                allocMemory(procId,header2[c].p_vaddr,header2[c].p_memsz);
+                /*TODO:trovare un modo di scrivere sulle pagine anche se non sono mappate in memoria!!!*/
+                memcpy(&buffer[header2[c].p_offset],header2[c].p_filesz,(char*)header2[c].p_vaddr);
+               
+                /*TODO: settare il relativo selettore di segmento*/
+                if(header2[c].p_flags & PF_R)
+                {
+                }
+              
+                if(header2[c].p_flags & PF_W)
+                {
+                }
+              
+                if(header2[c].p_flags & PF_X)
+                {
+                }
+                
+            }
+            else if(header2[c].p_type==PT_NULL)
+            {
+                /*NULL*/
+            }
+            else if(header2[c].p_type==PT_PHDR)
+            {
+                /*program header*/
+            }
+            else if(header2[c].p_type==PT_INTERP)
+            {
+                /*interprete*/
+            }
+            else
+            {
+                /*Unknown type*/
+            }
+        }
+        
+    }
+    else
+    {
+        return LOADER_BAD_FORMAT;
+    }
+    
+    return LOADER_OK;
 }

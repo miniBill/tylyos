@@ -172,5 +172,13 @@ typedef struct {
 #define PF_W       (1 << 1)    /* Segment is writable */
 #define PF_R       (1 << 2)    /* Segment is readable */
 
+typedef char loader_returnCode;
+
+#define LOADER_OK               0x00
+#define LOADER_NOT_FOUND        0x01
+#define LOADER_GENERIC_ERROR    0x02
+#define LOADER_BAD_FORMAT       0x03
 
 void loader_checkHeader(char *path);
+/*funzione che carica nella memoria di un task i relativi dati leggendoli da un file elf*/
+loader_returnCode loader_loadElf(char *path,int procId);

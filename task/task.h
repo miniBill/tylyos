@@ -93,5 +93,11 @@ struct pagina *allocaNuovaPagina ( unsigned int procID,unsigned int indirizzoLog
 /*funzione da utilizzare per la deallocazione di una pagina di un task*/
 unsigned int deallocaPagina ( unsigned int procID,unsigned int indirizzoLog );
 
+/*la funzione ritorna l'istanza di pagina richiesta, se la pagina non esiste ritorna 0*/
+struct pagina *getPagina(unsigned int procID,unsigned int indirizzoLog);
+
+/*funzione che si assicura che nel range definito da parametro un processo abbia delle pagine utilizzabili*/
+unsigned int allocMemory(unsigned int procID, unsigned int baseLogicAddr,unsigned int size);
+
 #endif
 
