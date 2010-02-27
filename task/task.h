@@ -55,6 +55,10 @@ struct taskStruct
     char stato;
     char nome[MAX_TASK_NAME_LEN];
     char privilegi;
+    unsigned int codeSegmentBase;
+    unsigned int codeSegmentSize;
+    unsigned int dataSegmentBase;
+    unsigned int dataSegmentSize;
 };
 
 struct taskListElement
