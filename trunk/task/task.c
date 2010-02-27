@@ -84,6 +84,10 @@ int addTask ( char nome[MAX_TASK_NAME_LEN],char privilegi )
     newTask->procID=getNewProcID();
     newTask->privilegi=privilegi;
     strcpy ( nome,newTask->nome );
+    newTask->codeSegmentBase=0;/*RICORDARSI DI FARLO AGGIORNARE DAL LOADER*/
+    newTask->codeSegmentSize=0;/*RICORDARSI DI FARLO AGGIORNARE DAL LOADER*/
+    newTask->dataSegmentBase=0;/*RICORDARSI DI FARLO AGGIORNARE DAL LOADER*/
+    newTask->dataSegmentSize=0;/*RICORDARSI DI FARLO AGGIORNARE DAL LOADER*/
 
     /*scrive i valori di default nel TSS*/
 
