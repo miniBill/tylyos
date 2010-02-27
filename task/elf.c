@@ -116,6 +116,7 @@ loader_returnCode loader_loadElf(char *path,int procId)
 {
     
     /*TODO: aggiornare i valori del TSS*/
+    struct taskStruct *t=getTask(procId);
     
     unsigned int dimensione;
     Elf32_Ehdr *header1;
@@ -141,7 +142,9 @@ loader_returnCode loader_loadElf(char *path,int procId)
         header1->e_ident[EI_CLASS] == ELFCLASS32 && /*32bit*/
         header1->e_ident[EI_DATA] == ELFDATA2LSB /*tipo di codifica*/
         )
-    {        
+    {    
+        t->TSS.eip=header1->e_entry;
+        printf(3,"entry: 0x%x\n",header1->e_entry);
         //scorre la program table
         Elf32_Phdr *header2=(Elf32_Phdr*)&buffer[header1->e_phoff];
         for(int c=0;c<header1->e_phnum;c++)
