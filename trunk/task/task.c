@@ -386,7 +386,7 @@ void memcpyToTask( char * source, unsigned int count, char * dest, unsigned int 
         }
         unsigned int fisicAddr= pg->indirizzoFis;
         /*prepara la pagina temporanea*/
-        printf(3,"    mappato indirizzo fisico: 0x%x\n",fisicAddr);
+        printf(3,"    indirizzo fisico: 0x%x -> 0x%x\n",fisicAddr,startMem);
         setPageSelector ( tempTableI, tempPageI,fisicAddr,flags );
         invalidateLookasideBuffer();
         /*scrivi i dati*/

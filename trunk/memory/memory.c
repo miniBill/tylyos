@@ -33,7 +33,6 @@ void memcpy ( char * source, unsigned int count, char * dest )  /*TODO: testare*
         {   
             dest[p]=source[p];
         }
-        printf(3,"testB.\n");
     }
     else
     {
