@@ -115,8 +115,12 @@ void loader_checkHeader(char *path)
 loader_returnCode loader_loadElf(char *path,int procId)
 {
     
-    /*TODO: aggiornare i valori del TSS riguardanti allo stack*/
+    /*TODO: aggiornare i valori del TSS riguardanti allo stack del kernel*/
     struct taskStruct *t=getTask(procId);
+    
+    /*setta i selettori di segmento nel TSS*/
+    t->TSS.cs=segmentoCodiceUser;
+    t->TSS.ds=segmentoDatiUser;
     
     unsigned int dimensione;
     Elf32_Ehdr *header1;
@@ -164,13 +168,18 @@ loader_returnCode loader_loadElf(char *path,int procId)
                 allocMemory(procId,header2[c].p_vaddr,header2[c].p_memsz);
                 memcpyToTask(&buffer[header2[c].p_offset],header2[c].p_filesz,(char*)header2[c].p_vaddr,procId);  
                 
-                /*TODO: settare i selettori di segmento nel TSS*/
+
                 
                 if( (header2[c].p_flags & PF_R) && (header2[c].p_flags & PF_W) )
                 {
                     /*segmento dati*/
                     t->dataSegmentBase=header2[c].p_vaddr;
-                    t->dataSegmentSize=header2[c].p_memsz;
+                    t->dataSegmentSize=header2[c].p_memsz+5000;/*aggiunge lo stack in fondo*/
+                    t->stackSegmentBase=t->dataSegmentBase;
+                    t->stackSegmentSize=t->dataSegmentSize;
+                    /*a quanto pare lo stack va verso il basso nell architettura intel*/
+                    t->TSS.esp=header2[c].p_vaddr+5000;
+                    t->TSS.ebp=header2[c].p_vaddr+5000;
                 }
               
                 if( (header2[c].p_flags & PF_R) && (header2[c].p_flags & PF_X) )
