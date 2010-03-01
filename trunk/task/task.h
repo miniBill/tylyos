@@ -19,6 +19,13 @@
 #ifndef TASK_H
 #define TASK_H
 
+#define KERNEL_STACK_SIZE 5000
+#define TASK_STACK_SIZE 5000
+
+unsigned short currentTSS,newTSS;
+
+char stackKernel[KERNEL_STACK_SIZE];/*stack usato per il kernel una volta avviati i task*/
+
 struct tss
 {
     unsigned int        link;
@@ -74,8 +81,6 @@ struct taskListElement
 
 struct taskListElement *taskListRoot; /*puntatore al primo elemento della lista dei task*/
 
-unsigned int lastTSSindex; /*questi due indici si riferiscono alla GDT*/
-unsigned int TSSindex;/*per lo switch serve il nuovo TSS e quello vecchio, queste variabili sono usate per capire la loro locazione*/
 
 void initTaskManagement();
 

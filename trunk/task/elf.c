@@ -115,12 +115,15 @@ void loader_checkHeader(char *path)
 loader_returnCode loader_loadElf(char *path,int procId)
 {
     
-    /*TODO: aggiornare i valori del TSS riguardanti allo stack del kernel*/
     struct taskStruct *t=getTask(procId);
     
     /*setta i selettori di segmento nel TSS*/
-    t->TSS.cs=segmentoCodiceUser;
-    t->TSS.ds=segmentoDatiUser;
+    t->TSS.cs=segmentoCodiceUser;/*selettori default per i task, vengono modificati i descrittori prima di ogni switch*/
+    t->TSS.ds=segmentoDatiUser; 
+    t->TSS.ss=segmentoCodiceUser;
+    
+    t->TSS.ss0=segmentoDatiKernel;/*esp0 usa un indirizzo relativo a questo segmneto*/
+    t->TSS.esp0=(unsigned int)stackKernel+KERNEL_STACK_SIZE-1;/*lo stack usato per il codice a ring0, a quanto pare viene resettato ogni volta in quanto mnca ebp0*/
     
     unsigned int dimensione;
     Elf32_Ehdr *header1;
@@ -148,7 +151,7 @@ loader_returnCode loader_loadElf(char *path,int procId)
         )
     {    
         t->TSS.eip=header1->e_entry;
-        printf(3,"entry: 0x%x\n",header1->e_entry);
+        printf(1,"entry: 0x%x\n",header1->e_entry);
         //scorre la program table
         Elf32_Phdr *header2=(Elf32_Phdr*)&buffer[header1->e_phoff];
         for(int c=0;c<header1->e_phnum;c++)
@@ -174,12 +177,12 @@ loader_returnCode loader_loadElf(char *path,int procId)
                 {
                     /*segmento dati*/
                     t->dataSegmentBase=header2[c].p_vaddr;
-                    t->dataSegmentSize=header2[c].p_memsz+5000;/*aggiunge lo stack in fondo*/
+                    t->dataSegmentSize=header2[c].p_memsz+TASK_STACK_SIZE;/*aggiunge lo stack in fondo*/
                     t->stackSegmentBase=t->dataSegmentBase;
                     t->stackSegmentSize=t->dataSegmentSize;
                     /*a quanto pare lo stack va verso il basso nell architettura intel*/
-                    t->TSS.esp=header2[c].p_vaddr+5000;
-                    t->TSS.ebp=header2[c].p_vaddr+5000;
+                    t->TSS.esp=header2[c].p_vaddr+TASK_STACK_SIZE-1;
+                    t->TSS.ebp=header2[c].p_vaddr+TASK_STACK_SIZE-1;
                 }
               
                 if( (header2[c].p_flags & PF_R) && (header2[c].p_flags & PF_X) )

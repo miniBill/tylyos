@@ -195,7 +195,7 @@ void initPaging ( void )
         }
     }
 
-    /*segmento codice user mode*/
+    /*segmento codice user mode, verranno modificati prima di ogni switch*/
     gdtSet ( 3, user_start, ( HEAP_START-user_start ) /0x1000,MEM_GRANULAR|MEM_32,
              MEM_PRESENT|MEM_CODE_DATA|MEM_RW|MEM_USER|MEM_CODE );
     /*segmento dati user mode*/

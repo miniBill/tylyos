@@ -259,7 +259,7 @@ void _kmain(multiboot_info_t* mbd, unsigned int magicN) {
 
   gui_printImageFromFile("/tylyos.bmp",0,0);
   
-  loader_checkHeader("/hello");
+  //loader_checkHeader("/hello");
   exec("/hello",'3');
 
   //draw_mandelbrot();

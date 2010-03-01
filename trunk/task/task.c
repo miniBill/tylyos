@@ -19,6 +19,7 @@
 
 #include "task.h"
 #include <memory/memory.h>
+#include <memory/gdtflags.h>
 #include <lib/string.h>
 #include <kernel/kernel.h>
 #include <task/elf.h>
@@ -26,6 +27,9 @@
 void initTaskManagement()
 {
     taskListRoot=0;
+    
+    currentTSS=segmentSelector ( 5,0,RPL_KERNEL );
+    newTSS=segmentSelector ( 6,0,RPL_KERNEL );
 
     return;
 }
@@ -53,15 +57,15 @@ int exec(char *path,char privilegi)
     struct taskStruct *newTask;
     int taskId=addTask("test",privilegi);
     newTask=getTask(taskId);
-    printf(3,"caricamento elf...\n");
+    printf(1,"caricamento elf...\n");
     /*parsa l'ELF e carica in memoria i vari segmenti*/
     if(loader_loadElf(path,taskId)==LOADER_OK)
     {
-        printf(3,"elf caricato\n");
+        printf(1,"elf caricato\n");
     }
     else
     {
-        printf(3,"errore nel caricamento dell elf\n");
+        printf(1,"errore nel caricamento dell elf\n");
     }
    
   
@@ -88,6 +92,8 @@ int addTask ( char nome[MAX_TASK_NAME_LEN],char privilegi )
     newTask->codeSegmentSize=0;/*RICORDARSI DI FARLO AGGIORNARE DAL LOADER*/
     newTask->dataSegmentBase=0;/*RICORDARSI DI FARLO AGGIORNARE DAL LOADER*/
     newTask->dataSegmentSize=0;/*RICORDARSI DI FARLO AGGIORNARE DAL LOADER*/
+    newTask->stackSegmentBase=0;/*RICORDARSI DI FARLO AGGIORNARE DAL LOADER*/
+    newTask->stackSegmentSize=0;/*RICORDARSI DI FARLO AGGIORNARE DAL LOADER*/
 
     /*scrive i valori di default nel TSS*/
 
@@ -386,11 +392,11 @@ void memcpyToTask( char * source, unsigned int count, char * dest, unsigned int 
         struct pagina *pg=getPagina(procID,startMem);
         if(pg==0)
         {
-            printf(4,"huston we have a problem at 0x%x max:0x%x\n",startMem,(unsigned int)dest+count);
+            printf(1,"huston we have a problem at 0x%x max:0x%x\n",startMem,(unsigned int)dest+count);
         }
         unsigned int fisicAddr= pg->indirizzoFis;
         /*prepara la pagina temporanea*/
-        printf(3,"    indirizzo fisico: 0x%x -> 0x%x\n",fisicAddr,startMem);
+        printf(1,"    indirizzo fisico: 0x%x -> 0x%x\n",fisicAddr,startMem);
         setPageSelector ( tempTableI, tempPageI,fisicAddr,flags );
         invalidateLookasideBuffer();
         /*scrivi i dati*/
