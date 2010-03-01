@@ -115,7 +115,7 @@ void loader_checkHeader(char *path)
 loader_returnCode loader_loadElf(char *path,int procId)
 {
     
-    /*TODO: aggiornare i valori del TSS*/
+    /*TODO: aggiornare i valori del TSS riguardanti allo stack*/
     struct taskStruct *t=getTask(procId);
     
     unsigned int dimensione;
@@ -163,19 +163,23 @@ loader_returnCode loader_loadElf(char *path,int procId)
                 /*mappa l'area nel processo e copia i dati dentro*/
                 allocMemory(procId,header2[c].p_vaddr,header2[c].p_memsz);
                 memcpyToTask(&buffer[header2[c].p_offset],header2[c].p_filesz,(char*)header2[c].p_vaddr,procId);  
-                /*TODO: settare il relativo selettore di segmento*/
-                if(header2[c].p_flags & PF_R)
-                {
-                }
-              
-                if(header2[c].p_flags & PF_W)
-                {
-                }
-              
-                if(header2[c].p_flags & PF_X)
-                {
-                }
                 
+                /*TODO: settare i selettori di segmento nel TSS*/
+                
+                if( (header2[c].p_flags & PF_R) && (header2[c].p_flags & PF_W) )
+                {
+                    /*segmento dati*/
+                    t->dataSegmentBase=header2[c].p_vaddr;
+                    t->dataSegmentSize=header2[c].p_memsz;
+                }
+              
+                if( (header2[c].p_flags & PF_R) && (header2[c].p_flags & PF_X) )
+                {
+                    /*segmento codice*/
+                    t->codeSegmentBase=header2[c].p_vaddr;
+                    t->codeSegmentSize=header2[c].p_memsz;
+                }
+              
             }
             else if(header2[c].p_type==PT_NULL)
             {
