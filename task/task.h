@@ -22,6 +22,9 @@
 #define KERNEL_STACK_SIZE 5000
 #define TASK_STACK_SIZE 5000
 
+#define CURRENT_TSS_INDEX 5/*indice della gdt in cui si trova il descrittore*/
+#define NEW_TSS_INDEX 6/*indice della gdt in cui si trova il descrittore*/
+
 unsigned short currentTSS,newTSS;
 
 char stackKernel[KERNEL_STACK_SIZE];/*stack usato per il kernel una volta avviati i task*/
@@ -52,6 +55,8 @@ struct tss
     unsigned short      ldtr, __ldtrh;
     unsigned short      trace, io_map_addr;
 };
+
+struct tss kernelTSS;
 
 #define MAX_TASK_NAME_LEN 20
 struct taskStruct
@@ -88,7 +93,7 @@ void initTaskManagement();
 /*num: indice nella GDT*/
 /*base: base segmento*/
 /*access: MEM_TSS_BUSY|MEM_TSS|MEM_KERNEL|MEM_RING1|MEM_RING2|MEM_USER|MEM_PRESENT|MEM_NOT_PRESENT*/
-void TSSset(int num, unsigned long base, unsigned char access);
+void TSSset(int num, unsigned int base, unsigned char access);
 
 /*ritorna un procID libero*/
 unsigned int getNewProcID();

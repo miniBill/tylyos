@@ -18,18 +18,33 @@
 
 #include "dispatcher.h"
 #include <memory/memory.h>
+#include <memory/gdtflags.h>
 
+/*funzione per caricare nel task register il selettore del tss, il parametro i specifica l'indice della gdt*/
+void loadTSSregister(short unsigned int selector,unsigned int i)/*TODO: sarebbe meglio ricavare i dal selettore*/
+{
+    asm volatile ("ltr %0\n" : :"r"(selector));
+    gdt[i].access &= 0xFD;/*azzera il fottuto flag BUSY, i manuali intel non specificano che ltr lo setta senza dire niente*/
+}
 
-void dispatch(unsigned int procID)
+void dispatch(int procID)
 {
     struct taskStruct *t;
     t=getTask(procID);
     /*prepara i dati del task in modo che siano mappati in meoria*/
     dispatcher_mapPages(t);
-    /*TODO: il descrittore selezionato da currentTSS deve essere settato uguale a quello di newTSS*/
-    /*TODO: il registro che contiene il tss deve essere settato con il selettore currentTSS*/
-    /*TODO: il descrittore selezionato da newTSS deve essere modificato in modo che punti al tss del nuovo task*/
-    /*TODO: vanno modificati i selettori di segmento selezionati da segmentoDatiUser e segmentoCodiceUser usando base e limit presenti nella struttura del nuovo task*/
+    /*il descrittore selezionato da currentTSS deve essere settato uguale a quello di newTSS*/
+    gdt[CURRENT_TSS_INDEX]=gdt[NEW_TSS_INDEX];
+    /*il registro che contiene il tss deve essere settato con il selettore currentTSS*/
+    loadTSSregister(currentTSS,CURRENT_TSS_INDEX);
+    /*il descrittore selezionato da newTSS deve essere modificato in modo che punti al tss del nuovo task*/
+    TSSset(NEW_TSS_INDEX,(unsigned int)&t->TSS,MEM_TSS|MEM_KERNEL|MEM_PRESENT);
+    /*vanno modificati i selettori di segmento selezionati da segmentoDatiUser e segmentoCodiceUser usando base e limit presenti nella struttura del nuovo task*/
+    /*TODO: verificare che limit sia passato in modo corretto alla funzione*/
+    /*segmento codice user mode, verranno modificati prima di ogni switch*/
+    gdtSet ( 3, t->codeSegmentBase, (t->codeSegmentSize+0x1000) /0x1000,MEM_GRANULAR|MEM_32,MEM_PRESENT|MEM_CODE_DATA|MEM_RW|MEM_USER|MEM_CODE );
+    /*segmento dati user mode*/
+    gdtSet ( 4, t->dataSegmentBase, (t->dataSegmentSize+0x1000) /0x1000,MEM_GRANULAR|MEM_32,MEM_PRESENT|MEM_CODE_DATA|MEM_RW|MEM_USER|MEM_DATA );
     /*TODO: JMP riferendosi al TSS del nuovo task per mandare in esecuzione*/
 }
 
