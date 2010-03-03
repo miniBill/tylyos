@@ -19,6 +19,9 @@
 #ifndef DISPATCHER_H
 #define DISPATCHER_H
 
+#include <task/task.h>
+
 void dispatch(unsigned int procID);
+void dispatcher_mapPages(struct taskStruct *t);
 
 #endif
