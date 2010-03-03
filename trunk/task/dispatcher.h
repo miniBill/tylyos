@@ -21,7 +21,9 @@
 
 #include <task/task.h>
 
-void dispatch(unsigned int procID);
+void loadTSSregister(short unsigned int selector,unsigned int i);
+
+void dispatch(int procID);
 void dispatcher_mapPages(struct taskStruct *t);
 
 #endif

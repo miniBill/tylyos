@@ -28,6 +28,9 @@ void invalidateLookasideBuffer();/*costringe la cpu ad aggiornare il lookaside b
 unsigned int getEBP();
 unsigned int getESP();
 
+/*setta una riga della GDT (descrittore di segmento)*/
+void gdtSet ( int num, unsigned long base, unsigned long limit, unsigned char gran, unsigned char access );
+
 /*ritorna un selettore di segmento assemblato usando i dati passati*/
 unsigned short segmentSelector ( unsigned int index,char tableIndicator,char RPL );
 
@@ -49,7 +52,7 @@ struct gdtPtr
     unsigned int base;
 } __attribute__ ( ( packed ) );
 
-#define NUMERO_SEGMENTI 5
+#define NUMERO_SEGMENTI 10
 
 struct gdtEntry gdt[NUMERO_SEGMENTI];
 struct gdtPtr gdtPointer;

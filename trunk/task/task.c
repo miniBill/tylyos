@@ -23,14 +23,29 @@
 #include <lib/string.h>
 #include <kernel/kernel.h>
 #include <task/elf.h>
+#include <task/dispatcher.h>
 
 void initTaskManagement()
 {
     taskListRoot=0;
     
-    currentTSS=segmentSelector ( 5,0,RPL_KERNEL );
-    newTSS=segmentSelector ( 6,0,RPL_KERNEL );
-
+    currentTSS=segmentSelector ( CURRENT_TSS_INDEX,0,RPL_KERNEL );
+    newTSS=segmentSelector ( NEW_TSS_INDEX,0,RPL_KERNEL );
+    
+    /*prapare un tss temporaneo per il kernel in modo da non creare problemi durante il primo dispatch*/
+    kernelTSS.cs=segmentoCodiceKernel;
+    kernelTSS.ds=segmentoDatiKernel;
+    kernelTSS.ss=segmentoDatiKernel;
+    kernelTSS.es=segmentoDatiKernel;
+    kernelTSS.fs=segmentoDatiKernel;
+    kernelTSS.gs=segmentoDatiKernel;
+    
+    TSSset(NEW_TSS_INDEX,(unsigned int)&kernelTSS,MEM_TSS|MEM_KERNEL|MEM_PRESENT);   
+     
+    loadTSSregister(newTSS,NEW_TSS_INDEX);
+      
+    printf(1,"TASK MANAGEMENT: active\n");
+    
     return;
 }
 
@@ -38,7 +53,7 @@ void initTaskManagement()
 /*num: indice nella GDT*/
 /*base: base segmento*/
 /*access: MEM_TSS_BUSY|MEM_TSS|MEM_KERNEL|MEM_RING1|MEM_RING2|MEM_USER|MEM_PRESENT|MEM_NOT_PRESENT*/
-void TSSset ( int num, unsigned long base, unsigned char access )
+void TSSset ( int num, unsigned int base, unsigned char access )
 {
     unsigned long limit=0x67;
     gdt[num].baseLow = ( base & 0xFFFF );

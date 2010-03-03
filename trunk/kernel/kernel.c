@@ -33,6 +33,7 @@
 #include <drivers/screen/vga.h>
 #include <gui/mandelbrot.h>
 #include <task/elf.h>
+#include <task/dispatcher.h>
 
 #include <gui/gui.h>
 
@@ -259,8 +260,11 @@ void _kmain(multiboot_info_t* mbd, unsigned int magicN) {
 
   gui_printImageFromFile("/tylyos.bmp",0,0);
   
+  initTaskManagement();
+  
   //loader_checkHeader("/hello");
-  exec("/hello",'3');
+  int idTask=exec("/hello",'3');
+  dispatch(idTask);
 
   //draw_mandelbrot();
   //gui_life();
