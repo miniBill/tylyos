@@ -1,4 +1,5 @@
 global gdtFlush
+global contextSwitch
 extern gdtPointer
 
 
@@ -27,3 +28,6 @@ gdtFlush:
     retf
 flush2:
     ret
+
+contextSwitch:
+ jmp 0x30:0x0

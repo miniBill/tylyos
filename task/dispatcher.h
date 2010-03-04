@@ -21,6 +21,8 @@
 
 #include <task/task.h>
 
+extern void contextSwitch();
+
 void loadTSSregister(short unsigned int selector,unsigned int i);
 
 void dispatch(int procID);
