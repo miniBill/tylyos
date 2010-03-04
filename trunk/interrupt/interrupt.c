@@ -173,6 +173,8 @@ void interrupt_handler(
       printf(0,"Ten");
       break;
     case 0x80:
+        printf(0,"SYSCALL!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n");
+        while(1);
       switch(eax&0xFF){
         case 88:
           asm("cli");
