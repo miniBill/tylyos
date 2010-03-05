@@ -51,11 +51,12 @@ void dispatch(int procID)
     gdtSet ( 4, t->dataSegmentBase, (t->dataSegmentSize+0x1000) /0x1000,MEM_GRANULAR|MEM_32, MEM_PRESENT|MEM_CODE_DATA|MEM_RW|MEM_KERNEL|MEM_DATA );
     /*TODO: JMP riferendosi al TSS del nuovo task per mandare in esecuzione*/
 
-   asm volatile ("push %0 ;\n \
+   /*asm volatile ("push %0 ;\n \
                    push $0;\n \
                    retf" 
-                  : :"r"(newTSS));
-  //contextSwitch();
+                  : :"r"(newTSS));*/
+  //asm volatile ("jmp *(%0)\n" : :"r"(newTSS));
+  contextSwitch();
    
 }
 
@@ -64,7 +65,7 @@ void dispatcher_mapPages(struct taskStruct *t)
 {
     unsigned int virtualAddr=user_start;
     struct pagina *currentPage=t->listaPagine;
-    char flags=PAG_PRESENT|PAG_READWRITE|PAG_SUPERVISOR|PAG_4KPAGE;
+    char flags=PAG_PRESENT|PAG_READWRITE|PAG_USER|PAG_4KPAGE;
     
     while(virtualAddr < HEAP_START)/*passa tutte le pagine virtuali riservate ai processi*/
     {

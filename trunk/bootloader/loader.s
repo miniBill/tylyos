@@ -1,5 +1,5 @@
 # This code should be public domain
-
+.global contextSwitch
 .global _loader                 # making entry point visible to linker
 
 # setting up the Multiboot header - see GRUB docs for details
@@ -23,4 +23,8 @@ _loader:
    push  %eax                       # Multiboot magic number
    push  %ebx                       # Multiboot data structure
    call  _kmain            # call kernel proper
-   hlt                    # halt machine should kernel return 
+   hlt                    # halt machine should kernel return
+
+contextSwitch:
+    mov 0x30, %ebx
+    jmpw *(%ebx,1)

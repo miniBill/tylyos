@@ -55,7 +55,7 @@ void initTaskManagement()
 /*access: MEM_TSS_BUSY|MEM_TSS|MEM_KERNEL|MEM_RING1|MEM_RING2|MEM_USER|MEM_PRESENT|MEM_NOT_PRESENT*/
 void TSSset ( int num, unsigned int base, unsigned char access )
 {
-    unsigned long limit=0x67;
+    unsigned long limit=0x6C;
     gdt[num].baseLow = ( base & 0xFFFF );
     gdt[num].baseMiddle = ( base >> 16 ) & 0xFF;
     gdt[num].baseHigh = ( base >> 24 ) & 0xFF;
@@ -64,6 +64,7 @@ void TSSset ( int num, unsigned int base, unsigned char access )
     /*granularity.low is limit.high*/
     gdt[num].granularity = ( ( limit >> 16 ) & 0x0F );
     gdt[num].access = access;
+    //gdtSet ( num, base,0x6D,MEM_32, MEM_PRESENT|MEM_SYS|MEM_RW|MEM_KERNEL|MEM_TSS );
 }
 
 /*funzione da usare per eseguire un task, il parametro path serve a dafinire il file in formato elf da cui caricare il task*/
