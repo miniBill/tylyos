@@ -286,7 +286,7 @@ void _kmain(multiboot_info_t* mbd, unsigned int magicN) {
 
 void kernelPanic(char *sender, char *message) {
   asm("cli");
-  set_physical_color(Yellow | Back_Red);
+  //set_physical_color(Yellow | Back_Red);
   clear_physical();
   goto_current_xy(0,3);
   write_current("RED SCREEN OF DOOM");
