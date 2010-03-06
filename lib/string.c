@@ -41,27 +41,31 @@ void itoa(int a, char buff[11]) {
   itobase(a, 10, buff);
 }
 
-void itobase(int a, unsigned short base, char * buff) {
+void uitobase(unsigned int a, unsigned short base, char * buff) {
   if (a == 0) {
       buff[0] = '0';
       buff[1] = 0;
     }
   else {
-      int i, l;
+      int l;
       char temp[MAXN] = {0};
-      if (a < 0) {
-          a = -a;
-          buff[0] = '-';
-        }
-      else
-        buff[0] = 0;
-      for (l = 0;a && (l < MAXN) ; a /= base, l++)
+      buff[0] = 0;
+      for(l = 0;a && (l < MAXN) ; a /= base, l++)
         temp[l] = "0123456789ABCDEF"[a % base];
-      for (i = l - 1, l = buff[0] == '-';i >= 0;i--)
+      for(int i = l - 1, l = buff[0] == '-';i >= 0;i--)
         buff[l++] = temp[i];
       buff[l] = 0;
-
     }
+}
+
+void itobase(int a,unsigned short base, char * buff){
+  if(a<0){
+    a=-a;
+    buff[0]='-';
+    uitobase(a,base,buff+1);
+  }
+  else
+    uitobase(a,base,buff);
 }
 
 unsigned int printf(unsigned int console, const char* format, ...) {
@@ -82,16 +86,20 @@ unsigned int printf(unsigned int console, const char* format, ...) {
               itoa(* ((int *) arg++), buf);
               goto number;
               break;
+            case 'u':
+              uitobase(* ((int *) arg++), 10, buf);
+              goto number;
+              break;
             case 'x':
-              itobase(* ((int *) arg++), 16, buf);
+              uitobase(* ((int *) arg++), 16, buf);
               goto number;
               break;
             case 'o':
-              itobase(* ((int *) arg++), 8, buf);
+              uitobase(* ((int *) arg++), 8, buf);
               goto number;
               break;
             case 'b':
-              itobase(* ((int *) arg++), 2, buf);
+              uitobase(* ((int *) arg++), 2, buf);
               goto number;
               break;
             case 'c':

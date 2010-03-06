@@ -248,6 +248,11 @@ void keypress(void) {
               ch = 0;
               do_sierpinski();
               break;
+            case 0x22:
+              ch = 0;
+              if(released)
+                do_grid();
+              break;
             case 0x20:/*D for doom */
               ch = 0;
               write_physical_xy("Dooming", (COLUMNS - 7) / 2, 0);

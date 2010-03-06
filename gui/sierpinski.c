@@ -16,3 +16,19 @@ void gui_sierpinski(int n){
     }
   }
 }
+
+void gui_grid(int m){
+  int a[VGA_height][VGA_width];
+  for(unsigned int i=0;i<VGA_height;i++)
+    a[i][0]=0;
+  for(unsigned int i=0;i<VGA_width;i++)
+    a[0][i]=0;
+  a[1][1]=1;
+  for(unsigned int y=1;y<VGA_height;y++){
+    for(unsigned int x=1;x<VGA_width;x++){
+      if(x+y!=2)
+        a[y][x]=(a[y-1][x-1]+a[y-1][x]+a[y][x-1])%m;
+      VGA_address[VGA_width*y+x]=a[y][x];
+    }
+  }
+}

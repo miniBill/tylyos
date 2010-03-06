@@ -37,11 +37,10 @@ int pointertest ( void )
 
 int printftest ( void )
 {
-    char output[16] = "10,CA,a,ciao,13";
-    int test = 13;
+    char output[17] = "10,CA,a,ci,-1,16";
     write ("Prova printf:" ,0);
-    printf (0, "%d,%x,%c,%s,%d", 10, 0xCA, 'a', "ciao", test );
-    printf (0, " base stack: %x end: %x", getEBP(), getESP() );
+    printf (0, "%d,%x,%c,%s,%d,%u", 10, 0xCA, 'a', "ci", -1, -0xFFFFFFF0);
+    printf (0, " EBP: %x ESP: %x", getEBP(), getESP() );
     return check ( output, 13 );
 }
 
