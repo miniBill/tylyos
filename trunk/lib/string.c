@@ -148,16 +148,20 @@ unsigned int sprintf(char * out, unsigned int max, const char * format, ...) {
               itoa(* ((int *) arg++), buf);
               goto number;
               break;
+            case 'u':
+              uitobase(* ((int *) arg++), 10, buf);
+              goto number;
+              break;
             case 'x':
-              itobase(* ((int *) arg++), 16, buf);
+              uitobase(* ((int *) arg++), 16, buf);
               goto number;
               break;
             case 'o':
-              itobase(* ((int *) arg++), 8, buf);
+              uitobase(* ((int *) arg++), 8, buf);
               goto number;
               break;
             case 'b':
-              itobase(* ((int *) arg++), 2, buf);
+              uitobase(* ((int *) arg++), 2, buf);
               goto number;
               break;
             case 'c':

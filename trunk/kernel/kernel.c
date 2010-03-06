@@ -268,8 +268,8 @@ void _kmain(multiboot_info_t* mbd, unsigned int magicN) {
   initTaskManagement();
   
   //loader_checkHeader("/hello");
-  //int idTask=exec("/hello",'3');
-  //dispatch(idTask);
+  int idTask=exec("/hello",'3');
+  dispatch(idTask);
 
   printf(0,"!\"#$%%&'()*+,-./\n"
   "0123456789:;<=>?@\n"
