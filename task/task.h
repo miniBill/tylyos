@@ -54,7 +54,7 @@ struct tss
     unsigned short      gs, __gsh;
     unsigned short      ldtr, __ldtrh;
     unsigned short      trace, io_map_addr;
-};
+}  __attribute__ ( ( packed ) );
 
 struct tss kernelTSS;
 

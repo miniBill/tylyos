@@ -21,6 +21,7 @@
 #include <memory/gdtflags.h>
 #include <kernel/kernel.h>
 #include <lib/string.h>
+#include <task/task.h>
 
 /*funzione per caricare nel task register il selettore del tss, il parametro i specifica l'indice della gdt*/
 void loadTSSregister(short unsigned int selector,unsigned int i)/*TODO: sarebbe meglio ricavare i dal selettore*/
@@ -56,7 +57,15 @@ void dispatch(int procID)
                    retf" 
                   : :"r"(newTSS));*/
   //asm volatile ("jmp *(%0)\n" : :"r"(newTSS));
-  contextSwitch();
+  //contextSwitch();
+  
+  struct tss testTSS;
+  //testTSS=t->TSS;
+  memcpy((char*)&t->TSS,sizeof(struct tss),(char*)&testTSS);
+  TSSset(NEW_TSS_INDEX,(unsigned int)&testTSS,MEM_TSS|MEM_KERNEL|MEM_PRESENT);
+  
+  kernelTSS.link=newTSS & 0x0000ffff;
+  asm volatile ("iret\n");
    
 }
 
@@ -74,7 +83,7 @@ void dispatcher_mapPages(struct taskStruct *t)
             if(currentPage->indirizzoLog == virtualAddr)
             {
                 /*setta la pagina e scorri la lista avanti*/
-                printf(1,"pagina settata\n");
+                printf(1,"pagina settata 0x%x\n",virtualAddr);
                 setPageSelector ( getTableFromVirtualAdress(virtualAddr), getPageFromVirtualAdress(virtualAddr),currentPage->indirizzoFis,flags );
                 currentPage=currentPage->next;
             }

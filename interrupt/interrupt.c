@@ -169,9 +169,9 @@ void interrupt_handler(
       else /*47*/
         diskInterrupt[1] = 1;
       break;
-    case 0x10:
+    /*case 0x10:
       printf(0,"Ten");
-      break;
+      break;*/
     case 0x80:
         printf(0,"SYSCALL!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n");
         while(1);
