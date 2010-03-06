@@ -41,6 +41,11 @@ static int magicNumber = 0;
 
 static int live=0;
 static int sier=0;
+static int grid=0;
+
+void do_grid(void){
+  grid++;
+}
 
 void do_sierpinski(void){
   sier=1-sier;
@@ -263,22 +268,26 @@ void _kmain(multiboot_info_t* mbd, unsigned int magicN) {
   initTaskManagement();
   
   //loader_checkHeader("/hello");
-  int idTask=exec("/hello",'3');
-  dispatch(idTask);
+  //int idTask=exec("/hello",'3');
+  //dispatch(idTask);
 
-  //draw_mandelbrot();
-  //gui_life();
   printf(0,"!\"#$%%&'()*+,-./\n"
   "0123456789:;<=>?@\n"
   "ABCDEFGHIJKLMNOPQRSTUVWXYZ\n"
   "[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~\n");
 
+  t=3;
   while(1){
     if(live)
       gui_life();
     if(sier){
       gui_sierpinski(210);
       sier=1-sier;
+    }
+    if(grid){
+      gui_grid(t);
+      t++;
+      grid=0;
     }
   }
   //halt now done via interrupt
