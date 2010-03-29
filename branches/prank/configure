@@ -1,0 +1,45 @@
+#!/bin/bash
+cp tylyos.kdev4.* tylyos.kdev4
+echo "Creating project file..."
+echo "Working Directory=file://"`pwd` | cat .kdev4/tylyos.kdev4.in - .kdev4/tylyos.kdev4.out - .kdev4/tylyos.kdev4.out > .kdev4/tylyos.kdev4
+GCC=""
+echo -n "checking for gcc... "
+if [ -x `which gcc` ]; then
+  echo `which gcc`
+else
+  echo "no"
+  echo "error: no gcc found"
+  exit 1
+fi
+echo -n "checking whether gcc supports -march=i386... "
+if echo |gcc -march=i386 -E - 2> /dev/null > /dev/null; then
+  echo yes
+  GCC=""
+else
+  echo no
+  echo -n "checking for a gcc that is compatible with -march=i386... "
+  if echo|i686-pc-linux-gnu-gcc -march=i386 -E - 2> /dev/null > /dev/null; then
+    echo `which i686-pc-linux-gnu-gcc`
+    GCC="CC=i686-pc-linux-gnu-gcc\n"
+    GCC="${GCC}AS=i686-pc-linux-gnu-as\n"
+    GCC="${GCC}LD=i686-pc-linux-gnu-ld"
+  else
+    if echo|i586-elf-gcc -march=i386 -E - 2> /dev/null > /dev/null; then
+      echo `which i586-elf-gcc`
+      GCC="CC=i586-elf-gcc\n"
+      GCC="${GCC}AS=i586-elf-as\n"
+      GCC="${GCC}LD=i586-elf-ld"
+    else
+      echo "none found"
+      echo "error: no compatilbe gcc found, if you have one edit Makefile.in"
+      echo "and specify the correct gcc with:"
+      echo "CC=your-gcc"
+      echo "AS=your-as"
+      echo "LD=your-ld"
+      exit 1
+    fi
+  fi
+fi
+echo "creating Makefile.in"
+echo -e "${GCC}" > Makefile.in
+echo "Good - your configure finished. Start make now"

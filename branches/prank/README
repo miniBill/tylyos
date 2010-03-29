@@ -1,0 +1,7 @@
+What is TylyOS?
+================
+TylyOS is a kernel for a lightweight and simple operating system, designed to be hosted in VMs
+and to be used in environments in which memory and CPU footprints are the main concern.
+It's geared towards developers who are seeking a way to test a program in a safe, and fast, way.
+The project is currently being builded using a Linux toolchain, but we hope there will be a day
+in which TylyOS will be able to build itself.
