@@ -19,12 +19,6 @@
 #ifndef MEMORY_H_
 #define MEMORY_H_
 
-#include <memory/heap.h>
-
-void memcpy(char * source, unsigned int count, char * dest);
-
-void invalidateLookasideBuffer();/*costringe la cpu ad aggiornare il lookaside buffer*/
-
 unsigned int getEBP();
 unsigned int getESP();
 

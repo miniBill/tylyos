@@ -18,9 +18,6 @@
 */
 
 #include <kernel/stdio.h>
-#include <drivers/timer/timer.h>
-
-/*TODO: testare le funzioni*/
 
 void sound(short freq)
 {
@@ -34,19 +31,4 @@ void sound(short freq)
     tmp = inb(0x61);
     if (tmp != (tmp | 3))   /* only output if bits are not correctly set */
         outb(0x61, tmp | 3);
-}
-
-void nosound()
-{
-    unsigned char tmp;
-    tmp = inb(0x61);  /* KB controller port B */
-    tmp &= 0xFC;      /* disable speaker + clock 2 gate */
-    outb(0x61, tmp);  /* output */
-}
-
-void beep()
-{
-    sound(1000);
-    sleep(1000);
-    nosound();
 }
