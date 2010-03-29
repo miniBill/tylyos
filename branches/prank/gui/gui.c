@@ -27,11 +27,8 @@
 
 #include <drivers/screen/vga.h>
 
-#include "mandelbrot.h"
 #include "gui.h"
 #include "font.h"
-
-
 
 void gui_writeChar(char ch, unsigned int _x, unsigned int _y, unsigned char color) {
   unsigned int c = 0;

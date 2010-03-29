@@ -17,7 +17,6 @@
  * along with TylyOS.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <config.txt>
 #include "kernel.h"
 #include "multiboot.h"
 #include <lib/string.h>
@@ -27,27 +26,10 @@
 #include <drivers/timer/timer.h>
 #include <drivers/sound/sound.h>
 #include <drivers/screen/vga.h>
-#include <gui/mandelbrot.h>
 
 #include <gui/gui.h>
 
 static int magicNumber = 0;
-
-static int live=0;
-static int sier=0;
-static int grid=0;
-
-void do_grid(void){
-  grid++;
-}
-
-void do_sierpinski(void){
-  sier=1-sier;
-}
-
-void do_life(void){
-  live=1-live;
-}
 
 static multiboot_info_t * multiBootInfo;
 
@@ -174,17 +156,10 @@ void _kmain(multiboot_info_t* mbd, unsigned int magicN) {
   set_physical_color(White|Back_Black);
   clear_all();
 
-  #ifdef EARLY_VGA
-  #ifndef NO_VGA
   VGA_init(320,200,8);
-  #endif
-  #endif
   
   NO(t);
   kwrite("Kernel caricato.");
-  #ifdef NO_VGA
-  put('Y',0);
-  #endif
   OK(t++);
   write("\n",0);
 
@@ -192,7 +167,6 @@ void _kmain(multiboot_info_t* mbd, unsigned int magicN) {
   write("Prova writeline.\n",0);
   OK(t++);
 
-  //logo();
   t = row(0);
 
   NO(t);
@@ -215,19 +189,11 @@ void _kmain(multiboot_info_t* mbd, unsigned int magicN) {
 
   NO(t);
   greendot();
-  printf(0,"Kernel pronto!!! [Rev: %d]\n",REVISION);
+  printf(0,"Kernel pronto!!!\n");
   OK(t++);
 
   goto_xy(0, 1, t);
   asm("sti");
-  write_physical_xy("[s][c][a][n][k] Console: [1] Time:",0, ROWS - 1);
-
-  #ifndef EARLY_VGA
-  #ifndef NO_VGA
-  sleep(500);
-  VGA_init(320,200,8);
-  #endif
-  #endif
   
   printf(0,"!\"#$%%&'()*+,-./\n"
   "0123456789:;<=>?@\n"
@@ -237,11 +203,9 @@ void _kmain(multiboot_info_t* mbd, unsigned int magicN) {
   gui_background=0;
   void VGA_clear_screen(void);
   VGA_clear_screen();
-  
-	t=3;
-	
-	flash=0;
-  
+
+  flash=0;
+
   while(1){
   while(!flash);
   for(int coll=0; flash && (coll<256);coll++){
@@ -254,7 +218,6 @@ void _kmain(multiboot_info_t* mbd, unsigned int magicN) {
   kernelPanic("your system", "an invalid operation has happened at unknown address! PEBKAC!!!");
   }
   }
-  //halt now done via interrupt
 }
 
 void kernelPanic(char *sender, char *message) {

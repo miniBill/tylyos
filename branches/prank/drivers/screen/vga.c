@@ -25,7 +25,6 @@
 #include <kernel/stdio.h>
 #include <kernel/kernel.h>
 
-#include <gui/mandelbrot.h>
 #include <gui/gui.h>
 #include "vga.h"
 #include "palette.h"

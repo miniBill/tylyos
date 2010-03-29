@@ -35,17 +35,6 @@ MK=Makefile.in
 
 all:tylyos.iso
 
-.PHONY:version
-version:
-	@echo "REV" $@
-	@echo -n "#pragma once\n#define REVISION " > version
-	@svn info | grep Revision|head -1| grep -o "[0-9]*" >>  version
-
-kernel/kernel.o:version
-	@echo "GCC" $@
-	@$(CC) $(CFLAGS) -c -o $@ kernel/kernel.c
-	
-
 tylyos.iso: tylyos Makefile.in
 	@echo "Preparing iso..."
 	@mkdir iso && \
@@ -54,9 +43,7 @@ tylyos.iso: tylyos Makefile.in
 	echo "timeout 0">>iso/boot/grub/menu.lst && \
 	echo "title   TylyOS">>iso/boot/grub/menu.lst && \
 	echo "kernel  /boot/tylyos">>iso/boot/grub/menu.lst && \
-	echo "module /boot/c.img">>iso/boot/grub/menu.lst && \
 	cp tylyos iso/boot/tylyos && \
-	cp c.img iso/boot/c.img && \
 	mkisofs -quiet -R -b boot/grub/stage2_eltorito -no-emul-boot \
 	-boot-load-size 4 -boot-info-table -o $@ iso && \
 	echo "Iso created" && \
