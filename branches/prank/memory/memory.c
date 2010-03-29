@@ -21,7 +21,6 @@
 #include "gdtflags.h"
 #include <drivers/screen/screen.h>
 #include <lib/string.h>
-#include <task/task.h>
 #include <kernel/kernel.h>
 
 void memcpy ( char * source, unsigned int count, char * dest )  /*TODO: testare*/
@@ -265,106 +264,6 @@ void setBitExt ( unsigned int *bitmap,unsigned int x,unsigned int value )
     else
         bitmap[off1]&=~ ( 1<<off2 );
 }
-
-/*aggiunge con un insert sort una pagina nella lista delle pagine*/
-/*NON MODIFICA LA BITMAP*/
-void addPaginaToTaskPageList ( struct pagina *p )
-{
-    /*TODO: da testare*/
-    struct pagina *pointer;
-    struct taskStruct *taskPointer;
-
-    taskPointer=getTask ( p->procID );
-    pointer=taskPointer->listaPagine;
-
-    if ( pointer==0 ) /*se la lista e' vuota aggiungi all inizio*/
-        taskPointer->listaPagine=p;
-    else
-    {
-        /*se e' da aggiungere prima del primo elemento*/
-        if ( p->indirizzoLog<taskPointer->listaPagine->indirizzoLog )
-        {
-            p->next=taskPointer->listaPagine;
-            taskPointer->listaPagine=p;
-            return;
-        }
-
-        /*scorre la lista cercando la posizione in cui inserire la pagina*/
-        while ( pointer->next!=0 )
-        {
-            /*se l'elemento precedente ha un indirizzo minore o uguale ed il successivo ha un indirizzo maggiore, inserisci*/
-            if ( pointer->indirizzoLog<=p->indirizzoLog && pointer->next->indirizzoLog>p->indirizzoLog )
-            {
-                p->next=pointer->next;
-                pointer->next=p;
-                return;
-            }
-            pointer=pointer->next;
-        }
-
-        /*se arriva qui' l'elemento e' da inserire in fondo alla lista*/
-        pointer->next=p;
-        p->next=0;
-        return;
-    }
-
-}
-
-/*rimuove una pagina dalla lista delle pagine E DEALLOCA LA STRUTTURA*/
-/*NON MODIFICA LA BITMAP*/
-unsigned int removePaginaFromList ( unsigned int procID,unsigned int indirizzoLogico )
-{
-    /*TODO: da testare*/
-    struct pagina *pointer;
-    struct taskStruct *taskPointer;
-
-    taskPointer=getTask ( procID );
-    pointer=taskPointer->listaPagine;
-
-    if ( pointer==0 )
-        return 0;
-    else
-    {
-        /*se e' da eliminare il primo element della lista*/
-        if ( pointer->procID==procID && pointer->indirizzoLog==indirizzoLogico )
-        {
-            taskPointer->listaPagine=pointer->next;
-            kfree ( pointer );
-            return 1;
-        }
-
-        /*scorre la lista*/
-        while ( pointer->next!=0 )
-        {
-            /*se trova l'elemento lo elimina*/
-            if ( pointer->next->procID==procID && pointer->next->indirizzoLog==indirizzoLogico )
-            {
-                struct pagina *temp;
-                temp=pointer->next;
-                pointer->next=pointer->next->next;
-                kfree ( temp );
-                return 1;
-            }
-        }
-    }
-
-    return 0;
-}
-
-/*ritorna un indirizzo fisico libero, pronto per l' allocazione di una nuova pagina*/
-/*NON MODIFICA LA BITMAP*/
-unsigned int getFreePage()
-{
-    /*TODO: testare*/
-    unsigned int c=0;
-    for ( ;c<mappaPagineFisiche.size;c++ )
-    {
-        if ( getBitExt ( mappaPagineFisiche.data,c ) ==0 )
-            return convertBitmapIndexToFisAddr ( c );
-    }
-    return 0;
-}
-
 
 /*ritorna l'indice corrispondente ad una pagina fisica da utilizzare nella bitmap delle pagine fisiche*/
 unsigned int convertFisAddrToBitmapIndex ( unsigned int addr )

@@ -24,7 +24,6 @@
 #include <lib/string.h>
 #include <kernel/stdio.h>
 #include <kernel/kernel.h>
-#include <fs/fs.h>
 
 #include <drivers/screen/vga.h>
 
@@ -81,37 +80,3 @@ void gui_writeString(char *s, unsigned int x, unsigned int y,unsigned char color
   for(unsigned int c = 0;c < count;c++)
     gui_writeChar(s[c], x + VGA_dx*c, y,color);
 }
-
-void gui_printImageFromFile(char *path,int x,int y)
-{
-    char immagine[2000];
-    File imm=openFile(path,'r');
-    if(imm==0)
-        printf(1,"doh\n");
-    else{
-        int read=0;
-        readFile(imm,immagine,0x36);/*legge l'header*/
-        /*struct bmpfile_magic *header1=(struct bmpfile_magic*)immagine;
-        struct bmpfile_header *header2=(struct bmpfile_header*)immagine+2;*/
-        
-        unsigned int width=*((unsigned int*)&immagine[0x12]);
-        unsigned int heigth=*((unsigned int*)&immagine[0x16]);
-        
-        readFile(imm,immagine,256*4);/*salta la palette*/
-        unsigned int ret=readFile(imm,immagine,100);
-        while(ret>0){
-            for(unsigned int c=0;c<ret;c++){
-                int _x=(read+c)%width;
-                int _y=heigth-(((read+c)/width)+1);
-                
-                VGA_address[(VGA_width)*(_y+y)+(_x+x)]=immagine[c];
-               
-            }
-            
-            read+=100;
-            ret=readFile(imm,immagine,100);
-        }
-    }
-    
-}
-

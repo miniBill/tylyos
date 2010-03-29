@@ -130,21 +130,6 @@ struct pagina
     struct pagina *next;
 };
 
-
-
-/*aggiunge con un insert sort una pagina nella lista delle pagine*/
-/*NON MODIFICA LA BITMAP*/
-void addPaginaToTaskPageList ( struct pagina *p );
-
-/*rimuove una pagina dalla lista delle pagine  E DEALLOCA LA STRUTTURA*/
-/*NON MODIFICA LA BITMAP*/
-unsigned int removePaginaFromList ( unsigned int procID,unsigned int indirizzoLogico );
-
-/*ritorna un indirizzo fisico libero, pronto per lallocazione di una nuova pagina*/
-/*NON MODIFICA LA BITMAP*/
-unsigned int getFreePage();
-
-
 struct bitmap
 {
     unsigned int *data;

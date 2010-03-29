@@ -18,9 +18,9 @@
 CFLAGS:= -m32 -ffreestanding -Wall -pedantic -Wextra -I. -fno-stack-protector -std=gnu99 -g
 ASFLAGS:= --32
 OBJ= bootloader/loader.o \
-     kernel/stdio.o kernel/kernel.o kernel/tests.o kernel/hunter.o \
+     kernel/stdio.o kernel/kernel.o \
      lib/string.o \
-     memory/memory.o memory/gdt.o memory/paging.o memory/heap.o \
+     memory/memory.o memory/gdt.o memory/paging.o \
        drivers/screen/screen.o drivers/screen/vga.o \
        drivers/keyboard/keyboard.o \
        drivers/timer/timer.o \

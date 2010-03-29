@@ -19,12 +19,9 @@
 
 #include <config.txt>
 #include "kernel.h"
-#include "hunter.h"
-#include "tests.h"
 #include "multiboot.h"
 #include <lib/string.h>
 #include <memory/memory.h>
-#include <task/task.h>
 #include <drivers/keyboard/keyboard.h>
 #include <interrupt/interrupt.h>
 #include <drivers/timer/timer.h>
@@ -160,7 +157,6 @@ char flash;
 
 void _kmain(multiboot_info_t* mbd, unsigned int magicN) {
   int t = 0;/*test number*/
-  module_t *moduloGrub;
 
   loadedModuleSize=0;
 
@@ -215,26 +211,9 @@ void _kmain(multiboot_info_t* mbd, unsigned int magicN) {
 
   NO(t);
   greendot();
-  write("Cerco l'initrd: ",0);
-  moduloGrub=hunt_getArray(multiBootInfo);
-  if(moduloGrub){
-      OK(t++);
-      NO(t);
-      hunt_load(moduloGrub);
-      OK(t++);
-  }
-  else
-    t++;
-
-  NO(t);
-  greendot();
   write("Inizializzazione Paging\n",0);
   initPaging();
   OK(t++);
-
-  /*here start the true tests*/
-
-  doTests(); //from now on printf is ok
 
   magic();
 
