@@ -18,8 +18,7 @@
  */
 
 #include "kernel.h"
-#include "multiboot.h"
-#include <lib/string.h>
+//#include <lib/string.h>
 #include <memory/memory.h>
 #include <drivers/keyboard/keyboard.h>
 #include <interrupt/interrupt.h>
@@ -29,176 +28,24 @@
 
 #include <gui/gui.h>
 
-static int magicNumber = 0;
+unsigned char flash;
 
-static multiboot_info_t * multiBootInfo;
-
-inline void greendot(void) {
-  write(" * ",0);
-  put_color_xy(Light_Green,0,1,row(0));
+void spinWait(unsigned long long t){
+  unsigned long long a=0;
+  for(unsigned long long wait=0;wait<t;wait++)
+    a+=wait;
 }
-
-void OK(int i) {
-  write_xy("[ ok ]",0,COLUMNS - 6, i);
-  put_color_xy(Blue,0,COLUMNS - 6, i);
-  put_color_xy(Light_Green,0,COLUMNS - 4, i);
-  put_color_xy(Light_Green,0,COLUMNS - 3, i);
-  put_color_xy(Blue,0,COLUMNS - 1, i);
-}
-
-void NO(int i) {
-  write_xy("[ NO ]",0,COLUMNS - 6, i);
-  put_color_xy(Blue,0,COLUMNS - 6, i);
-  put_color_xy(Light_Red,0,COLUMNS - 4, i);
-  put_color_xy(Light_Red,0,COLUMNS - 3, i);
-  put_color_xy(Blue,0,COLUMNS - 1, i);
-}
-
-void kwrite(const char * string) {
-  static char * kpointer = (char *) 0xb8000;
-  int k;
-  for (k = 0;
-       string[k] != 0 && k < (COLUMNS*ROWS);
-       k++) {
-      * (kpointer++) = string[k];
-      * (kpointer++) = 7;
-    }
-}
-
-const int s=20;
-
-void logo(void) {
-    /*
-    write("                           ___              _    _ \n",0);
-    write("                            |       |      / \\  (  \n",0);
-    write("a)                          |   \\/  |  \\/  \\_/  _) \n",0);
-    write("                                /      /           \n",0);
-    write("\n",0);
-    */
-    int c;
-    for(c=0;c<s;c++)
-      put(' ',0);
-    write("_._      .            __\n",0);
-    for(c=0;c<s;c++)
-      put(' ',0);
-    write(" |       |      /^\\  (_ \n",0);
-    for(c=0;c<s;c++)
-      put(' ',0);
-    write(" |   \\/  |  \\/  \\_/  __) \n",0);
-    for(c=0;c<s;c++)
-      put(' ',0);
-    write("     /      /           \n",0);
-    write("\n",0);
-}
-
-int check(const char * output, int offset) {
-  unsigned int retval = 1, i;
-  for (i = 0;i < strlen(output);i++)
-    if (read_x(i + 3 + offset,0) != output[i]) {
-        retval = 0;
-        put_color_x(Light_Red,0,i + 3 + offset);
-      }
-  return retval;
-}
-
-int magictest(void) {
-  printf(0,"Test magic number: %x", magicNumber);
-  return magicNumber == 0x2BADB002;
-}
-
-int mbdtest(void) {
-  int l = multiBootInfo->mem_lower;
-  int u = multiBootInfo->mem_upper;
-  if (multiBootInfo->flags & 1){
-      printf(0,"Low mem:%dK,",l);
-      printf(0,"Up mem:%dM,",u/1024);
-      printf(0,"Tot mem:%dM and %dK.",(l + u) / 1024,(l + u) % 1024);
-  }
-  return l > 0;
-}
-
-void magic(void) {
-  int t = row(0);
-  NO(t);
-  greendot();
-  if (magictest())
-    OK(t++);
-  else
-    t++;
-  printf(0,"\n");
-  NO(t);
-  greendot();
-  if (mbdtest())
-    OK(t++);
-  else
-    t++;
-  printf(0,"\n");
-}
-
-char flash;
 
 void _kmain(multiboot_info_t* mbd, unsigned int magicN) {
-  int t = 0;/*test number*/
-
-  loadedModuleSize=0;
-
-  kernel_end=(unsigned int)&l_end;/*NON togliere da qui'!!!*/
-  tempPage=(char*)&l_tempPage;
-
-  magicNumber = magicN;
-  multiBootInfo = mbd;
-
-  memoriaFisica = multiBootInfo->mem_lower + multiBootInfo->mem_upper;
-  memoriaFisica *= 1024;
-  
-  gui_background=0x1;
-
   set_physical_color(White|Back_Black);
-  clear_all();
 
   VGA_init(320,200,8);
-  
-  NO(t);
-  kwrite("Kernel caricato.");
-  OK(t++);
-  write("\n",0);
 
-  NO(t);
-  write("Prova writeline.\n",0);
-  OK(t++);
-
-  t = row(0);
-
-  NO(t);
-  greendot();
-  write("Inizializzazione:",0);
-
-  write(" GDT",0);
   initGdt();
-
-  write(" IDT",0);
   initIdt();
-
-  write(" PIT\n",0);
   initTimer();
-  OK(t++);
 
-  magic();
-
-  t = row(0);
-
-  NO(t);
-  greendot();
-  printf(0,"Kernel pronto!!!\n");
-  OK(t++);
-
-  goto_xy(0, 1, t);
   asm("sti");
-  
-  printf(0,"!\"#$%%&'()*+,-./\n"
-  "0123456789:;<=>?@\n"
-  "ABCDEFGHIJKLMNOPQRSTUVWXYZ\n"
-  "[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~\n");
   
   gui_background=0;
   void VGA_clear_screen(void);
@@ -206,35 +53,27 @@ void _kmain(multiboot_info_t* mbd, unsigned int magicN) {
 
   flash=0;
 
-  while(1){
   while(!flash);
-  for(int coll=0; flash && (coll<256);coll++){
-    gui_background=coll;
-    void VGA_clear_screen(void);
-    VGA_clear_screen();
-  }
-  if(!flash){
-  write_physical_xy("Dooming", (COLUMNS - 7) / 2, 0);
-  kernelPanic("your system", "an invalid operation has happened at unknown address! PEBKAC!!!");
-  }
-  }
-}
-
-void kernelPanic(char *sender, char *message) {
+  
   asm("cli");
-  gui_background=(unsigned char)28;
-  void VGA_clear_screen(void);
-  VGA_clear_screen();
-  //set_physical_color(Yellow | Back_Red);
-  clear_physical();
+
   goto_current_xy(0,3);
-  write_current("RED SCREEN OF DOOM");
+  write_current("BLACK SCREEN OF DOOM");
   goto_current_xy(0, 7);
   write_current("Dear user,\n");
   write_current("I am very sorry I haven't written for so long.\n");
-  write_current("I am writing to tell you that \n");
-  write_current(message);
-  write_current("\nMuch love, ");
-  write_current(sender);
+  write_current("I am writing to tell you that an invalid operation has happened at unknown address! PEBKAC!!!\n");
+  write_current("Much love, your computer.\n");
   set_cursor(100, 100);
+  spinWait(20000000);
+  write_current("AYEEEEEEE! EXPLODING!!!");
+  spinWait(60000000);
+  sound(1000);
+  while(1)
+    for(unsigned char coll=0; flash && (coll<254);coll++){
+      spinWait(100000);
+      gui_background=coll;
+      void VGA_clear_screen(void);
+      VGA_clear_screen();
+    }
 }
