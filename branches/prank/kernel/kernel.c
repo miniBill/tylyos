@@ -28,12 +28,9 @@
 #include <drivers/keyboard/keyboard.h>
 #include <interrupt/interrupt.h>
 #include <drivers/timer/timer.h>
-#include <fs/fs.h>
 #include <drivers/sound/sound.h>
 #include <drivers/screen/vga.h>
 #include <gui/mandelbrot.h>
-#include <task/elf.h>
-#include <task/dispatcher.h>
 
 #include <gui/gui.h>
 
@@ -242,12 +239,6 @@ void _kmain(multiboot_info_t* mbd, unsigned int magicN) {
   magic();
 
   t = row(0);
-
-  NO(t);
-  greendot();
-  printf(0,"Inizializzazione gestore devices\n");
-  initDeviceFsManager();
-  OK(t++);
 
   NO(t);
   greendot();

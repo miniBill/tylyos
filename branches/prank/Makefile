@@ -25,13 +25,8 @@ OBJ= bootloader/loader.o \
        drivers/keyboard/keyboard.o \
        drivers/timer/timer.o \
        drivers/sound/sound.o \
-       drivers/hdd/ata.o drivers/hdd/atapi.o drivers/hdd/ataatapi.o \
      interrupt/interrupt.o interrupt/interruptHandler.o interrupt/ldt.o \
      gui/gui.o \
-     task/task.o task/elf.o task/dispatcher.o\
-     fs/iso/iso.o \
-     fs/fs.o \
-     fs/ramFs/ramFs.o
 
 LDFLAGS= -melf_i386 -T linker.ld
 MK=Makefile.in

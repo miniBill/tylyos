@@ -1,2 +1,0 @@
-Settori da 2048 byte (a.k.a 2k)
-I primi 16 settori sono vuoti
