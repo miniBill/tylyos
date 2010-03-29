@@ -24,7 +24,10 @@
 #include <drivers/screen/screen.h>
 #include <lib/string.h>
 
+extern char flash;
+
 void keypress(void) {
-              write_physical_xy("Dooming", (COLUMNS - 7) / 2, 0);
-              kernelPanic("your system", "an invalid operation has happened at unknown address! PEBKAC!!!");
+  flash++;
+  if(flash==3)
+  flash=0;
 }

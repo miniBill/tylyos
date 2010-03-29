@@ -159,6 +159,8 @@ void magic(void) {
   printf(0,"\n");
 }
 
+char flash;
+
 void _kmain(multiboot_info_t* mbd, unsigned int magicN) {
   int t = 0;/*test number*/
   module_t *moduloGrub;
@@ -262,15 +264,7 @@ void _kmain(multiboot_info_t* mbd, unsigned int magicN) {
   VGA_init(320,200,8);
   #endif
   #endif
-
-  gui_printImageFromFile("/tylyos.bmp",0,0);
   
-  /*initTaskManagement();
-  
-  //loader_checkHeader("/hello");
-  int idTask=exec("/hello",'3');
-  dispatch(idTask);*/
-
   printf(0,"!\"#$%%&'()*+,-./\n"
   "0123456789:;<=>?@\n"
   "ABCDEFGHIJKLMNOPQRSTUVWXYZ\n"
@@ -280,14 +274,28 @@ void _kmain(multiboot_info_t* mbd, unsigned int magicN) {
   void VGA_clear_screen(void);
   VGA_clear_screen();
   
-  t=3;
-  while(1);
+	t=3;
+	
+	flash=0;
+  
+  while(1){
+  while(!flash);
+  for(int coll=0; flash && (coll<256);coll++){
+    gui_background=coll;
+    void VGA_clear_screen(void);
+    VGA_clear_screen();
+  }
+  if(!flash){
+  write_physical_xy("Dooming", (COLUMNS - 7) / 2, 0);
+  kernelPanic("your system", "an invalid operation has happened at unknown address! PEBKAC!!!");
+  }
+  }
   //halt now done via interrupt
 }
 
 void kernelPanic(char *sender, char *message) {
   asm("cli");
-  gui_background=28;
+  gui_background=(unsigned char)28;
   void VGA_clear_screen(void);
   VGA_clear_screen();
   //set_physical_color(Yellow | Back_Red);
@@ -302,5 +310,4 @@ void kernelPanic(char *sender, char *message) {
   write_current("\nMuch love, ");
   write_current(sender);
   set_cursor(100, 100);
-  while (1);
 }

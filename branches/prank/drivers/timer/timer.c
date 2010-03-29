@@ -17,6 +17,8 @@ void initTimer()
     asm ( "sti" );
 }
 
+extern char gui_background;
+
 void tick ( void )
 {
     timeCount++;
@@ -27,7 +29,14 @@ void tick ( void )
         itoa ( timeCount/1000,timestring );
         while ( timestring[COLUMNS-print]!=0 )
             print--;
-        //write_physical_xy(timestring,print,ROWS-1);
+    
+        int tc=timeCount/1000;
+        if(tc>3){
+            gui_background=tc%256;
+            void VGA_clear_screen(void);
+            VGA_clear_screen();
+            write_xy(timestring,0,0,0);
+        }
     }
 }
 
