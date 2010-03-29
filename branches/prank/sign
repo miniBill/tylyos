@@ -1,2 +1,0 @@
-#!/bin/bash
-gpg --detach tylyos.iso
