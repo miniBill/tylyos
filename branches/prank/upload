@@ -1,3 +1,0 @@
-#!/bin/bash
-scp tylyos.iso `cat user`@download.gna.org:/upload/clearos/
-scp tylyos.iso.sig `cat user`@download.gna.org:/upload/clearos/
