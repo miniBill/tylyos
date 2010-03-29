@@ -44,7 +44,7 @@ all:tylyos.iso
 version:
 	@echo "REV" $@
 	@echo -n "#pragma once\n#define REVISION " > version
-	@svn info | grep Revision| grep -o "[0-9]*" >>  version
+	@svn info | grep Revision|head -1| grep -o "[0-9]*" >>  version
 
 kernel/kernel.o:version
 	@echo "GCC" $@
