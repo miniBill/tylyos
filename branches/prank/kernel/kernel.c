@@ -275,33 +275,28 @@ void _kmain(multiboot_info_t* mbd, unsigned int magicN) {
   "0123456789:;<=>?@\n"
   "ABCDEFGHIJKLMNOPQRSTUVWXYZ\n"
   "[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~\n");
-
+  
+  gui_background=0;
+  void VGA_clear_screen(void);
+  VGA_clear_screen();
+  
   t=3;
-  while(1){
-    if(live)
-      gui_life();
-    if(sier){
-      gui_sierpinski(210);
-      sier=1-sier;
-    }
-    if(grid){
-      gui_grid(t);
-      t++;
-      grid=0;
-    }
-  }
+  while(1);
   //halt now done via interrupt
 }
 
 void kernelPanic(char *sender, char *message) {
   asm("cli");
+  gui_background=28;
+  void VGA_clear_screen(void);
+  VGA_clear_screen();
   //set_physical_color(Yellow | Back_Red);
   clear_physical();
   goto_current_xy(0,3);
   write_current("RED SCREEN OF DOOM");
   goto_current_xy(0, 7);
   write_current("Dear user,\n");
-  write_current("I am very sorry I haven't written for so long. ");
+  write_current("I am very sorry I haven't written for so long.\n");
   write_current("I am writing to tell you that \n");
   write_current(message);
   write_current("\nMuch love, ");
