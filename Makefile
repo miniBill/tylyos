@@ -15,8 +15,8 @@
 # You should have received a copy of the GNU General Public License
 # along with TylyOS.  If not, see <http://www.gnu.org/licenses/>.
 
-CFLAGS:= -march=i386 -ffreestanding -Wall -pedantic -Wextra -I. -fno-stack-protector -std=gnu99 -g
-ASFLAGS:= -march=i386
+CFLAGS:= -m32 -ffreestanding -Wall -pedantic -Wextra -I. -fno-stack-protector -std=gnu99 -g
+ASFLAGS:= --32
 OBJ= bootloader/loader.o \
      kernel/stdio.o kernel/kernel.o kernel/tests.o kernel/hunter.o \
      lib/string.o lib/life.o \
@@ -33,7 +33,7 @@ OBJ= bootloader/loader.o \
      fs/fs.o \
      fs/ramFs/ramFs.o
 
-LDFLAGS= -T linker.ld
+LDFLAGS= -melf_i386 -T linker.ld
 MK=Makefile.in
 
 -include Makefile.in
@@ -85,7 +85,7 @@ tylyos: $(OBJ)
 
 %.o: %.asm
 	@echo "NASM" $@
-	@nasm -f elf -o $@ $^
+	@$(NASM) -f elf -o $@ $^
 
 .PHONY: clean
 clean:
