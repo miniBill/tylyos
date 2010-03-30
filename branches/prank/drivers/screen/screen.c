@@ -115,7 +115,6 @@ void clear_all(void) {
 }
 
 void clear(unsigned int console) {
-    
         for (int ty = 0;ty < ROWS*PAGES;ty++)
             for (int tx = 0;tx < COLUMNS;tx++) {
                 videoMemory[console][ty][tx] = ' ';

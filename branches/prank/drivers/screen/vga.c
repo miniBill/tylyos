@@ -100,12 +100,34 @@ void write_registers(unsigned char *regs){
     outb(VGA_AC_INDEX, 0x20);
 }
 
+extern int fishing;
 
 void VGA_clear_screen(){
     unsigned int x,y;
     for(y=0; y<VGA_height; y++)
-        for(x=0; x<VGA_width; x++)
-            VGA_address[VGA_width*y+x]=gui_background;
+      for(x=0; x<VGA_width; x++)
+        VGA_address[VGA_width*y+x]=gui_background;
+    if(!fishing)
+      return;
+    
+    for(x=10; x<260; x++)
+      for(y=75; y<125; y++)
+        VGA_address[VGA_width*y+x]=255-gui_background;
+    for(x=20; x<40; x++)
+      for(y=80; y<100; y++)
+        VGA_address[VGA_width*y+x]=gui_background;
+    for(x=20; x<60; x++)
+      for(y=110; y<120; y++)
+        VGA_address[VGA_width*y+x]=gui_background;
+    for(x=260; x<285; x++)
+      for(y=75+x-260; y<125-x+260; y++)
+        VGA_address[VGA_width*y+x]=255-gui_background;
+    for(x=285; x<310; x++)
+      for(y=100-x+285; y<100+x-285; y++)
+        VGA_address[VGA_width*y+x]=255-gui_background;
+
+    write_xy("PESCE",0,20,40);
+    spinWait(1000000);
 }
 
 void VGA_setPalette(){

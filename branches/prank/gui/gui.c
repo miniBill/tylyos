@@ -62,8 +62,8 @@ void gui_writeChar(char ch, unsigned int _x, unsigned int _y, unsigned char colo
       if (_x + (4 - x) < VGA_width && _y + y < VGA_height){
         if(g_4x5_font[(int)ch*3+y/2] & 1<<c)
           VGA_address[VGA_width*(_y+y)+(_x+(4-x))] = color;
-        else
-            VGA_address[VGA_width*(_y+y)+(_x+(4-x))] = gui_background;
+        /*else
+            VGA_address[VGA_width*(_y+y)+(_x+(4-x))] = gui_background;*/
       }
       c=(c+1)%8;
     }

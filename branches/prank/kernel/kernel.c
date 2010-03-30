@@ -36,6 +36,8 @@ void spinWait(unsigned long long t){
     a+=wait;
 }
 
+int fishing;
+
 void _kmain(multiboot_info_t* mbd, unsigned int magicN) {
   set_physical_color(White|Back_Black);
 
@@ -69,11 +71,14 @@ void _kmain(multiboot_info_t* mbd, unsigned int magicN) {
   write_current("AYEEEEEEE! EXPLODING!!!");
   spinWait(60000000);
   sound(1000);
-  while(1)
-    for(unsigned char coll=0; flash && (coll<254);coll++){
-      spinWait(100000);
-      gui_background=coll;
-      void VGA_clear_screen(void);
-      VGA_clear_screen();
-    }
+  int coll=0;
+  while(1){
+    coll++;
+    spinWait(100000);
+    gui_background=coll%255;
+    void VGA_clear_screen(void);
+    VGA_clear_screen();
+    if(coll>400)
+      fishing=1;
+  }
 }
