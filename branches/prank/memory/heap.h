@@ -17,17 +17,25 @@
 * along with TylyOS.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef VGA_H
-#define VGA_H
+#ifndef MEMORY_HEAP_H
+#define MEMORY_HEAP_H
 
-void VGA_init(int width, int height, int colors);
+void *calloc ( unsigned int num, unsigned int size );
+void* kmalloc ( unsigned int byte );
+void kfree ( void *pointer );
 
-//the vga identifiers
-unsigned int VGA_width;
-unsigned int VGA_height;
-unsigned int VGA_bpp;
+unsigned int getHeapSize();/*ritorna il numero di bytes fisici riservati all heap*/
 
-unsigned char *VGA_address;
+void increaseHeapSize();/*alloca una pagina fisica e la mappa in fondo all heap*/
+void decreaseHeapSize();/*dealloca l'ultima pagina dell heap*/
 
+/*struttura lista allocazioni*/
+struct memoryArea
+{
+    unsigned int size;/*dimensione in byte*/
+    struct memoryArea *next;/*indirizzo header della prossima area*/
+} __attribute__ ( ( packed ) );
+
+struct memoryArea *kmallocList;/*liste aree allocate e libere*/
 
 #endif

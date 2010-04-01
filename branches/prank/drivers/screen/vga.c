@@ -20,10 +20,12 @@
 #include <drivers/screen/screen.h>
 #include <lib/string.h>
 #include <kernel/stdio.h>
+#include <memory/memory.h>
 #include <lib/string.h>
 #include <kernel/stdio.h>
 #include <kernel/kernel.h>
 
+#include <gui/mandelbrot.h>
 #include <gui/gui.h>
 #include "vga.h"
 #include "palette.h"
@@ -51,104 +53,187 @@
 #define   VGA_NUM_AC_REGS      21
 #define   VGA_NUM_REGS      (1+VGA_NUM_SEQ_REGS+VGA_NUM_CRTC_REGS+VGA_NUM_GC_REGS+VGA_NUM_AC_REGS)
 
+
+
+/**
+* CREATE THE REGISTER ARRAY TAKEN FROM http://wiki.osdev.org/VGA_Hardware
+*/
+unsigned char g_640x480x16[] =
+{
+    /* MISC */
+    0xE3,
+    /* SEQ */
+    0x03, 0x01, 0x08, 0x00, 0x06,
+    /* CRTC */
+    0x5F, 0x4F, 0x50, 0x82, 0x54, 0x80, 0x0B, 0x3E,
+    0x00, 0x40, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0xEA, 0x0C, 0xDF, 0x28, 0x00, 0xE7, 0x04, 0xE3,
+    0xFF,
+    /* GC */
+    0x00, 0x00, 0x00, 0x00, 0x03, 0x00, 0x05, 0x0F,
+    0xFF,
+    /* AC */
+    0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x14, 0x07,
+    0x38, 0x39, 0x3A, 0x3B, 0x3C, 0x3D, 0x3E, 0x3F,
+    0x01, 0x00, 0x0F, 0x00, 0x00
+};
+
 unsigned char mode_320_200_256[]={
-    0x63, 0x03, 0x01, 0x0F, 0x00, 0x0E,
+    /* MISC
+    *
+    * 0x63 => 01100011
+    * 7 6 5 4 3 2 1 0
+    * 1 1 0 0 0 1 1 0
+    * VSP HSP - - CS CS ERAM IOS
+    * 7,6 - 480 lines
+    * 5,4 - free
+    * 3,2 - 28,322 MHZ Clock
+    * 1 - Enable Ram
+    * 0 - Map 0x3d4 to 0x3b4
+    */
+    0x63,
+    /* SEQ */
+    /**
+    * index 0x00 - Reset
+    * 0x03 = 11
+    * Bits 1,0 Synchronous reset
+    */
+    0x03,
+    /**
+    * index 0x01
+    * Clocking mode register
+    * 8/9 Dot Clocks
+    */
+    0x01,
+    /**
+    * Map Mask Register, 0x02
+    * 0x0F = 1111
+    * Enable all 4 Maps Bits 0-3
+    * chain 4 mode
+    */
+    0x0F,
+    /**
+    * map select register, 0x03
+    * no character map enabled
+    */
+    0x00,
+    /**
+    * memory mode register 0x04
+    * enables ch4,odd/even,extended memory
+    */
+    0x0E,
+    /* CRTC */
     0x5F, 0x4F, 0x50, 0x82, 0x54, 0x80, 0xBF, 0x1F,
     0x00, 0x41, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-    0x9C, 0x0E, 0x8F, 0x28, 0x40, 0x96, 0xB9, 0xA3,
+    0x9C, 0x0E, 0x8F, 0x28,   0x40, 0x96, 0xB9, 0xA3,
     0xFF,
+    /* GC */
     0x00, 0x00, 0x00, 0x00, 0x00, 0x40, 0x05, 0x0F,
     0xFF,
+    /* AC */
     0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07,
     0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F,
-    0x41, 0x00, 0x0F, 0x00, 0x00
+    0x41, 0x00, 0x0F, 0x00,   0x00
 };
 
 void write_registers(unsigned char *regs){
     unsigned i;
     
+    /* write MISCELLANEOUS reg */
     outb(VGA_MISC_WRITE, *regs);
     regs++;
-    for(i = 0; i < VGA_NUM_SEQ_REGS; i++){
+    /* write SEQUENCER regs */
+    for(i = 0; i < VGA_NUM_SEQ_REGS; i++)
+    {
         outb(VGA_SEQ_INDEX, i);
         outb(VGA_SEQ_DATA, *regs);
         regs++;
     }
+    /* unlock CRTC registers */
     outb(VGA_CRTC_INDEX, 0x03);
     outb(VGA_CRTC_DATA, inb(VGA_CRTC_DATA) | 0x80);
     outb(VGA_CRTC_INDEX, 0x11);
     outb(VGA_CRTC_DATA, inb(VGA_CRTC_DATA) & ~0x80);
+    /* make sure they remain unlocked */
     regs[0x03] |= 0x80;
     regs[0x11] &= ~0x80;
-    for(i = 0; i < VGA_NUM_CRTC_REGS; i++){
+    /* write CRTC regs */
+    for(i = 0; i < VGA_NUM_CRTC_REGS; i++)
+    {
         outb(VGA_CRTC_INDEX, i);
         outb(VGA_CRTC_DATA, *regs);
         regs++;
     }
-    for(i = 0; i < VGA_NUM_GC_REGS; i++){
+    /* write GRAPHICS CONTROLLER regs */
+    for(i = 0; i < VGA_NUM_GC_REGS; i++)
+    {
         outb(VGA_GC_INDEX, i);
         outb(VGA_GC_DATA, *regs);
         regs++;
     }
-    for(i = 0; i < VGA_NUM_AC_REGS; i++){
+    /* write ATTRIBUTE CONTROLLER regs */
+    for(i = 0; i < VGA_NUM_AC_REGS; i++)
+    {
         (void)inb(VGA_INSTAT_READ);
         outb(VGA_AC_INDEX, i);
         outb(VGA_AC_WRITE, *regs);
         regs++;
     }
+    
+    /* lock 16-color palette and unblank display */
     (void)inb(VGA_INSTAT_READ);
     outb(VGA_AC_INDEX, 0x20);
 }
 
-extern int fishing;
 
 void VGA_clear_screen(){
     unsigned int x,y;
     for(y=0; y<VGA_height; y++)
-      for(x=0; x<VGA_width; x++)
-        VGA_address[VGA_width*y+x]=gui_background;
-    if(!fishing)
-      return;
-    
-    for(x=10; x<260; x++)
-      for(y=75; y<125; y++)
-        VGA_address[VGA_width*y+x]=255-gui_background;
-    for(x=20; x<40; x++)
-      for(y=80; y<100; y++)
-        VGA_address[VGA_width*y+x]=gui_background;
-    for(x=20; x<60; x++)
-      for(y=110; y<120; y++)
-        VGA_address[VGA_width*y+x]=gui_background;
-    for(x=260; x<285; x++)
-      for(y=75+x-260; y<125-x+260; y++)
-        VGA_address[VGA_width*y+x]=255-gui_background;
-    for(x=285; x<310; x++)
-      for(y=100-x+285; y<100+x-285; y++)
-        VGA_address[VGA_width*y+x]=255-gui_background;
-
-    write_xy("PESCE",0,20,40);
-    spinWait(1000000);
+        for(x=0; x<VGA_width; x++)
+            VGA_address[VGA_width*y+x]=gui_background;
 }
 
-void VGA_setPalette(){
+
+
+
+void VGA_setPalette()
+{
     outb(0x03C6,0xff);
     outb(0x3c8,0);
-    for(unsigned int c=0;c<256;c++){
+    for(unsigned int c=0;c<256;c++)
+    {  
         outb(0x3c9,palette[(c*3)]/4);
         outb(0x3c9,palette[(c*3)+1]/4);
         outb(0x3c9,palette[(c*3)+2]/4);
     }
 }
 
-void VGA_init(int width, int height, int bpp){
+/**
+* Note here the vga struct must have the width 320 and height of 200
+* color mode is 256
+*/
+void VGA_init(int width, int height, int bpp)
+{
     VGA_width=(unsigned int)width;
     VGA_height=(unsigned int)height;
     VGA_bpp=bpp;
     
     VGA_address=(unsigned char*)0xA0000;
     
-    write_registers(mode_320_200_256);
+    
+    if(width==320 && height==200 && bpp==8)
+    {
+        write_registers(mode_320_200_256);
+    }
+    else
+    {
+        kernelPanic("VGA_init()","the selected mode is not supported");
+    }
+    
+    /*modifica la plaette*/
     VGA_setPalette();
+    
     VGA_clear_screen();
-    go_graphic();
+    
+   go_graphic();
 }
