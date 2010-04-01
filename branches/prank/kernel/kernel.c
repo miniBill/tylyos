@@ -19,7 +19,6 @@
 
 #include "kernel.h"
 #include "hunter.h"
-#include "tests.h"
 #include "multiboot.h"
 #include <lib/string.h>
 #include <memory/memory.h>
@@ -231,8 +230,6 @@ void _kmain(multiboot_info_t* mbd, unsigned int magicN) {
   OK(t++);
 
   /*here start the true tests*/
-
-  doTests(); //from now on printf is ok
 
   magic();
 

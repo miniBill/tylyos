@@ -18,20 +18,15 @@
 CFLAGS:= -m32 -ffreestanding -Wall -pedantic -Wextra -I. -fno-stack-protector -std=gnu99 -g
 ASFLAGS:= --32
 OBJ= bootloader/loader.o \
-     kernel/stdio.o kernel/kernel.o kernel/tests.o kernel/hunter.o \
+     kernel/stdio.o kernel/kernel.o kernel/hunter.o \
      lib/string.o \
      memory/memory.o memory/gdt.o memory/paging.o memory/heap.o \
        drivers/screen/screen.o drivers/screen/vga.o \
        drivers/keyboard/keyboard.o \
        drivers/timer/timer.o \
        drivers/sound/sound.o \
-       drivers/hdd/ata.o drivers/hdd/atapi.o drivers/hdd/ataatapi.o \
      interrupt/interrupt.o interrupt/interruptHandler.o interrupt/ldt.o \
      gui/gui.o \
-     task/task.o task/elf.o task/dispatcher.o\
-     fs/iso/iso.o \
-     fs/fs.o \
-     fs/ramFs/ramFs.o
 
 LDFLAGS= -melf_i386 -T linker.ld
 MK=Makefile.in
@@ -59,9 +54,7 @@ tylyos.iso: tylyos Makefile.in
 	echo "timeout 0">>iso/boot/grub/menu.lst && \
 	echo "title   TylyOS">>iso/boot/grub/menu.lst && \
 	echo "kernel  /boot/tylyos">>iso/boot/grub/menu.lst && \
-	echo "module /boot/c.img">>iso/boot/grub/menu.lst && \
 	cp tylyos iso/boot/tylyos && \
-	cp c.img iso/boot/c.img && \
 	mkisofs -quiet -R -b boot/grub/stage2_eltorito -no-emul-boot \
 	-boot-load-size 4 -boot-info-table -o $@ iso && \
 	echo "Iso created" && \
