@@ -61,8 +61,9 @@ void dispatch(int procID)
   
   memcpy((char*)&t->TSS,sizeof(struct tss),(char*)newTSS);
   TSSset(NEW_TSS_INDEX,(unsigned int)newTSS,MEM_TSS|MEM_KERNEL|MEM_PRESENT|0b10);
-  
   kernelTSS.link=newTSS & 0x0000ffff;
+  printf(1,"currentTSS: %x\n",currentTSS);
+  printf(1,"newTSS: %x\n",newTSS);
   asm volatile ("iret\n");
 
    

@@ -52,7 +52,7 @@ struct gdtPtr
     unsigned int base;
 } __attribute__ ( ( packed ) );
 
-#define NUMERO_SEGMENTI 10
+#define NUMERO_SEGMENTI 100
 
 struct gdtEntry gdt[NUMERO_SEGMENTI];
 struct gdtPtr gdtPointer;
