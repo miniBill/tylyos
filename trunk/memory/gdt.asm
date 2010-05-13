@@ -13,7 +13,7 @@ gdtFlush:
 
     mov esp,ebp
     pop ebp
-    ;mov ax, 0x10 ;segmento 2    TI 0=gdt    RPL=0 backup sempre meglio tenere ;P
+    ;mov ax, 0x10 ;segmento 2    TI 0=gdt    RPL=0 backup sempre meglio tenere 
     ;setta tutti i registri di segmento
     mov ds, ax
     mov es, ax

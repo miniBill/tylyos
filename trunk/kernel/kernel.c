@@ -265,11 +265,12 @@ void _kmain(multiboot_info_t* mbd, unsigned int magicN) {
 
   gui_printImageFromFile("/tylyos.bmp",0,0);
   
-  /*initTaskManagement();
+  initTaskManagement();
   
   //loader_checkHeader("/hello");
   int idTask=exec("/hello",'3');
-  dispatch(idTask);*/
+  printf(1,"nuovo task inizializzato, id: %d\n",idTask);
+  dispatch(idTask);
 
   printf(0,"!\"#$%%&'()*+,-./\n"
   "0123456789:;<=>?@\n"

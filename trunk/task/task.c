@@ -41,6 +41,7 @@ void initTaskManagement()
     kernelTSS.gs=segmentoDatiKernel;
     
     TSSset(NEW_TSS_INDEX,(unsigned int)&kernelTSS,MEM_TSS|MEM_KERNEL|MEM_PRESENT);   
+    TSSset(CURRENT_TSS_INDEX,(unsigned int)&kernelTSS,MEM_TSS|MEM_KERNEL|MEM_PRESENT);   
      
     loadTSSregister(newTSS,NEW_TSS_INDEX);
       
