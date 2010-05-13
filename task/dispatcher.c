@@ -59,13 +59,12 @@ void dispatch(int procID)
   //asm volatile ("jmp *(%0)\n" : :"r"(newTSS));
   //contextSwitch();
   
-  struct tss testTSS;
-  //testTSS=t->TSS;
-  memcpy((char*)&t->TSS,sizeof(struct tss),(char*)&testTSS);
-  TSSset(NEW_TSS_INDEX,(unsigned int)&testTSS,MEM_TSS|MEM_KERNEL|MEM_PRESENT);
+  memcpy((char*)&t->TSS,sizeof(struct tss),(char*)newTSS);
+  TSSset(NEW_TSS_INDEX,(unsigned int)newTSS,MEM_TSS|MEM_KERNEL|MEM_PRESENT|0b10);
   
   kernelTSS.link=newTSS & 0x0000ffff;
   asm volatile ("iret\n");
+
    
 }
 
