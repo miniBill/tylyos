@@ -29,8 +29,8 @@ void initTaskManagement()
 {
     taskListRoot=0;
     
-    currentTSS=segmentSelector ( CURRENT_TSS_INDEX,0,RPL_USER );
-    newTSS=segmentSelector ( NEW_TSS_INDEX,0,RPL_USER );
+    currentTSS=segmentSelector ( CURRENT_TSS_INDEX,0,RPL_KERNEL );
+    newTSS=segmentSelector ( NEW_TSS_INDEX,0,RPL_KERNEL );
     
     /*prapare un tss temporaneo per il kernel in modo da non creare problemi durante il primo dispatch*/
     kernelTSS.cs=segmentoCodiceKernel;

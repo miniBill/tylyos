@@ -30,6 +30,21 @@ void loadTSSregister(short unsigned int selector,unsigned int i)/*TODO: sarebbe 
     gdt[i].access &= 0xFD;/*azzera il fottuto flag BUSY, i manuali intel non specificano che ltr lo setta senza dire niente*/
 }
 
+unsigned int getTSS()
+{
+    unsigned int data=0;
+asm volatile ( "str %0":"=r" ( data ) );
+    return data;
+}
+
+void switchTo(unsigned int selector)
+{
+    unsigned int sel[2];
+
+    sel[1] = selector;
+
+    asm ("lcall %0": :"m" (*sel));
+}
 
 
 void dispatch(int procID)
@@ -47,24 +62,28 @@ void dispatch(int procID)
     /*vanno modificati i selettori di segmento selezionati da segmentoDatiUser e segmentoCodiceUser usando base e limit presenti nella struttura del nuovo task*/
     /*TODO: verificare che limit sia passato in modo corretto alla funzione*/
     /*segmento codice user mode, verranno modificati prima di ogni switch*/
-    gdtSet ( 3, t->codeSegmentBase, (t->codeSegmentSize+0x1000) /0x1000,MEM_GRANULAR|MEM_32, MEM_PRESENT|MEM_CODE_DATA|MEM_RW|MEM_KERNEL|MEM_CODE );
+    gdtSet ( 3, t->codeSegmentBase, (t->codeSegmentSize+0x1000) /0x1000,MEM_GRANULAR|MEM_32, MEM_PRESENT|MEM_CODE_DATA|MEM_RW|MEM_USER|MEM_CODE );
     /*segmento dati user mode*/
-    gdtSet ( 4, t->dataSegmentBase, (t->dataSegmentSize+0x1000) /0x1000,MEM_GRANULAR|MEM_32, MEM_PRESENT|MEM_CODE_DATA|MEM_RW|MEM_KERNEL|MEM_DATA );
+    gdtSet ( 4, t->dataSegmentBase, (t->dataSegmentSize+0x1000) /0x1000,MEM_GRANULAR|MEM_32, MEM_PRESENT|MEM_CODE_DATA|MEM_RW|MEM_USER|MEM_DATA );
     /*TODO: JMP riferendosi al TSS del nuovo task per mandare in esecuzione*/
 
-   /*asm volatile ("push %0 ;\n \
+ /*  asm volatile ("push %0 ;\n \
                    push $0;\n \
                    retf" 
                   : :"r"(newTSS));*/
   //asm volatile ("jmp *(%0)\n" : :"r"(newTSS));
   //contextSwitch();
   
-  memcpy((char*)&t->TSS,sizeof(struct tss),(char*)newTSS);
-  TSSset(NEW_TSS_INDEX,(unsigned int)newTSS,MEM_TSS|MEM_KERNEL|MEM_PRESENT|0b10);
   kernelTSS.link=newTSS & 0x0000ffff;
+    loadTSSregister(currentTSS,CURRENT_TSS_INDEX);
   printf(1,"currentTSS: %x\n",currentTSS);
   printf(1,"newTSS: %x\n",newTSS);
-  asm volatile ("iret\n");
+  printf(1,"TSS: %x\n",getTSS());
+  printf(1,"new SS: %x\n",t->TSS.ss);
+  printf(1,"new CS base: %x\n",t->codeSegmentBase);
+ while(1); 
+switchTo(newTSS);
+  //asm volatile ("iret\n");
 
    
 }
