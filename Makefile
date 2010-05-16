@@ -28,7 +28,7 @@ OBJ= bootloader/loader.o \
        drivers/sound/sound.o \
        drivers/hdd/ata.o drivers/hdd/atapi.o drivers/hdd/ataatapi.o \
      interrupt/interrupt.o interrupt/interruptHandler.o interrupt/ldt.o \
-     gui/gui.o gui/mandelbrot.o gui/sierpinski.o \
+     gui/gui.o gui/mandelbrot.o gui/sierpinski.o gui/life.o \
      task/task.o task/elf.o task/dispatcher.o\
      fs/iso/iso.o \
      fs/fs.o \

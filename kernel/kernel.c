@@ -18,24 +18,25 @@
  */
 
 #include <config.txt>
-#include "kernel.h"
+
 #include "hunter.h"
-#include "tests.h"
+#include "kernel.h"
 #include "multiboot.h"
-#include <lib/string.h>
-#include <memory/memory.h>
-#include <task/task.h>
+#include "tests.h"
 #include <drivers/keyboard/keyboard.h>
-#include <interrupt/interrupt.h>
+#include <drivers/screen/vga.h>
+#include <drivers/sound/sound.h>
 #include <drivers/timer/timer.h>
 #include <fs/fs.h>
-#include <drivers/sound/sound.h>
-#include <drivers/screen/vga.h>
-#include <gui/mandelbrot.h>
-#include <task/elf.h>
-#include <task/dispatcher.h>
-
 #include <gui/gui.h>
+#include <gui/life.h>
+#include <gui/mandelbrot.h>
+#include <interrupt/interrupt.h>
+#include <lib/string.h>
+#include <memory/memory.h>
+#include <task/dispatcher.h>
+#include <task/elf.h>
+#include <task/task.h>
 
 static int magicNumber = 0;
 

@@ -44,6 +44,8 @@ void switchTo(unsigned int selector)
     sel[1] = selector;
 
     asm ("lcall %0": :"m" (*sel));
+/* task/dispatcher.c: Assembler messages:
+task/dispatcher.c:46: Warning: indirect lcall without `*' */
 }
 
 
