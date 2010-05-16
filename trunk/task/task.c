@@ -29,8 +29,9 @@ void initTaskManagement()
 {
     taskListRoot=0;
     
-    currentTSS=segmentSelector ( CURRENT_TSS_INDEX,0,RPL_KERNEL );
-    newTSS=segmentSelector ( NEW_TSS_INDEX,0,RPL_KERNEL );
+    currentTSS=segmentSelector ( CURRENT_TSS_INDEX,0,RPL_USER );
+    newTSS=segmentSelector ( NEW_TSS_INDEX,0,RPL_USER );
+    tempTSS=segmentSelector ( NEW_TSS_INDEX,0,RPL_KERNEL );
     
     /*prapare un tss temporaneo per il kernel in modo da non creare problemi durante il primo dispatch*/
     kernelTSS.cs=segmentoCodiceKernel;
@@ -43,7 +44,7 @@ void initTaskManagement()
     TSSset(NEW_TSS_INDEX,(unsigned int)&kernelTSS,MEM_TSS|MEM_KERNEL|MEM_PRESENT);   
     TSSset(CURRENT_TSS_INDEX,(unsigned int)&kernelTSS,MEM_TSS|MEM_KERNEL|MEM_PRESENT);   
      
-    loadTSSregister(newTSS,NEW_TSS_INDEX);
+    loadTSSregister(tempTSS,NEW_TSS_INDEX);
       
     printf(1,"TASK MANAGEMENT: active\n");
     
@@ -126,7 +127,7 @@ int addTask ( char nome[MAX_TASK_NAME_LEN],char privilegi )
     newTask->TSS.__ss2h=0;/*sempre a 0*/
 
     /*selettori stack*/
-    newTask->TSS.ss0=segmentoDatiUser;
+    newTask->TSS.ss0=segmentoDatiKernel;
     newTask->TSS.ss1=segmentoDatiUser;
     newTask->TSS.ss2=segmentoDatiUser;
 
