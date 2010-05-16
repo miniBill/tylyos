@@ -24,6 +24,7 @@
 extern void contextSwitch();
 
 void loadTSSregister(short unsigned int selector,unsigned int i);
+unsigned int getTSS();
 
 void dispatch(int procID);
 void dispatcher_mapPages(struct taskStruct *t);
