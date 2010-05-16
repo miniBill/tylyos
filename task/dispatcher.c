@@ -77,13 +77,12 @@ void dispatch(int procID)
   //contextSwitch();
   
   kernelTSS.link=newTSS & 0x0000ffff;
-    loadTSSregister(currentTSS,CURRENT_TSS_INDEX);
+    //loadTSSregister(currentTSS,CURRENT_TSS_INDEX);
   printf(1,"currentTSS: %x\n",currentTSS);
   printf(1,"newTSS: %x\n",newTSS);
   printf(1,"TSS: %x\n",getTSS());
   printf(1,"new SS: %x\n",t->TSS.ss);
   printf(1,"new CS base: %x\n",t->codeSegmentBase);
- while(1); 
 switchTo(newTSS);
   //asm volatile ("iret\n");
 
