@@ -11,24 +11,26 @@ else
   echo "error: no gcc found"
   exit 1
 fi
-echo -n "checking whether gcc supports -march=i386... "
-if echo |gcc -march=i386 -E - 2> /dev/null > /dev/null; then
+echo -n "checking whether gcc supports -m32... "
+if echo |gcc -m32 -E - 2> /dev/null > /dev/null; then
   echo yes
-  GCC=""
+  GCC="NASM=nasm"
 else
   echo no
-  echo -n "checking for a gcc that is compatible with -march=i386... "
-  if echo|i686-pc-linux-gnu-gcc -march=i386 -E - 2> /dev/null > /dev/null; then
+  echo -n "checking for a gcc that is compatible with -m32... "
+  if echo|i686-pc-linux-gnu-gcc -m32 -E - 2> /dev/null > /dev/null; then
     echo `which i686-pc-linux-gnu-gcc`
     GCC="CC=i686-pc-linux-gnu-gcc\n"
     GCC="${GCC}AS=i686-pc-linux-gnu-as\n"
-    GCC="${GCC}LD=i686-pc-linux-gnu-ld"
+    GCC="${GCC}LD=i686-pc-linux-gnu-ld\n"
+    GCC="${GCC}NASM=nasm"
   else
-    if echo|i586-elf-gcc -march=i386 -E - 2> /dev/null > /dev/null; then
+    if echo|i586-elf-gcc -m32 -E - 2> /dev/null > /dev/null; then
       echo `which i586-elf-gcc`
       GCC="CC=i586-elf-gcc\n"
       GCC="${GCC}AS=i586-elf-as\n"
-      GCC="${GCC}LD=i586-elf-ld"
+      GCC="${GCC}LD=i586-elf-ld\n"
+      GCC="${GCC}NASM=nasm"
     else
       echo "none found"
       echo "error: no compatilbe gcc found, if you have one edit Makefile.in"
@@ -36,6 +38,7 @@ else
       echo "CC=your-gcc"
       echo "AS=your-as"
       echo "LD=your-ld"
+      echo "NASM=your-nasm"
       exit 1
     fi
   fi
