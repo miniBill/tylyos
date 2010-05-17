@@ -78,7 +78,8 @@ void dispatch(int procID)
 
 //verificare se e' giusto
 // t->TSS.eip-=t->codeSegmentBase; 
-  kernelTSS.link=newTSS & 0x0000ffff;
+ // kernelTSS.link=newTSS & 0x0000ffff;
+  t->TSS.link=currentTSS & 0x0000ffff;
     loadTSSregister(currentTSS,CURRENT_TSS_INDEX);
   printf(1,"currentTSS: %x\n",currentTSS);
   printf(1,"newTSS: %x\n",newTSS);
