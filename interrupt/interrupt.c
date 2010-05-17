@@ -73,7 +73,7 @@ void initIdt(void) {
   addIdtSeg(0x80, isr_x80, INTERRUPT_PRESENT, segmentoCodiceKernel);
 
     /*questo e' un test*/
-    addIdtGate(80,INTERRUPT_PRESENT, kernelInterruptTSSselector);
+    addIdtGate(0x80,INTERRUPT_PRESENT, kernelInterruptTSSselector);
 
   idt_pointer.limit = 0xFFFF;
   idt_pointer.base = (unsigned int) & idt;
