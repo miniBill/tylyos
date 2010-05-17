@@ -67,6 +67,8 @@ void initTaskManagement()
     kernelInterruptTSS.cr3= ( unsigned int ) pageDir;
 
     kernelInterruptTSS.eip= (unsigned int) isr_x80;
+
+    TSSset(KERNEL_INTERRUPT_TSS_INDEX,(unsigned int)&kernelInterruptTSS,MEM_TSS|MEM_KERNEL|MEM_PRESENT);   
       
     printf(1,"TASK MANAGEMENT: active\n");
     
