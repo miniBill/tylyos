@@ -120,7 +120,7 @@ loader_returnCode loader_loadElf(char *path,int procId)
     /*setta i selettori di segmento nel TSS*/
     t->TSS.cs=segmentoCodiceUser;/*selettori default per i task, vengono modificati i descrittori prima di ogni switch*/
     t->TSS.ds=segmentoDatiUser; 
-    t->TSS.ss=segmentoCodiceUser;
+    t->TSS.ss=segmentoDatiUser;
     
     t->TSS.ss0=segmentoDatiKernel;/*esp0 usa un indirizzo relativo a questo segmneto*/
     t->TSS.esp0=(unsigned int)stackKernel+KERNEL_STACK_SIZE-1;/*lo stack usato per il codice a ring0, a quanto pare viene resettato ogni volta in quanto mnca ebp0*/

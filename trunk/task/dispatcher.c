@@ -81,8 +81,9 @@ void dispatch(int procID)
   printf(1,"currentTSS: %x\n",currentTSS);
   printf(1,"newTSS: %x\n",newTSS);
   printf(1,"TSS: %x\n",getTSS());
-  printf(1,"new SS: %x\n",t->TSS.ss);
-  printf(1,"new CS base: %x\n",t->codeSegmentBase);
+  printf(1,"new SS: %x\n",t->TSS.ss>>3);
+  printf(1,"new CS: %x\n",t->TSS.cs>>3);
+  printf(1,": %x\n",segmentoDatiUser>>3);
 switchTo(newTSS);
   //asm volatile ("iret\n");
 
