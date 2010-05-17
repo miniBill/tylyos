@@ -75,15 +75,19 @@ void dispatch(int procID)
                   : :"r"(newTSS));*/
   //asm volatile ("jmp *(%0)\n" : :"r"(newTSS));
   //contextSwitch();
-  
+
+//verificare se e' giusto
+// t->TSS.eip-=t->codeSegmentBase; 
   kernelTSS.link=newTSS & 0x0000ffff;
     loadTSSregister(currentTSS,CURRENT_TSS_INDEX);
   printf(1,"currentTSS: %x\n",currentTSS);
   printf(1,"newTSS: %x\n",newTSS);
   printf(1,"TSS: %x\n",getTSS());
-  printf(1,"new SS: %x\n",t->TSS.ss>>3);
-  printf(1,"new CS: %x\n",t->TSS.cs>>3);
-  printf(1,": %x\n",segmentoDatiUser>>3);
+  printf(1,"CS start: %x\n",t->codeSegmentBase);
+  printf(1,"CS limit: %x\n",t->codeSegmentSize);
+  printf(1,"CS limit: %x\n",(t->codeSegmentSize+0x1000) /0x1000);
+  printf(1,"EIP: %x\n",t->TSS.eip);
+  printf(1,"CS: %x\n",t->TSS.cs);
 switchTo(newTSS);
   //asm volatile ("iret\n");
 
