@@ -24,8 +24,10 @@
 
 #define CURRENT_TSS_INDEX 5/*indice della gdt in cui si trova il descrittore*/
 #define NEW_TSS_INDEX 6/*indice della gdt in cui si trova il descrittore*/
+#define KERNEL_INTERRUPT_TSS_INDEX 7
 
-unsigned short currentTSS,newTSS;
+unsigned short currentTSSselector,newTSSselector;
+unsigned short kernelInterruptTSSselector;/*usato per i task gate degli interrupt*/
 
 char stackKernel[KERNEL_STACK_SIZE];/*stack usato per il kernel una volta avviati i task*/
 
@@ -56,7 +58,7 @@ struct tss
     unsigned short      trace, io_map_addr;
 }  __attribute__ ( ( packed ) );
 
-struct tss kernelTSS;
+struct tss kernelTSS,kernelInterruptTSS;
 
 #define MAX_TASK_NAME_LEN 20
 struct taskStruct

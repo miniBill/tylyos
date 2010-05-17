@@ -24,13 +24,14 @@
 #include <kernel/kernel.h>
 #include <task/elf.h>
 #include <task/dispatcher.h>
+#include <interrupt/interrupt.h>
 
 void initTaskManagement()
 {
     taskListRoot=0;
     
-    currentTSS=segmentSelector ( CURRENT_TSS_INDEX,0,RPL_USER );
-    newTSS=segmentSelector ( NEW_TSS_INDEX,0,RPL_USER );
+    currentTSSselector=segmentSelector ( CURRENT_TSS_INDEX,0,RPL_USER );
+    newTSSselector=segmentSelector ( NEW_TSS_INDEX,0,RPL_USER );
     unsigned short tempTSS=segmentSelector ( NEW_TSS_INDEX,0,RPL_KERNEL );
     
     /*prapare un tss temporaneo per il kernel in modo da non creare problemi durante il primo dispatch*/
@@ -41,10 +42,31 @@ void initTaskManagement()
     kernelTSS.fs=segmentoDatiKernel;
     kernelTSS.gs=segmentoDatiKernel;
     
+    /*setta il descrittore in modo da puntare alla struttura del tss temporaneo*/
     TSSset(NEW_TSS_INDEX,(unsigned int)&kernelTSS,MEM_TSS|MEM_KERNEL|MEM_PRESENT);   
     TSSset(CURRENT_TSS_INDEX,(unsigned int)&kernelTSS,MEM_TSS|MEM_KERNEL|MEM_PRESENT);   
      
+    /*carica nel task register il selettore del TSS temporaneo*/
     loadTSSregister(tempTSS,NEW_TSS_INDEX);
+
+
+    /*INIZIA A PREPARARE IL TSS PER GLI INTERRUPT*/
+    /*setta il selettore*/
+    kernelInterruptTSSselector=segmentSelector (  KERNEL_INTERRUPT_TSS_INDEX,0,RPL_KERNEL );
+    
+    kernelInterruptTSS.cs=segmentoCodiceKernel;
+    kernelInterruptTSS.ds=segmentoDatiKernel;
+    kernelInterruptTSS.ss=segmentoDatiKernel;
+    kernelInterruptTSS.es=segmentoDatiKernel;
+    kernelInterruptTSS.fs=segmentoDatiKernel;
+    kernelInterruptTSS.gs=segmentoDatiKernel;
+
+    kernelInterruptTSS.ebp=(unsigned int)kernelStack;
+    kernelInterruptTSS.esp=(unsigned int)kernelStack;
+    
+    kernelInterruptTSS.cr3= ( unsigned int ) pageDir;
+
+    kernelInterruptTSS.eip= (unsigned int) isr_x80;
       
     printf(1,"TASK MANAGEMENT: active\n");
     

@@ -208,6 +208,8 @@ void _kmain(multiboot_info_t* mbd, unsigned int magicN) {
   write(" GDT",0);
   initGdt();
 
+  initTaskManagement();
+
   write(" IDT",0);
   initIdt();
 
@@ -266,7 +268,6 @@ void _kmain(multiboot_info_t* mbd, unsigned int magicN) {
 
   gui_printImageFromFile("/tylyos.bmp",0,0);
   
-  initTaskManagement();
   
   //loader_checkHeader("/hello");
   int idTask=exec("/hello",'3');

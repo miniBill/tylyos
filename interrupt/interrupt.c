@@ -27,6 +27,7 @@
 #include <drivers/timer/timer.h>
 #include <drivers/keyboard/keyboard.h>
 #include <kernel/kernel.h>
+#include <task/dispatcher.h>
 
 int xtemp;
 
@@ -71,6 +72,9 @@ void initIdt(void) {
   addIdtSeg(47, isr_47, INTERRUPT_PRESENT, segmentoCodiceKernel);
   addIdtSeg(0x80, isr_x80, INTERRUPT_PRESENT, segmentoCodiceKernel);
 
+    /*questo e' un test*/
+    addIdtGate(80,INTERRUPT_PRESENT, kernelInterruptTSSselector);
+
   idt_pointer.limit = 0xFFFF;
   idt_pointer.base = (unsigned int) & idt;
 
@@ -80,6 +84,7 @@ void initIdt(void) {
   /*          32   40 */
   irq_remap(0x20, 0x28);
 
+asm("int $0x80");
 }
 
 void clearIdt(void) {
@@ -95,6 +100,16 @@ void addIdtSeg(short int i, void (*gestore)(), unsigned char options, unsigned i
   idt[i].always0 = 0x00;
   idt[i].sel = seg_sel;
   idt[i].flags = options | 0xE; /* 1|110: 32bit|interrupt gate  */
+}
+
+void addIdtGate(short int i, unsigned char options, unsigned int seg_sel)
+ {
+  unsigned int indirizzo = (unsigned int) 0;
+  idt[i].base_hi = indirizzo >> 16;
+  idt[i].base_lo = (indirizzo & 0xFFFF);
+  idt[i].always0 = 0x00;
+  idt[i].sel = seg_sel;
+  idt[i].flags = options | 0xD; /* 1|101: 32bit|task gate  */
 }
 
 void sendICW(int pic_p, int pic_s , int data) {
@@ -174,7 +189,7 @@ void interrupt_handler(
       break;*/
     case 0x80:
         printf(0,"SYSCALL!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n");
-        while(1);
+        //while(1);
       switch(eax&0xFF){
         case 88:
           asm("cli");

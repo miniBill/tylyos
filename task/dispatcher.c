@@ -58,7 +58,7 @@ void dispatch(int procID)
     /*il descrittore selezionato da currentTSS deve essere settato uguale a quello di newTSS*/
     gdt[CURRENT_TSS_INDEX]=gdt[NEW_TSS_INDEX];
     /*il registro che contiene il tss deve essere settato con il selettore currentTSS*/
-    loadTSSregister(currentTSS,CURRENT_TSS_INDEX);
+    loadTSSregister(currentTSSselector,CURRENT_TSS_INDEX);
     /*il descrittore selezionato da newTSS deve essere modificato in modo che punti al tss del nuovo task*/
     TSSset(NEW_TSS_INDEX,(unsigned int)&t->TSS,MEM_TSS|MEM_USER|MEM_PRESENT);
     /*vanno modificati i selettori di segmento selezionati da segmentoDatiUser e segmentoCodiceUser usando base e limit presenti nella struttura del nuovo task*/
@@ -79,17 +79,17 @@ void dispatch(int procID)
 //verificare se e' giusto
 // t->TSS.eip-=t->codeSegmentBase; 
  // kernelTSS.link=newTSS & 0x0000ffff;
-  t->TSS.link=currentTSS & 0x0000ffff;
-    loadTSSregister(currentTSS,CURRENT_TSS_INDEX);
-  printf(1,"currentTSS: %x\n",currentTSS);
-  printf(1,"newTSS: %x\n",newTSS);
+  t->TSS.link=currentTSSselector & 0x0000ffff;
+    loadTSSregister(currentTSSselector,CURRENT_TSS_INDEX);
+  printf(1,"currentTSS: %x\n",currentTSSselector);
+  printf(1,"newTSS: %x\n",newTSSselector);
   printf(1,"TSS: %x\n",getTSS());
   printf(1,"CS start: %x\n",t->codeSegmentBase);
   printf(1,"CS limit: %x\n",t->codeSegmentSize);
   printf(1,"CS limit: %x\n",(t->codeSegmentSize+0x1000) /0x1000);
   printf(1,"EIP: %x\n",t->TSS.eip);
   printf(1,"CS: %x\n",t->TSS.cs);
-switchTo(newTSS);
+switchTo(newTSSselector);
   //asm volatile ("iret\n");
 
    

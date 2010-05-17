@@ -39,6 +39,8 @@ struct idt_ptr
 struct idt_entry idt[256];
 struct idt_ptr idt_pointer;
 
+char kernelStack[0x3000];/*stack usato durante gli interrupt, settato nel tss dei task gate nella idt*/
+
 extern void idt_load ( void );
 
 void initIdt ( void );
