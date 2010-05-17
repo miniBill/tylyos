@@ -60,7 +60,7 @@ void dispatch(int procID)
     /*il registro che contiene il tss deve essere settato con il selettore currentTSS*/
     loadTSSregister(currentTSS,CURRENT_TSS_INDEX);
     /*il descrittore selezionato da newTSS deve essere modificato in modo che punti al tss del nuovo task*/
-    TSSset(NEW_TSS_INDEX,(unsigned int)&t->TSS,MEM_TSS|MEM_KERNEL|MEM_PRESENT);
+    TSSset(NEW_TSS_INDEX,(unsigned int)&t->TSS,MEM_TSS|MEM_USER|MEM_PRESENT);
     /*vanno modificati i selettori di segmento selezionati da segmentoDatiUser e segmentoCodiceUser usando base e limit presenti nella struttura del nuovo task*/
     /*TODO: verificare che limit sia passato in modo corretto alla funzione*/
     /*segmento codice user mode, verranno modificati prima di ogni switch*/
@@ -77,7 +77,7 @@ void dispatch(int procID)
   //contextSwitch();
   
   kernelTSS.link=newTSS & 0x0000ffff;
-    //loadTSSregister(currentTSS,CURRENT_TSS_INDEX);
+    loadTSSregister(currentTSS,CURRENT_TSS_INDEX);
   printf(1,"currentTSS: %x\n",currentTSS);
   printf(1,"newTSS: %x\n",newTSS);
   printf(1,"TSS: %x\n",getTSS());
