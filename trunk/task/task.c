@@ -84,6 +84,7 @@ void initTaskManagement()
 
     TSSset(KERNEL_INTERRUPT_TSS_INDEX,(unsigned int)&kernelInterruptTSS,MEM_TSS|MEM_KERNEL|MEM_PRESENT);   
 
+    /*setta il tss garbage che viene usato in modo temporaneo nelle routine degli interrupt in modo che quelli settati nella idt non vengano modificati*/
     garbageTSSselector=segmentSelector (  GARBAGE_TSS_INDEX,0,RPL_KERNEL );
     TSSset(GARBAGE_TSS_INDEX,(unsigned int)&garbageTSS,MEM_TSS|MEM_KERNEL|MEM_PRESENT);   
       

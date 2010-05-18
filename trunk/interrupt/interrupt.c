@@ -21,6 +21,7 @@
 
 #include "interrupt.h"
 #include <memory/memory.h>
+#include <memory/gdtflags.h>
 #include <lib/string.h>
 #include <kernel/stdio.h>
 #include <drivers/screen/screen.h>
@@ -44,7 +45,7 @@ void initIdt(void) {
   for (c = 0;c < 256;c++)
     addIdtSeg(c, 0, 0, 0);
 
-  /*DA RICONTROLLARE IL SELETTORE DI SEGMENTO!!!!*/
+  /*TODO: eliminare dopo che tutti gli interrupt sono stati passati ai task gate in modo funzionante*/
   addIdtSeg(0, isr_0, INTERRUPT_PRESENT, segmentoCodiceKernel);
   addIdtSeg(1, isr_1, INTERRUPT_PRESENT, segmentoCodiceKernel);
   addIdtSeg(2, isr_2, INTERRUPT_PRESENT, segmentoCodiceKernel);
@@ -65,7 +66,7 @@ void initIdt(void) {
   addIdtSeg(17, isr_17, INTERRUPT_PRESENT, segmentoCodiceKernel);
   addIdtSeg(18, isr_18, INTERRUPT_PRESENT, segmentoCodiceKernel);
   for (c = 32;c < 50;c++)
-    addIdtSeg(c, isr_32, INTERRUPT_PRESENT, segmentoCodiceKernel);
+    addIdtSeg(c, isr_34, INTERRUPT_PRESENT, segmentoCodiceKernel);
   addIdtSeg(32, isr_32, INTERRUPT_PRESENT, segmentoCodiceKernel);
   addIdtSeg(33, isr_33, INTERRUPT_PRESENT, segmentoCodiceKernel);
   addIdtSeg(46, isr_46, INTERRUPT_PRESENT, segmentoCodiceKernel);
@@ -73,8 +74,27 @@ void initIdt(void) {
   addIdtSeg(0x80, isr_x80, INTERRUPT_PRESENT, segmentoCodiceKernel);
 
     /*questo e' un test*/
-   addIdtGate(32,INTERRUPT_PRESENT, kernelInterruptTSSselector);
+   //addIdtGate(32,INTERRUPT_PRESENT, kernelInterruptTSSselector);
 
+
+    /*inizializza i selettori*/
+/*TODO*/
+    isr32TSSselector=segmentSelector (  ISR_TSS_INDEX+32,0,RPL_KERNEL );
+    isr33TSSselector=segmentSelector (  ISR_TSS_INDEX+33,0,RPL_KERNEL );
+    /*inizializza i TSS*/
+/*TODO*/
+    memcpy(&kernelInterruptTSS,sizeof(struct tss),&isr32TSS);
+    isr32TSS.eip=isr_32;
+    memcpy(&kernelInterruptTSS,sizeof(struct tss),&isr33TSS);
+    isr33TSS.eip=isr_33;
+    /*inizializza i descrittori*/
+/*TODO*/
+    TSSset(ISR_TSS_INDEX+32,(unsigned int)&isr32TSS,MEM_TSS|MEM_KERNEL|MEM_PRESENT);   
+    TSSset(ISR_TSS_INDEX+33,(unsigned int)&isr33TSS,MEM_TSS|MEM_KERNEL|MEM_PRESENT);   
+    /*inizializza la IDT*/
+/*TODO*/
+    addIdtGate(32,INTERRUPT_PRESENT, isr32TSSselector);
+    addIdtGate(33,INTERRUPT_PRESENT, isr33TSSselector);
 
   idt_pointer.limit = 0xFFFF;
   idt_pointer.base = (unsigned int) & idt;
@@ -170,14 +190,20 @@ void interrupt_handler(
   int c;
 
 
-
-unsigned short originalSelector;
+  unsigned short originalSelector;
   originalSelector=getTSS();
   struct tss *original=getBaseFromSegmentDescriptor(originalSelector>>3);
+if(original!=&kernelTSS)
+{
   memcpy(original,sizeof(struct tss),&garbageTSS);
   loadTSSregister(garbageTSSselector,GARBAGE_TSS_INDEX);
    gdt[originalSelector>>3].access &= 0xFD;
+}
+else
+{
+printf(2,"QUESTA ISR: %d sta' venendo eseguita nel senza task gate!!!\n",isr);
 
+}
 
   /* codice che interpreta le interruzioni */
   switch (isr) {
@@ -187,6 +213,8 @@ unsigned short originalSelector;
       break;
     case 33:
       keypress();
+      break;
+    case 34:
       break;
     case 46:
     case 47:
