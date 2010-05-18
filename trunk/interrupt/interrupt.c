@@ -73,7 +73,7 @@ void initIdt(void) {
   addIdtSeg(0x80, isr_x80, INTERRUPT_PRESENT, segmentoCodiceKernel);
 
     /*questo e' un test*/
-    addIdtGate(0x80,INTERRUPT_PRESENT, kernelInterruptTSSselector);
+    addIdtGate(32,INTERRUPT_PRESENT, kernelInterruptTSSselector);
 
   idt_pointer.limit = 0xFFFF;
   idt_pointer.base = (unsigned int) & idt;
@@ -84,7 +84,8 @@ void initIdt(void) {
   /*          32   40 */
   irq_remap(0x20, 0x28);
 
-asm("int $0x80");
+asm("int $32");
+while(1);
 }
 
 void clearIdt(void) {
@@ -109,7 +110,7 @@ void addIdtGate(short int i, unsigned char options, unsigned int seg_sel)
   idt[i].base_lo = (indirizzo & 0xFFFF);
   idt[i].always0 = 0x00;
   idt[i].sel = seg_sel;
-  idt[i].flags = options | 0xD; /* 1|101: 32bit|task gate  */
+  idt[i].flags = options | 0x5; /* 1|1|101: system|32bit|task gate  */
 }
 
 void sendICW(int pic_p, int pic_s , int data) {
@@ -214,7 +215,7 @@ void interrupt_handler(
       c = eax ^ ebx ^ ecx ^ edx ^ ebp ^ esi ^ edi ^ ds ^ es ^ fs ^ gs ^ eip ^ cs ^ eflags ^ error ^ xtemp;/*HACK*/
 #endif
       char message[1000];
-      sprintf(message, 1000, "I have recived an interrupt: 0x%x, TSS: %x error coder: 0x%x A:0x%x B:0x%x C:0x%x D:0x%x IP:0x%x", isr,getTSS(),error,eax,ebx,ecx,edx,eip);
+      sprintf(message, 1000, "I have recived an interrupt: 0x%x, TSS: %x error code: 0x%x A:0x%x B:0x%x C:0x%x D:0x%x IP:0x%x", isr,getTSS(),error,eax,ebx,ecx,edx,eip);
       kernelPanic("interrupt_handler()", message);
     }
   /* Send End Of Interrupt to PIC */
