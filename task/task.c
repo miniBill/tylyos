@@ -70,17 +70,22 @@ void initTaskManagement()
     kernelInterruptTSS.ldtr=0;
     kernelInterruptTSS.io_map_addr=0;
 
-    kernelInterruptTSS.ebp=(unsigned int)kernelStack+0x3000;
-    kernelInterruptTSS.esp=(unsigned int)kernelStack+0x3000;
-    kernelInterruptTSS.esp0=(unsigned int)kernelStack+0x3000;
-    kernelInterruptTSS.esp1=(unsigned int)kernelStack+0x3000;
-    kernelInterruptTSS.esp2=(unsigned int)kernelStack+0x3000;
+    kernelInterruptTSS.ebp=(unsigned int)kernelStack+0x9000;
+    kernelInterruptTSS.esp=(unsigned int)kernelStack+0x9000;
+    kernelInterruptTSS.esp0=(unsigned int)kernelStack+0x9000;
+    kernelInterruptTSS.esp1=(unsigned int)kernelStack+0x9000;
+    kernelInterruptTSS.esp2=(unsigned int)kernelStack+0x9000;
     
     kernelInterruptTSS.cr3= ( unsigned int ) pageDir;
 
     kernelInterruptTSS.eip= (unsigned int) isr_32;
 
+    kernelInterruptTSS.link= 0x0000ffff & tempTSS;
+
     TSSset(KERNEL_INTERRUPT_TSS_INDEX,(unsigned int)&kernelInterruptTSS,MEM_TSS|MEM_KERNEL|MEM_PRESENT);   
+
+    garbageTSSselector=segmentSelector (  GARBAGE_TSS_INDEX,0,RPL_KERNEL );
+    TSSset(GARBAGE_TSS_INDEX,(unsigned int)&garbageTSS,MEM_TSS|MEM_KERNEL|MEM_PRESENT);   
       
     printf(1,"TASK MANAGEMENT: active\n");
     

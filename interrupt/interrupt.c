@@ -73,7 +73,8 @@ void initIdt(void) {
   addIdtSeg(0x80, isr_x80, INTERRUPT_PRESENT, segmentoCodiceKernel);
 
     /*questo e' un test*/
-    addIdtGate(32,INTERRUPT_PRESENT, kernelInterruptTSSselector);
+   addIdtGate(32,INTERRUPT_PRESENT, kernelInterruptTSSselector);
+
 
   idt_pointer.limit = 0xFFFF;
   idt_pointer.base = (unsigned int) & idt;
@@ -85,7 +86,7 @@ void initIdt(void) {
   irq_remap(0x20, 0x28);
 
 asm("int $32");
-while(1);
+
 }
 
 void clearIdt(void) {
@@ -167,6 +168,17 @@ void interrupt_handler(
   unsigned int error, unsigned int eip, unsigned int cs,
   unsigned int eflags, ...) {
   int c;
+
+
+
+unsigned short originalSelector;
+  originalSelector=getTSS();
+  struct tss *original=getBaseFromSegmentDescriptor(originalSelector>>3);
+  memcpy(original,sizeof(struct tss),&garbageTSS);
+  loadTSSregister(garbageTSSselector,GARBAGE_TSS_INDEX);
+   gdt[originalSelector>>3].access &= 0xFD;
+
+
   /* codice che interpreta le interruzioni */
   switch (isr) {
     case 32:
@@ -189,7 +201,7 @@ void interrupt_handler(
       printf(0,"Ten");
       break;*/
     case 0x80:
-        printf(0,"SYSCALL!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n");
+        printf(0,"\n\nSYSCALL!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n");
         //while(1);
       switch(eax&0xFF){
         case 88:
@@ -221,6 +233,12 @@ void interrupt_handler(
   /* Send End Of Interrupt to PIC */
   if (isr > 7) outb(0xA0, 0x20);
   outb(0x20, 0x20);
+
+
+
+  
+  
+
 }
 
 char getDiskInterruptState(unsigned int disk) {

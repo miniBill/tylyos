@@ -166,6 +166,8 @@ void _kmain(multiboot_info_t* mbd, unsigned int magicN) {
 
   loadedModuleSize=0;
 
+  pageDir=&l_pageDir;/*legge il parametro passato dal linker*/
+
   kernel_end=(unsigned int)&l_end;/*NON togliere da qui'!!!*/
   tempPage=(char*)&l_tempPage;
 
@@ -212,6 +214,7 @@ void _kmain(multiboot_info_t* mbd, unsigned int magicN) {
 
   write(" IDT",0);
   initIdt();
+
 
   write(" PIT\n",0);
   initTimer();
@@ -278,6 +281,8 @@ void _kmain(multiboot_info_t* mbd, unsigned int magicN) {
   "0123456789:;<=>?@\n"
   "ABCDEFGHIJKLMNOPQRSTUVWXYZ\n"
   "[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~\n");
+
+
 
   t=3;
   while(1){
