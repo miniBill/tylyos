@@ -26,8 +26,8 @@
 /*funzione per caricare nel task register il selettore del tss, il parametro i specifica l'indice della gdt*/
 void loadTSSregister(short unsigned int selector,unsigned int i)/*TODO: sarebbe meglio ricavare i dal selettore*/
 {
-    asm volatile ("ltr %0\n" : :"r"(selector));
     gdt[i].access &= 0xFD;/*azzera il fottuto flag BUSY, i manuali intel non specificano che ltr lo setta senza dire niente*/
+    asm volatile ("ltr %0\n" : :"r"(selector));
 }
 
 unsigned int getTSS()
@@ -89,8 +89,9 @@ void dispatch(int procID)
   printf(1,"CS limit: %x\n",(t->codeSegmentSize+0x1000) /0x1000);
   printf(1,"EIP: %x\n",t->TSS.eip);
   printf(1,"CS: %x\n",t->TSS.cs);
-switchTo(newTSSselector);
-  //asm volatile ("iret\n");
+
+//switchTo(newTSSselector);
+  
 
    
 }

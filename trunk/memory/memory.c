@@ -86,6 +86,13 @@ void gdtSet ( int num, unsigned long base, unsigned long limit, unsigned char gr
     gdt[num].access = access;
 }
 
+unsigned int getBaseFromSegmentDescriptor(unsigned int gdtI)
+{
+    unsigned int ret;
+    ret = ( gdt[gdtI].baseLow & 0xFFFF ) | ((gdt[gdtI].baseMiddle & 0xFF)<<16) | ((gdt[gdtI].baseHigh & 0xFF)<<24);
+    return ret;
+}
+
 /*inizializza i segmenti di default*/
 void initGdt()
 {

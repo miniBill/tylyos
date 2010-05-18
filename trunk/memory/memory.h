@@ -31,6 +31,8 @@ unsigned int getESP();
 /*setta una riga della GDT (descrittore di segmento)*/
 void gdtSet ( int num, unsigned long base, unsigned long limit, unsigned char gran, unsigned char access );
 
+unsigned int getBaseFromSegmentDescriptor(unsigned int gdtI);
+
 /*ritorna un selettore di segmento assemblato usando i dati passati*/
 unsigned short segmentSelector ( unsigned int index,char tableIndicator,char RPL );
 

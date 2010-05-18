@@ -39,7 +39,7 @@ struct idt_ptr
 struct idt_entry idt[256];
 struct idt_ptr idt_pointer;
 
-char kernelStack[0x3000];/*stack usato durante gli interrupt, settato nel tss dei task gate nella idt*/
+char kernelStack[0x9000];/*stack usato durante gli interrupt, settato nel tss dei task gate nella idt*/
 
 extern void idt_load ( void );
 
@@ -92,5 +92,9 @@ extern void isr_33 ( void );
 extern void isr_46 ( void );
 extern void isr_47 ( void );
 extern void isr_x80 ( void );
+
+/*tss e selettore usato per impedire a lret degli interrupt di modificare il tss originale
+viene infatti settato prima del return al task in modo da subire le modifiche al posto del tss originale*/
+struct tss garbageTSS;unsigned short garbageTSSselector;
 
 #endif
