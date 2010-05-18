@@ -89,6 +89,7 @@ extern void isr_17 ( void );
 extern void isr_18 ( void );
 extern void isr_32 ( void );
 extern void isr_33 ( void );
+extern void isr_34 ( void );
 extern void isr_46 ( void );
 extern void isr_47 ( void );
 extern void isr_x80 ( void );
@@ -96,5 +97,29 @@ extern void isr_x80 ( void );
 /*tss e selettore usato per impedire a lret degli interrupt di modificare il tss originale
 viene infatti settato prima del return al task in modo da subire le modifiche al posto del tss originale*/
 struct tss garbageTSS;unsigned short garbageTSSselector;
+
+unsigned short isr0TSSselector; struct tss isr0TSS;
+unsigned short isr1TSSselector; struct tss isr1TSS;
+unsigned short isr2TSSselector; struct tss isr2TSS;
+unsigned short isr3TSSselector; struct tss isr3TSS;
+unsigned short isr4TSSselector; struct tss isr4TSS;
+unsigned short isr5TSSselector; struct tss isr5TSS;
+unsigned short isr6TSSselector; struct tss isr6TSS;
+unsigned short isr7TSSselector; struct tss isr7TSS;
+unsigned short isr8TSSselector; struct tss isr8TSS;
+unsigned short isr9TSSselector; struct tss isr9TSS;
+unsigned short isr10TSSselector; struct tss isr10TSS;
+unsigned short isr11TSSselector; struct tss isr11TSS;
+unsigned short isr12TSSselector; struct tss isr12TSS;
+unsigned short isr13TSSselector; struct tss isr13TSS;
+unsigned short isr14TSSselector; struct tss isr14TSS;
+unsigned short isr15TSSselector; struct tss isr15TSS;
+unsigned short isr16TSSselector; struct tss isr16TSS;
+unsigned short isr17TSSselector; struct tss isr17TSS;
+unsigned short isr18TSSselector; struct tss isr18TSS;
+
+unsigned short isr32TSSselector; struct tss isr32TSS;
+unsigned short isr33TSSselector; struct tss isr33TSS;
+unsigned short isr34TSSselector; struct tss isr34TSS;
 
 #endif

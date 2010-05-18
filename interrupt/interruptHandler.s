@@ -22,6 +22,7 @@
 
 .globl isr_32
 .globl isr_33
+.globl isr_34
 .globl isr_46
 .globl isr_47
 
@@ -147,6 +148,12 @@ isr_33:         # IRQ 1: tastiera
     cli
     push $0     # Codice di errore fittizio.
     push $33     # Numero di procedura ISR.
+    jmp isr_common
+
+isr_34:         # IRQ :generico
+    cli
+    push $0     # Codice di errore fittizio.
+    push $34     # Numero di procedura ISR.
     jmp isr_common
 
 isr_46:         # IRQ 14: canale IDE primario 

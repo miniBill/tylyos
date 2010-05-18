@@ -26,6 +26,7 @@
 #define NEW_TSS_INDEX 6/*indice della gdt in cui si trova il descrittore*/
 #define KERNEL_INTERRUPT_TSS_INDEX 7/*TODO: eliminare dalla gdt in quanto non è vitale*/
 #define GARBAGE_TSS_INDEX 8
+#define ISR_TSS_INDEX 10/*indice di partenza dei tss delle isr, da quì in poi non usare gli indici*/
 
 unsigned short currentTSSselector,newTSSselector;
 unsigned short kernelInterruptTSSselector;/*usato per i task gate degli interrupt*/
