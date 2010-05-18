@@ -41,6 +41,9 @@ void initTaskManagement()
     kernelTSS.es=segmentoDatiKernel;
     kernelTSS.fs=segmentoDatiKernel;
     kernelTSS.gs=segmentoDatiKernel;
+    kernelTSS.ldtr=0;
+    kernelTSS.io_map_addr=0;
+    kernelTSS.cr3= ( unsigned int ) pageDir;
     
     /*setta il descrittore in modo da puntare alla struttura del tss temporaneo*/
     TSSset(NEW_TSS_INDEX,(unsigned int)&kernelTSS,MEM_TSS|MEM_KERNEL|MEM_PRESENT);   
@@ -57,16 +60,25 @@ void initTaskManagement()
     kernelInterruptTSS.cs=segmentoCodiceKernel;
     kernelInterruptTSS.ds=segmentoDatiKernel;
     kernelInterruptTSS.ss=segmentoDatiKernel;
+    kernelInterruptTSS.ss0=segmentoDatiKernel;
+    kernelInterruptTSS.ss1=segmentoDatiKernel;
+    kernelInterruptTSS.ss2=segmentoDatiKernel;
     kernelInterruptTSS.es=segmentoDatiKernel;
     kernelInterruptTSS.fs=segmentoDatiKernel;
     kernelInterruptTSS.gs=segmentoDatiKernel;
 
-    kernelInterruptTSS.ebp=(unsigned int)kernelStack;
-    kernelInterruptTSS.esp=(unsigned int)kernelStack;
+    kernelInterruptTSS.ldtr=0;
+    kernelInterruptTSS.io_map_addr=0;
+
+    kernelInterruptTSS.ebp=(unsigned int)kernelStack+0x3000;
+    kernelInterruptTSS.esp=(unsigned int)kernelStack+0x3000;
+    kernelInterruptTSS.esp0=(unsigned int)kernelStack+0x3000;
+    kernelInterruptTSS.esp1=(unsigned int)kernelStack+0x3000;
+    kernelInterruptTSS.esp2=(unsigned int)kernelStack+0x3000;
     
     kernelInterruptTSS.cr3= ( unsigned int ) pageDir;
 
-    kernelInterruptTSS.eip= (unsigned int) isr_x80;
+    kernelInterruptTSS.eip= (unsigned int) isr_32;
 
     TSSset(KERNEL_INTERRUPT_TSS_INDEX,(unsigned int)&kernelInterruptTSS,MEM_TSS|MEM_KERNEL|MEM_PRESENT);   
       
@@ -151,7 +163,7 @@ int addTask ( char nome[MAX_TASK_NAME_LEN],char privilegi )
     newTask->TSS.__ss2h=0;/*sempre a 0*/
 
     /*selettori stack*/
-    newTask->TSS.ss0=segmentoDatiKernel;
+    newTask->TSS.ss0=segmentoDatiUser;
     newTask->TSS.ss1=segmentoDatiUser;
     newTask->TSS.ss2=segmentoDatiUser;
 
