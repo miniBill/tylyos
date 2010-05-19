@@ -33,6 +33,7 @@ void initTaskManagement()
     currentTSSselector=segmentSelector ( CURRENT_TSS_INDEX,0,RPL_USER );
     newTSSselector=segmentSelector ( NEW_TSS_INDEX,0,RPL_USER );
     unsigned short tempTSS=segmentSelector ( NEW_TSS_INDEX,0,RPL_KERNEL );
+    newTSSselector=tempTSS;
     
     /*prapare un tss temporaneo per il kernel in modo da non creare problemi durante il primo dispatch*/
     kernelTSS.cs=segmentoCodiceKernel;
@@ -456,7 +457,7 @@ void memcpyToTask( char * source, unsigned int count, char * dest, unsigned int 
         }
         unsigned int fisicAddr= pg->indirizzoFis;
         /*prepara la pagina temporanea*/
-        printf(1,"    indirizzo fisico: 0x%x -> 0x%x\n",fisicAddr,startMem);
+        printf(1,"    indirizzo fisico: 0x%x -> 0x%x\n",fisicAddr,startMem-user_start);
         setPageSelector ( tempTableI, tempPageI,fisicAddr,flags );
         invalidateLookasideBuffer();
         /*scrivi i dati*/

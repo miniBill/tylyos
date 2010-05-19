@@ -168,8 +168,8 @@ loader_returnCode loader_loadElf(char *path,int procId)
             {
                 /*loadable segment*/
                 /*mappa l'area nel processo e copia i dati dentro*/
-                allocMemory(procId,header2[c].p_vaddr,header2[c].p_memsz);
-                memcpyToTask(&buffer[header2[c].p_offset],header2[c].p_filesz,(char*)header2[c].p_vaddr,procId);  
+                allocMemory(procId,header2[c].p_vaddr+user_start,header2[c].p_memsz);
+                memcpyToTask(&buffer[header2[c].p_offset],header2[c].p_filesz,(char*)header2[c].p_vaddr+user_start,procId);  
                 
 
                 
