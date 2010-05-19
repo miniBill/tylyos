@@ -111,57 +111,57 @@ void initIdt(void) {
     /*inizializza i TSS*/
 /*TODO*/
     isr0TSS=kernelInterruptTSS;
-    isr0TSS.eip=isr_0;
+    isr0TSS.eip=(unsigned int)isr_0;
     isr1TSS=kernelInterruptTSS;
-    isr1TSS.eip=isr_1;
+    isr1TSS.eip=(unsigned int)isr_1;
     isr2TSS=kernelInterruptTSS;
-    isr2TSS.eip=isr_2;
+    isr2TSS.eip=(unsigned int)isr_2;
     isr3TSS=kernelInterruptTSS;
-    isr3TSS.eip=isr_3;
+    isr3TSS.eip=(unsigned int)isr_3;
     isr4TSS=kernelInterruptTSS;
-    isr4TSS.eip=isr_4;
+    isr4TSS.eip=(unsigned int)isr_4;
     isr5TSS=kernelInterruptTSS;
-    isr5TSS.eip=isr_5;
+    isr5TSS.eip=(unsigned int)isr_5;
     isr6TSS=kernelInterruptTSS;
-    isr6TSS.eip=isr_6;
+    isr6TSS.eip=(unsigned int)isr_6;
     isr7TSS=kernelInterruptTSS;
-    isr7TSS.eip=isr_7;
+    isr7TSS.eip=(unsigned int)isr_7;
     isr8TSS=kernelInterruptTSS;
-    isr8TSS.eip=isr_8;
+    isr8TSS.eip=(unsigned int)isr_8;
     isr9TSS=kernelInterruptTSS;
-    isr9TSS.eip=isr_9;
+    isr9TSS.eip=(unsigned int)isr_9;
     isr10TSS=kernelInterruptTSS;
-    isr10TSS.eip=isr_10;
+    isr10TSS.eip=(unsigned int)isr_10;
     isr11TSS=kernelInterruptTSS;
-    isr11TSS.eip=isr_11;
+    isr11TSS.eip=(unsigned int)isr_11;
     isr12TSS=kernelInterruptTSS;
-    isr12TSS.eip=isr_12;
+    isr12TSS.eip=(unsigned int)isr_12;
     isr13TSS=kernelInterruptTSS;
-    isr13TSS.eip=isr_13;
+    isr13TSS.eip=(unsigned int)isr_13;
     isr14TSS=kernelInterruptTSS;
-    isr14TSS.eip=isr_14;
+    isr14TSS.eip=(unsigned int)isr_14;
     isr15TSS=kernelInterruptTSS;
-    isr15TSS.eip=isr_15;
+    isr15TSS.eip=(unsigned int)isr_15;
     isr16TSS=kernelInterruptTSS;
-    isr16TSS.eip=isr_16;
+    isr16TSS.eip=(unsigned int)isr_16;
     isr17TSS=kernelInterruptTSS;
-    isr17TSS.eip=isr_17;
+    isr17TSS.eip=(unsigned int)isr_17;
     isr18TSS=kernelInterruptTSS;
-    isr18TSS.eip=isr_18;
+    isr18TSS.eip=(unsigned int)isr_18;
     isr32TSS=kernelInterruptTSS;
-    isr32TSS.eip=isr_32;
+    isr32TSS.eip=(unsigned int)isr_32;
     isr33TSS=kernelInterruptTSS;
-    isr33TSS.eip=isr_33;
+    isr33TSS.eip=(unsigned int)isr_33;
 
     isr34TSS=kernelInterruptTSS;
-    isr34TSS.eip=isr_34;
+    isr34TSS.eip=(unsigned int)isr_34;
 
     isr46TSS=kernelInterruptTSS;
-    isr46TSS.eip=isr_46;
+    isr46TSS.eip=(unsigned int)isr_46;
     isr47TSS=kernelInterruptTSS;
-    isr47TSS.eip=isr_47;
+    isr47TSS.eip=(unsigned int)isr_47;
     isrx80TSS=kernelInterruptTSS;
-    isrx80TSS.eip=isr_x80;
+    isrx80TSS.eip=(unsigned int)isr_x80;
     /*inizializza i descrittori*/
 /*TODO*/
 
@@ -320,10 +320,10 @@ void interrupt_handler(
 
   unsigned short originalSelector;
   originalSelector=getTSS();
-  struct tss *original=getBaseFromSegmentDescriptor(originalSelector>>3);
+  struct tss *original=(struct tss*)getBaseFromSegmentDescriptor(originalSelector>>3);
 if(original!=&kernelTSS)
 {
-  memcpy(original,sizeof(struct tss),&garbageTSS);
+  garbageTSS=*original;
   loadTSSregister(garbageTSSselector,GARBAGE_TSS_INDEX);
    gdt[originalSelector>>3].access &= 0xFD;
 }

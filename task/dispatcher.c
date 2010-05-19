@@ -43,7 +43,8 @@ void switchTo(unsigned int selector)
 
     sel[1] = selector;
 
-    asm ("lcall %0": :"m" (*sel));
+    //asm ("lcall %0": :"m" (*sel));
+    asm ("lcall *%0": :"m" (*sel));
 /* task/dispatcher.c: Assembler messages:
 task/dispatcher.c:46: Warning: indirect lcall without `*' */
 }
@@ -90,7 +91,7 @@ void dispatch(int procID)
   printf(1,"EIP: %x\n",t->TSS.eip);
   printf(1,"CS: %x\n",t->TSS.cs);
 
-//switchTo(newTSSselector);
+switchTo(newTSSselector);
   
 
    
