@@ -384,7 +384,10 @@ printf(2,"QUESTA ISR: %d sta' venendo eseguita nel senza task gate!!!\n",isr);
       c = eax ^ ebx ^ ecx ^ edx ^ ebp ^ esi ^ edi ^ ds ^ es ^ fs ^ gs ^ eip ^ cs ^ eflags ^ error ^ xtemp;/*HACK*/
 #endif
       char message[1000];
-      sprintf(message, 1000, "I have recived an interrupt: 0x%x, TSS: %x error code: 0x%x A:0x%x B:0x%x C:0x%x D:0x%x IP:0x%x", isr,getTSS(),error,eax,ebx,ecx,edx,eip);
+
+    struct tss *taskTSSt=(struct tss*)getBaseFromSegmentDescriptor(newTSSselector>>3);
+
+      sprintf(message, 1000, "I have recived an interrupt: 0x%x, task eip: %x error code: 0x%x A:0x%x B:0x%x C:0x%x D:0x%x IP:0x%x", isr,taskTSSt->eip,error,eax,ebx,ecx,edx,eip);
       kernelPanic("interrupt_handler()", message);
     }
   /* Send End Of Interrupt to PIC */
