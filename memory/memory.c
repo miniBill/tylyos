@@ -160,7 +160,7 @@ void initPaging ( void )
 {
     unsigned int pointer,fisicPointer;
     int pageIndex,pageTableIndex;
-    char flags=PAG_PRESENT|PAG_READWRITE|PAG_SUPERVISOR|PAG_4KPAGE;
+    char flags=PAG_PRESENT|PAG_READWRITE|PAG_USER|PAG_4KPAGE;
     asm ( "cli" );
     
     pageDir=&l_pageDir;/*legge il parametro passato dal linker*/
