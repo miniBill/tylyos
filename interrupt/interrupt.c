@@ -46,6 +46,7 @@ void initIdt(void) {
     addIdtSeg(c, 0, 0, 0);
 
   /*TODO: eliminare dopo che tutti gli interrupt sono stati passati ai task gate in modo funzionante*/
+/*
   addIdtSeg(0, isr_0, INTERRUPT_PRESENT, segmentoCodiceKernel);
   addIdtSeg(1, isr_1, INTERRUPT_PRESENT, segmentoCodiceKernel);
   addIdtSeg(2, isr_2, INTERRUPT_PRESENT, segmentoCodiceKernel);
@@ -65,36 +66,163 @@ void initIdt(void) {
   addIdtSeg(16, isr_16, INTERRUPT_PRESENT, segmentoCodiceKernel);
   addIdtSeg(17, isr_17, INTERRUPT_PRESENT, segmentoCodiceKernel);
   addIdtSeg(18, isr_18, INTERRUPT_PRESENT, segmentoCodiceKernel);
-  for (c = 32;c < 50;c++)
+  for (c = 34;c < 50;c++)
     addIdtSeg(c, isr_34, INTERRUPT_PRESENT, segmentoCodiceKernel);
   addIdtSeg(32, isr_32, INTERRUPT_PRESENT, segmentoCodiceKernel);
   addIdtSeg(33, isr_33, INTERRUPT_PRESENT, segmentoCodiceKernel);
+
   addIdtSeg(46, isr_46, INTERRUPT_PRESENT, segmentoCodiceKernel);
   addIdtSeg(47, isr_47, INTERRUPT_PRESENT, segmentoCodiceKernel);
   addIdtSeg(0x80, isr_x80, INTERRUPT_PRESENT, segmentoCodiceKernel);
-
+*/
     /*questo e' un test*/
    //addIdtGate(32,INTERRUPT_PRESENT, kernelInterruptTSSselector);
 
 
     /*inizializza i selettori*/
 /*TODO*/
+    isr0TSSselector=segmentSelector (  ISR_TSS_INDEX+0,0,RPL_KERNEL );
+    isr1TSSselector=segmentSelector (  ISR_TSS_INDEX+1,0,RPL_KERNEL );
+    isr2TSSselector=segmentSelector (  ISR_TSS_INDEX+2,0,RPL_KERNEL );
+    isr3TSSselector=segmentSelector (  ISR_TSS_INDEX+3,0,RPL_KERNEL );
+    isr4TSSselector=segmentSelector (  ISR_TSS_INDEX+4,0,RPL_KERNEL );
+    isr5TSSselector=segmentSelector (  ISR_TSS_INDEX+5,0,RPL_KERNEL );
+    isr6TSSselector=segmentSelector (  ISR_TSS_INDEX+6,0,RPL_KERNEL );
+    isr7TSSselector=segmentSelector (  ISR_TSS_INDEX+7,0,RPL_KERNEL );
+    isr8TSSselector=segmentSelector (  ISR_TSS_INDEX+8,0,RPL_KERNEL );
+    isr9TSSselector=segmentSelector (  ISR_TSS_INDEX+9,0,RPL_KERNEL );
+    isr10TSSselector=segmentSelector (  ISR_TSS_INDEX+10,0,RPL_KERNEL );
+    isr11TSSselector=segmentSelector (  ISR_TSS_INDEX+11,0,RPL_KERNEL );
+    isr12TSSselector=segmentSelector (  ISR_TSS_INDEX+12,0,RPL_KERNEL );
+    isr13TSSselector=segmentSelector (  ISR_TSS_INDEX+13,0,RPL_KERNEL );
+    isr14TSSselector=segmentSelector (  ISR_TSS_INDEX+14,0,RPL_KERNEL );
+    isr15TSSselector=segmentSelector (  ISR_TSS_INDEX+15,0,RPL_KERNEL );
+    isr16TSSselector=segmentSelector (  ISR_TSS_INDEX+16,0,RPL_KERNEL );
+    isr17TSSselector=segmentSelector (  ISR_TSS_INDEX+17,0,RPL_KERNEL );
+    isr18TSSselector=segmentSelector (  ISR_TSS_INDEX+18,0,RPL_KERNEL );
     isr32TSSselector=segmentSelector (  ISR_TSS_INDEX+32,0,RPL_KERNEL );
     isr33TSSselector=segmentSelector (  ISR_TSS_INDEX+33,0,RPL_KERNEL );
+
+    isr34TSSselector=segmentSelector (  ISR_TSS_INDEX+34,0,RPL_KERNEL );
+
+    isr46TSSselector=segmentSelector (  ISR_TSS_INDEX+46,0,RPL_KERNEL );
+    isr47TSSselector=segmentSelector (  ISR_TSS_INDEX+47,0,RPL_KERNEL );
+    isrx80TSSselector=segmentSelector (  ISR_TSS_INDEX+0x80,0,RPL_KERNEL );
     /*inizializza i TSS*/
 /*TODO*/
-    memcpy(&kernelInterruptTSS,sizeof(struct tss),&isr32TSS);
+    isr0TSS=kernelInterruptTSS;
+    isr0TSS.eip=isr_0;
+    isr1TSS=kernelInterruptTSS;
+    isr1TSS.eip=isr_1;
+    isr2TSS=kernelInterruptTSS;
+    isr2TSS.eip=isr_2;
+    isr3TSS=kernelInterruptTSS;
+    isr3TSS.eip=isr_3;
+    isr4TSS=kernelInterruptTSS;
+    isr4TSS.eip=isr_4;
+    isr5TSS=kernelInterruptTSS;
+    isr5TSS.eip=isr_5;
+    isr6TSS=kernelInterruptTSS;
+    isr6TSS.eip=isr_6;
+    isr7TSS=kernelInterruptTSS;
+    isr7TSS.eip=isr_7;
+    isr8TSS=kernelInterruptTSS;
+    isr8TSS.eip=isr_8;
+    isr9TSS=kernelInterruptTSS;
+    isr9TSS.eip=isr_9;
+    isr10TSS=kernelInterruptTSS;
+    isr10TSS.eip=isr_10;
+    isr11TSS=kernelInterruptTSS;
+    isr11TSS.eip=isr_11;
+    isr12TSS=kernelInterruptTSS;
+    isr12TSS.eip=isr_12;
+    isr13TSS=kernelInterruptTSS;
+    isr13TSS.eip=isr_13;
+    isr14TSS=kernelInterruptTSS;
+    isr14TSS.eip=isr_14;
+    isr15TSS=kernelInterruptTSS;
+    isr15TSS.eip=isr_15;
+    isr16TSS=kernelInterruptTSS;
+    isr16TSS.eip=isr_16;
+    isr17TSS=kernelInterruptTSS;
+    isr17TSS.eip=isr_17;
+    isr18TSS=kernelInterruptTSS;
+    isr18TSS.eip=isr_18;
+    isr32TSS=kernelInterruptTSS;
     isr32TSS.eip=isr_32;
-    memcpy(&kernelInterruptTSS,sizeof(struct tss),&isr33TSS);
+    isr33TSS=kernelInterruptTSS;
     isr33TSS.eip=isr_33;
+
+    isr34TSS=kernelInterruptTSS;
+    isr34TSS.eip=isr_34;
+
+    isr46TSS=kernelInterruptTSS;
+    isr46TSS.eip=isr_46;
+    isr47TSS=kernelInterruptTSS;
+    isr47TSS.eip=isr_47;
+    isrx80TSS=kernelInterruptTSS;
+    isrx80TSS.eip=isr_x80;
     /*inizializza i descrittori*/
 /*TODO*/
+
+    TSSset(ISR_TSS_INDEX+0,(unsigned int)&isr0TSS,MEM_TSS|MEM_KERNEL|MEM_PRESENT);   
+    TSSset(ISR_TSS_INDEX+1,(unsigned int)&isr1TSS,MEM_TSS|MEM_KERNEL|MEM_PRESENT);   
+    TSSset(ISR_TSS_INDEX+2,(unsigned int)&isr2TSS,MEM_TSS|MEM_KERNEL|MEM_PRESENT);   
+    TSSset(ISR_TSS_INDEX+3,(unsigned int)&isr3TSS,MEM_TSS|MEM_KERNEL|MEM_PRESENT);   
+    TSSset(ISR_TSS_INDEX+4,(unsigned int)&isr4TSS,MEM_TSS|MEM_KERNEL|MEM_PRESENT);   
+    TSSset(ISR_TSS_INDEX+5,(unsigned int)&isr5TSS,MEM_TSS|MEM_KERNEL|MEM_PRESENT);   
+    TSSset(ISR_TSS_INDEX+6,(unsigned int)&isr6TSS,MEM_TSS|MEM_KERNEL|MEM_PRESENT);   
+    TSSset(ISR_TSS_INDEX+7,(unsigned int)&isr7TSS,MEM_TSS|MEM_KERNEL|MEM_PRESENT);   
+    TSSset(ISR_TSS_INDEX+8,(unsigned int)&isr8TSS,MEM_TSS|MEM_KERNEL|MEM_PRESENT);   
+    TSSset(ISR_TSS_INDEX+9,(unsigned int)&isr9TSS,MEM_TSS|MEM_KERNEL|MEM_PRESENT);   
+    TSSset(ISR_TSS_INDEX+10,(unsigned int)&isr10TSS,MEM_TSS|MEM_KERNEL|MEM_PRESENT);   
+    TSSset(ISR_TSS_INDEX+11,(unsigned int)&isr11TSS,MEM_TSS|MEM_KERNEL|MEM_PRESENT);   
+    TSSset(ISR_TSS_INDEX+12,(unsigned int)&isr12TSS,MEM_TSS|MEM_KERNEL|MEM_PRESENT);   
+    TSSset(ISR_TSS_INDEX+13,(unsigned int)&isr13TSS,MEM_TSS|MEM_KERNEL|MEM_PRESENT);   
+    TSSset(ISR_TSS_INDEX+14,(unsigned int)&isr14TSS,MEM_TSS|MEM_KERNEL|MEM_PRESENT);   
+    TSSset(ISR_TSS_INDEX+15,(unsigned int)&isr15TSS,MEM_TSS|MEM_KERNEL|MEM_PRESENT);   
+    TSSset(ISR_TSS_INDEX+16,(unsigned int)&isr16TSS,MEM_TSS|MEM_KERNEL|MEM_PRESENT);   
+    TSSset(ISR_TSS_INDEX+17,(unsigned int)&isr17TSS,MEM_TSS|MEM_KERNEL|MEM_PRESENT);   
+    TSSset(ISR_TSS_INDEX+18,(unsigned int)&isr18TSS,MEM_TSS|MEM_KERNEL|MEM_PRESENT);   
+
     TSSset(ISR_TSS_INDEX+32,(unsigned int)&isr32TSS,MEM_TSS|MEM_KERNEL|MEM_PRESENT);   
     TSSset(ISR_TSS_INDEX+33,(unsigned int)&isr33TSS,MEM_TSS|MEM_KERNEL|MEM_PRESENT);   
+
+    TSSset(ISR_TSS_INDEX+34,(unsigned int)&isr34TSS,MEM_TSS|MEM_KERNEL|MEM_PRESENT);   
+
+    TSSset(ISR_TSS_INDEX+46,(unsigned int)&isr46TSS,MEM_TSS|MEM_KERNEL|MEM_PRESENT);   
+    TSSset(ISR_TSS_INDEX+47,(unsigned int)&isr47TSS,MEM_TSS|MEM_KERNEL|MEM_PRESENT);   
+    TSSset(ISR_TSS_INDEX+0x80,(unsigned int)&isrx80TSS,MEM_TSS|MEM_KERNEL|MEM_PRESENT);   
+
     /*inizializza la IDT*/
 /*TODO*/
+    addIdtGate(0,INTERRUPT_PRESENT, isr0TSSselector);
+    addIdtGate(1,INTERRUPT_PRESENT, isr1TSSselector);
+    addIdtGate(2,INTERRUPT_PRESENT, isr2TSSselector);
+    addIdtGate(3,INTERRUPT_PRESENT, isr3TSSselector);
+    addIdtGate(4,INTERRUPT_PRESENT, isr4TSSselector);
+    addIdtGate(5,INTERRUPT_PRESENT, isr5TSSselector);
+    addIdtGate(6,INTERRUPT_PRESENT, isr6TSSselector);
+    addIdtGate(7,INTERRUPT_PRESENT, isr7TSSselector);
+    addIdtGate(8,INTERRUPT_PRESENT, isr8TSSselector);
+    addIdtGate(9,INTERRUPT_PRESENT, isr9TSSselector);
+    addIdtGate(10,INTERRUPT_PRESENT, isr10TSSselector);
+    addIdtGate(11,INTERRUPT_PRESENT, isr11TSSselector);
+    addIdtGate(12,INTERRUPT_PRESENT, isr12TSSselector);
+    addIdtGate(13,INTERRUPT_PRESENT, isr13TSSselector);
+    addIdtGate(14,INTERRUPT_PRESENT, isr14TSSselector);
+    addIdtGate(15,INTERRUPT_PRESENT, isr15TSSselector);
+    addIdtGate(16,INTERRUPT_PRESENT, isr16TSSselector);
+    addIdtGate(17,INTERRUPT_PRESENT, isr17TSSselector);
+    addIdtGate(18,INTERRUPT_PRESENT, isr18TSSselector);
     addIdtGate(32,INTERRUPT_PRESENT, isr32TSSselector);
     addIdtGate(33,INTERRUPT_PRESENT, isr33TSSselector);
+    for (c = 34;c < 50;c++)
+        addIdtGate(c,INTERRUPT_PRESENT, isr34TSSselector);
+
+    addIdtGate(46,INTERRUPT_PRESENT, isr46TSSselector);
+    addIdtGate(47,INTERRUPT_PRESENT, isr47TSSselector);
+    addIdtGate(0x80,INTERRUPT_PRESENT, isrx80TSSselector);
 
   idt_pointer.limit = 0xFFFF;
   idt_pointer.base = (unsigned int) & idt;
