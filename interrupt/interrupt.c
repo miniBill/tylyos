@@ -326,6 +326,7 @@ if(original!=&kernelTSS)
   garbageTSS=*original;
   loadTSSregister(garbageTSSselector,GARBAGE_TSS_INDEX);
    gdt[originalSelector>>3].access &= 0xFD;
+  garbageTSS.link=newTSSselector;
 }
 else
 {
@@ -358,7 +359,7 @@ printf(2,"QUESTA ISR: %d sta' venendo eseguita nel senza task gate!!!\n",isr);
       break;*/
     case 0x80:
         printf(0,"\n\nSYSCALL!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n");
-        //while(1);
+        while(1);
       switch(eax&0xFF){
         case 88:
           asm("cli");

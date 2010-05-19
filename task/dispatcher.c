@@ -44,6 +44,7 @@ void switchTo(unsigned int selector)
     sel[1] = selector;
 
     //asm ("lcall %0": :"m" (*sel));
+    asm ("sti");
     asm ("lcall *%0": :"m" (*sel));
 /* task/dispatcher.c: Assembler messages:
 task/dispatcher.c:46: Warning: indirect lcall without `*' */
@@ -52,6 +53,10 @@ task/dispatcher.c:46: Warning: indirect lcall without `*' */
 
 void dispatch(int procID)
 {
+asm("cli");
+    currentTSSselector=segmentSelector ( CURRENT_TSS_INDEX,0,RPL_USER );
+    newTSSselector=segmentSelector ( NEW_TSS_INDEX,0,RPL_USER );
+
     struct taskStruct *t;
     t=getTask(procID);
     /*prepara i dati del task in modo che siano mappati in meoria*/
@@ -65,9 +70,9 @@ void dispatch(int procID)
     /*vanno modificati i selettori di segmento selezionati da segmentoDatiUser e segmentoCodiceUser usando base e limit presenti nella struttura del nuovo task*/
     /*TODO: verificare che limit sia passato in modo corretto alla funzione*/
     /*segmento codice user mode, verranno modificati prima di ogni switch*/
-    gdtSet ( 3, t->codeSegmentBase, (t->codeSegmentSize+0x1000) /0x1000,MEM_GRANULAR|MEM_32, MEM_PRESENT|MEM_CODE_DATA|MEM_RW|MEM_USER|MEM_CODE );
+    //gdtSet ( 3, t->codeSegmentBase, (t->codeSegmentSize+0x1000) /0x1000,MEM_GRANULAR|MEM_32, MEM_PRESENT|MEM_CODE_DATA|MEM_RW|MEM_USER|MEM_CODE );
     /*segmento dati user mode*/
-    gdtSet ( 4, t->dataSegmentBase, (t->dataSegmentSize+0x1000) /0x1000,MEM_GRANULAR|MEM_32, MEM_PRESENT|MEM_CODE_DATA|MEM_RW|MEM_USER|MEM_DATA );
+    //gdtSet ( 4, t->dataSegmentBase, (t->dataSegmentSize+0x1000) /0x1000,MEM_GRANULAR|MEM_32, MEM_PRESENT|MEM_CODE_DATA|MEM_RW|MEM_USER|MEM_DATA );
     /*TODO: JMP riferendosi al TSS del nuovo task per mandare in esecuzione*/
 
  /*  asm volatile ("push %0 ;\n \
@@ -82,15 +87,10 @@ void dispatch(int procID)
  // kernelTSS.link=newTSS & 0x0000ffff;
   t->TSS.link=currentTSSselector & 0x0000ffff;
     loadTSSregister(currentTSSselector,CURRENT_TSS_INDEX);
-  printf(1,"currentTSS: %x\n",currentTSSselector);
-  printf(1,"newTSS: %x\n",newTSSselector);
-  printf(1,"TSS: %x\n",getTSS());
-  printf(1,"CS start: %x\n",t->codeSegmentBase);
-  printf(1,"CS limit: %x\n",t->codeSegmentSize);
-  printf(1,"CS limit: %x\n",(t->codeSegmentSize+0x1000) /0x1000);
+  printf(1,"CS image start: %x\n",t->codeSegmentBase);
+  printf(1,"CS image limit: %x\n",t->codeSegmentSize);
   printf(1,"EIP: %x\n",t->TSS.eip);
   printf(1,"CS: %x\n",t->TSS.cs);
-
 switchTo(newTSSselector);
   
 
@@ -111,7 +111,7 @@ void dispatcher_mapPages(struct taskStruct *t)
             if(currentPage->indirizzoLog == virtualAddr)
             {
                 /*setta la pagina e scorri la lista avanti*/
-                printf(1,"pagina settata 0x%x\n",virtualAddr);
+                printf(1,"pagina settata (task addr space: 0x%x)\n",virtualAddr-user_start);
                 setPageSelector ( getTableFromVirtualAdress(virtualAddr), getPageFromVirtualAdress(virtualAddr),currentPage->indirizzoFis,flags );
                 currentPage=currentPage->next;
             }
