@@ -47,6 +47,7 @@ void initIdt ( void );
 void clearIdt ( void );
 
 void addIdtSeg ( short int i, void ( *gestore ) (), unsigned char options, unsigned int seg_sel );
+void addIdtGate(short int i, unsigned char options, unsigned int seg_sel);
 
 /*
  * ritorna 1 se è stato generato un interrupt dal disco specificato, successivamente azzera lo stato
