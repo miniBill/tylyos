@@ -211,9 +211,10 @@ void _kmain(multiboot_info_t* mbd, unsigned int magicN) {
   initGdt();
 
   initTaskManagement();
-
+printf(0,"\nback: %x",gui_background);
   write(" IDT",0);
   initIdt();
+printf(0,"\nback: %x",gui_background);
 
 
   write(" PIT\n",0);

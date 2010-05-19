@@ -122,4 +122,9 @@ unsigned short isr32TSSselector; struct tss isr32TSS;
 unsigned short isr33TSSselector; struct tss isr33TSS;
 unsigned short isr34TSSselector; struct tss isr34TSS;
 
+unsigned short isr46TSSselector; struct tss isr46TSS;
+unsigned short isr47TSSselector; struct tss isr47TSS;
+unsigned short isrx80TSSselector; struct tss isrx80TSS;
+
+
 #endif
