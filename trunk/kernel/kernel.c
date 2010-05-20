@@ -211,10 +211,8 @@ void _kmain(multiboot_info_t* mbd, unsigned int magicN) {
   initGdt();
 
   initTaskManagement();
-printf(0,"\nback: %x",gui_background);
   write(" IDT",0);
   initIdt();
-printf(0,"\nback: %x",gui_background);
 
 
   write(" PIT\n",0);
@@ -274,7 +272,7 @@ printf(0,"\nback: %x",gui_background);
   
   
   //loader_checkHeader("/hello");
-  int idTask=exec("/hello",'3');
+  int idTask=exec("/hello",'5');
   printf(1,"nuovo task inizializzato, id: %d\n",idTask);
   dispatch(idTask);
 

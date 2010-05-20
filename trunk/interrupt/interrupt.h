@@ -20,6 +20,7 @@
 #define INTERRUPT_H_
 
 #define INTERRUPT_PRESENT 0x80
+#define INTERRUPT_DPL_USER 0x60
 
 struct idt_entry
 {
