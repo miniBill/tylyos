@@ -86,6 +86,7 @@ asm("cli");
 // t->TSS.eip-=t->codeSegmentBase; 
  // kernelTSS.link=newTSS & 0x0000ffff;
   t->TSS.link=kernelInterruptTSSselector & 0x0000ffff;
+  t->TSS.eflags|=1<<9;
     loadTSSregister(currentTSSselector,CURRENT_TSS_INDEX);
   printf(1,"CS image start: %x\n",t->codeSegmentBase);
   printf(1,"CS image limit: %x\n",t->codeSegmentSize);
