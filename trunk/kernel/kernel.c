@@ -303,9 +303,11 @@ void _kmain(multiboot_info_t* mbd, unsigned int magicN) {
 void kernelPanic(char *sender, char *message) {
   asm("cli");
   //set_physical_color(Yellow | Back_Red);
+  gui_background=(char)0xE0;
+  VGA_clear_screen();
   clear_physical();
   goto_current_xy(0,3);
-  write_current("RED SCREEN OF DOOM");
+  write_current("                      RED SCREEN OF DOOM");
   goto_current_xy(0, 7);
   write_current("Dear user,\n");
   write_current("I am very sorry I haven't written for so long. ");
