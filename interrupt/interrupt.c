@@ -359,7 +359,7 @@ printf(2,"QUESTA ISR: %d sta' venendo eseguita nel senza task gate!!!\n",isr);
       break;*/
     case 0x80:
         printf(0,"\n\nSYSCALL!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n");
-        while(1);
+ //       while(1);
       switch(eax&0xFF){
         case 88:
           asm("cli");
