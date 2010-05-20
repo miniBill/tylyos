@@ -79,11 +79,12 @@ void initTaskManagement()
     
     kernelInterruptTSS.cr3= ( unsigned int ) pageDir;
 
-    kernelInterruptTSS.eip= (unsigned int) isr_32;
+    kernelInterruptTSS.eip= (unsigned int) isr_x80;
 
     kernelInterruptTSS.link= 0x0000ffff & tempTSS;
 
     TSSset(KERNEL_INTERRUPT_TSS_INDEX,(unsigned int)&kernelInterruptTSS,MEM_TSS|MEM_KERNEL|MEM_PRESENT);   
+    gdt[KERNEL_INTERRUPT_TSS_INDEX].access &= 0x2;
 
     /*setta il tss garbage che viene usato in modo temporaneo nelle routine degli interrupt in modo che quelli settati nella idt non vengano modificati*/
     garbageTSSselector=segmentSelector (  GARBAGE_TSS_INDEX,0,RPL_KERNEL );
