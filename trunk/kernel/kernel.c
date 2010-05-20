@@ -271,8 +271,8 @@ void _kmain(multiboot_info_t* mbd, unsigned int magicN) {
   gui_printImageFromFile("/tylyos.bmp",0,0);
   
   
-  //loader_checkHeader("/hello");
-  int idTask=exec("/hello",'5');
+  //loader_checkHeader("/ottanta");
+  int idTask=exec("/ottanta",'5');
   printf(1,"nuovo task inizializzato, id: %d\n",idTask);
   dispatch(idTask);
 

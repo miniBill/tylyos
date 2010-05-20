@@ -168,7 +168,7 @@ loader_returnCode loader_loadElf(char *path,int procId)
             {
                 /*loadable segment*/
                 /*mappa l'area nel processo e copia i dati dentro*/
-                allocMemory(procId,header2[c].p_vaddr+user_start,header2[c].p_memsz);
+                allocMemory(procId,header2[c].p_vaddr+user_start,header2[c].p_memsz+TASK_STACK_SIZE);
                 memcpyToTask(&buffer[header2[c].p_offset],header2[c].p_filesz,(char*)header2[c].p_vaddr+user_start,procId);  
                 
 
@@ -191,6 +191,10 @@ loader_returnCode loader_loadElf(char *path,int procId)
                     t->codeSegmentBase=header2[c].p_vaddr;
                     t->codeSegmentSize=header2[c].p_memsz;
                 }
+
+                    /*HACK!!!! a qunto pare non tutti i fottuti elf hanno il segmento dati*/
+                   t->TSS.esp=header2[c].p_vaddr+TASK_STACK_SIZE-1;
+                    t->TSS.ebp=header2[c].p_vaddr+TASK_STACK_SIZE-1;
               
             }
             else if(header2[c].p_type==PT_NULL)

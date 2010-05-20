@@ -107,7 +107,7 @@ void initIdt(void) {
 
     isr46TSSselector=segmentSelector (  ISR_TSS_INDEX+46,0,RPL_KERNEL );
     isr47TSSselector=segmentSelector (  ISR_TSS_INDEX+47,0,RPL_KERNEL );
-    isrx80TSSselector=segmentSelector (  ISR_TSS_INDEX+0x80,0,RPL_USER );
+    isrx80TSSselector=segmentSelector (  ISR_TSS_INDEX+0x80,0,RPL_KERNEL );
     /*inizializza i TSS*/
 /*TODO*/
     isr0TSS=kernelInterruptTSS;
@@ -215,8 +215,8 @@ void initIdt(void) {
     addIdtGate(16,INTERRUPT_PRESENT, isr16TSSselector);
     addIdtGate(17,INTERRUPT_PRESENT, isr17TSSselector);
     addIdtGate(18,INTERRUPT_PRESENT, isr18TSSselector);
-    addIdtGate(32,INTERRUPT_PRESENT, isr32TSSselector);
-    addIdtGate(33,INTERRUPT_PRESENT, isr33TSSselector);
+    addIdtGate(32,INTERRUPT_PRESENT|INTERRUPT_DPL_USER, isr32TSSselector);
+    addIdtGate(33,INTERRUPT_PRESENT|INTERRUPT_DPL_USER, isr33TSSselector);
     for (c = 34;c < 50;c++)
         addIdtGate(c,INTERRUPT_PRESENT, isr34TSSselector);
 
@@ -360,6 +360,7 @@ printf(2,"QUESTA ISR: %d sta' venendo eseguita nel senza task gate!!!\n",isr);
     case 0x80:
         printf(0,"\n\nSYSCALL!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n");
  //       while(1);
+break;
       switch(eax&0xFF){
         case 88:
           asm("cli");
