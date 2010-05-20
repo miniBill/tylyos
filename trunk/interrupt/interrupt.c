@@ -317,6 +317,7 @@ void interrupt_handler(
   unsigned int eflags, ...) {
   int c;
 
+  struct tss *currentTaskTSS=(struct tss*)getBaseFromSegmentDescriptor(newTSSselector>>3);
 
   unsigned short originalSelector;
   originalSelector=getTSS();
@@ -360,15 +361,14 @@ printf(2,"QUESTA ISR: %d sta' venendo eseguita nel senza task gate!!!\n",isr);
     case 0x80:
         printf(0,"\n\nSYSCALL!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n");
  //       while(1);
-break;
-      switch(eax&0xFF){
+      switch(currentTaskTSS->eax&0xFF){
         case 88:
           asm("cli");
           clearIdt();
           asm("int $1");
           break;
         case 250:
-          printf(0, "Write interrupt: [[%s]]" , (char*)ebx);
+          printf(0, "TASK MESSAGE: %s" , (char*)user_start+currentTaskTSS->ebx);
           break;
       }
       break;
