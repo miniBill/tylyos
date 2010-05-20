@@ -107,7 +107,7 @@ void initIdt(void) {
 
     isr46TSSselector=segmentSelector (  ISR_TSS_INDEX+46,0,RPL_KERNEL );
     isr47TSSselector=segmentSelector (  ISR_TSS_INDEX+47,0,RPL_KERNEL );
-    isrx80TSSselector=segmentSelector (  ISR_TSS_INDEX+0x80,0,RPL_KERNEL );
+    isrx80TSSselector=segmentSelector (  ISR_TSS_INDEX+0x80,0,RPL_USER );
     /*inizializza i TSS*/
 /*TODO*/
     isr0TSS=kernelInterruptTSS;
@@ -222,7 +222,7 @@ void initIdt(void) {
 
     addIdtGate(46,INTERRUPT_PRESENT, isr46TSSselector);
     addIdtGate(47,INTERRUPT_PRESENT, isr47TSSselector);
-    addIdtGate(0x80,INTERRUPT_PRESENT, isrx80TSSselector);
+    addIdtGate(0x80,INTERRUPT_PRESENT|INTERRUPT_DPL_USER, isrx80TSSselector);
 
   idt_pointer.limit = 0xFFFF;
   idt_pointer.base = (unsigned int) & idt;
@@ -233,7 +233,7 @@ void initIdt(void) {
   /*          32   40 */
   irq_remap(0x20, 0x28);
 
-asm("int $32");
+//asm("int $0x80");
 
 }
 
