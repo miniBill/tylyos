@@ -29,6 +29,7 @@
 #include <drivers/keyboard/keyboard.h>
 #include <kernel/kernel.h>
 #include <task/dispatcher.h>
+#include <task/scheduler.h>
 
 int xtemp;
 
@@ -340,6 +341,7 @@ printf(2,"QUESTA ISR: %d sta' venendo eseguita nel senza task gate!!!\n",isr);
     case 32:
       /*timer*/
       tick();
+      schedule();
       break;
     case 33:
       keypress();

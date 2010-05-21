@@ -37,6 +37,7 @@
 #include <task/dispatcher.h>
 #include <task/elf.h>
 #include <task/task.h>
+#include <task/scheduler.h>
 
 static int magicNumber = 0;
 
@@ -274,6 +275,10 @@ void _kmain(multiboot_info_t* mbd, unsigned int magicN) {
   //loader_checkHeader("/ottanta");
   int idTask=exec("/ottanta",'5');
   printf(1,"nuovo task inizializzato, id: %d\n",idTask);
+
+  initScheduler();
+  startScheduler();
+
   dispatch(idTask);
 
   printf(0,"!\"#$%%&'()*+,-./\n"

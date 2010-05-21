@@ -45,7 +45,7 @@ void switchTo(unsigned int selector)
 
     //asm ("lcall %0": :"m" (*sel));
     /*ribilita gli interrupt*/
-    asm ("sti");
+    //asm ("sti");
     /*esegue lo switch*/
     asm ("lcall *%0": :"m" (*sel));
 }
@@ -61,6 +61,8 @@ asm("cli");
 
     struct taskStruct *t;
     t=getTask(procID);
+    if(t==0)
+        kernelPanic("dispatch","il task non esiste"); 
     /*mappa in memoria le pagine del task preparando il contesto*/
     dispatcher_mapPages(t);
     /*il task corrente viene passato da newTSS a currentTSS in modo da liberare newTSS per il caricamento del nuovo,questo dovrebbe servire soltanto al primo switch visto che poi ogni interrupt ha il suo tss, in ogni caso TODO:verificare se si puo' semplificare il procedimento*/
