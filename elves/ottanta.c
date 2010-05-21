@@ -1,6 +1,8 @@
 #include <kernel/syscall.h>
 
 int main(){
-    syscallzero(80);
+  char test[]={'T','e','s','t','\n',0};
+while(1)
+  syswrite(test);
     return 0;
 }

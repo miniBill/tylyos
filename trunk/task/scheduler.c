@@ -53,9 +53,9 @@ void schedule()
     if(time()-lastSchedule>=scheduleTimeSlice)
     {
         printf(0,"<scheduler in action>\n");
+        lastSchedule=time();
         dispatch(0);
         /*TODO: scrivere codice che sceglie il task e lo manda in esecuzione*/
-        lastSchedule=time();
     }
 }
 /*

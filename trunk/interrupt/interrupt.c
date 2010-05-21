@@ -341,6 +341,9 @@ printf(2,"QUESTA ISR: %d sta' venendo eseguita nel senza task gate!!!\n",isr);
     case 32:
       /*timer*/
       tick();
+  /* Send End Of Interrupt to PIC */
+  if (isr > 7) outb(0xA0, 0x20);
+  outb(0x20, 0x20);
       schedule();
       break;
     case 33:

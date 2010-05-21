@@ -30,7 +30,6 @@ void initTaskManagement()
 {
     taskListRoot=0;
     
-    currentTSSselector=segmentSelector ( CURRENT_TSS_INDEX,0,RPL_USER );
     newTSSselector=segmentSelector ( NEW_TSS_INDEX,0,RPL_USER );
     unsigned short tempTSS=segmentSelector ( NEW_TSS_INDEX,0,RPL_KERNEL );
     newTSSselector=tempTSS;
@@ -48,7 +47,6 @@ void initTaskManagement()
     
     /*setta il descrittore in modo da puntare alla struttura del tss temporaneo*/
     TSSset(NEW_TSS_INDEX,(unsigned int)&kernelTSS,MEM_TSS|MEM_KERNEL|MEM_PRESENT);   
-    TSSset(CURRENT_TSS_INDEX,(unsigned int)&kernelTSS,MEM_TSS|MEM_KERNEL|MEM_PRESENT);   
      
     /*carica nel task register il selettore del TSS temporaneo*/
     loadTSSregister(tempTSS,NEW_TSS_INDEX);

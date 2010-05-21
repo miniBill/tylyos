@@ -16,6 +16,7 @@
 # along with TylyOS.  If not, see <http://www.gnu.org/licenses/>.
 
 CFLAGS:= -march=i386 -ffreestanding -Wall -pedantic -Wextra -I ../trunk -fno-stack-protector -std=gnu99 -nostdlib
+td=gnu99 -g
 ASFLAGS:= -march=i386
 
 MK=Makefile.in
@@ -23,7 +24,7 @@ MK=Makefile.in
 -include Makefile.in
 
 ottanta:ottanta.o
-	$(CC) -ffreestanding -nostdlib -melf_i386 -T linker.ld -o $@ $^
+	$(CC)  -m32 -ffreestanding -Wall -pedantic -Wextra -I. -fno-stack-protector -std=gnu99 -g -ffreestanding -nostdlib -melf_i386 -T linker.ld -o $@ $^
 	strip $@
 
 newhello:newhello.c
