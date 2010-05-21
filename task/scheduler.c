@@ -22,6 +22,7 @@
 void initScheduler()
 {
     scheduleTimeSlice=500;
+    activeScheduler=0;
 }
 
 /*setta ogni quanti millisecondi viene eseguito l' algoritmo di scheduling*/
@@ -33,17 +34,25 @@ void setSchedulerTimeSlice(unsigned int ms)
 /*abilita lo scheduler*/
 void startScheduler()
 {
+    activeScheduler=1; 
 }
 
 /*disabilita lo scheduling dei task*/
 void stopScheduler()
 {
+    activeScheduler=0; 
 }
 
 /*funzione che sceglie il task da mandare in esecuzione e che lo manda in esecuzione usando il dispatcher*/
-void schedule();
+void schedule()
+{
+    if(activeScheduler==0)
+        return;
+}
 /*
 funzioneche viene richimata quando nessun task ha niente da fare
 dovra' mandare in esecuzione un task dedicato alla gestione dei tempi morti
 */
-void idle();
+void idle()
+{
+}

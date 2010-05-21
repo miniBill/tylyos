@@ -44,50 +44,37 @@ void switchTo(unsigned int selector)
     sel[1] = selector;
 
     //asm ("lcall %0": :"m" (*sel));
+    /*ribilita gli interrupt*/
     asm ("sti");
+    /*esegue lo switch*/
     asm ("lcall *%0": :"m" (*sel));
-/* task/dispatcher.c: Assembler messages:
-task/dispatcher.c:46: Warning: indirect lcall without `*' */
 }
 
 
 void dispatch(int procID)
 {
+/*disabilita gli interrupt, le isr altrimenti danno errore per via dei cambi che questa funzione fa sui selettori dei tss*/
 asm("cli");
+    /*risetta per sicurezza i selettori dei tss*/
     currentTSSselector=segmentSelector ( CURRENT_TSS_INDEX,0,RPL_USER );
     newTSSselector=segmentSelector ( NEW_TSS_INDEX,0,RPL_USER );
 
     struct taskStruct *t;
     t=getTask(procID);
-    /*prepara i dati del task in modo che siano mappati in meoria*/
+    /*mappa in memoria le pagine del task preparando il contesto*/
     dispatcher_mapPages(t);
+    /*il task corrente viene passato da newTSS a currentTSS in modo da liberare newTSS per il caricamento del nuovo,questo dovrebbe servire soltanto al primo switch visto che poi ogni interrupt ha il suo tss, in ogni caso TODO:verificare se si puo' semplificare il procedimento*/
     /*il descrittore selezionato da currentTSS deve essere settato uguale a quello di newTSS*/
     gdt[CURRENT_TSS_INDEX]=gdt[NEW_TSS_INDEX];
     /*il registro che contiene il tss deve essere settato con il selettore currentTSS*/
     loadTSSregister(currentTSSselector,CURRENT_TSS_INDEX);
     /*il descrittore selezionato da newTSS deve essere modificato in modo che punti al tss del nuovo task*/
     TSSset(NEW_TSS_INDEX,(unsigned int)&t->TSS,MEM_TSS|MEM_USER|MEM_PRESENT);
-    /*vanno modificati i selettori di segmento selezionati da segmentoDatiUser e segmentoCodiceUser usando base e limit presenti nella struttura del nuovo task*/
-    /*TODO: verificare che limit sia passato in modo corretto alla funzione*/
-    /*segmento codice user mode, verranno modificati prima di ogni switch*/
-    //gdtSet ( 3, t->codeSegmentBase, (t->codeSegmentSize+0x1000) /0x1000,MEM_GRANULAR|MEM_32, MEM_PRESENT|MEM_CODE_DATA|MEM_RW|MEM_USER|MEM_CODE );
-    /*segmento dati user mode*/
-    //gdtSet ( 4, t->dataSegmentBase, (t->dataSegmentSize+0x1000) /0x1000,MEM_GRANULAR|MEM_32, MEM_PRESENT|MEM_CODE_DATA|MEM_RW|MEM_USER|MEM_DATA );
-    /*TODO: JMP riferendosi al TSS del nuovo task per mandare in esecuzione*/
 
- /*  asm volatile ("push %0 ;\n \
-                   push $0;\n \
-                   retf" 
-                  : :"r"(newTSS));*/
-  //asm volatile ("jmp *(%0)\n" : :"r"(newTSS));
-  //contextSwitch();
-
-//verificare se e' giusto
-// t->TSS.eip-=t->codeSegmentBase; 
- // kernelTSS.link=newTSS & 0x0000ffff;
   t->TSS.link=kernelInterruptTSSselector & 0x0000ffff;
+  /*abilita gli interrupt nel contesto del task*/
   t->TSS.eflags|=1<<9;
-    loadTSSregister(currentTSSselector,CURRENT_TSS_INDEX);
+  loadTSSregister(currentTSSselector,CURRENT_TSS_INDEX);
   printf(1,"CS image start: %x\n",t->codeSegmentBase);
   printf(1,"CS image limit: %x\n",t->codeSegmentSize);
   printf(1,"EIP: %x\n",t->TSS.eip);
