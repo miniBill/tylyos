@@ -18,11 +18,13 @@
 
 #include "scheduler.h"
 #include <task/dispatcher.h>
+#include <drivers/timer/timer.h>
 
 void initScheduler()
 {
-    scheduleTimeSlice=500;
+    scheduleTimeSlice=5000;
     activeScheduler=0;
+    lastSchedule=0;
 }
 
 /*setta ogni quanti millisecondi viene eseguito l' algoritmo di scheduling*/
@@ -48,6 +50,13 @@ void schedule()
 {
     if(activeScheduler==0)
         return;
+    if(time()-lastSchedule>=scheduleTimeSlice)
+    {
+        printf(0,"<scheduler in action>\n");
+        dispatch(0);
+        /*TODO: scrivere codice che sceglie il task e lo manda in esecuzione*/
+        lastSchedule=time();
+    }
 }
 /*
 funzioneche viene richimata quando nessun task ha niente da fare

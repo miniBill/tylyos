@@ -20,6 +20,7 @@
 #define SCHEDULER_H
 
 unsigned int scheduleTimeSlice;
+unsigned long int lastSchedule;
 char activeScheduler;
 /*inizializza le strutture che servono allo cheduler per funzionare*/
 void initScheduler();
