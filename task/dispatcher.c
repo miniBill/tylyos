@@ -51,12 +51,14 @@ void switchTo(unsigned int selector)
 }
 
 
+
+
+
 void dispatch(int procID)
 {
 /*disabilita gli interrupt, le isr altrimenti danno errore per via dei cambi che questa funzione fa sui selettori dei tss*/
 asm("cli");
     /*risetta per sicurezza i selettori dei tss*/
-    currentTSSselector=segmentSelector ( CURRENT_TSS_INDEX,0,RPL_USER );
     newTSSselector=segmentSelector ( NEW_TSS_INDEX,0,RPL_USER );
 
     struct taskStruct *t;
@@ -65,26 +67,15 @@ asm("cli");
         kernelPanic("dispatch","il task non esiste"); 
     /*mappa in memoria le pagine del task preparando il contesto*/
     dispatcher_mapPages(t);
-    /*il task corrente viene passato da newTSS a currentTSS in modo da liberare newTSS per il caricamento del nuovo,questo dovrebbe servire soltanto al primo switch visto che poi ogni interrupt ha il suo tss, in ogni caso TODO:verificare se si puo' semplificare il procedimento*/
-    /*il descrittore selezionato da currentTSS deve essere settato uguale a quello di newTSS*/
-    gdt[CURRENT_TSS_INDEX]=gdt[NEW_TSS_INDEX];
-    /*il registro che contiene il tss deve essere settato con il selettore currentTSS*/
-    loadTSSregister(currentTSSselector,CURRENT_TSS_INDEX);
     /*il descrittore selezionato da newTSS deve essere modificato in modo che punti al tss del nuovo task*/
     TSSset(NEW_TSS_INDEX,(unsigned int)&t->TSS,MEM_TSS|MEM_USER|MEM_PRESENT);
 
   t->TSS.link=kernelInterruptTSSselector & 0x0000ffff;
   /*abilita gli interrupt nel contesto del task*/
   t->TSS.eflags|=1<<9;
-  loadTSSregister(currentTSSselector,CURRENT_TSS_INDEX);
-  printf(1,"CS image start: %x\n",t->codeSegmentBase);
-  printf(1,"CS image limit: %x\n",t->codeSegmentSize);
-  printf(1,"EIP: %x\n",t->TSS.eip);
-  printf(1,"CS: %x\n",t->TSS.cs);
 switchTo(newTSSselector);
   
 
-   
 }
 
 /*funzione che mappa in memoria le pagine del task*/
