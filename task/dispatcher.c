@@ -73,6 +73,9 @@ asm("cli");
   t->TSS.link=kernelInterruptTSSselector & 0x0000ffff;
   /*abilita gli interrupt nel contesto del task*/
   t->TSS.eflags|=1<<9;
+
+    t->lastScheduledTime=time();
+
 switchTo(newTSSselector);
   
 

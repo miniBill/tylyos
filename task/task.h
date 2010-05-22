@@ -70,6 +70,7 @@ struct taskStruct
     char stato;
     char nome[MAX_TASK_NAME_LEN];
     char privilegi;
+    unsigned long int lastScheduledTime;
     /*segnento codice*/
     unsigned int codeSegmentBase;
     unsigned int codeSegmentSize;

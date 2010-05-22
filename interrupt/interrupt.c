@@ -364,8 +364,6 @@ printf(2,"QUESTA ISR: %d sta' venendo eseguita nel senza task gate!!!\n",isr);
       printf(0,"Ten");
       break;*/
     case 0x80:
-        printf(0,"\n\nSYSCALL!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n");
- //       while(1);
       switch(currentTaskTSS->eax&0xFF){
         case 88:
           asm("cli");
@@ -373,7 +371,7 @@ printf(2,"QUESTA ISR: %d sta' venendo eseguita nel senza task gate!!!\n",isr);
           asm("int $1");
           break;
         case 250:
-          printf(0, "TASK MESSAGE: %s" , (char*)user_start+currentTaskTSS->ebx);
+          printf(0,(char*)user_start+currentTaskTSS->ebx);
           break;
       }
       break;

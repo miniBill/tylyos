@@ -52,10 +52,27 @@ void schedule()
         return;
     if(time()-lastSchedule>=scheduleTimeSlice)
     {
-        printf(0,"<scheduler in action>\n");
         lastSchedule=time();
-        dispatch(0);
-        /*TODO: scrivere codice che sceglie il task e lo manda in esecuzione*/
+        unsigned int id;
+        struct taskListElement *pointer=taskListRoot;
+
+        if ( pointer!=0 )
+        {
+            unsigned long int min=pointer->task->lastScheduledTime;
+            id=pointer->task->procID;
+            do
+            {
+                if ( pointer->task->lastScheduledTime<min )
+                {
+                    min=pointer->task->lastScheduledTime;
+                    id=pointer->task->procID;
+                }
+                pointer=pointer->next;
+            }
+            while ( pointer!=0 );
+        }
+        printf(1,"<scheduler in action> %s\n",getTask(id)->nome);
+        dispatch(id);
     }
 }
 /*

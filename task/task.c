@@ -115,7 +115,16 @@ void TSSset ( int num, unsigned int base, unsigned char access )
 int exec(char *path,char privilegi)
 {
     struct taskStruct *newTask;
-    int taskId=addTask("test",privilegi);
+
+/*TODO: fare una funzione che prende il nome del file da un path*/
+    char nome[MAX_TASK_NAME_LEN];
+    unsigned int i=0;
+    for(unsigned int c=0;c<strlen(path);c++)
+        if(path[c]=='/')
+            i++;
+    split(path,nome,MAX_TASK_NAME_LEN,'/',i);
+
+    int taskId=addTask(nome,privilegi);
     newTask=getTask(taskId);
     printf(1,"caricamento elf...\n");
     /*parsa l'ELF e carica in memoria i vari segmenti*/
@@ -143,6 +152,7 @@ int addTask ( char nome[MAX_TASK_NAME_LEN],char privilegi )
     newListElement->task=newTask;
     newListElement->next=0;
 
+    newTask->lastScheduledTime=0;
 
     newTask->listaPagine=0;
     newTask->procID=getNewProcID();
