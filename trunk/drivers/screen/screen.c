@@ -66,7 +66,7 @@ static inline unsigned char convert(unsigned char color){
   }
 }
 
-static inline void update(void) {
+inline void update(void) {
   for (int ty = 0;ty < ROWS - 1;ty++)
     for (int tx = 0;tx < COLUMNS;tx++)
       if(!vga_mode){

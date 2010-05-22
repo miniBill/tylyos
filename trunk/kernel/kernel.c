@@ -276,6 +276,8 @@ void _kmain(multiboot_info_t* mbd, unsigned int magicN) {
   int idTask=exec("/ottanta",'5');
   printf(1,"nuovo task inizializzato, id: %d\n",idTask);
 
+exec("/hello",'5');
+
   initScheduler();
   startScheduler();
 

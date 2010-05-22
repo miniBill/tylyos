@@ -27,8 +27,9 @@ ottanta:ottanta.o
 	$(CC)  -m32 -ffreestanding -Wall -pedantic -Wextra -I. -fno-stack-protector -std=gnu99 -g -ffreestanding -nostdlib -melf_i386 -T linker.ld -o $@ $^
 	strip $@
 
-newhello:newhello.c
-	$(CC) -march=i386 -Wall -pedantic -Wextra -fno-stack-protector -fno-ident $^ -o $@ 
+hello:hello.o
+	$(CC)  -m32 -ffreestanding -Wall -pedantic -Wextra -I. -fno-stack-protector -std=gnu99 -g -ffreestanding -nostdlib -melf_i386 -T linker.ld -o $@ $^
+	strip $@
 
 Makefile.in:
 	@echo "Configuring..."

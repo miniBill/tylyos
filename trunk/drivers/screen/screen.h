@@ -71,6 +71,8 @@ enum{
   VGA_dy      =  6,
 };
 
+void update(void);
+
 //activate graphical console
 void go_graphic(void);
 
