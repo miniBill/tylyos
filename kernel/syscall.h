@@ -5,3 +5,4 @@
 
 #define reboot() syscallzero(88)
 #define syswrite(a) syscallone(250,a)
+#define syssleep(a) syscallone(251,a)

@@ -46,42 +46,8 @@ void initIdt(void) {
   for (c = 0;c < 256;c++)
     addIdtSeg(c, 0, 0, 0);
 
-  /*TODO: eliminare dopo che tutti gli interrupt sono stati passati ai task gate in modo funzionante*/
-/*
-  addIdtSeg(0, isr_0, INTERRUPT_PRESENT, segmentoCodiceKernel);
-  addIdtSeg(1, isr_1, INTERRUPT_PRESENT, segmentoCodiceKernel);
-  addIdtSeg(2, isr_2, INTERRUPT_PRESENT, segmentoCodiceKernel);
-  addIdtSeg(3, isr_3, INTERRUPT_PRESENT, segmentoCodiceKernel);
-  addIdtSeg(4, isr_4, INTERRUPT_PRESENT, segmentoCodiceKernel);
-  addIdtSeg(5, isr_5, INTERRUPT_PRESENT, segmentoCodiceKernel);
-  addIdtSeg(6, isr_6, INTERRUPT_PRESENT, segmentoCodiceKernel);
-  addIdtSeg(7, isr_7, INTERRUPT_PRESENT, segmentoCodiceKernel);
-  addIdtSeg(8, isr_8, INTERRUPT_PRESENT, segmentoCodiceKernel);
-  addIdtSeg(9, isr_9, INTERRUPT_PRESENT, segmentoCodiceKernel);
-  addIdtSeg(10, isr_10, INTERRUPT_PRESENT, segmentoCodiceKernel);
-  addIdtSeg(11, isr_11, INTERRUPT_PRESENT, segmentoCodiceKernel);
-  addIdtSeg(12, isr_12, INTERRUPT_PRESENT, segmentoCodiceKernel);
-  addIdtSeg(13, isr_13, INTERRUPT_PRESENT, segmentoCodiceKernel);
-  addIdtSeg(14, isr_14, INTERRUPT_PRESENT, segmentoCodiceKernel);
-  addIdtSeg(15, isr_15, INTERRUPT_PRESENT, segmentoCodiceKernel);
-  addIdtSeg(16, isr_16, INTERRUPT_PRESENT, segmentoCodiceKernel);
-  addIdtSeg(17, isr_17, INTERRUPT_PRESENT, segmentoCodiceKernel);
-  addIdtSeg(18, isr_18, INTERRUPT_PRESENT, segmentoCodiceKernel);
-  for (c = 34;c < 50;c++)
-    addIdtSeg(c, isr_34, INTERRUPT_PRESENT, segmentoCodiceKernel);
-  addIdtSeg(32, isr_32, INTERRUPT_PRESENT, segmentoCodiceKernel);
-  addIdtSeg(33, isr_33, INTERRUPT_PRESENT, segmentoCodiceKernel);
-
-  addIdtSeg(46, isr_46, INTERRUPT_PRESENT, segmentoCodiceKernel);
-  addIdtSeg(47, isr_47, INTERRUPT_PRESENT, segmentoCodiceKernel);
-  addIdtSeg(0x80, isr_x80, INTERRUPT_PRESENT, segmentoCodiceKernel);
-*/
-    /*questo e' un test*/
-   //addIdtGate(32,INTERRUPT_PRESENT, kernelInterruptTSSselector);
-
 
     /*inizializza i selettori*/
-/*TODO*/
     isr0TSSselector=segmentSelector (  ISR_TSS_INDEX+0,0,RPL_KERNEL );
     isr1TSSselector=segmentSelector (  ISR_TSS_INDEX+1,0,RPL_KERNEL );
     isr2TSSselector=segmentSelector (  ISR_TSS_INDEX+2,0,RPL_KERNEL );
@@ -110,7 +76,6 @@ void initIdt(void) {
     isr47TSSselector=segmentSelector (  ISR_TSS_INDEX+47,0,RPL_KERNEL );
     isrx80TSSselector=segmentSelector (  ISR_TSS_INDEX+0x80,0,RPL_KERNEL );
     /*inizializza i TSS*/
-/*TODO*/
     isr0TSS=kernelInterruptTSS;
     isr0TSS.eip=(unsigned int)isr_0;
     isr1TSS=kernelInterruptTSS;
@@ -164,7 +129,6 @@ void initIdt(void) {
     isrx80TSS=kernelInterruptTSS;
     isrx80TSS.eip=(unsigned int)isr_x80;
     /*inizializza i descrittori*/
-/*TODO*/
 
     TSSset(ISR_TSS_INDEX+0,(unsigned int)&isr0TSS,MEM_TSS|MEM_KERNEL|MEM_PRESENT);   
     TSSset(ISR_TSS_INDEX+1,(unsigned int)&isr1TSS,MEM_TSS|MEM_KERNEL|MEM_PRESENT);   
@@ -196,7 +160,6 @@ void initIdt(void) {
     TSSset(ISR_TSS_INDEX+0x80,(unsigned int)&isrx80TSS,MEM_TSS|MEM_KERNEL|MEM_PRESENT);   
 
     /*inizializza la IDT*/
-/*TODO*/
     addIdtGate(0,INTERRUPT_PRESENT, isr0TSSselector);
     addIdtGate(1,INTERRUPT_PRESENT, isr1TSSselector);
     addIdtGate(2,INTERRUPT_PRESENT, isr2TSSselector);
@@ -371,7 +334,14 @@ printf(2,"QUESTA ISR: %d sta' venendo eseguita nel senza task gate!!!\n",isr);
           asm("int $1");
           break;
         case 250:
-          printf(0,(char*)user_start+currentTaskTSS->ebx);
+          printf(0,(char*)user_start+runningTask->TSS.ebx);
+          break;
+        case 251:
+          printf(1,"sleep %s %dms\n",runningTask->nome,runningTask->TSS.ebx);
+          setTaskStateSleeping(runningTask->procID,runningTask->TSS.ebx);
+  if (isr > 7) outb(0xA0, 0x20);
+  outb(0x20, 0x20);
+          forceSchedule();
           break;
       }
       break;

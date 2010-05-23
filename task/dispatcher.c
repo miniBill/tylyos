@@ -76,6 +76,7 @@ asm("cli");
 
     t->lastScheduledTime=time();
 
+runningTask=t;
 switchTo(newTSSselector);
   
 
@@ -95,7 +96,7 @@ void dispatcher_mapPages(struct taskStruct *t)
             if(currentPage->indirizzoLog == virtualAddr)
             {
                 /*setta la pagina e scorri la lista avanti*/
-                printf(1,"pagina settata (task addr space: 0x%x)\n",virtualAddr-user_start);
+               // printf(1,"pagina settata (task addr space: 0x%x)\n",virtualAddr-user_start);
                 setPageSelector ( getTableFromVirtualAdress(virtualAddr), getPageFromVirtualAdress(virtualAddr),currentPage->indirizzoFis,flags );
                 currentPage=currentPage->next;
             }
