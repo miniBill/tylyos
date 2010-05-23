@@ -15,47 +15,27 @@
 # You should have received a copy of the GNU General Public License
 # along with TylyOS.  If not, see <http://www.gnu.org/licenses/>.
 
-CFLAGS:= -march=i386 -ffreestanding -Wall -pedantic -Wextra -I ../trunk -fno-stack-protector -std=gnu99 -nostdlib
-td=gnu99 -g
-ASFLAGS:= -march=i386
+CFLAGS:= -m32 -ffreestanding -Wall -pedantic -Wextra -I. -fno-stack-protector -std=gnu99 -g -ffreestanding -nostdlib -melf_i386 -T linker.ld 
 
-MK=Makefile.in
-
--include Makefile.in
-
-ottanta:ottanta.o
-	$(CC)  -m32 -ffreestanding -Wall -pedantic -Wextra -I. -fno-stack-protector -std=gnu99 -g -ffreestanding -nostdlib -melf_i386 -T linker.ld -o $@ $^
+ottanta:ottanta.c
+	@echo "GCC" $@
+	@$(CC) $(CFLAGS) -o $@ $^
 	strip $@
 
-hello:hello.o
-	$(CC)  -m32 -ffreestanding -Wall -pedantic -Wextra -I. -fno-stack-protector -std=gnu99 -g -ffreestanding -nostdlib -melf_i386 -T linker.ld -o $@ $^
+hello:hello.c
+	@echo "GCC" $@
+	@$(CC) $(CFLAGS) -o $@ $^
 	strip $@
 
-idle:idle.o
-	$(CC)  -m32 -ffreestanding -Wall -pedantic -Wextra -I. -fno-stack-protector -std=gnu99 -g -ffreestanding -nostdlib -melf_i386 -T linker.ld -o $@ $^
+idle:idle.c
+	@echo "GCC" $@
+	@$(CC) $(CFLAGS) -o $@ $^
 	strip $@
 
 Makefile.in:
 	@echo "Configuring..."
 	@./configure
 
-%.o:%.s 
-	@echo "AS" $@
-	@$(AS) $(ASFLAGS) $^ -o $@
-
-%.o: %.c
-	@echo "GCC" $@
-	@$(CC) $(CFLAGS) -c -o $@ $^
-
-%.o: %.asm
-	@echo "NASM" $@
-	@nasm -f elf -o $@ $^
-
-%.s:%.c
-	@echo "GCC -S" $@
-	@$(CC) $(CFLAGS) -S -o $@ $^
-
 .PHONY: clean
 clean:
-	rm -f *\~ *.o
-
+	rm -f *\~ *.o ottanta hello idle
