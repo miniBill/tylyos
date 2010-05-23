@@ -15,21 +15,23 @@
 # You should have received a copy of the GNU General Public License
 # along with TylyOS.  If not, see <http://www.gnu.org/licenses/>.
 
-CFLAGS:= -m32 -ffreestanding -Wall -pedantic -Wextra -I. -fno-stack-protector -std=gnu99 -g -ffreestanding -nostdlib -melf_i386 -T linker.ld 
+CFLAGS:= -march=i386 -ffreestanding -Wall -pedantic -Wextra -I ../trunk -fno-stack-protector -std=gnu99 -nostdlib
+LDFLAGS:= -nostdlib -melf_i386 -T linker.ld
+ASFLAGS:= -march=i386
 
-ottanta:ottanta.c
-	@echo "GCC" $@
-	@$(CC) $(CFLAGS) -o $@ $^
+.PHONY:all
+all: ottanta hello idle
+
+ottanta:ottanta.o
+	$(LD) $(LDFLAGS) -o $@ $^
 	strip $@
 
-hello:hello.c
-	@echo "GCC" $@
-	@$(CC) $(CFLAGS) -o $@ $^
+hello:hello.o
+	$(LD) $(LDFLAGS) -o $@ $^
 	strip $@
 
-idle:idle.c
-	@echo "GCC" $@
-	@$(CC) $(CFLAGS) -o $@ $^
+idle:idle.o
+	$(LD) $(LDFLAGS) -o $@ $^
 	strip $@
 
 Makefile.in:
