@@ -22,7 +22,7 @@
 
 void initScheduler()
 {
-    scheduleTimeSlice=5000;
+    scheduleTimeSlice=1000;
     activeScheduler=0;
     lastSchedule=0;
 }
@@ -45,6 +45,13 @@ void stopScheduler()
     activeScheduler=0; 
 }
 
+void forceSchedule()
+{
+    lastSchedule=time()-scheduleTimeSlice-1;
+    schedule();
+}
+
+
 /*funzione che sceglie il task da mandare in esecuzione e che lo manda in esecuzione usando il dispatcher*/
 void schedule()
 {
@@ -56,13 +63,26 @@ void schedule()
         unsigned int id;
         struct taskListElement *pointer=taskListRoot;
 
+            unsigned long int min=0xFFFFFFFF;
+            id=0;
+
         if ( pointer!=0 )
         {
-            unsigned long int min=pointer->task->lastScheduledTime;
-            id=pointer->task->procID;
             do
             {
-                if ( pointer->task->lastScheduledTime<min )
+                /*controlla se il task in sllep deve essere risvegliato*/
+                if (
+                     pointer->task->stato==TASK_STATE_SLEEPING &&
+                     pointer->task->statoInfo<time()
+                   )
+                {
+                    pointer->task->stato=TASK_STATE_READY;
+                }
+                /*se il task e' pronto ed e' quello eseguito meno recentemente*/
+                if (
+                     pointer->task->stato==TASK_STATE_READY &&
+                     pointer->task->lastScheduledTime<min
+                   )
                 {
                     min=pointer->task->lastScheduledTime;
                     id=pointer->task->procID;
@@ -71,8 +91,16 @@ void schedule()
             }
             while ( pointer!=0 );
         }
-        printf(1,"<scheduler in action> %s\n",getTask(id)->nome);
-        dispatch(id);
+        if(id>0)
+        {
+            printf(1,"<scheduler in action> %s\n",getTask(id)->nome);
+            dispatch(id);
+        }
+        else
+        {
+            idle();
+        }
+
     }
 }
 /*
@@ -81,4 +109,6 @@ dovra' mandare in esecuzione un task dedicato alla gestione dei tempi morti
 */
 void idle()
 {
+    printf(1,"idle\n");
+    dispatch(0);
 }

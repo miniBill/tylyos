@@ -137,6 +137,7 @@ int exec(char *path,char privilegi)
         printf(1,"errore nel caricamento dell elf\n");
     }
    
+    setTaskStateReady(taskId);
   
     return taskId;
 }
@@ -304,11 +305,32 @@ struct taskStruct *getTask ( unsigned int procID )
     return 0;
 }
 
+void setTaskStateReady(unsigned int procID)
+{
+    struct taskStruct *t;
+    t=getTask(procID);
+    if(t==0)
+        kernelPanic("setTaskStateReady","il task non esiste");
+
+    t->stato=TASK_STATE_READY;
+
+}
+void setTaskStateSleeping(unsigned int procID,unsigned int ms)
+{
+    struct taskStruct *t;
+    t=getTask(procID);
+    if(t==0)
+        kernelPanic("setTaskStateSleeping","il task non esiste");
+
+    t->stato=TASK_STATE_SLEEPING;
+    t->statoInfo=time()+ms;
+}
+
 /*ritorna un id non utilizzato*/
 unsigned int getNewProcID()
 {
     struct taskListElement *pointer;
-    unsigned int id=0;
+    unsigned int id=1;
 
     while ( 1 )
     {

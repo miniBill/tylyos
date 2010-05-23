@@ -33,6 +33,8 @@ void startScheduler();
 /*disabilita lo scheduling dei task*/
 void stopScheduler();
 
+void forceSchedule();
+
 /*funzione che sceglie il task da mandare in esecuzione e che lo manda in esecuzione usando il dispatcher*/
 void schedule();
 /*

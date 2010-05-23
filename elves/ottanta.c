@@ -9,6 +9,8 @@ while(1)
   syswrite(test);
   if(count==26)
     count=0;
+
+  syssleep(5000);
 }
     return 0;
 }

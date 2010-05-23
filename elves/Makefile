@@ -31,6 +31,10 @@ hello:hello.o
 	$(CC)  -m32 -ffreestanding -Wall -pedantic -Wextra -I. -fno-stack-protector -std=gnu99 -g -ffreestanding -nostdlib -melf_i386 -T linker.ld -o $@ $^
 	strip $@
 
+idle:idle.o
+	$(CC)  -m32 -ffreestanding -Wall -pedantic -Wextra -I. -fno-stack-protector -std=gnu99 -g -ffreestanding -nostdlib -melf_i386 -T linker.ld -o $@ $^
+	strip $@
+
 Makefile.in:
 	@echo "Configuring..."
 	@./configure

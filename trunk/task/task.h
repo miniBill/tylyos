@@ -62,12 +62,18 @@ struct tss
 struct tss kernelTSS,kernelInterruptTSS;
 
 #define MAX_TASK_NAME_LEN 20
+
+#define TASK_STATE_READY 1
+#define TASK_STATE_SLEEPING 2
+#define TASK_STATE_STOPPED 3
+
 struct taskStruct
 {
     struct tss TSS;
     struct pagina *listaPagine;
     unsigned int procID;
     char stato;
+    unsigned int statoInfo;
     char nome[MAX_TASK_NAME_LEN];
     char privilegi;
     unsigned long int lastScheduledTime;
@@ -109,6 +115,8 @@ int exec(char *path,char privilegi);
 int addTask(char nome[MAX_TASK_NAME_LEN],char privilegi);
 int removeTask(unsigned int procID);
 struct taskStruct *getTask(unsigned int procID);
+void setTaskStateReady(unsigned int procID);
+void setTaskStateSleeping(unsigned int procID,unsigned int ms);
 
 /*funzione da utilizzare per l'allocazione di una nuova pagina per un task*/
 struct pagina *allocaNuovaPagina ( unsigned int procID,unsigned int indirizzoLog );
