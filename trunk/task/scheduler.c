@@ -22,7 +22,7 @@
 
 void initScheduler()
 {
-    scheduleTimeSlice=1000;
+    scheduleTimeSlice=200;
     activeScheduler=0;
     lastSchedule=0;
 }
@@ -55,10 +55,11 @@ void forceSchedule()
 /*funzione che sceglie il task da mandare in esecuzione e che lo manda in esecuzione usando il dispatcher*/
 void schedule()
 {
-    if(activeScheduler==0)
-        return;
     if(time()-lastSchedule>=scheduleTimeSlice)
     {
+        if(activeScheduler==0)
+            return;
+
         lastSchedule=time();
         unsigned int id;
         struct taskListElement *pointer=taskListRoot;
@@ -93,7 +94,7 @@ void schedule()
         }
         if(id>0)
         {
-            printf(1,"<scheduler in action> %s\n",getTask(id)->nome);
+           // printf(1,"<scheduler in action> %s\n",getTask(id)->nome);
             dispatch(id);
         }
         else
@@ -109,6 +110,6 @@ dovra' mandare in esecuzione un task dedicato alla gestione dei tempi morti
 */
 void idle()
 {
-    printf(1,"idle\n");
+//    printf(1,"idle\n");
     dispatch(0);
 }
