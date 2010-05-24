@@ -1,2 +1,2 @@
 #!/bin/sh
-qemu -cdrom tylyos.iso
+qemu -cdrom tylyos.iso -localtime

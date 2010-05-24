@@ -337,10 +337,10 @@ printf(2,"QUESTA ISR: %d sta' venendo eseguita nel senza task gate!!!\n",isr);
           printf(0,(char*)user_start+runningTask->TSS.ebx);
           break;
         case 251:
-          printf(1,"sleep %s %dms\n",runningTask->nome,runningTask->TSS.ebx);
+        //  printf(1,"sleep %s %dms\n",runningTask->nome,runningTask->TSS.ebx);
           setTaskStateSleeping(runningTask->procID,runningTask->TSS.ebx);
   if (isr > 7) outb(0xA0, 0x20);
-  outb(0x20, 0x20);
+  outb(0x21, 0x20);
           forceSchedule();
           break;
       }

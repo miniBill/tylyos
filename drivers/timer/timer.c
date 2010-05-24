@@ -19,7 +19,7 @@ void initTimer()
 
 void tick ( void )
 {
-    timeCount++;
+    timeCount+=1;
     if ( timeCount%1000==0 )
     {
         char timestring[9]={0};
