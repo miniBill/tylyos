@@ -59,7 +59,7 @@ void dispatch(int procID)
 /*disabilita gli interrupt, le isr altrimenti danno errore per via dei cambi che questa funzione fa sui selettori dei tss*/
 asm("cli");
     /*risetta per sicurezza i selettori dei tss*/
-    newTSSselector=segmentSelector ( NEW_TSS_INDEX,0,RPL_USER );
+    //newTSSselector=segmentSelector ( NEW_TSS_INDEX,0,RPL_USER );
 
     struct taskStruct *t;
     t=getTask(procID);
