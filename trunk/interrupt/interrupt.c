@@ -327,6 +327,7 @@ printf(2,"QUESTA ISR: %d sta' venendo eseguita nel senza task gate!!!\n",isr);
       printf(0,"Ten");
       break;*/
     case 0x80:
+tick();
       switch(currentTaskTSS->eax&0xFF){
         case 88:
           asm("cli");
