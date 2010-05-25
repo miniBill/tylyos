@@ -34,6 +34,7 @@ void tick ( void )
         while ( timestring[COLUMNS-print]!=0 )
             print--;
         write_physical_xy(timestring,print,ROWS-1);
+	blit();
     }
 
 

@@ -21,14 +21,13 @@
 #define VGA_H
 
 void VGA_clear_screen();
-void VGA_init(int width, int height, int colors);
+void VGA_init(int width, int height, int bpp);
+void set_pixel(unsigned int i,char value);
+void blit(void);
 
 //the vga identifiers
 unsigned int VGA_width;
 unsigned int VGA_height;
 unsigned int VGA_bpp;
-
-unsigned char *VGA_address;
-
 
 #endif

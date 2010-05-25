@@ -49,8 +49,10 @@ int modifier(char c, int released) {
         shift = 0;
       else
         shift = 1;
-      if (!stop_output)
+      if (!stop_output){
         put_physical_xy(shift ? 'S' : 's', 1, ROWS - 1);
+	blit();
+      }
       return 1;
     }
   if (c == 0x1D) {
@@ -58,8 +60,10 @@ int modifier(char c, int released) {
         ctrl = 0;
       else
         ctrl = 1;
-      if (!stop_output)
+      if (!stop_output){
         put_physical_xy(ctrl ? 'C' : 'c', 4, ROWS - 1);
+	blit();
+      }
       return 1;
     }
   if (c == 0x38) {
@@ -67,23 +71,29 @@ int modifier(char c, int released) {
         alt = 0;
       else
         alt = 1;
-      if (!stop_output)
+      if (!stop_output){
         put_physical_xy(alt ? 'A' : 'a', 7, ROWS - 1);
+	blit();
+      }
       return 1;
     }
   if (c == 0x45) {
       if (!released) {
           numlock = 1 - numlock;
-          if (!stop_output)
+          if (!stop_output){
             put_physical_xy(numlock ? 'N' : 'n', 10, ROWS - 1);
+	    blit();
+	  }
         }
       return 1;
     }
   if (c == 0x3A) {
       if (!released) {
           capslock = 1 - capslock;
-          if (!stop_output)
+          if (!stop_output){
             put_physical_xy(capslock ? 'K' : 'k', 13, ROWS - 1);
+	    blit();
+	  }
         }
       return 1;
     }

@@ -185,16 +185,35 @@ void write_registers(unsigned char *regs){
     outb(VGA_AC_INDEX, 0x20);
 }
 
+static unsigned char *VGA_address;
+char backbuffer[320*200];
+char changed[320*200];
 
 void VGA_clear_screen(){
-    unsigned int x,y;
-    for(y=0; y<VGA_height; y++)
-        for(x=0; x<VGA_width; x++)
-            VGA_address[VGA_width*y+x]=gui_background;
+  unsigned int x,y;
+  for(y=0; y<VGA_height; y++)
+    for(x=0; x<VGA_width; x++)
+      backbuffer[VGA_width*y+x]=VGA_address[VGA_width*y+x]=gui_background;
 }
 
+void set_pixel(unsigned int i,char value){
+  if(i>320*200)
+    return;
+  changed[i]=1;
+  backbuffer[i]=value;
+}
 
-
+void blit(void){
+  unsigned int x,y;
+  for(y=0; y<VGA_height; y++)
+    for(x=0; x<VGA_width; x++){
+      int i=VGA_width*y+x;
+      if(changed[i]){
+	VGA_address[i]=backbuffer[i];
+	changed[i]=0;
+      }
+    }
+}
 
 void VGA_setPalette()
 {
@@ -220,7 +239,6 @@ void VGA_init(int width, int height, int bpp)
     
     VGA_address=(unsigned char*)0xA0000;
     
-    
     if(width==320 && height==200 && bpp==8)
     {
         write_registers(mode_320_200_256);
@@ -235,5 +253,5 @@ void VGA_init(int width, int height, int bpp)
     
     VGA_clear_screen();
     
-   go_graphic();
+    go_graphic();
 }

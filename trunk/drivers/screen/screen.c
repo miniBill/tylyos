@@ -19,6 +19,7 @@
  */
 
 #include "screen.h"
+#include "vga.h"
 #include <memory/memory.h>
 #include <lib/string.h>
 #include <gui/gui.h>
@@ -77,6 +78,7 @@ inline void update(void) {
         gui_writeChar(videoMemory[currentConsole][ty+baseline[currentConsole]][tx],tx*dx+ulx,ty*dy+uly,vga_mode?
               convert(colorMemory[currentConsole][ty+baseline[currentConsole]][tx])
                      :colorMemory[currentConsole][ty+baseline[currentConsole]][tx]);
+  blit();
 }
 
 void go_graphic(void){
@@ -91,9 +93,9 @@ void switch_console(unsigned int console) {
   if (console >= CONSOLE)
     return;
   currentConsole = console;
-  update();
   set_cursor(x[console],y[console]);
   put_physical_xy(console+'1', 26, ROWS - 1);
+  update();
 }
 
 unsigned int current_console(void) {
@@ -220,6 +222,8 @@ int col(unsigned int console) {
 }
 
 void nl(unsigned int console) {
+  if(console==currentConsole)
+    blit();
   goto_xy(console, 0, y[console] + 1);
 }
 
@@ -229,6 +233,8 @@ void write(const char* string, unsigned int console) {
       put(string[k], console);
     else
       nl(console);
+    if(console==currentConsole)
+      blit();
 }
 
 void write_current(const char* string){
