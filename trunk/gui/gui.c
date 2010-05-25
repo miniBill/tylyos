@@ -18,21 +18,16 @@
  */
 
 #include <drivers/screen/screen.h>
-#include <lib/string.h>
-#include <kernel/stdio.h>
-#include <memory/memory.h>
-#include <lib/string.h>
-#include <kernel/stdio.h>
-#include <kernel/kernel.h>
-#include <fs/fs.h>
-
 #include <drivers/screen/vga.h>
+#include <fs/fs.h>
+#include <kernel/kernel.h>
+#include <kernel/stdio.h>
+#include <lib/string.h>
+#include <memory/memory.h>
 
-#include "mandelbrot.h"
-#include "gui.h"
 #include "font.h"
-
-
+#include "gui.h"
+#include "mandelbrot.h"
 
 void gui_writeChar(char ch, unsigned int _x, unsigned int _y, unsigned char color) {
   unsigned int c = 0;
@@ -73,13 +68,6 @@ void gui_writeChar(char ch, unsigned int _x, unsigned int _y, unsigned char colo
     }
     #endif
   #endif
-}
-
-void gui_writeString(char *s, unsigned int x, unsigned int y,unsigned char color) {
-  unsigned int count = strlen(s);
-
-  for(unsigned int c = 0;c < count;c++)
-    gui_writeChar(s[c], x + VGA_dx*c, y,color);
 }
 
 void gui_printImageFromFile(char *path,int x,int y)

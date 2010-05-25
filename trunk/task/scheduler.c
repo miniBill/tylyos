@@ -19,6 +19,7 @@
 #include "scheduler.h"
 #include <task/dispatcher.h>
 #include <drivers/timer/timer.h>
+#include <lib/string.h>
 
 void initScheduler()
 {

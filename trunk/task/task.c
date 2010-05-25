@@ -25,6 +25,7 @@
 #include <task/elf.h>
 #include <task/dispatcher.h>
 #include <interrupt/interrupt.h>
+#include <drivers/timer/timer.h>
 
 void initTaskManagement()
 {
