@@ -83,6 +83,7 @@ switchTo(newTSSselector);
 }
 
 /*funzione che mappa in memoria le pagine del task*/
+/*TODO: riscrivere in modo ottimizzato*/
 void dispatcher_mapPages(struct taskStruct *t)
 {
     unsigned int virtualAddr=user_start;
@@ -113,6 +114,7 @@ void dispatcher_mapPages(struct taskStruct *t)
         }
         else
         {
+            break;
             /*setta la pagina come vuota*/
             setPageSelector( getTableFromVirtualAdress(virtualAddr), getPageFromVirtualAdress(virtualAddr),0,PAG_NOTPRESENT);
         }
