@@ -24,7 +24,7 @@
 /*il tsk che sta' usando la cpu attualmente*/
 struct taskStruct *runningTask;
 
-void loadTSSregister(short unsigned int selector,unsigned int i);
+void loadTSSregister(short unsigned int selector);
 unsigned int getTSS();
 
 void dispatch(int procID);

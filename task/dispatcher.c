@@ -25,9 +25,9 @@
 #include <drivers/timer/timer.h>
 
 /*funzione per caricare nel task register il selettore del tss, il parametro i specifica l'indice della gdt*/
-void loadTSSregister(short unsigned int selector,unsigned int i)/*TODO: sarebbe meglio ricavare i dal selettore*/
+void loadTSSregister(short unsigned int selector)/*TODO: sarebbe meglio ricavare i dal selettore*/
 {
-    gdt[i].access &= 0xFD;/*azzera il fottuto flag BUSY, i manuali intel non specificano che ltr lo setta senza dire niente*/
+    gdt[selector>>3].access &= 0xFD;/*azzera il fottuto flag BUSY, i manuali intel non specificano che ltr lo setta senza dire niente*/
     asm volatile ("ltr %0\n" : :"r"(selector));
 }
 
