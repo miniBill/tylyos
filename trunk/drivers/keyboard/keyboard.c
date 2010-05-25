@@ -22,6 +22,7 @@
 #include <kernel/stdio.h>
 #include <kernel/kernel.h>
 #include <drivers/screen/screen.h>
+#include <drivers/screen/vga.h>
 #include <lib/string.h>
 
 unsigned char kmode = 0;

@@ -21,6 +21,7 @@
 #include "string.h"
 #include <drivers/screen/screen.h>
 #include <memory/memory.h>
+#include <drivers/screen/vga.h>
 
 unsigned int strlen(const char * string) {
   unsigned int ret = 0;
