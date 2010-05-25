@@ -22,6 +22,7 @@
 #include <kernel/kernel.h>
 #include <lib/string.h>
 #include <task/task.h>
+#include <drivers/timer/timer.h>
 
 /*funzione per caricare nel task register il selettore del tss, il parametro i specifica l'indice della gdt*/
 void loadTSSregister(short unsigned int selector,unsigned int i)/*TODO: sarebbe meglio ricavare i dal selettore*/
