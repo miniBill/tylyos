@@ -5,14 +5,12 @@
 #include <drivers/keyboard/keyboard.h>
 
 static unsigned long int timeCount=0;
-static unsigned long int resto;
 
 void initTimer()
 {
     unsigned int divisor=1193*10;/*interrupt ogni 1ms*/
     asm ( "cli" );
     timeCount=0;
-    resto=0;
     outb ( PIT_COMMREG,0x37 );
     //outb ( PIT_COMMREG,0x34 );
     outb ( PIT_DATAREG0,divisor & 0xFF );
@@ -24,9 +22,7 @@ void initTimer()
 void tick ( void )
 {
     /*somma ai tick 1 + il numero di tick che il timer ha accumulato dall ultima interrupt*/
-unsigned int count=read_PIT_count();
-    timeCount+=(1+((count+resto)/1193))*10;
-    resto=(count+resto)%1193;
+    timeCount+=1*10;
 //    outb ( PIT_DATAREG0,0 );
 //    outb ( PIT_DATAREG0,0 );
 
