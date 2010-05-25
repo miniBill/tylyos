@@ -3,6 +3,7 @@
 #include <lib/string.h>
 #include <drivers/screen/screen.h>
 #include <drivers/keyboard/keyboard.h>
+#include <drivers/screen/vga.h>
 
 static unsigned long int timeCount=0;
 
