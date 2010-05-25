@@ -131,6 +131,8 @@ number:
           size++;
         }
     }
+  if(console==current_console())
+    blit();
   return size;
 }
 

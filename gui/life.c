@@ -143,14 +143,14 @@ static inline unsigned char map(char color){
 static void printforce(){
   for(int y=0;y<200;y++)
     for(int x=0;x<320;x++)
-      VGA_address[VGA_width*y+x]=map(G(y,x));
+      set_pixel(VGA_width*y+x,map(G(y,x)));
 }
 
 static void print(){
   for(int y=0;y<200;y++)
     for(int x=0;x<320;x++)
       if(G(y,x)!=AG(y,x))//only if different!!!
-        VGA_address[VGA_width*y+x]=map(G(y,x));
+        set_pixel(VGA_width*y+x,map(G(y,x)));
 }
 
 static int t;
@@ -226,8 +226,8 @@ void editor(void){
         printforce();
         return;
     }
-    VGA_address[VGA_width*oy+ox]=map(G(oy,ox));
-    VGA_address[VGA_width*y+x]=map(G(y,x)+5);
+    set_pixel(VGA_width*oy+ox,map(G(oy,ox)));
+    set_pixel(VGA_width*y+x,map(G(y,x)+5));
   }
 }
 

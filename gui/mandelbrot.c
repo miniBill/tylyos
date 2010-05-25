@@ -43,12 +43,12 @@ void draw_mandelbrot(void){
         count++;
       }
       if(count==255)
-        VGA_address[VGA_width*iy+ix]=0x0;
+        set_pixel(VGA_width*iy+ix,0x0);
       else{
         if(count<4)
-          VGA_address[VGA_width*iy+ix]=0x13;
+          set_pixel(VGA_width*iy+ix,0x13);
         else
-          VGA_address[VGA_width*iy+ix]=convert(count);
+          set_pixel(VGA_width*iy+ix,convert(count));
         if(count<min)
           min=count;
         if(count>max)
