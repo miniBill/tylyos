@@ -83,43 +83,30 @@ switchTo(newTSSselector);
 }
 
 /*funzione che mappa in memoria le pagine del task*/
-/*TODO: riscrivere in modo ottimizzato*/
+/*TODO: puo' essere scritta in modo migliore*/
 void dispatcher_mapPages(struct taskStruct *t)
 {
-    unsigned int virtualAddr=user_start;
-    struct pagina *currentPage=t->listaPagine;
+    struct pagina *currentPage;
     char flags=PAG_PRESENT|PAG_READWRITE|PAG_USER|PAG_4KPAGE;
-    
-    while(virtualAddr < HEAP_START)/*passa tutte le pagine virtuali riservate ai processi*/
+
+    if(runningTask!=0)
     {
-        if(currentPage!=0)
-        {
-            if(currentPage->indirizzoLog == virtualAddr)
-            {
-                /*setta la pagina e scorri la lista avanti*/
-               // printf(1,"pagina settata (task addr space: 0x%x)\n",virtualAddr-user_start);
-                setPageSelector ( getTableFromVirtualAdress(virtualAddr), getPageFromVirtualAdress(virtualAddr),currentPage->indirizzoFis,flags );
+        currentPage=runningTask->listaPagine;
+
+        while(currentPage!=0)
+        {   
+                setPageSelector ( getTableFromVirtualAdress(currentPage->indirizzoLog), getPageFromVirtualAdress(currentPage->indirizzoLog),0,PAG_NOTPRESENT );
+
                 currentPage=currentPage->next;
-            }
-            else if(currentPage->indirizzoLog > virtualAddr)
-            {
-                /*setta la pagina come vuota perche' la lista delle pagine e' ordinata*/
-                setPageSelector( getTableFromVirtualAdress(virtualAddr), getPageFromVirtualAdress(virtualAddr),0,PAG_NOTPRESENT);
-            }
-            else
-            {
-                /*se si arriva qui' il pc rischia di implodere e diventare una supernova, non e' affatto una bella cosa*/
-                kernelPanic("dispatcher_mapPages()","the fucking ordered list ISN'T ordered");
-            }
         }
-        else
+    }
+    currentPage=t->listaPagine;
+    
+        while(currentPage!=0)
         {
-            break;
-            /*setta la pagina come vuota*/
-            setPageSelector( getTableFromVirtualAdress(virtualAddr), getPageFromVirtualAdress(virtualAddr),0,PAG_NOTPRESENT);
+                setPageSelector ( getTableFromVirtualAdress(currentPage->indirizzoLog), getPageFromVirtualAdress(currentPage->indirizzoLog),currentPage->indirizzoFis,flags );
+                currentPage=currentPage->next;
         }
         
-        virtualAddr+=0x1000;
-    }
     invalidateLookasideBuffer();
 }

@@ -29,6 +29,7 @@
 void initTaskManagement()
 {
     taskListRoot=0;
+    runningTask=0;
     
     newTSSselector=segmentSelector ( NEW_TSS_INDEX,0,RPL_USER );
     unsigned short tempTSS=segmentSelector ( NEW_TSS_INDEX,0,RPL_KERNEL );
