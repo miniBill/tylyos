@@ -51,7 +51,7 @@ void initTaskManagement()
     TSSset(NEW_TSS_INDEX,(unsigned int)&kernelTSS,MEM_TSS|MEM_KERNEL|MEM_PRESENT);   
      
     /*carica nel task register il selettore del TSS temporaneo*/
-    loadTSSregister(tempTSS,NEW_TSS_INDEX);
+    loadTSSregister(tempTSS);
 
 
     /*INIZIA A PREPARARE IL TSS PER GLI INTERRUPT*/

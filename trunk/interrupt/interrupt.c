@@ -289,7 +289,7 @@ void interrupt_handler(
 if(original!=&kernelTSS)
 {
   garbageTSS=*original;
-  loadTSSregister(garbageTSSselector,GARBAGE_TSS_INDEX);
+  loadTSSregister(garbageTSSselector);
    gdt[originalSelector>>3].access &= 0xFD;
   garbageTSS.link=newTSSselector;
 }
