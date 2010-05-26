@@ -73,20 +73,20 @@ void gui_writeChar(char ch, unsigned int _x, unsigned int _y, unsigned char colo
 void gui_printImageFromFile(char *path,int x,int y)
 {
     char immagine[2000];
-    File imm=openFile(path,'r');
+    File imm=openFile(0,path,'r');
     if(imm==0)
         printf(1,"doh\n");
     else{
         int read=0;
-        readFile(imm,immagine,0x36);/*legge l'header*/
+        readFile(0,imm,immagine,0x36);/*legge l'header*/
         /*struct bmpfile_magic *header1=(struct bmpfile_magic*)immagine;
         struct bmpfile_header *header2=(struct bmpfile_header*)immagine+2;*/
         
         unsigned int width=*((unsigned int*)&immagine[0x12]);
         unsigned int heigth=*((unsigned int*)&immagine[0x16]);
         
-        readFile(imm,immagine,256*4);/*salta la palette*/
-        unsigned int ret=readFile(imm,immagine,100);
+        readFile(0,imm,immagine,256*4);/*salta la palette*/
+        unsigned int ret=readFile(0,imm,immagine,100);
         while(ret>0){
             for(unsigned int c=0;c<ret;c++){
                 int _x=(read+c)%width;
@@ -96,7 +96,7 @@ void gui_printImageFromFile(char *path,int x,int y)
             }
             
             read+=100;
-            ret=readFile(imm,immagine,100);
+            ret=readFile(0,imm,immagine,100);
         }
 	blit();
     }

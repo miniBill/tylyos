@@ -27,18 +27,18 @@ void loader_checkHeader(char *path)
 {
     unsigned int dimensione;
     Elf32_Ehdr *header1;
-    File file=openFile(path,'r');
+    File file=openFile(0,path,'r');
     
     if(file==0)
         return;
     
-    dimensione=fileSize(file);
+    dimensione=fileSize(0,file);
     
     printf(2,"file aperto: %d Bytes\n",dimensione);
     
     char *buffer=kmalloc(dimensione);
     
-    readFile(file,buffer,dimensione);
+    readFile(0,file,buffer,dimensione);
     
     printf(2,"inizio parsing...\n");
     header1=(Elf32_Ehdr*)buffer;
@@ -127,16 +127,16 @@ loader_returnCode loader_loadElf(char *path,int procId)
     
     unsigned int dimensione;
     Elf32_Ehdr *header1;
-    File file=openFile(path,'r');
+    File file=openFile(0,path,'r');
     
     if(file==0)
         return LOADER_NOT_FOUND;
     
-    dimensione=fileSize(file);
+    dimensione=fileSize(0,file);
     
     char *buffer=kmalloc(dimensione);
     
-    readFile(file,buffer,dimensione);
+    readFile(0,file,buffer,dimensione);
     
     header1=(Elf32_Ehdr*)buffer;
     /*controlla che sia un elf valido*/
