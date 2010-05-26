@@ -34,7 +34,7 @@ void initDeviceFsManager()
     rootDeviceFs= newRamFs();
 }
 
-unsigned int getUnusedOpenNodeId()/*TODO: testare il funzionamento*/
+unsigned int getUnusedOpenNodeId(unsigned int procID)/*TODO: testare il funzionamento*/
 {
     if ( openNodeNumber==MAX_OPEN_NODES ) /*se si e' raggiunto il limite di nodi aperti*/
         return 0;
@@ -45,7 +45,7 @@ unsigned int getUnusedOpenNodeId()/*TODO: testare il funzionamento*/
         char trovato=0;
         for ( unsigned int c=0;c<openNodeNumber;c++ )
         {
-            if ( openNodes[c]->id==id )
+            if ( openNodes[c]->id==id && openNodes[c]->procID==procID )
                 trovato=1;
         }
 
@@ -89,16 +89,17 @@ struct deviceFs *getDeviceFromPath ( char *path )/*TODO: testare il funzionament
     }
 }
 
-unsigned int openFile ( char *path,char mode )/*TODO: inserire un controllo sulla modalita' di apertura*/
+unsigned int openFile (unsigned int procID, char *path,char mode )/*TODO: inserire un controllo sulla modalita' di apertura*/
 {
     unsigned int id;
-    id=getUnusedOpenNodeId();
+    id=getUnusedOpenNodeId(procID);
 
     if ( id==0 ) /*raggiunto il numero massimo di nodi aperti*/
         return 0;
 
     struct fs_node_descriptor *nuovoNodo=kmalloc ( sizeof ( struct fs_node_descriptor ) );/*alloca un nuovo descrittore*/
     nuovoNodo->id=id;
+    nuovoNodo->procID=procID;
     nuovoNodo->mode=mode;
     nuovoNodo->device=getDeviceFromPath ( path );/*cerca nei mount points quale device gestisce il path*/
     
@@ -120,13 +121,13 @@ unsigned int openFile ( char *path,char mode )/*TODO: inserire un controllo sull
     return id;/*ritorna l'id in modo che possa essere usato per richiamare read write e close*/
 }
 
-void closeFile(File file)/*TODO: testare*/
+void closeFile(unsigned int procID,File file)/*TODO: testare*/
 {
     struct fs_node_descriptor *pointer=0;
     
     for(unsigned int c=0;c<openNodeNumber;c++)/*passa tutti i nodi aperti*/
     {
-        if(openNodes[c]->id == file)/*se l'id corrisponde*/
+        if(openNodes[c]->id == file && openNodes[c]->procID==procID)/*se l'id corrisponde*/
         {
             pointer=openNodes[c];/*salva il puntatore per dopo*/
             /*cancella dalla lista*/
@@ -146,13 +147,13 @@ void closeFile(File file)/*TODO: testare*/
     kfree(pointer);/*dealloca il descrittore*/
 }
 
-unsigned int readFile(File file,char *buffer,unsigned int byteCount)/*TODO: testare*/
+unsigned int readFile(unsigned int procID,File file,char *buffer,unsigned int byteCount)/*TODO: testare*/
 {
     struct fs_node_descriptor *pointer=0;
     /*cerca il descrittore del file aperto*/
     for(unsigned int c=0;c<openNodeNumber;c++)
     {
-        if(openNodes[c]->id==file)
+        if(openNodes[c]->id==file && openNodes[c]->procID==procID)
         {
             pointer=openNodes[c];
         }
@@ -166,13 +167,13 @@ unsigned int readFile(File file,char *buffer,unsigned int byteCount)/*TODO: test
     return pointer->device->readFile(pointer,buffer,byteCount);
 }
 
-unsigned int writeFile(File file, char* buffer, unsigned int byteCount)/*TODO: testare*/
+unsigned int writeFile(unsigned int procID,File file, char* buffer, unsigned int byteCount)/*TODO: testare*/
 {
     struct fs_node_descriptor *pointer=0;
     /*cerca il descrittore del file aperto*/
     for(unsigned int c=0;c<openNodeNumber;c++)
     {
-        if(openNodes[c]->id==file)
+        if(openNodes[c]->id==file && openNodes[c]->procID==procID)
         {
             pointer=openNodes[c];
         }
@@ -184,13 +185,13 @@ unsigned int writeFile(File file, char* buffer, unsigned int byteCount)/*TODO: t
     return pointer->device->writeFile(pointer,buffer,byteCount);
 }
 
-unsigned int seek(File file,int offset)/*TODO: testare*/
+unsigned int seek(unsigned int procID,File file,int offset)/*TODO: testare*/
 {
     struct fs_node_descriptor *pointer=0;
     /*cerca il descrittore del file aperto*/
     for(unsigned int c=0;c<openNodeNumber;c++)
     {
-        if(openNodes[c]->id==file)
+        if(openNodes[c]->id==file && openNodes[c]->procID==procID)
         {
             pointer=openNodes[c];
         }
@@ -201,13 +202,13 @@ unsigned int seek(File file,int offset)/*TODO: testare*/
     return pointer->device->seek(pointer,offset);
 }
 
-unsigned int fileSize(File file)
+unsigned int fileSize(unsigned int procID,File file)
 {
     struct fs_node_descriptor *pointer=0;
     /*cerca il descrittore del file aperto*/
     for(unsigned int c=0;c<openNodeNumber;c++)
     {
-        if(openNodes[c]->id==file)
+        if(openNodes[c]->id==file && openNodes[c]->procID==procID)
         {
             pointer=openNodes[c];
         }
@@ -221,16 +222,17 @@ unsigned int fileSize(File file)
     return info.size;
 }
 
-File openDir(char *path)
+File openDir(unsigned int procID,char *path)
 {
     unsigned int id;
-    id=getUnusedOpenNodeId();
+    id=getUnusedOpenNodeId(procID);
     
     if ( id==0 ) /*raggiunto il numero massimo di nodi aperti*/
         return 0;
     
     struct fs_node_descriptor *nuovoNodo=kmalloc ( sizeof ( struct fs_node_descriptor ) );/*alloca un nuovo descrittore*/
     nuovoNodo->id=id;
+    nuovoNodo->procID=procID;
     nuovoNodo->device=getDeviceFromPath ( path );/*cerca nei mount points quale device gestisce il path*/
     
     nuovoNodo->device->getNodeDescriptor(nuovoNodo->device,nuovoNodo,path);/*carica in nuovoNodo il puntatore alle informazioni dell inode*/
@@ -251,13 +253,13 @@ File openDir(char *path)
     return id;/*ritorna l'id in modo che possa essere usato per richiamare read write e close*/
 }
 
-fs_returnCode readDir(File dir,struct fs_node_info *out)
+fs_returnCode readDir(unsigned int procID,File dir,struct fs_node_info *out)
 {
     struct fs_node_descriptor *pointer=0;
     /*cerca il descrittore della cartella*/
     for(unsigned int c=0;c<openNodeNumber;c++)
     {
-        if(openNodes[c]->id==dir)
+        if(openNodes[c]->id==dir && openNodes[c]->procID==procID)
         {
             pointer=openNodes[c];
         }

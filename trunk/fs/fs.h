@@ -57,20 +57,20 @@ struct fs_node_info
     struct deviceFs *device;/*device che è stato identificato come gestore del nodo*/
 };
 
-File openFile(char *path,char mode);/*cerca il device e l'inode su cui si trova il file, alloca la truttura e ne ritorna l'id per i successivi utilizzi*/
-void closeFile(File file);/*dealloca il fs_node_descriptor allocato con la precedente open*/
+File openFile(unsigned int procID,char *path,char mode);/*cerca il device e l'inode su cui si trova il file, alloca la truttura e ne ritorna l'id per i successivi utilizzi*/
+void closeFile(unsigned int procID,File file);/*dealloca il fs_node_descriptor allocato con la precedente open*/
 
-unsigned int readFile(File file,char *buffer,unsigned int byteCount);
-unsigned int writeFile(File file,char *buffer,unsigned int byteCount);
-unsigned int seek(File file,int offset);
-unsigned int fileSize(File file);
+unsigned int readFile(unsigned int procID,File file,char *buffer,unsigned int byteCount);
+unsigned int writeFile(unsigned int procID,File file,char *buffer,unsigned int byteCount);
+unsigned int seek(unsigned int procID,File file,int offset);
+unsigned int fileSize(unsigned int procID,File file);
 
-File openDir(char *path);
-void closeDir(File dir);
+File openDir(unsigned int procID,char *path);
+void closeDir(unsigned int procID,File dir);
 
-fs_returnCode readDir(File dir,struct fs_node_info *out);
+fs_returnCode readDir(unsigned int procID,File dir,struct fs_node_info *out);
 
-File createFile(char *path);
+fs_returnCode createFile(char *path);
 fs_returnCode createDir(char *path);
 
 fs_returnCode deleteFile(char *path);
@@ -88,6 +88,7 @@ struct fs_node_descriptor
   void *inodeInfo;/*puntatore alla struttura allocata dal device contenente le informazioni del nodo*/
   char mode;/*il modo con cui e' stato aperto*/
   unsigned int id;/*id univoco del nodo, viene generato automaticamente all apertura del file o della directory*/
+  unsigned int procID;/*l'id del task a cui e' assegnato*/
   char type;
 };
 
@@ -133,7 +134,7 @@ struct mountPoint *mountPoints[MAX_MOUNT];
 unsigned int mountPointsNumber;/*numero di mount presenti nell array mountPoints*/
 
 void initDeviceFsManager();
-unsigned int getUnusedOpenNodeId();
+unsigned int getUnusedOpenNodeId(unsigned int procID);
 fs_returnCode addMountPoint(char *path,struct deviceFs *device);
 
 #endif

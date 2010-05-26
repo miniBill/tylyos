@@ -273,9 +273,9 @@ void _kmain(multiboot_info_t* mbd, unsigned int magicN) {
   gui_printImageFromFile("/tylyos.bmp",0,0);
   
   /*TODO: mettere l'inizializzazione automatica da un altra parte*/
-  /*inizializza il task idle e gli assegna id 0*/  
+  /*inizializza il task idle e gli assegna id 1*/  
   int idleID=exec("/idle",'5');
-  getTask(idleID)->procID=0;
+  getTask(idleID)->procID=1;
 
   //loader_checkHeader("/ottanta");
   int idTask=exec("/ottanta",'5');
