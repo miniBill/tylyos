@@ -90,7 +90,7 @@ void* kmalloc ( unsigned int byte )
         if ( ( unsigned int ) next+sizeof ( struct memoryArea ) +byte >= ( unsigned int ) heapEndPointer )
         {
             unsigned int n= (sizeof ( struct memoryArea ) + byte) / 0x1000;
-            
+            n++;
             for(unsigned int c=0;c<n;c++)
                 increaseHeapSize();
             
