@@ -269,6 +269,7 @@ void _kmain(multiboot_info_t* mbd, unsigned int magicN) {
   #endif
   #endif
 
+
   gui_printImageFromFile("/tylyos.bmp",0,0);
   
   /*TODO: mettere l'inizializzazione automatica da un altra parte*/
