@@ -19,6 +19,8 @@
 #ifndef TASK_H
 #define TASK_H
 
+#define PROCID_MIN 10
+
 #define KERNEL_STACK_SIZE 5000
 #define TASK_STACK_SIZE 5000
 
