@@ -39,7 +39,7 @@ typedef char fs_returnCode;
 #define FS_GENERIC_ERROR    0x02
 #define FS_END              0x03/*usato per readDir*/
 
-typedef unsigned int File;
+typedef int File;
 
 /*
 struttura contenente tutte le informazioni di un nodo
@@ -87,7 +87,7 @@ struct fs_node_descriptor
   struct deviceFs *device;/*device che è stato identificato come gestore del nodo*/
   void *inodeInfo;/*puntatore alla struttura allocata dal device contenente le informazioni del nodo*/
   char mode;/*il modo con cui e' stato aperto*/
-  unsigned int id;/*id univoco del nodo, viene generato automaticamente all apertura del file o della directory*/
+  File id;/*id univoco del nodo, viene generato automaticamente all apertura del file o della directory*/
   unsigned int procID;/*l'id del task a cui e' assegnato*/
   char type;
 };
