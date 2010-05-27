@@ -63,6 +63,8 @@ char getDiskInterruptState ( unsigned int disk );
 */
 void irq_remap ( unsigned int offset_1, unsigned int offset_2 );
 
+void sendPicAck();
+
 void interrupt_handler ( unsigned int eax, unsigned int ebx, unsigned int ecx, unsigned int edx,
                          unsigned int ebp, unsigned int esi, unsigned int edi, unsigned int ds,
                          unsigned int es, unsigned int fs, unsigned int gs, unsigned int isr,

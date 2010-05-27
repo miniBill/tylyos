@@ -30,6 +30,7 @@
 #include <kernel/kernel.h>
 #include <task/dispatcher.h>
 #include <task/scheduler.h>
+#include <task/syscallHandler.h>
 
 int xtemp;
 
@@ -272,6 +273,12 @@ void irq_remap(unsigned int offset_1, unsigned int offset_2) {
   io_wait();
 }
 
+void sendPicAck()
+{
+    outb(0xA0, 0x20);
+    outb(0x20, 0x20);
+}
+
 void interrupt_handler(
   unsigned int eax, unsigned int ebx, unsigned int ecx,
   unsigned int edx, unsigned int ebp, unsigned int esi,
@@ -281,7 +288,6 @@ void interrupt_handler(
   unsigned int eflags, ...) {
   int c;
 
-  struct tss *currentTaskTSS=(struct tss*)getBaseFromSegmentDescriptor(newTSSselector>>3);
 
   unsigned short originalSelector;
   originalSelector=getTSS();
@@ -305,8 +311,7 @@ printf(2,"QUESTA ISR: %d sta' venendo eseguita nel senza task gate!!!\n",isr);
       /*timer*/
       tick();
   /* Send End Of Interrupt to PIC */
-  if (isr > 7) outb(0xA0, 0x20);
-  outb(0x20, 0x20);
+      sendPicAck();
       schedule();
       break;
     case 33:
@@ -327,24 +332,7 @@ printf(2,"QUESTA ISR: %d sta' venendo eseguita nel senza task gate!!!\n",isr);
       printf(0,"Ten");
       break;*/
     case 0x80:
-tick();
-      switch(currentTaskTSS->eax&0xFF){
-        case 88:
-          asm("cli");
-          clearIdt();
-          asm("int $1");
-          break;
-        case 250:
-          printf(0,(char*)user_start+runningTask->TSS.ebx);
-          break;
-        case 251:
-        //  printf(1,"sleep %s %dms\n",runningTask->nome,runningTask->TSS.ebx);
-          setTaskStateSleeping(runningTask->procID,runningTask->TSS.ebx);
-  if (isr > 7) outb(0xA0, 0x20);
-  outb(0x21, 0x20);
-          forceSchedule();
-          break;
-      }
+      handleSyscall();
       break;
    /* case 0xE:
       break;//HEAVY HACK
@@ -366,8 +354,7 @@ tick();
       kernelPanic("interrupt_handler()", message);
     }
   /* Send End Of Interrupt to PIC */
-  if (isr > 7) outb(0xA0, 0x20);
-  outb(0x20, 0x20);
+  sendPicAck();
 
 
 

@@ -332,7 +332,7 @@ void setTaskStateSleeping(unsigned int procID,unsigned int ms)
 unsigned int getNewProcID()
 {
     struct taskListElement *pointer;
-    unsigned int id=10;/*gli id fino a 10 sono riservati al kernel*/
+    unsigned int id=PROCID_MIN;/*gli id fino a PROCID_MIN sono riservati al kernel*/
 
     while ( 1 )
     {
