@@ -21,9 +21,11 @@
 #include <task/dispatcher.h>
 #include <memory/memory.h>
 #include <lib/string.h>
+#include <fs/fs.h>
 
 void handleSyscall()
 {
+          File ret;
     switch(runningTask->TSS.eax&0xFF){
         case 88:
           asm("cli");
@@ -38,6 +40,15 @@ void handleSyscall()
           setTaskStateSleeping(runningTask->procID,runningTask->TSS.ebx);
           sendPicAck();
           forceSchedule();
+          break;
+        case 252:/*open file*/
+          ret = openFile(runningTask->procID,(char*)user_start+runningTask->TSS.ebx,(char)user_start+runningTask->TSS.ecx);
+          runningTask->TSS.eax=(unsigned int)ret;
+          printf(1,"aperto file: %d\n",ret);
+          break;
+        case 253:/*close file*/
+          closeFile(runningTask->procID,runningTask->TSS.ebx);
+          printf(1,"chiuso file %d\n",runningTask->TSS.ebx);
           break;
       }
 }
