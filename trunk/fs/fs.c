@@ -137,6 +137,7 @@ void closeFile(unsigned int procID,File file)/*TODO: testare*/
                 c++;
             }
             openNodeNumber--;
+            return;
         }
     }
     
