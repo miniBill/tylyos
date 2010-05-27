@@ -39,7 +39,7 @@ unsigned int getUnusedOpenNodeId(unsigned int procID)/*TODO: testare il funziona
     if ( openNodeNumber==MAX_OPEN_NODES ) /*se si e' raggiunto il limite di nodi aperti*/
         return 0;
 
-    unsigned int id=1;
+    int id=1;
     while ( 1 )
     {
         char trovato=0;
@@ -89,13 +89,13 @@ struct deviceFs *getDeviceFromPath ( char *path )/*TODO: testare il funzionament
     }
 }
 
-unsigned int openFile (unsigned int procID, char *path,char mode )/*TODO: inserire un controllo sulla modalita' di apertura*/
+File openFile (unsigned int procID, char *path,char mode )/*TODO: inserire un controllo sulla modalita' di apertura*/
 {
     unsigned int id;
     id=getUnusedOpenNodeId(procID);
 
     if ( id==0 ) /*raggiunto il numero massimo di nodi aperti*/
-        return 0;
+        return -1;
 
     struct fs_node_descriptor *nuovoNodo=kmalloc ( sizeof ( struct fs_node_descriptor ) );/*alloca un nuovo descrittore*/
     nuovoNodo->id=id;
@@ -111,7 +111,7 @@ unsigned int openFile (unsigned int procID, char *path,char mode )/*TODO: inseri
     if(nuovoNodo->inodeInfo==0 || info.type != FS_FILE )/*se il nodo non e' stato trovato o non e' un file*/
     {
         kfree(nuovoNodo);
-        return 0;
+        return -1;
     }
     
     /*salva il nodo appena aperto nella lista*/
@@ -229,7 +229,7 @@ File openDir(unsigned int procID,char *path)
     id=getUnusedOpenNodeId(procID);
     
     if ( id==0 ) /*raggiunto il numero massimo di nodi aperti*/
-        return 0;
+        return -1;
     
     struct fs_node_descriptor *nuovoNodo=kmalloc ( sizeof ( struct fs_node_descriptor ) );/*alloca un nuovo descrittore*/
     nuovoNodo->id=id;
@@ -244,7 +244,7 @@ File openDir(unsigned int procID,char *path)
     if(nuovoNodo->inodeInfo==0 || info.type != FS_DIRECTORY )/*se il nodo non e' stato trovato o non e' un file*/
     {
         kfree(nuovoNodo);
-        return 0;
+        return -1;
     }
     
     /*salva il nodo appena aperto nella lista*/
