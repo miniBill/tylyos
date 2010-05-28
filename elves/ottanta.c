@@ -15,13 +15,24 @@ void closeFile(int file)
     syscallone(253,file);
 }
 
+unsigned int readFile(int file,char *buffer,unsigned int byteCount)
+{
+    int ret;
+    syscallthree(254,file,buffer,byteCount);
+    asm( "mov %%eax, %0;"
+          :"=r"(ret)
+       );
+    return ret;
+}
+
 int main(){
-  char test[]={'T','e','s','t',' ','\n',0};
+  char test[100];
   int file=0;
 while(1)
 {
-  file= openFile("/hello",'r');
-  test[4]='a'+file;
+  file= openFile("/config/test.txt",'r');
+
+  readFile(file,test,100);
   syswrite(test);
 
   closeFile(file);
