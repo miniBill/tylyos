@@ -50,5 +50,10 @@ void handleSyscall()
           closeFile(runningTask->procID,runningTask->TSS.ebx);
           printf(1,"chiuso file %d\n",runningTask->TSS.ebx);
           break;
+        case 254:/*read file*/
+          printf(1,"read file %d: %d byte\n",runningTask->TSS.ebx,runningTask->TSS.edx);
+          ret = readFile(runningTask->procID,(File)runningTask->TSS.ebx,(char*)user_start+runningTask->TSS.ecx,runningTask->TSS.edx);
+          runningTask->TSS.eax=(unsigned int)ret;
+          break;
       }
 }
