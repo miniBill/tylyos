@@ -33,6 +33,7 @@ OBJ= bootloader/loader.o \
      task/task.o task/elf.o task/dispatcher.o task/scheduler.o task/syscallHandler.o \
      fs/iso/iso.o \
      fs/fs.o \
+     fs/pipe.o \
      fs/ramFs/ramFs.o
 
 LDFLAGS= -melf_i386 -T linker.ld
