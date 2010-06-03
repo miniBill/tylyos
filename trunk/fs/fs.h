@@ -59,6 +59,7 @@ struct fs_node_info
 
 File openFile(unsigned int procID,char *path,char mode);/*cerca il device e l'inode su cui si trova il file, alloca la truttura e ne ritorna l'id per i successivi utilizzi*/
 void closeFile(unsigned int procID,File file);/*dealloca il fs_node_descriptor allocato con la precedente open*/
+void pipe(unsigned int procID,File descriptors[2]);/*alloca due descrittori, uno in lettura ed uno in scrittura, di tipo PIPE*/
 
 unsigned int readFile(unsigned int procID,File file,char *buffer,unsigned int byteCount);
 unsigned int writeFile(unsigned int procID,File file,char *buffer,unsigned int byteCount);

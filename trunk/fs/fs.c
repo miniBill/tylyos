@@ -148,6 +148,11 @@ void closeFile(unsigned int procID,File file)/*TODO: testare*/
     kfree(pointer);/*dealloca il descrittore*/
 }
 
+void pipe(unsigned int procID,File descriptors[2])/*alloca due descrittori, uno in lettura ed uno in scrittura, di tipo PIPE*/
+{
+    /*TODO: scrivere la funzione*/
+}
+
 unsigned int readFile(unsigned int procID,File file,char *buffer,unsigned int byteCount)/*TODO: testare*/
 {
     struct fs_node_descriptor *pointer=0;
