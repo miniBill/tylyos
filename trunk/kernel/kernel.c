@@ -38,6 +38,7 @@
 #include <task/elf.h>
 #include <task/task.h>
 #include <task/scheduler.h>
+#include <fs/pipe.h>
 
 static int magicNumber = 0;
 
@@ -268,6 +269,7 @@ void _kmain(multiboot_info_t* mbd, unsigned int magicN) {
   VGA_init(320,200,8);
   #endif
   #endif
+
 
 
   gui_printImageFromFile("/tylyos.bmp",0,0);
