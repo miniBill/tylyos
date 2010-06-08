@@ -334,3 +334,23 @@ fs_returnCode addMountPoint(char *path,struct deviceFs *device)
     
     return FS_OK;
 }
+
+/*permette di assegnare ad un descittore aperto un novo id e di assegnarlo ad un altro task*/
+void moveNodeDescriptor(unsigned int procID,File id,unsigned int newProcID,File newId)
+{
+    struct fs_node_descriptor *pointer=0;
+    /*cerca il descrittore aperto*/
+    for(unsigned int c=0;c<openNodeNumber;c++)
+    {
+        if(openNodes[c]->id==id && openNodes[c]->procID==procID)
+        {
+            pointer=openNodes[c];
+        }
+    }
+
+    if(pointer==0)/*se non e' aperto*/
+        return;
+
+    pointer->id=newId;
+    pointer->procID=newProcID;
+}
