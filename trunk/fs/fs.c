@@ -26,6 +26,7 @@ file contenente tutte le funzioni base per accedere al file system indipendentem
 #include <fs/ramFs/ramFs.h>
 #include <memory/memory.h>
 #include <lib/string.h>
+#include <fs/pipe.h>
 
 void initDeviceFsManager()
 {
@@ -152,6 +153,32 @@ void closeFile(unsigned int procID,File file)/*TODO: testare*/
 void pipe(unsigned int procID,File descriptors[2])/*alloca due descrittori, uno in lettura ed uno in scrittura, di tipo PIPE*/
 {
     /*TODO: scrivere la funzione*/
+    /*alloca i due descrittori, uno in lettura ed uno in scrittura*/
+    unsigned int idLettura,idScrittura;
+    idLettura=getUnusedOpenNodeId(procID);
+    idScrittura=getUnusedOpenNodeId(procID);
+
+    if ( idLettura==0 || idScrittura==0 ) /*raggiunto il numero massimo di nodi aperti*/
+        return;
+
+    struct fs_node_descriptor *nodoLettura=kmalloc ( sizeof ( struct fs_node_descriptor ) );/*alloca un nuovo descrittore*/
+    struct fs_node_descriptor *nodoScrittura=kmalloc ( sizeof ( struct fs_node_descriptor ) );/*alloca un nuovo descrittore*/
+    nodoLettura->id=idLettura;
+    nodoScrittura->id=idScrittura;
+    nodoLettura->type=FS_PIPE;
+    nodoScrittura->type=FS_PIPE;
+    nodoLettura->procID=procID;
+    nodoScrittura->procID=procID;
+    /*TODO: implementare i controlli su lettura e scrittura*/
+    nodoLettura->mode=0;
+    nodoScrittura->mode=0;
+    /*li collega alla pipe*/
+    struct pipe *p=createPipe();
+    nodoLettura->inodeInfo=(void*)p;
+    nodoScrittura->inodeInfo=(void*)p;
+
+    descriptors[0]=nodoLettura->id;
+    descriptors[1]=nodoScrittura->id;
 }
 
 unsigned int readFile(unsigned int procID,File file,char *buffer,unsigned int byteCount)/*TODO: testare*/
@@ -166,12 +193,16 @@ unsigned int readFile(unsigned int procID,File file,char *buffer,unsigned int by
         }
     }
     
-    if(pointer==0 || pointer->type!=FS_FILE)/*se non e' aperto o non e' un file*/
-    {
+
+    if(pointer==0)/*se non e' aperto*/
         return 0;
-    }
-    
-    return pointer->device->readFile(pointer,buffer,byteCount);
+      
+    if(pointer->type&FS_FILE)
+        return pointer->device->readFile(pointer,buffer,byteCount);
+
+    if(pointer->type&FS_PIPE)
+        return readOnPipe((struct pipe*)pointer->inodeInfo,buffer,byteCount);   
+    return 0;
 }
 
 unsigned int writeFile(unsigned int procID,File file, char* buffer, unsigned int byteCount)/*TODO: testare*/
@@ -186,10 +217,16 @@ unsigned int writeFile(unsigned int procID,File file, char* buffer, unsigned int
         }
     }
     
-    if(pointer==0 || !(pointer->type&FS_FILE))/*se non e' aperto o non e' un file*/
+    if(pointer==0)/*se non e' aperto*/
         return 0;
     
-    return pointer->device->writeFile(pointer,buffer,byteCount);
+    if(pointer->type&FS_FILE)
+        return pointer->device->writeFile(pointer,buffer,byteCount);
+
+    if(pointer->type&FS_PIPE)
+        return writeOnPipe((struct pipe*)pointer->inodeInfo,buffer,byteCount);
+
+    return 0;
 }
 
 unsigned int seek(unsigned int procID,File file,int offset)/*TODO: testare*/
@@ -204,9 +241,14 @@ unsigned int seek(unsigned int procID,File file,int offset)/*TODO: testare*/
         }
     }
     
-    if(pointer==0 || !(pointer->type&FS_FILE))/*se non e' aperto o non e' un file*/
+
+    if(pointer==0)/*se non e' aperto*/
         return 0;
-    return pointer->device->seek(pointer,offset);
+      
+    if(pointer->type&FS_FILE)
+        return pointer->device->seek(pointer,offset);
+
+    return 0;
 }
 
 unsigned int fileSize(unsigned int procID,File file)
