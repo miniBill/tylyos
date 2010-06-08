@@ -99,6 +99,7 @@ File openFile (unsigned int procID, char *path,char mode )/*TODO: inserire un co
 
     struct fs_node_descriptor *nuovoNodo=kmalloc ( sizeof ( struct fs_node_descriptor ) );/*alloca un nuovo descrittore*/
     nuovoNodo->id=id;
+    nuovoNodo->type=FS_FILE;
     nuovoNodo->procID=procID;
     nuovoNodo->mode=mode;
     nuovoNodo->device=getDeviceFromPath ( path );/*cerca nei mount points quale device gestisce il path*/
