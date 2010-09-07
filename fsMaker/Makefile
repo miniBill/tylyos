@@ -13,7 +13,7 @@ $(BINS):
 	@cd ../elves && make && cd ../fsMaker
 
 out.img : main $(BINS)
-	@echo "1024\n1024" | ./main > /dev/null
+	@./main 1024 1024 > /dev/null
 
 %: %.cpp
 	@echo "GCC" $@

@@ -232,12 +232,20 @@ int getdir (string dir,unsigned int parent)
     return 0;
 }
 
-int main()
+int main(int argc,char **argv)
 {
-    cout<<"dimensione cluster: ";
-    cin>>clusterSize;
-    cout<<"numero clusters: ";
-    cin>>clusterNumber;
+    if(argc<3)
+    {
+        cout<<"dimensione cluster: ";
+        cin>>clusterSize;
+        cout<<"numero clusters: ";
+        cin>>clusterNumber;
+    }
+    else
+    {
+        sscanf(argv[1],"%d",&clusterSize);
+        sscanf(argv[2],"%d",&clusterNumber);
+    }
     
     imageSize=(clusterSize*clusterNumber)+(clusterNumber*4)+(4*2);
     
