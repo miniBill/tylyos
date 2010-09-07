@@ -91,6 +91,7 @@ struct taskStruct
 
     int argc;
     char **argv;
+
 };
 
 struct taskListElement

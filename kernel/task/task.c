@@ -139,6 +139,7 @@ int start(char *path,char privilegi)
     else
     {
         printf(1,"errore nel caricamento dell elf\n");
+        removeTask(taskId);
     }
 
     parseAndLoadArgs(taskId,path);
