@@ -16,9 +16,12 @@
  * You should have received a copy of the GNU General Public License
  * along with TylyOS.  If not, see <http://www.gnu.org/licenses/>.
  */
+#include <fs/fs.h>
 
 #ifndef KEYBOARD_H_
 #define KEYBOARD_H_
+
+File keyboardPipe;
 
 void keypress(void);
 /*char scanCodeToChar(int scode);*/

@@ -168,6 +168,8 @@ void _kmain(multiboot_info_t* mbd, unsigned int magicN) {
 
   loadedModuleSize=0;
 
+  keyboardPipe=0;
+
   pageDir=&l_pageDir;/*legge il parametro passato dal linker*/
 
   kernel_end=(unsigned int)&l_end;/*NON togliere da qui'!!!*/
@@ -279,16 +281,20 @@ void _kmain(multiboot_info_t* mbd, unsigned int magicN) {
   int idleID=exec("/idle",'5');
   getTask(idleID)->procID=1;
 
-  //loader_checkHeader("/ottanta");
-  int idTask=exec("/ottanta",'5');
-  printf(1,"nuovo task inizializzato, id: %d\n",idTask);
-
-exec("/hello",'5');
+  /*fa partire il task init*/
+  int initID=exec("/init",'5');
+  getTask(idleID)->procID=2;
+  initID=2;
+  initTask=getTask(initID);
+  int pipeTmp[2];
+  pipe(0,pipeTmp);/*alloca una pipe specificando 0 come taskid*/
+  keyboardPipe=pipeTmp[1];
+  moveNodeDescriptor(0,pipeTmp[0],initID,1);
 
   initScheduler();
   startScheduler();
 
-  dispatch(idTask);
+  dispatch(initTask->procID);
 
   printf(0,"!\"#$%%&'()*+,-./\n"
   "0123456789:;<=>?@\n"
