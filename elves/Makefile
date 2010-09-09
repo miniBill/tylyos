@@ -20,7 +20,11 @@ LDFLAGS:= -nostdlib -melf_i386 -T linker.ld
 ASFLAGS:= -march=i386
 
 .PHONY:all
-all: ottanta hello idle
+all: ottanta hello idle init
+
+init:init.o
+	$(LD) $(LDFLAGS) -o $@ $^
+	strip $@
 
 ottanta:ottanta.o
 	$(LD) $(LDFLAGS) -o $@ $^
@@ -40,4 +44,4 @@ Makefile.in:
 
 .PHONY: clean
 clean:
-	rm -f *\~ *.o ottanta hello idle
+	rm -f *\~ *.o ottanta hello idle init

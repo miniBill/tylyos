@@ -98,6 +98,7 @@ struct taskListElement
 
 struct taskListElement *taskListRoot; /*puntatore al primo elemento della lista dei task*/
 
+struct taskStruct *initTask;/*puntatore al task init*/
 
 void initTaskManagement();
 

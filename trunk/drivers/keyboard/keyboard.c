@@ -24,6 +24,8 @@
 #include <drivers/screen/screen.h>
 #include <drivers/screen/vga.h>
 #include <lib/string.h>
+#include <fs/fs.h>
+#include <task/task.h>
 
 unsigned char kmode = 0;
 
@@ -122,10 +124,13 @@ void input(char ch, int released) {
 #endif
 
   if (!released) {
-      if (((inpointer[cur] + 1) % KEYBUFSIZE) == outpointer[cur])
+/*
+  if (((inpointer[cur] + 1) % KEYBUFSIZE) == outpointer[cur])
         return;//no space left for moar
       buffer[cur][inpointer[cur]] = ch;
       inpointer[cur] = (inpointer[cur] + 1) % KEYBUFSIZE;
+*/
+        writeFile(0,keyboardPipe,&ch,1);
     }
 #ifdef FREEROAMING
   put(ch,cur);
