@@ -52,13 +52,19 @@ void handleSyscall()
           printf(1,"chiuso file %d\n",runningTask->TSS.ebx);
           break;
         case 254:/*read file*/
-          printf(1,"read file %d: %d byte\n",runningTask->TSS.ebx,runningTask->TSS.edx);
+          printf(1,"read file %d: %d byte \"%s\"\n",runningTask->TSS.ebx,runningTask->TSS.edx,user_start+runningTask->TSS.ecx);
           ret = readFile(runningTask->procID,(File)runningTask->TSS.ebx,(char*)user_start+runningTask->TSS.ecx,runningTask->TSS.edx);
           runningTask->TSS.eax=(unsigned int)ret;
           break;
         case 200:/*pipe*/
           desc=(int*)(user_start+runningTask->TSS.ebx);
           pipe(runningTask->procID,desc);
+          printf(1,"pipe %d,%d\n",desc[0],desc[1]);
+          break;
+        case 201:/*write file*/
+          printf(1,"write file %d: %d byte \"%s\"\n",runningTask->TSS.ebx,runningTask->TSS.edx,user_start+runningTask->TSS.ecx);
+          ret = writeFile(runningTask->procID,(File)runningTask->TSS.ebx,(char*)user_start+runningTask->TSS.ecx,runningTask->TSS.edx);
+          runningTask->TSS.eax=(unsigned int)ret;
           break;
       }
 }
