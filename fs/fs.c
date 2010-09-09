@@ -155,16 +155,11 @@ void pipe(unsigned int procID,File descriptors[2])/*alloca due descrittori, uno 
     /*TODO: scrivere la funzione*/
     /*alloca i due descrittori, uno in lettura ed uno in scrittura*/
     unsigned int idLettura,idScrittura;
-    idLettura=getUnusedOpenNodeId(procID);
-    idScrittura=getUnusedOpenNodeId(procID);
 
-    if ( idLettura==0 || idScrittura==0 ) /*raggiunto il numero massimo di nodi aperti*/
-        return;
+
 
     struct fs_node_descriptor *nodoLettura=kmalloc ( sizeof ( struct fs_node_descriptor ) );/*alloca un nuovo descrittore*/
     struct fs_node_descriptor *nodoScrittura=kmalloc ( sizeof ( struct fs_node_descriptor ) );/*alloca un nuovo descrittore*/
-    nodoLettura->id=idLettura;
-    nodoScrittura->id=idScrittura;
     nodoLettura->type=FS_PIPE;
     nodoScrittura->type=FS_PIPE;
     nodoLettura->procID=procID;
@@ -179,6 +174,32 @@ void pipe(unsigned int procID,File descriptors[2])/*alloca due descrittori, uno 
 
     descriptors[0]=nodoLettura->id;
     descriptors[1]=nodoScrittura->id;
+
+    /*genera l'id ed inserisce nella lista il descrittore*/
+    idLettura=getUnusedOpenNodeId(procID);
+    if ( idLettura==0 ) /*raggiunto il numero massimo di nodi aperti*/
+    {
+        kfree(nodoLettura);
+        kfree(nodoScrittura);
+        return;
+    }
+    nodoLettura->id=idLettura;
+
+    openNodes[openNodeNumber]=nodoLettura;
+    openNodeNumber++;
+
+    /*genera l'id ed inserisce nella lista il descrittore*/
+    idScrittura=getUnusedOpenNodeId(procID);
+    if ( idScrittura==0 ) /*raggiunto il numero massimo di nodi aperti*/
+    {
+        kfree(nodoLettura);
+        kfree(nodoScrittura);
+        return;
+    }
+    nodoScrittura->id=idScrittura;
+
+    openNodes[openNodeNumber]=nodoScrittura;
+    openNodeNumber++;
 }
 
 unsigned int readFile(unsigned int procID,File file,char *buffer,unsigned int byteCount)/*TODO: testare*/
