@@ -172,11 +172,10 @@ void pipe(unsigned int procID,File descriptors[2])/*alloca due descrittori, uno 
     nodoLettura->inodeInfo=(void*)p;
     nodoScrittura->inodeInfo=(void*)p;
 
-    descriptors[0]=nodoLettura->id;
-    descriptors[1]=nodoScrittura->id;
 
     /*genera l'id ed inserisce nella lista il descrittore*/
     idLettura=getUnusedOpenNodeId(procID);
+printf(1,">>>>>%d\n",idLettura);
     if ( idLettura==0 ) /*raggiunto il numero massimo di nodi aperti*/
     {
         kfree(nodoLettura);
@@ -190,6 +189,7 @@ void pipe(unsigned int procID,File descriptors[2])/*alloca due descrittori, uno 
 
     /*genera l'id ed inserisce nella lista il descrittore*/
     idScrittura=getUnusedOpenNodeId(procID);
+printf(1,">>>>>%d\n",idScrittura);
     if ( idScrittura==0 ) /*raggiunto il numero massimo di nodi aperti*/
     {
         kfree(nodoLettura);
@@ -200,6 +200,9 @@ void pipe(unsigned int procID,File descriptors[2])/*alloca due descrittori, uno 
 
     openNodes[openNodeNumber]=nodoScrittura;
     openNodeNumber++;
+
+    descriptors[0]=nodoLettura->id;
+    descriptors[1]=nodoScrittura->id;
 }
 
 unsigned int readFile(unsigned int procID,File file,char *buffer,unsigned int byteCount)/*TODO: testare*/
