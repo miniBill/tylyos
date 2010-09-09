@@ -25,6 +25,11 @@ unsigned int readFile(int file,char *buffer,unsigned int byteCount)
     return ret;
 }
 
+void pipe(int descriptors[2])
+{
+    syscallone(200,descriptors);
+}
+
 int main(){
   char test[100];
   int file=0;
