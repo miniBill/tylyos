@@ -26,6 +26,7 @@
 void handleSyscall()
 {
           File ret;
+          int *desc;
     switch(runningTask->TSS.eax&0xFF){
         case 88:
           asm("cli");
@@ -54,6 +55,10 @@ void handleSyscall()
           printf(1,"read file %d: %d byte\n",runningTask->TSS.ebx,runningTask->TSS.edx);
           ret = readFile(runningTask->procID,(File)runningTask->TSS.ebx,(char*)user_start+runningTask->TSS.ecx,runningTask->TSS.edx);
           runningTask->TSS.eax=(unsigned int)ret;
+          break;
+        case 200:/*pipe*/
+          desc=(int*)(user_start+runningTask->TSS.ebx);
+          pipe(runningTask->procID,desc);
           break;
       }
 }
