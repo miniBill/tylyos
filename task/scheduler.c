@@ -20,6 +20,7 @@
 #include <task/dispatcher.h>
 #include <drivers/timer/timer.h>
 #include <lib/string.h>
+#include <kernel/kernel.h>
 
 void initScheduler()
 {
@@ -111,6 +112,10 @@ dovra' mandare in esecuzione un task dedicato alla gestione dei tempi morti
 */
 void idle()
 {
-//    printf(1,"idle\n");
+    //printf(1,"idle\n");
+    char buffer[100];
+    while(readFile(0,outputPipe,buffer,100)>0)
+        printf(0,buffer);
+    /*fa partire un task fittizio in modo da non tenere bloccati gli interrupt*/
     dispatch(0);
 }

@@ -279,7 +279,7 @@ void _kmain(multiboot_info_t* mbd, unsigned int magicN) {
   /*TODO: mettere l'inizializzazione automatica da un altra parte*/
   /*inizializza il task idle e gli assegna id 1*/  
   int idleID=exec("/idle",'5');
-  getTask(idleID)->procID=1;
+  getTask(idleID)->procID=0;
 
   /*fa partire il task init*/
   int initID=exec("/init",'5');
@@ -287,9 +287,14 @@ void _kmain(multiboot_info_t* mbd, unsigned int magicN) {
   initID=2;
   initTask=getTask(initID);
   int pipeTmp[2];
+  /*INPUT*/
   pipe(0,pipeTmp);/*alloca una pipe specificando 0 come taskid*/
   keyboardPipe=pipeTmp[1];
   moveNodeDescriptor(0,pipeTmp[0],initID,1);
+  /*OUTPUT*/
+  pipe(0,pipeTmp);/*alloca una pipe specificando 0 come taskid*/
+  outputPipe=pipeTmp[0];
+  moveNodeDescriptor(0,pipeTmp[1],initID,2);
 
   initScheduler();
   startScheduler();
