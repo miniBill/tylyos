@@ -5,8 +5,9 @@ int main()
     char test[100];
     while(1)
     {
-      if(readFile(1,test,100)>0)
-          syswrite(test);
+     int n=readFile(1,test,100);
+      if(n>0)
+          writeFile(2,test,n);
       syssleep(100);
     }
     return 0;

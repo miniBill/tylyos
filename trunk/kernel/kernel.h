@@ -4,6 +4,7 @@
 #include "multiboot.h"
 #include "syscall.h"
 #include <drivers/screen/screen.h>
+#include <fs/fs.h>
 
 void sleep ( unsigned int time );
 
@@ -22,5 +23,7 @@ void kernelPanic ( char *sender,char *message );
 void do_life(void);
 void do_sierpinski(void);
 void do_grid(void);
+
+File outputPipe;
 
 #endif
