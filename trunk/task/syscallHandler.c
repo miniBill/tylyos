@@ -28,6 +28,9 @@ void handleSyscall()
           File ret;
           int *desc;
     switch(runningTask->TSS.eax&0xFF){
+        case 1:
+          kernelPanic("handleSyscall","TASK TERMINATO!!!!");
+          break;
         case 88:
           asm("cli");
           clearIdt();
