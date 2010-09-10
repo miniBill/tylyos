@@ -35,6 +35,24 @@ unsigned int writeFile(int file,char *buffer,unsigned int byteCount)
     return ret;
 }
 
+unsigned int strlen(char *str)
+{
+    unsigned int ret=0;
+    while(str[ret]!=0)
+        ret++;
+    return ret;
+}
+
+void printf(char *buffer)
+{
+    writeFile(2,buffer,strlen(buffer));
+}
+
+unsigned int get(char *buffer,unsigned int bufferSize)
+{
+    return readFile(1,buffer,bufferSize);
+}
+
 
 void pipe(int descriptors[2])
 {
