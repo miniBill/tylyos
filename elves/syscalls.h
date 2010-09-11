@@ -5,6 +5,17 @@ void exit(int status)
     syscallone(1,status);
 }
 
+int fork()
+{
+    int ret;
+    syscallone(2,0);
+    asm( "mov %%eax, %0;"
+          :"=r"(ret)
+       );
+    return ret;
+}
+
+
 int openFile(char *path,char mode)
 {
     int ret;

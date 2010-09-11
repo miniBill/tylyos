@@ -11,6 +11,19 @@ int main()
           printf(test);
           if(test[0]=='Q')//TEST
               exit(0);
+          if(test[0]=='F')//TEST
+          {
+              int r=fork();
+              if(r==0)
+              {
+                  printf("io sono il vecchio task e vado in loop\n");
+                  while(1);
+              }
+              else
+              {
+                  printf("io sono il fork\n");
+              }
+          }
       }
       syssleep(100);
     }

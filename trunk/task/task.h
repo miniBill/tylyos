@@ -138,5 +138,7 @@ void memcpyToTask( char * source, unsigned int count, char * dest, unsigned int 
 
 void kill(unsigned int procID);
 
+unsigned int fork(unsigned int procID);
+
 #endif
 
