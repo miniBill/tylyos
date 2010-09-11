@@ -23,6 +23,7 @@
 #include <lib/string.h>
 #include <kernel/kernel.h>
 #include <task/elf.h>
+#include <fs/fs.h>
 #include <task/dispatcher.h>
 #include <interrupt/interrupt.h>
 #include <drivers/timer/timer.h>
@@ -517,4 +518,36 @@ void kill(unsigned int procID)
         pointer=getTask ( procID )->listaPagine; 
     }
     removeTask (procID );
+}
+
+/*ritorna l'id del nuovo task*/
+unsigned int fork(unsigned int procID)
+{
+    struct taskStruct *t=getTask(procID);
+    struct taskStruct *newt;
+    //crea le strutture del nuovo task
+    unsigned int id= addTask ( t->nome,t->privilegi );
+    newt=getTask(id);
+    memcpy ( (char*)t, sizeof(struct taskStruct), (char*)newt );
+    newt->procID=id;
+    newt->listaPagine=0;
+    //alloca e copia le pagine
+    struct pagina *pointer;
+    pointer=t->listaPagine;
+    while(pointer!=0)
+    {   
+        allocaNuovaPagina (newt->procID,pointer->indirizzoLog );
+        memcpyToTask( (char*)pointer->indirizzoLog, 0x1000,  (char*)pointer->indirizzoLog, newt->procID );
+        pointer=pointer->next;
+    }
+printf(0,">>%d %d %s %s\n",procID,id,t->nome,newt->nome);
+    //copia i file descriptors aperti
+    for(unsigned int c=0;c<openNodeNumber;c++)
+    {   
+        if(openNodes[c]->procID==procID)
+        {
+            copyNodeDescriptor(procID,openNodes[c]->id,newt->procID,openNodes[c]->id);
+        }
+    }
+    return id;
 }

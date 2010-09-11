@@ -396,6 +396,34 @@ void moveNodeDescriptor(unsigned int procID,File id,unsigned int newProcID,File 
     pointer->procID=newProcID;
 }
 
+void copyNodeDescriptor(unsigned int procID,File id,unsigned int newProcID,File newId)
+{
+    struct fs_node_descriptor *pointer=0;
+    /*cerca il descrittore aperto*/
+    for(unsigned int c=0;c<openNodeNumber;c++)
+    {
+        if(openNodes[c]->id==id && openNodes[c]->procID==procID)
+        {
+            pointer=openNodes[c];
+        }
+    }
+
+    if(pointer==0)/*se non e' aperto*/
+        return;
+
+    struct fs_node_descriptor *nuovoNodo=kmalloc ( sizeof ( struct fs_node_descriptor ) );/*alloca un nuovo descrittore*/
+    nuovoNodo->id=newId;
+    nuovoNodo->procID=newProcID;
+    nuovoNodo->device=pointer->device;
+    nuovoNodo->inodeInfo=pointer->inodeInfo;
+    nuovoNodo->mode=pointer->mode;
+    nuovoNodo->type=pointer->type;
+
+    /*salva il nodo appena aperto nella lista*/
+    openNodes[openNodeNumber]=nuovoNodo;
+    openNodeNumber++;
+}
+
 void closeAllNodeDescriptors(unsigned int procID)
 {
     char t;

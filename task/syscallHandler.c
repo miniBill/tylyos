@@ -27,11 +27,18 @@ void handleSyscall()
 {
           File ret;
           int *desc;
+          unsigned int id;
     switch(runningTask->TSS.eax&0xFF){
         case 1:
           kill(runningTask->procID);
           printf(0,"KILLED!!!\n");
           forceSchedule();
+          break;
+        case 2:
+          id=fork(runningTask->procID);
+          runningTask->TSS.eax=0;
+          getTask(id)->TSS.eax=1;
+          printf(0,"FORK!!!\n");
           break;
         case 88:
           asm("cli");
@@ -57,7 +64,7 @@ void handleSyscall()
           printf(1,"chiuso file %d\n",runningTask->TSS.ebx);
           break;
         case 254:/*read file*/
-          printf(1,"read file %d: %d byte \"%s\"\n",runningTask->TSS.ebx,runningTask->TSS.edx,user_start+runningTask->TSS.ecx);
+          printf(1,"%d) read file %d: %d byte \"%s\"\n",runningTask->procID,runningTask->TSS.ebx,runningTask->TSS.edx,user_start+runningTask->TSS.ecx);
           ret = readFile(runningTask->procID,(File)runningTask->TSS.ebx,(char*)user_start+runningTask->TSS.ecx,runningTask->TSS.edx);
           runningTask->TSS.eax=(unsigned int)ret;
           break;
