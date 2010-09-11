@@ -505,3 +505,16 @@ void memcpyToTask( char * source, unsigned int count, char * dest, unsigned int 
 
     }
 }
+
+void kill(unsigned int procID)
+{
+    closeAllNodeDescriptors(procID);
+    struct pagina *pointer;
+    pointer=getTask ( procID )->listaPagine; 
+    while(pointer!=0)
+    {
+        deallocaPagina (procID,pointer->indirizzoLog );
+        pointer=getTask ( procID )->listaPagine; 
+    }
+    removeTask (procID );
+}

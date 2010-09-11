@@ -352,6 +352,7 @@ unsigned int removePaginaFromList ( unsigned int procID,unsigned int indirizzoLo
                 kfree ( temp );
                 return 1;
             }
+            pointer=pointer->next;
         }
     }
 

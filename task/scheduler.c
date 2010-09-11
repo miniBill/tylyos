@@ -94,7 +94,7 @@ void schedule()
             }
             while ( pointer!=0 );
         }
-        if(id>0)
+        if(id!=idleTaskID)
         {
            // printf(1,"<scheduler in action> %s\n",getTask(id)->nome);
             dispatch(id);
@@ -117,5 +117,5 @@ void idle()
     while(readFile(0,outputPipe,buffer,100)>0)
         printf(0,buffer);
     /*fa partire un task fittizio in modo da non tenere bloccati gli interrupt*/
-    dispatch(0);
+    dispatch(idleTaskID);
 }
