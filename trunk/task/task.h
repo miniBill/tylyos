@@ -136,5 +136,7 @@ unsigned int allocMemory(unsigned int procID, unsigned int baseLogicAddr,unsigne
 /*funzione per copiare dei dati in memoria ad un task non correntemente mappato*/
 void memcpyToTask( char * source, unsigned int count, char * dest, unsigned int procID );
 
+void kill(unsigned int procID);
+
 #endif
 

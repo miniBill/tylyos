@@ -139,14 +139,31 @@ void closeFile(unsigned int procID,File file)/*TODO: testare*/
                 c++;
             }
             openNodeNumber--;
-            return;
         }
     }
     
     if(pointer==0)
         return;
-    
-    pointer->device->freeInodeInfoPointer(pointer->inodeInfo);/*dealloca la struttura dell inode*/
+    if(pointer->type!=FS_PIPE)  
+        pointer->device->freeInodeInfoPointer(pointer->inodeInfo);/*dealloca la struttura dell inode*/
+    else/*se e' una pipe deve togliere anche l'altro descrittore*/
+    {
+        for(unsigned int c=0;c<openNodeNumber;c++)/*passa tutti i nodi aperti*/
+        {   
+            if(openNodes[c]->inodeInfo==pointer->inodeInfo)/*se punta alla stessa pipe*/
+            {
+                kfree(openNodes[c]);
+                /*cancella dalla lista*/
+                while(c+1<openNodeNumber)
+                {
+                    openNodes[c]=openNodes[c+1];
+                    c++;
+                }
+                openNodeNumber--;
+            }
+        }
+    }
+    kfree(pointer->inodeInfo);
     kfree(pointer);/*dealloca il descrittore*/
 }
 
@@ -377,4 +394,23 @@ void moveNodeDescriptor(unsigned int procID,File id,unsigned int newProcID,File 
 
     pointer->id=newId;
     pointer->procID=newProcID;
+}
+
+void closeAllNodeDescriptors(unsigned int procID)
+{
+    char t;
+
+    do/*passa la lista e finche' ne trova elimina idescrittori legati al task specificato*/
+    {
+        t=0;
+        for(unsigned int c=0;c<openNodeNumber;c++)
+        {
+            if( openNodes[c]->procID==procID )
+            {
+                closeFile(openNodes[c]->procID,openNodes[c]->id);
+                t=1;
+                break;
+            }
+        }
+    }while(t);
 }

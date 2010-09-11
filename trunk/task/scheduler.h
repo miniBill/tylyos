@@ -19,6 +19,8 @@
 #ifndef SCHEDULER_H
 #define SCHEDULER_H
 
+unsigned int idleTaskID;/*contiene l'id del task idle in modo che lo scheduler si accorga quando arriva il momento di eseguire le operazioni*/
+
 unsigned int scheduleTimeSlice;
 unsigned long int lastSchedule;
 char activeScheduler;

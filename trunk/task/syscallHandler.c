@@ -29,7 +29,9 @@ void handleSyscall()
           int *desc;
     switch(runningTask->TSS.eax&0xFF){
         case 1:
-          kernelPanic("handleSyscall","TASK TERMINATO!!!!");
+          kill(runningTask->procID);
+          printf(0,"KILLED!!!\n");
+          forceSchedule();
           break;
         case 88:
           asm("cli");

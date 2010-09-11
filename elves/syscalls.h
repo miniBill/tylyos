@@ -1,5 +1,10 @@
 #include <kernel/syscall.h>
 
+void exit(int status)
+{
+    syscallone(1,status);
+}
+
 int openFile(char *path,char mode)
 {
     int ret;
