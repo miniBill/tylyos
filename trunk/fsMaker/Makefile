@@ -6,7 +6,7 @@ all:../c.img
 .PHONY: out.img
 
 out.img : main
-	@echo "512\n1000" | ./main
+	@echo "1024\n1024\n" | ./main
 
 .PHONY: clean
 

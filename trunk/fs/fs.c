@@ -148,19 +148,26 @@ void closeFile(unsigned int procID,File file)/*TODO: testare*/
         pointer->device->freeInodeInfoPointer(pointer->inodeInfo);/*dealloca la struttura dell inode*/
     else/*se e' una pipe deve togliere anche l'altro descrittore*/
     {
+        unsigned int found=0;
+        unsigned int ci=0;
         for(unsigned int c=0;c<openNodeNumber;c++)/*passa tutti i nodi aperti*/
         {   
             if(openNodes[c]->inodeInfo==pointer->inodeInfo)/*se punta alla stessa pipe*/
             {
-                kfree(openNodes[c]);
-                /*cancella dalla lista*/
-                while(c+1<openNodeNumber)
-                {
-                    openNodes[c]=openNodes[c+1];
-                    c++;
-                }
-                openNodeNumber--;
+                found+=1;
+                ci=c;
             }
+        }
+        if(found==1)/*se ne e' rimasto solo uno ed e' quindi orfano*/
+        {
+            kfree(openNodes[ci]);
+            /*cancella dalla lista*/
+            while(ci+1<openNodeNumber)
+            {
+                openNodes[ci]=openNodes[ci+1];
+                ci++;
+            }
+            openNodeNumber--;
         }
     }
     kfree(pointer->inodeInfo);

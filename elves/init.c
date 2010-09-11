@@ -16,8 +16,8 @@ int main()
               int r=fork();
               if(r==0)
               {
-                  printf("io sono il vecchio task e vado in loop\n");
-                  while(1);
+                  printf("io sono il vecchio task e mi killo\n");
+                  exit(0);
               }
               else
               {
