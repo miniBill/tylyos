@@ -22,6 +22,10 @@ ASFLAGS:= -march=i386
 .PHONY:all
 all: ottanta hello idle init
 
+shell:shell.o
+	$(LD) $(LDFLAGS) -o $@ $^
+	strip $@
+
 init:init.o
 	$(LD) $(LDFLAGS) -o $@ $^
 	strip $@
@@ -44,4 +48,4 @@ Makefile.in:
 
 .PHONY: clean
 clean:
-	rm -f *\~ *.o ottanta hello idle init
+	rm -f *\~ *.o ottanta hello idle init shell

@@ -87,7 +87,7 @@ unsigned int get(char *buffer,unsigned int bufferSize)
 }
 
 
-void pipe(int descriptors[2])
+void pipe(File descriptors[2])
 {
     syscallone(200,descriptors);
 }

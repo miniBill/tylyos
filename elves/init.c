@@ -3,29 +3,28 @@
 int main()
 {
     char test[100];
-mov2(1,5);
-mov2(5,1);
+    File pipein[2];/*read 0,write 1*/
+    File pipeout[2];/*read 0,write 1*/
+    pipe(pipein);
+    pipe(pipeout);
+    unsigned int r=fork();
+    if(r==0)
+    {  
+        mov2(pipein[0],1);
+        mov2(pipeout[1],2);
+//        exec("/shell");
+    }
     while(1)
     {
-     int n=get(test,100);
+      int n=get(test,100);
       if(n>0)
       {
-          printf(test);
-          if(test[0]=='Q')//TEST
-              exit(0);
-          if(test[0]=='F')//TEST
-          {
-              int r=fork();
-              if(r!=0)
-              {
-                  printf("io sono il vecchio task\n");
-              }
-              else
-              {
-                  printf("io sono il fork\n");
-                  exec("/ottanta");
-              }
-          }
+      //    writeFile(pipein[1],test,strlen(test));
+      }
+      //n=readFile(pipeout[0],test,100);
+      if(n>0)
+      {
+     //     printf(test);
       }
       syssleep(100);
     }
