@@ -10,21 +10,21 @@ int main()
     unsigned int r=fork();
     if(r==0)
     {  
- //       mov2(pipein[0],1); IL PROBLEMA STA' QUI'!!!!!!!!!!!!!!
-  //      mov2(pipeout[1],2);IL PROBLEMA STA' QUI'!!!!!!!!!!!!!!
-        exec("/ottanta");
+        mov2(pipein[0],1); 
+        mov2(pipeout[1],2);
+        exec("/shell");
     }
     while(1)
     {
       int n=get(test,100);
       if(n>0)
       {
-      //    writeFile(pipein[1],test,strlen(test));
+          writeFile(pipein[1],test,strlen(test));
       }
-      //n=readFile(pipeout[0],test,100);
+      n=readFile(pipeout[0],test,100);
       if(n>0)
       {
-     //     printf(test);
+          printf(test);
       }
       syssleep(100);
     }

@@ -2,7 +2,6 @@
 
 int main()
 {
-while(1);
     char test[100];
     while(1)
     {
