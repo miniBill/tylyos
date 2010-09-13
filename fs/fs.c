@@ -145,7 +145,9 @@ void closeFile(unsigned int procID,File file)/*TODO: testare*/
     if(pointer==0)
         return;
     if(pointer->type!=FS_PIPE)  
+    {
         pointer->device->freeInodeInfoPointer(pointer->inodeInfo);/*dealloca la struttura dell inode*/
+    }
     else/*se e' una pipe deve togliere anche l'altro descrittore*/
     {
         unsigned int found=0;
@@ -161,6 +163,7 @@ void closeFile(unsigned int procID,File file)/*TODO: testare*/
         if(found==1)/*se ne e' rimasto solo uno ed e' quindi orfano*/
         {
             kfree(openNodes[ci]);
+            kfree(pointer->inodeInfo);
             /*cancella dalla lista*/
             while(ci+1<openNodeNumber)
             {
@@ -170,7 +173,6 @@ void closeFile(unsigned int procID,File file)/*TODO: testare*/
             openNodeNumber--;
         }
     }
-    kfree(pointer->inodeInfo);
     kfree(pointer);/*dealloca il descrittore*/
 }
 
@@ -199,7 +201,6 @@ void pipe(unsigned int procID,File descriptors[2])/*alloca due descrittori, uno 
 
     /*genera l'id ed inserisce nella lista il descrittore*/
     idLettura=getUnusedOpenNodeId(procID);
-printf(1,">>>>>%d\n",idLettura);
     if ( idLettura==0 ) /*raggiunto il numero massimo di nodi aperti*/
     {
         kfree(nodoLettura);
@@ -213,7 +214,6 @@ printf(1,">>>>>%d\n",idLettura);
 
     /*genera l'id ed inserisce nella lista il descrittore*/
     idScrittura=getUnusedOpenNodeId(procID);
-printf(1,">>>>>%d\n",idScrittura);
     if ( idScrittura==0 ) /*raggiunto il numero massimo di nodi aperti*/
     {
         kfree(nodoLettura);
