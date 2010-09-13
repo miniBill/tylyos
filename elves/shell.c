@@ -5,10 +5,13 @@ int main()
     char test[100];
     while(1)
     {
-      int n=get(test,100);
+      printf("# >:");
+      int n=readLine(test,100);
       if(n>0)
       {  
+          printf("readLine: ");
           printf(test);
+          printf("\n");
       }
       syssleep(100);
     }

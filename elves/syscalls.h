@@ -2,6 +2,7 @@
 
 typedef unsigned int File;
 
+
 void exit(int status)
 {
     syscallone(1,status);
@@ -90,4 +91,42 @@ unsigned int get(char *buffer,unsigned int bufferSize)
 void pipe(File descriptors[2])
 {
     syscallone(200,descriptors);
+}
+
+unsigned int readLine(char *buffer,unsigned int bufferSize)
+{
+    unsigned int i=0;
+    char c[2];
+    buffer[0]=0;
+    while(1)
+    {   
+        if(get(c,1))
+        {  
+            switch(c[0])
+            {
+            case '\n':
+                printf("\n");
+                return i;
+                break;
+            case '\b':
+                if(i>0)
+                {
+                    printf("\b");
+                    i-=1;
+                    buffer[i]=0;
+                }
+                break;
+            default:
+                if(i<bufferSize-2)
+                {  
+                    printf(c);
+                    buffer[i]=c[0];
+                    buffer[i+1]=0;
+                    i+=1;
+                }
+                break;
+            }
+
+        }
+    }
 }

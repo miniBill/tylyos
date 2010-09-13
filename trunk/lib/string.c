@@ -125,10 +125,19 @@ number:
           i++;
         }
       else {
-          if (format[i] != '\n')
+          switch(format[i])
+          {
+          case '\n':
+             nl(console);
+             break;
+          case '\b':
+             goto_x(console, col(console) - 1);
+             put_x(' ', console, col(console));
+             break;
+          default:
             put(format[i], console);
-          else
-            nl(console);
+            break;
+          }
           size++;
         }
     }

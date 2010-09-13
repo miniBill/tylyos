@@ -67,24 +67,24 @@ void handleSyscall()
         case 252:/*open file*/
           ret = openFile(runningTask->procID,(char*)user_start+runningTask->TSS.ebx,(char)user_start+runningTask->TSS.ecx);
           runningTask->TSS.eax=(unsigned int)ret;
-          printf(1,"aperto file: %d\n",ret);
+          //printf(1,"aperto file: %d\n",ret);
           break;
         case 253:/*close file*/
           closeFile(runningTask->procID,runningTask->TSS.ebx);
-          printf(1,"chiuso file %d\n",runningTask->TSS.ebx);
+          //printf(1,"chiuso file %d\n",runningTask->TSS.ebx);
           break;
         case 254:/*read file*/
-          printf(1,"%d) read file %d: %d byte \"%s\"\n",runningTask->procID,runningTask->TSS.ebx,runningTask->TSS.edx,user_start+runningTask->TSS.ecx);
+          //printf(1,"%d) read file %d: %d byte \"%s\"\n",runningTask->procID,runningTask->TSS.ebx,runningTask->TSS.edx,user_start+runningTask->TSS.ecx);
           ret = readFile(runningTask->procID,(File)runningTask->TSS.ebx,(char*)user_start+runningTask->TSS.ecx,runningTask->TSS.edx);
           runningTask->TSS.eax=(unsigned int)ret;
           break;
         case 200:/*pipe*/
           desc=(int*)(user_start+runningTask->TSS.ebx);
           pipe(runningTask->procID,desc);
-          printf(1,"pipe %d,%d\n",desc[0],desc[1]);
+          //printf(1,"pipe %d,%d\n",desc[0],desc[1]);
           break;
         case 201:/*write file*/
-          printf(1,"write file %d: %d byte \"%s\"\n",runningTask->TSS.ebx,runningTask->TSS.edx,user_start+runningTask->TSS.ecx);
+          //printf(1,"write file %d: %d byte \"%s\"\n",runningTask->TSS.ebx,runningTask->TSS.edx,user_start+runningTask->TSS.ecx);
           ret = writeFile(runningTask->procID,(File)runningTask->TSS.ebx,(char*)user_start+runningTask->TSS.ecx,runningTask->TSS.edx);
           runningTask->TSS.eax=(unsigned int)ret;
           break;

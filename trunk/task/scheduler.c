@@ -24,7 +24,7 @@
 
 void initScheduler()
 {
-    scheduleTimeSlice=50;
+    scheduleTimeSlice=25;
     activeScheduler=0;
     lastSchedule=0;
 }

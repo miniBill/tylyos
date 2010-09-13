@@ -20,7 +20,7 @@ LDFLAGS:= -nostdlib -melf_i386 -T linker.ld
 ASFLAGS:= -march=i386
 
 .PHONY:all
-all: ottanta hello idle init
+all: ottanta hello idle init shell
 
 shell:shell.o
 	$(LD) $(LDFLAGS) -o $@ $^

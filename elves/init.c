@@ -26,6 +26,6 @@ int main()
       {
           printf(test);
       }
-      syssleep(100);
+      //syssleep(100);
     }
 }
