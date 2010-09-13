@@ -10,9 +10,9 @@ int main()
     unsigned int r=fork();
     if(r==0)
     {  
-        mov2(pipein[0],1);
-        mov2(pipeout[1],2);
-//        exec("/shell");
+ //       mov2(pipein[0],1); IL PROBLEMA STA' QUI'!!!!!!!!!!!!!!
+  //      mov2(pipeout[1],2);IL PROBLEMA STA' QUI'!!!!!!!!!!!!!!
+        exec("/ottanta");
     }
     while(1)
     {
