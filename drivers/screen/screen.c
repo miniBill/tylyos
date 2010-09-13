@@ -227,12 +227,24 @@ void nl(unsigned int console) {
   goto_xy(console, 0, y[console] + 1);
 }
 
-void write(const char* string, unsigned int console) {
+void write(const char* string, unsigned int console)
+{
   for (int k = 0; string[k] != 0; k++)
-    if (string[k] != '\n')
-      put(string[k], console);
-    else
-      nl(console);
+  {
+    switch(string[k])
+    {
+    case '\n':
+        nl(console);
+        break;
+    case '\b':
+        goto_x(console, col(console) - 1);
+        put_x(' ', console, col(console));
+        break;
+    default:
+        put(string[k], console);
+        break;
+    }
+  }
     if(console==currentConsole)
       blit();
 }
