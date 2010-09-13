@@ -16,12 +16,12 @@ int main()
               int r=fork();
               if(r==0)
               {
-                  printf("io sono il vecchio task e mi killo\n");
-                  exit(0);
+                  printf("io sono il vecchio task\n");
               }
               else
               {
                   printf("io sono il fork\n");
+                  exec("/ottanta");
               }
           }
       }

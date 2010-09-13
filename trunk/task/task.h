@@ -112,7 +112,7 @@ void TSSset(int num, unsigned int base, unsigned char access);
 unsigned int getNewProcID();
 
 /*funzione da usare per eseguire un task, il parametro path serve a dafinire il file in formato elf da cui caricare il task*/
-int exec(char *path,char privilegi);
+int start(char *path,char privilegi);
 /*alloca le strutture ed aggiunge il task alla lista dei processi*/
 /*ritorna l'id del task*/
 int addTask(char nome[MAX_TASK_NAME_LEN],char privilegi);
@@ -136,9 +136,13 @@ unsigned int allocMemory(unsigned int procID, unsigned int baseLogicAddr,unsigne
 /*funzione per copiare dei dati in memoria ad un task non correntemente mappato*/
 void memcpyToTask( char * source, unsigned int count, char * dest, unsigned int procID );
 
+void freeTaskPages(unsigned int procID);
+
 void kill(unsigned int procID);
 
 unsigned int fork(unsigned int procID);
+
+void exec(unsigned int procID,char *path);
 
 #endif
 

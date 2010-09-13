@@ -5,6 +5,11 @@ void exit(int status)
     syscallone(1,status);
 }
 
+void exec(char *path)
+{
+    syscallone(3,path);
+}
+
 int fork()
 {
     int ret;
