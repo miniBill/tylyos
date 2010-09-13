@@ -37,8 +37,8 @@ void handleSyscall()
           break;
         case 2:/*fork*/
           id=fork(runningTask->procID);
-          runningTask->TSS.eax=0;
-          getTask(id)->TSS.eax=1;
+          runningTask->TSS.eax=id;
+          getTask(id)->TSS.eax=0;
           //printf(0,"FORK!!!\n");
           break;
         case 3:/*exec*/
