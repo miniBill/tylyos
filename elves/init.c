@@ -16,7 +16,7 @@ mov2(5,1);
           if(test[0]=='F')//TEST
           {
               int r=fork();
-              if(r==0)
+              if(r!=0)
               {
                   printf("io sono il vecchio task\n");
               }
