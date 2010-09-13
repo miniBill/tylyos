@@ -449,3 +449,18 @@ void closeAllNodeDescriptors(unsigned int procID)
         }
     }while(t);
 }
+
+/*modifica l'id di un file descriptor, in caso il nuovo fd sia gia' usato elimina il vecchio*/
+File movFileDescriptorTo(unsigned int procID,File file,File newfile)
+{
+    closeFile(procID,newfile);
+    /*cerca il descrittore del file aperto*/
+    for(unsigned int c=0;c<openNodeNumber;c++)
+    {   
+        if(openNodes[c]->id==file && openNodes[c]->procID==procID)
+        {
+            openNodes[c]->id=newfile;
+        }
+    }
+    return newfile;
+}

@@ -1,5 +1,7 @@
 #include <kernel/syscall.h>
 
+typedef unsigned int File;
+
 void exit(int status)
 {
     syscallone(1,status);
@@ -8,6 +10,16 @@ void exit(int status)
 void exec(char *path)
 {
     syscallone(3,path);
+}
+
+File mov2(File file,File newfile)
+{
+    File ret;
+    syscalltwo(4,file,newfile);
+    asm( "mov %%eax, %0;"
+          :"=r"(ret)
+       );
+    return ret;
 }
 
 int fork()

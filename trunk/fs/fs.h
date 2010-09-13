@@ -145,5 +145,8 @@ void copyNodeDescriptor(unsigned int procID,File id,unsigned int newProcID,File 
 
 void closeAllNodeDescriptors(unsigned int procID);
 
+/*modifica l'id di un file descriptor, in caso il nuovo fd sia gia' usato elimina il vecchio*/
+File movFileDescriptorTo(unsigned int procID,File file,File newfile);
+
 
 #endif

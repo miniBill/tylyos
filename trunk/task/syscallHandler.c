@@ -46,6 +46,10 @@ void handleSyscall()
           //printf(0,"EXEC!!!\n");
           forceSchedule();
           break;
+        case 4:/*move file descriptor*/
+          ret=movFileDescriptorTo(runningTask->procID,runningTask->TSS.ebx,runningTask->TSS.ecx);
+          runningTask->TSS.eax=(unsigned int)ret;
+          break;
         case 88:
           asm("cli");
           clearIdt();

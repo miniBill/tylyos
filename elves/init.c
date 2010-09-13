@@ -3,6 +3,8 @@
 int main()
 {
     char test[100];
+mov2(1,5);
+mov2(5,1);
     while(1)
     {
      int n=get(test,100);
