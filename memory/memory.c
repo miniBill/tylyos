@@ -285,7 +285,10 @@ void addPaginaToTaskPageList ( struct pagina *p )
     pointer=taskPointer->listaPagine;
 
     if ( pointer==0 ) /*se la lista e' vuota aggiungi all inizio*/
+    {
         taskPointer->listaPagine=p;
+        p->next=0;
+    }
     else
     {
         /*se e' da aggiungere prima del primo elemento*/
@@ -302,7 +305,7 @@ void addPaginaToTaskPageList ( struct pagina *p )
             /*se l'elemento precedente ha un indirizzo minore o uguale ed il successivo ha un indirizzo maggiore, inserisci*/
             if ( pointer->indirizzoLog<=p->indirizzoLog && pointer->next->indirizzoLog>p->indirizzoLog )
             {
-                p->next=pointer->next;
+                p->next=pointer->next->next;
                 pointer->next=p;
                 return;
             }

@@ -115,7 +115,7 @@ void TSSset ( int num, unsigned int base, unsigned char access )
 }
 
 /*funzione da usare per eseguire un task, il parametro path serve a dafinire il file in formato elf da cui caricare il task*/
-int exec(char *path,char privilegi)
+int start(char *path,char privilegi)
 {
     struct taskStruct *newTask;
 
@@ -510,14 +510,19 @@ void memcpyToTask( char * source, unsigned int count, char * dest, unsigned int 
 void kill(unsigned int procID)
 {
     closeAllNodeDescriptors(procID);
+    freeTaskPages(procID);
+    removeTask (procID );
+}
+
+void freeTaskPages(unsigned int procID)
+{
     struct pagina *pointer;
-    pointer=getTask ( procID )->listaPagine; 
+    pointer=getTask ( procID )->listaPagine;
     while(pointer!=0)
     {
         deallocaPagina (procID,pointer->indirizzoLog );
-        pointer=getTask ( procID )->listaPagine; 
+        pointer=getTask ( procID )->listaPagine;
     }
-    removeTask (procID );
 }
 
 /*ritorna l'id del nuovo task*/
@@ -540,7 +545,6 @@ unsigned int fork(unsigned int procID)
         memcpyToTask( (char*)pointer->indirizzoLog, 0x1000,  (char*)pointer->indirizzoLog, newt->procID );
         pointer=pointer->next;
     }
-printf(0,">>%d %d %s %s\n",procID,id,t->nome,newt->nome);
     //copia i file descriptors aperti
     for(unsigned int c=0;c<openNodeNumber;c++)
     {   
@@ -550,4 +554,20 @@ printf(0,">>%d %d %s %s\n",procID,id,t->nome,newt->nome);
         }
     }
     return id;
+}
+
+/*modifica l'eseguibile in memoria mantenendo i file descriptor aperti*/
+void exec(unsigned int procID,char *path)
+{
+    /*TODO: pulire la pagedir prima altrimenti potrebbero rimanere pagine mappate a caso*/
+    freeTaskPages(procID);
+    if(loader_loadElf(path,procID)==LOADER_OK)
+    {
+        printf(1,"elf caricato\n");
+    }
+    else
+    {  
+        printf(1,"errore nel caricamento dell elf\n");
+    }
+    
 }

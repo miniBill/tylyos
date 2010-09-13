@@ -90,7 +90,7 @@ void dispatcher_mapPages(struct taskStruct *t)
     struct pagina *currentPage;
     char flags=PAG_PRESENT|PAG_READWRITE|PAG_USER|PAG_4KPAGE;
 
-    if(runningTask!=0)
+    if(runningTask!=0 )
     {
         currentPage=runningTask->listaPagine;
 

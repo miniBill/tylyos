@@ -278,10 +278,10 @@ void _kmain(multiboot_info_t* mbd, unsigned int magicN) {
   
   /*TODO: mettere l'inizializzazione automatica da un altra parte*/
   /*inizializza il task idle e gli assegna id 1*/  
-  idleTaskID=exec("/idle",'5');
+  idleTaskID=start("/idle",'5');
 
   /*fa partire il task init*/
-  int initID=exec("/init",'5');
+  int initID=start("/init",'5');
   initTask=getTask(initID);
   int pipeTmp[2];
   /*INPUT*/
