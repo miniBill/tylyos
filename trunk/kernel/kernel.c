@@ -275,9 +275,9 @@ void _kmain(multiboot_info_t* mbd, unsigned int magicN) {
 
 
   gui_printImageFromFile("/tylyos.bmp",0,0);
+
+  printf(0,"memoria fisica: %uMB\n",memoriaFisica/1000000);
   
-  /*TODO: mettere l'inizializzazione automatica da un altra parte*/
-  /*inizializza il task idle e gli assegna id 1*/  
   idleTaskID=start("/idle",'5');
 
   /*fa partire il task init*/
@@ -296,7 +296,6 @@ void _kmain(multiboot_info_t* mbd, unsigned int magicN) {
   initScheduler();
   startScheduler();
 
-printf(0,"memoria fisica: %u\n\n",memoriaFisica/1000000);
 
   dispatch(initTask->procID);
 

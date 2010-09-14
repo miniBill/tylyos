@@ -135,7 +135,6 @@ loader_returnCode loader_loadElf(char *path,int procId)
     
     char *buffer=kmalloc(dimensione);
     buffer[dimensione-1]=0;
-printf(0,"a\n");    
     
     readFile(0,file,buffer,dimensione);
     
@@ -221,6 +220,5 @@ printf(0,"a\n");
     {
         return LOADER_BAD_FORMAT;
     }
-printf(0,"fine\n");
     return LOADER_OK;
 }

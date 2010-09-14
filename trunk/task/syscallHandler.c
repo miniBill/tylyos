@@ -39,16 +39,16 @@ void handleSyscall()
           id=fork(runningTask->procID);
           runningTask->TSS.eax=id;
           getTask(id)->TSS.eax=0;
-          printf(0,"FORK!!!\n");
+          //printf(0,"FORK!!!\n");
           break;
         case 3:/*exec*/
           exec(runningTask->procID,(char*)user_start+runningTask->TSS.ebx);
-          printf(0,"EXEC!!!\n");
+          //printf(0,"EXEC!!!\n");
           forceSchedule();
           break;
         case 4:/*move file descriptor*/
           ret=movFileDescriptorTo(runningTask->procID,runningTask->TSS.ebx,runningTask->TSS.ecx);
-          printf(0,"MOV!!!\n");
+          //printf(0,"MOV!!!\n");
           runningTask->TSS.eax=(unsigned int)ret;
           break;
         case 88:
@@ -82,7 +82,7 @@ void handleSyscall()
         case 200:/*pipe*/
           desc=(int*)(user_start+runningTask->TSS.ebx);
           pipe(runningTask->procID,desc);
-          printf(0,"pipe %d,%d\n",desc[0],desc[1]);
+          //printf(0,"pipe %d,%d\n",desc[0],desc[1]);
           break;
         case 201:/*write file*/
           //printf(1,"write file %d: %d byte \"%s\"\n",runningTask->TSS.ebx,runningTask->TSS.edx,user_start+runningTask->TSS.ecx);
