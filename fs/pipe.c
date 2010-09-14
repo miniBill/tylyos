@@ -38,7 +38,7 @@ void deletePipe(struct pipe *p)
 /*ritorna il numero di byte scritti, se e' minore di count significa che la pipe e' piena*/
 unsigned int writeOnPipe(struct pipe *p,char *data,unsigned int count)
 {
-    if(p->inputPointer==p->outputPointer-1)
+    if(p->inputPointer==p->outputPointer-1 || (p->inputPointer==PIPE_BUFFER_SIZE-1 && p->outputPointer==0))
         return 0;
     else
     {
@@ -46,7 +46,7 @@ unsigned int writeOnPipe(struct pipe *p,char *data,unsigned int count)
         while(i<count)
         {
             p->buffer[p->inputPointer]=data[i];
-            if(p->inputPointer==p->outputPointer-1)
+            if(p->inputPointer==p->outputPointer-1 || (p->inputPointer==PIPE_BUFFER_SIZE-1 && p->outputPointer==0))
             {
                 i++;
                 break;
@@ -54,7 +54,9 @@ unsigned int writeOnPipe(struct pipe *p,char *data,unsigned int count)
 
             p->inputPointer++;
             if(p->inputPointer==PIPE_BUFFER_SIZE)
+            {
                 p->inputPointer=0;
+            }
             i++;
         }
         return i;
@@ -73,6 +75,9 @@ unsigned int readOnPipe(struct pipe *p,char *data,unsigned int count)
         while(i<count)
         {
             data[i]=p->buffer[p->outputPointer];
+            p->buffer[p->outputPointer]='A';
+            if(i+1<count)
+               data[i+1]=0;
             if(p->outputPointer==p->inputPointer)
             {
                 break;
@@ -80,9 +85,12 @@ unsigned int readOnPipe(struct pipe *p,char *data,unsigned int count)
 
             p->outputPointer++;
             if(p->outputPointer==PIPE_BUFFER_SIZE)
+            {
                 p->outputPointer=0;
+            }
             i++;
         }
+        //data[i+1]=0;
         return i;
     }
 }

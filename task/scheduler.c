@@ -113,9 +113,13 @@ dovra' mandare in esecuzione un task dedicato alla gestione dei tempi morti
 void idle()
 {
     //printf(1,"idle\n");
-    char buffer[100];
-    while(readFile(0,outputPipe,buffer,100)>0)
+    char buffer[101];
+    int n=readFile(0,outputPipe,buffer,100);
+    if(n>0)
+    {
+        buffer[n]=0;
         printf(0,buffer);
+    }
     /*fa partire un task fittizio in modo da non tenere bloccati gli interrupt*/
     dispatch(idleTaskID);
 }

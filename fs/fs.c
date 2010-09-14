@@ -27,6 +27,7 @@ file contenente tutte le funzioni base per accedere al file system indipendentem
 #include <memory/memory.h>
 #include <lib/string.h>
 #include <fs/pipe.h>
+#include <task/dispatcher.h>
 
 void initDeviceFsManager()
 {
@@ -229,7 +230,7 @@ void pipe(unsigned int procID,File descriptors[2])/*alloca due descrittori, uno 
     descriptors[1]=nodoScrittura->id;
 }
 
-unsigned int readFile(unsigned int procID,File file,char *buffer,unsigned int byteCount)/*TODO: testare*/
+int readFile(unsigned int procID,File file,char *buffer,unsigned int byteCount)/*TODO: testare*/
 {
     struct fs_node_descriptor *pointer=0;
     /*cerca il descrittore del file aperto*/
@@ -243,7 +244,7 @@ unsigned int readFile(unsigned int procID,File file,char *buffer,unsigned int by
     
 
     if(pointer==0)/*se non e' aperto*/
-        return 0;
+        return -1;
       
     if(pointer->type&FS_FILE)
         return pointer->device->readFile(pointer,buffer,byteCount);
@@ -253,7 +254,7 @@ unsigned int readFile(unsigned int procID,File file,char *buffer,unsigned int by
     return 0;
 }
 
-unsigned int writeFile(unsigned int procID,File file, char* buffer, unsigned int byteCount)/*TODO: testare*/
+int writeFile(unsigned int procID,File file, char* buffer, unsigned int byteCount)/*TODO: testare*/
 {
     struct fs_node_descriptor *pointer=0;
     /*cerca il descrittore del file aperto*/
@@ -266,7 +267,7 @@ unsigned int writeFile(unsigned int procID,File file, char* buffer, unsigned int
     }
     
     if(pointer==0)/*se non e' aperto*/
-        return 0;
+        return -1;
     
     if(pointer->type&FS_FILE)
         return pointer->device->writeFile(pointer,buffer,byteCount);
