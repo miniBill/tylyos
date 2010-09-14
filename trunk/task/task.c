@@ -424,7 +424,6 @@ unsigned int deallocaPagina ( unsigned int procID,unsigned int indirizzoLog )
     
     /*rimuove la pagina dalla lista e dealloca la struttura*/
     removePaginaFromList ( procID,indirizzoLog );
-    
     return 1;
 }
 
@@ -561,6 +560,7 @@ void exec(unsigned int procID,char *path)
 {
     /*TODO: pulire la pagedir prima altrimenti potrebbero rimanere pagine mappate a caso*/
     freeTaskPages(procID);
+printf(0,"ELFFFF\n");
     if(loader_loadElf(path,procID)==LOADER_OK)
     {
         printf(0,"elf caricato\n");

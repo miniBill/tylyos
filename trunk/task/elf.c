@@ -114,7 +114,6 @@ void loader_checkHeader(char *path)
 /*funzione che carica nella memoria di un task i relativi dati leggendoli da un file elf*/
 loader_returnCode loader_loadElf(char *path,int procId)
 {
-    
     struct taskStruct *t=getTask(procId);
     
     /*setta i selettori di segmento nel TSS*/
@@ -135,6 +134,8 @@ loader_returnCode loader_loadElf(char *path,int procId)
     dimensione=fileSize(0,file);
     
     char *buffer=kmalloc(dimensione);
+    buffer[dimensione-1]=0;
+printf(0,"a\n");    
     
     readFile(0,file,buffer,dimensione);
     
@@ -220,6 +221,6 @@ loader_returnCode loader_loadElf(char *path,int procId)
     {
         return LOADER_BAD_FORMAT;
     }
-    
+printf(0,"fine\n");
     return LOADER_OK;
 }
