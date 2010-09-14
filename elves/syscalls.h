@@ -37,6 +37,16 @@ int fork()
     return ret;
 }
 
+int strcmp(const char *a, const char *b)
+{
+    while(*a && *b) {
+        if(*a++ != *b++) return 1;
+    }
+    if(*a || *b) return 1;
+    return 0;
+}
+
+
 
 int openFile(char *path,char mode)
 {
@@ -53,7 +63,7 @@ void closeFile(int file)
     syscallone(253,file);
 }
 
-unsigned int readFile(int file,char *buffer,unsigned int byteCount)
+int readFile(int file,char *buffer,unsigned int byteCount)
 {
     int ret;
     syscallthree(254,file,buffer,byteCount);
@@ -63,7 +73,7 @@ unsigned int readFile(int file,char *buffer,unsigned int byteCount)
     return ret;
 }
 
-unsigned int writeFile(int file,char *buffer,unsigned int byteCount)
+int writeFile(int file,char *buffer,unsigned int byteCount)
 {   
     int ret;
     syscallthree(201,file,buffer,byteCount);
@@ -267,6 +277,7 @@ unsigned int readLine(char *buffer,unsigned int bufferSize)
     {   
         if(get(c,1))
         {  
+            c[1]=0;
             switch(c[0])
             {
             case '\n':
@@ -282,7 +293,7 @@ unsigned int readLine(char *buffer,unsigned int bufferSize)
                 }
                 break;
             default:
-                if(i<bufferSize-2)
+                if(i<bufferSize-1)
                 {  
                     printf(c);
                     buffer[i]=c[0];
@@ -297,3 +308,23 @@ unsigned int readLine(char *buffer,unsigned int bufferSize)
 }
 
 
+void forkExec(char *path,File _p[2])
+{
+    File pipein[2];/*read 0,write 1*/
+    File pipeout[2];/*read 0,write 1*/
+    pipe(pipein);
+    pipe(pipeout);
+    unsigned int r=fork();
+    if(r==0)
+    {
+        closeFile(pipein[1]);
+        closeFile(pipeout[0]);
+        mov2(pipein[0],STANDARD_INPUT);
+        mov2(pipeout[1],STANDARD_OUTPUT);
+        exec(path);
+    }
+    closeFile(pipein[0]);
+    closeFile(pipeout[1]);
+    _p[0]=pipeout[0];
+    _p[1]=pipein[1];
+}

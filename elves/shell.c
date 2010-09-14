@@ -1,21 +1,5 @@
 #include "syscalls.h"
 
-void forkExec(char *path,File _p[2])
-{
-    File pipein[2];/*read 0,write 1*/
-    File pipeout[2];/*read 0,write 1*/
-    pipe(pipein);
-    pipe(pipeout);
-    unsigned int r=fork();
-    if(r==0)
-    {  
-        mov2(pipein[0],STANDARD_INPUT);
-        mov2(pipeout[1],STANDARD_OUTPUT);
-        exec(path);
-    }
-    _p[0]=pipeout[0];
-    _p[1]=pipein[1];
-}
 
 int main()
 {
@@ -32,6 +16,12 @@ int main()
           if(n>0)
           {  
               printf("readLine: %s\n",test);
+              if(strcmp(test,"exit")==0)
+              {
+                  syssleep(100);
+                  exit(0);
+              }
+              
               forkExec(test,pp);
               task=1;
           }
@@ -42,6 +32,11 @@ int main()
           if(n>0)
           {
               printf(test);
+          }
+          if(n==-1)
+          {
+              task=0;
+              closeFile(pp[1]);
           }
           n=get(test,100);
           if(n>0)

@@ -20,12 +20,12 @@
 #ifndef PIPE_H
 #define PIPE_H
 
-#define PIPE_BUFFER_SIZE 0x1000
+#define PIPE_BUFFER_SIZE 50
 
 struct pipe
 {
-    unsigned short inputPointer;
-    unsigned short outputPointer;
+    int inputPointer;
+    int outputPointer;
     char buffer[PIPE_BUFFER_SIZE];
 };
 

@@ -61,8 +61,8 @@ File openFile(unsigned int procID,char *path,char mode);/*cerca il device e l'in
 void closeFile(unsigned int procID,File file);/*dealloca il fs_node_descriptor allocato con la precedente open*/
 void pipe(unsigned int procID,File descriptors[2]);/*alloca due descrittori, uno in lettura ed uno in scrittura, di tipo PIPE*/
 
-unsigned int readFile(unsigned int procID,File file,char *buffer,unsigned int byteCount);
-unsigned int writeFile(unsigned int procID,File file,char *buffer,unsigned int byteCount);
+int readFile(unsigned int procID,File file,char *buffer,unsigned int byteCount);
+int writeFile(unsigned int procID,File file,char *buffer,unsigned int byteCount);
 unsigned int seek(unsigned int procID,File file,int offset);
 unsigned int fileSize(unsigned int procID,File file);
 
