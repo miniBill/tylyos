@@ -15,7 +15,7 @@ int main()
           n=readLine(test,100);
           if(n>0)
           {  
-              printf("readLine: %s\n",test);
+              //printf("readLine: %s\n",test);
               if(strcmp(test,"exit")==0)
               {
                   syssleep(100);
