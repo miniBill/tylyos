@@ -65,7 +65,7 @@ void* kmalloc ( unsigned int byte )
             if (
                 ( ( unsigned int ) next )-
                 ( ( unsigned int ) pre+sizeof ( struct memoryArea ) +pre->size )
-                >= byte
+                >= byte+sizeof ( struct memoryArea )
                 )
             {
                 /*c'e' spazio, alloca fra pre e next*/
@@ -75,7 +75,7 @@ void* kmalloc ( unsigned int byte )
                 temp->next=next;
                 temp->size=byte;
                 
-                /*printf("in mezzo\n");*/
+                //printf(0,"in mezzo\n");
                 
                 return ( void* ) ( ( unsigned int ) temp+sizeof ( struct memoryArea ) );
             }
@@ -101,7 +101,7 @@ void* kmalloc ( unsigned int byte )
         next->next=0;
         next->size=byte;
         
-        /*printf("alla fine\n");*/
+        //printf(0,"alla fine\n");
         
         return ( void* ) ( ( unsigned int ) next+sizeof ( struct memoryArea ) );
         

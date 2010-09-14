@@ -560,14 +560,13 @@ void exec(unsigned int procID,char *path)
 {
     /*TODO: pulire la pagedir prima altrimenti potrebbero rimanere pagine mappate a caso*/
     freeTaskPages(procID);
-printf(0,"ELFFFF\n");
     if(loader_loadElf(path,procID)==LOADER_OK)
     {
-        printf(0,"elf caricato\n");
+        printf(1,"elf caricato\n");
     }
     else
     {  
-        printf(0,"errore nel caricamento dell elf\n");
+        printf(1,"errore nel caricamento dell elf\n");
     }
     
 }
