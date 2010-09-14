@@ -325,7 +325,7 @@ void _kmain(multiboot_info_t* mbd, unsigned int magicN) {
 
 void kernelPanic(char *sender, char *message) {
   asm("cli");
-while(1);
+//while(1);
       //set_physical_color(Yellow | Back_Red);
   gui_background=(char)0xE0;
   VGA_clear_screen();
