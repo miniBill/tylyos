@@ -179,7 +179,7 @@ void _kmain(multiboot_info_t* mbd, unsigned int magicN) {
   multiBootInfo = mbd;
 
   memoriaFisica = multiBootInfo->mem_lower + multiBootInfo->mem_upper;
-  memoriaFisica *= 1024;
+  memoriaFisica *= 1000;
   
   gui_background=0x1;
 
@@ -296,6 +296,8 @@ void _kmain(multiboot_info_t* mbd, unsigned int magicN) {
   initScheduler();
   startScheduler();
 
+printf(0,"memoria fisica: %u\n\n",memoriaFisica/1000000);
+
   dispatch(initTask->procID);
 
   printf(0,"!\"#$%%&'()*+,-./\n"
@@ -324,7 +326,8 @@ void _kmain(multiboot_info_t* mbd, unsigned int magicN) {
 
 void kernelPanic(char *sender, char *message) {
   asm("cli");
-  //set_physical_color(Yellow | Back_Red);
+while(1);
+      //set_physical_color(Yellow | Back_Red);
   gui_background=(char)0xE0;
   VGA_clear_screen();
   clear_physical();

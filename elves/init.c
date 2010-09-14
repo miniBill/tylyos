@@ -10,8 +10,8 @@ int main()
     unsigned int r=fork();
     if(r==0)
     {  
-        mov2(pipein[0],1); 
-        mov2(pipeout[1],2);
+        mov2(pipein[0],STANDARD_INPUT); 
+        mov2(pipeout[1],STANDARD_OUTPUT);
         exec("/shell");
     }
     while(1)

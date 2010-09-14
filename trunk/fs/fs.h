@@ -93,7 +93,7 @@ struct fs_node_descriptor
   char type;
 };
 
-#define MAX_OPEN_NODES 50
+#define MAX_OPEN_NODES 500
 
 
 struct fs_node_descriptor *openNodes[MAX_OPEN_NODES];

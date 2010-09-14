@@ -563,11 +563,11 @@ void exec(unsigned int procID,char *path)
     freeTaskPages(procID);
     if(loader_loadElf(path,procID)==LOADER_OK)
     {
-        printf(1,"elf caricato\n");
+        printf(0,"elf caricato\n");
     }
     else
     {  
-        printf(1,"errore nel caricamento dell elf\n");
+        printf(0,"errore nel caricamento dell elf\n");
     }
     
 }
