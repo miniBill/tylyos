@@ -116,6 +116,7 @@ void loader_checkHeader(char *path)
 loader_returnCode loader_loadElf(char *path,int procId)
 {
     struct taskStruct *t=getTask(procId);
+    char dataF=0;
     
     /*setta i selettori di segmento nel TSS*/
     t->TSS.cs=segmentoCodiceUser;/*selettori default per i task, vengono modificati i descrittori prima di ogni switch*/
@@ -177,6 +178,7 @@ loader_returnCode loader_loadElf(char *path,int procId)
                 
                 if( (header2[c].p_flags & PF_R) && (header2[c].p_flags & PF_W) )
                 {
+                    dataF=1;
                     /*segmento dati*/
                     t->dataSegmentBase=header2[c].p_vaddr;
                     t->dataSegmentSize=header2[c].p_memsz+TASK_STACK_SIZE;/*aggiunge lo stack in fondo*/
@@ -218,11 +220,11 @@ loader_returnCode loader_loadElf(char *path,int procId)
         return LOADER_BAD_FORMAT;
     }
  
-    if(t->dataSegmentBase==0)
+    if(dataF==0)
     {
-        /*HACK!!!! a qunto pare non tutti i fottuti elf hanno il segmento dati*/
+        //HACK!!!! a qunto pare non tutti i fottuti elf hanno il segmento dati
         t->dataSegmentBase=t->codeSegmentBase;
-        t->dataSegmentSize=t->codeSegmentSize+TASK_STACK_SIZE;/*aggiunge lo stack in fondo*/
+        t->dataSegmentSize=t->codeSegmentSize+TASK_STACK_SIZE;//aggiunge lo stack in fondo
         t->stackSegmentBase=t->dataSegmentBase;
         t->stackSegmentSize=t->dataSegmentSize;
         t->TSS.esp= t->dataSegmentBase+t->dataSegmentSize;

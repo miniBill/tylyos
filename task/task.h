@@ -88,6 +88,9 @@ struct taskStruct
     /*segnento stack*/
     unsigned int stackSegmentBase;
     unsigned int stackSegmentSize;
+
+    int argc;
+    char **argv;
 };
 
 struct taskListElement

@@ -51,6 +51,10 @@ void handleSyscall()
           //printf(0,"MOV!!!\n");
           runningTask->TSS.eax=(unsigned int)ret;
           break;
+        case 5:/*get arg*/
+          runningTask->TSS.eax=(unsigned int)runningTask->argc;
+          runningTask->TSS.ebx=(unsigned int)runningTask->argv;
+          break;
         case 88:
           asm("cli");
           clearIdt();
