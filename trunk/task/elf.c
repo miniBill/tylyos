@@ -20,6 +20,7 @@
 #include <fs/fs.h>
 #include <lib/string.h>
 #include <kernel/stdio.h>
+#include <kernel/kernel.h>
 #include <memory/memory.h>
 #include <task/task.h>
 
@@ -168,6 +169,7 @@ loader_returnCode loader_loadElf(char *path,int procId)
             {
                 /*loadable segment*/
                 /*mappa l'area nel processo e copia i dati dentro*/
+                /**/
                 allocMemory(procId,header2[c].p_vaddr+user_start,header2[c].p_memsz+TASK_STACK_SIZE);
                 memcpyToTask(&buffer[header2[c].p_offset],header2[c].p_filesz,(char*)header2[c].p_vaddr+user_start,procId);  
                 
@@ -180,9 +182,8 @@ loader_returnCode loader_loadElf(char *path,int procId)
                     t->dataSegmentSize=header2[c].p_memsz+TASK_STACK_SIZE;/*aggiunge lo stack in fondo*/
                     t->stackSegmentBase=t->dataSegmentBase;
                     t->stackSegmentSize=t->dataSegmentSize;
-                    /*a quanto pare lo stack va verso il basso nell architettura intel*/
-                    t->TSS.esp=header2[c].p_vaddr+TASK_STACK_SIZE-1;
-                    t->TSS.ebp=header2[c].p_vaddr+TASK_STACK_SIZE-1;
+                    t->TSS.esp= t->dataSegmentBase+t->dataSegmentSize;
+                    t->TSS.ebp= t->dataSegmentBase+t->dataSegmentSize;
                 }
               
                 if( (header2[c].p_flags & PF_R) && (header2[c].p_flags & PF_X) )
@@ -192,10 +193,6 @@ loader_returnCode loader_loadElf(char *path,int procId)
                     t->codeSegmentSize=header2[c].p_memsz;
                 }
 
-                    /*HACK!!!! a qunto pare non tutti i fottuti elf hanno il segmento dati*/
-                   t->TSS.esp=header2[c].p_vaddr+TASK_STACK_SIZE-1;
-                    t->TSS.ebp=header2[c].p_vaddr+TASK_STACK_SIZE-1;
-              
             }
             else if(header2[c].p_type==PT_NULL)
             {
@@ -220,5 +217,17 @@ loader_returnCode loader_loadElf(char *path,int procId)
     {
         return LOADER_BAD_FORMAT;
     }
+ 
+    if(t->dataSegmentBase==0)
+    {
+        /*HACK!!!! a qunto pare non tutti i fottuti elf hanno il segmento dati*/
+        t->dataSegmentBase=t->codeSegmentBase;
+        t->dataSegmentSize=t->codeSegmentSize+TASK_STACK_SIZE;/*aggiunge lo stack in fondo*/
+        t->stackSegmentBase=t->dataSegmentBase;
+        t->stackSegmentSize=t->dataSegmentSize;
+        t->TSS.esp= t->dataSegmentBase+t->dataSegmentSize;
+        t->TSS.ebp= t->dataSegmentBase+t->dataSegmentSize;
+    }
+
     return LOADER_OK;
 }

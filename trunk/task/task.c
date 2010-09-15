@@ -568,5 +568,5 @@ void exec(unsigned int procID,char *path)
     {  
         printf(1,"errore nel caricamento dell elf\n");
     }
-    
+   /*TODO: cambiare il nome al task*/ 
 }
