@@ -76,10 +76,9 @@ unsigned int readOnPipe(struct pipe *p,char *data,unsigned int count)
         {
             data[i]=p->buffer[p->outputPointer];
             p->buffer[p->outputPointer]=0;
-            if(i+1<count)
-               data[i+1]=0;
             if(p->outputPointer==p->inputPointer)
             {
+                i++;
                 break;
             }
 
@@ -90,7 +89,6 @@ unsigned int readOnPipe(struct pipe *p,char *data,unsigned int count)
             }
             i++;
         }
-        //data[i+1]=0;
         return i;
     }
 }
