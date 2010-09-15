@@ -78,7 +78,7 @@ unsigned int readOnPipe(struct pipe *p,char *data,unsigned int count)
             p->buffer[p->outputPointer]=0;
             if(p->outputPointer==p->inputPointer)
             {
-                i++;
+                //i++;
                 break;
             }
 
