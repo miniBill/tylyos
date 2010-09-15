@@ -1,6 +1,5 @@
 #include "syscalls.h"
 
-
 int main()
 {
     char test[100];
