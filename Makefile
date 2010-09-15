@@ -34,7 +34,7 @@ OBJ= bootloader/loader.o \
      fs/iso/iso.o \
      fs/fs.o \
      fs/pipe.o \
-     fs/ramFs/ramFs.o
+     fs/ramFs/ramFs.o task/argParser.o
 
 LDFLAGS= -melf_i386 -T linker.ld
 MK=Makefile.in
