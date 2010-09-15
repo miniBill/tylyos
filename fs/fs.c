@@ -97,7 +97,10 @@ File openFile (unsigned int procID, char *path,char mode )/*TODO: inserire un co
     id=getUnusedOpenNodeId(procID);
 
     if ( id==0 ) /*raggiunto il numero massimo di nodi aperti*/
+    {
+        kernelPanic("openFile()","raggiunto limite file descriptors");
         return -1;
+    }
 
     struct fs_node_descriptor *nuovoNodo=kmalloc ( sizeof ( struct fs_node_descriptor ) );/*alloca un nuovo descrittore*/
     nuovoNodo->id=id;
@@ -206,6 +209,7 @@ void pipe(unsigned int procID,File descriptors[2])/*alloca due descrittori, uno 
     {
         kfree(nodoLettura);
         kfree(nodoScrittura);
+        kernelPanic("pipe()","raggiunto limite files descriptors");
         return;
     }
     nodoLettura->id=idLettura;
@@ -219,6 +223,7 @@ void pipe(unsigned int procID,File descriptors[2])/*alloca due descrittori, uno 
     {
         kfree(nodoLettura);
         kfree(nodoScrittura);
+        kernelPanic("pipe()","raggiunto limite files descriptors");
         return;
     }
     nodoScrittura->id=idScrittura;
