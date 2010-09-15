@@ -1,6 +1,6 @@
 #include "syscalls.h"
 
-int main()
+int main(int argc, char *argv[])
 {
     char test[100];
     char task=0;
@@ -18,7 +18,7 @@ int main()
               if(strcmp(test,"exit")==0)
               {
                   syssleep(100);
-                  exit(0);
+                  return 0;
               }
               
               forkExec(test,pp);

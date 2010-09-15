@@ -1,10 +1,10 @@
 #include "syscalls.h"
 
-int main(){
-while(1)
+int main(int argc, char *argv[])
 {
-  syswrite("ottanta\n"); 
-  syssleep(2000);
-}
-    return 0;
+    printf("(%d) %s\n",argc,argv[0]);
+
+while(1);
+
+  return 0;
 }

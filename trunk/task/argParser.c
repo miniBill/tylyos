@@ -17,8 +17,20 @@
  */
 
 #include <task/task.h>
+#include <memory/memory.h>
 #include <task/argParser.h>
 
 void parseAndLoadArgs(unsigned int procID,char *string)
 {
+    struct taskStruct *t;
+    t=getTask(procID);
+    if(t==0)
+        return;
+    t->argc=1;
+    t->argv=t->dataSegmentBase+t->dataSegmentSize;
+    unsigned int tmp=t->dataSegmentBase+t->dataSegmentSize+4;
+ allocMemory(procID,t->argv+user_start,5+4+1000);
+     memcpyToTask( &tmp, 4,user_start+t->dataSegmentBase+t->dataSegmentSize,procID );
+     memcpyToTask( "test\0", 5,user_start+t->dataSegmentBase+t->dataSegmentSize+4,procID );
+    t->dataSegmentSize+=4+5;
 }

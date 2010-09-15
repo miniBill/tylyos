@@ -21,6 +21,7 @@
 #include <memory/memory.h>
 #include <memory/gdtflags.h>
 #include <lib/string.h>
+#include <task/argParser.h>
 #include <kernel/kernel.h>
 #include <task/elf.h>
 #include <fs/fs.h>
@@ -139,6 +140,8 @@ int start(char *path,char privilegi)
     {
         printf(1,"errore nel caricamento dell elf\n");
     }
+
+    parseAndLoadArgs(taskId,path);
    
     setTaskStateReady(taskId);
   
@@ -157,6 +160,9 @@ int addTask ( char nome[MAX_TASK_NAME_LEN],char privilegi )
     newListElement->next=0;
 
     newTask->lastScheduledTime=0;
+
+    newTask->argc=0;
+    newTask->argv=0;
 
     newTask->listaPagine=0;
     newTask->procID=getNewProcID();
@@ -568,5 +574,6 @@ void exec(unsigned int procID,char *path)
     {  
         printf(1,"errore nel caricamento dell elf\n");
     }
+    parseAndLoadArgs(procID,path);
    /*TODO: cambiare il nome al task*/ 
 }

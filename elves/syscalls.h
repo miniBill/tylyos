@@ -7,9 +7,25 @@ typedef unsigned int File;
 
 #define MAXN 32 /*lunghezza massima in cifre di un numero*/
 
+int main(int argc, char *argv[]);
+
 void exit(int status)
 {
     syscallone(1,status);
+}
+
+void _start()
+{
+    int argc;
+    char **argv;
+    syscallone(5,0);
+    asm( "mov %%eax, %0;"
+          :"=r"(argc)
+       );
+    asm( "mov %%ebx, %0;"
+          :"=r"(argv)
+       );
+    exit(main(argc,argv));
 }
 
 void exec(char *path)
