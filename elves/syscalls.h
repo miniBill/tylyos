@@ -189,7 +189,7 @@ void put(char c)
     char tmp[2];
     tmp[0]=c;
     tmp[1]=0;
-    writeFile(STANDARD_OUTPUT,tmp,strlen(tmp));
+    writeFile(STANDARD_OUTPUT,tmp,1);
 }
 
 
@@ -280,6 +280,8 @@ unsigned int readLine(char *buffer,unsigned int bufferSize)
             c[1]=0;
             switch(c[0])
             {
+            case '\0':
+                break;
             case '\n':
                 printf("\n");
                 return i;

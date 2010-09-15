@@ -10,7 +10,7 @@ int main()
       int n=get(test,100);
       if(n>0)
       {
-          writeFile(pp[1],test,strlen(test));
+          writeFile(pp[1],test,n);
       }
       n=readFile(pp[0],test,100);
       if(n>0)
