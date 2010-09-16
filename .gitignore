@@ -1,9 +1,9 @@
 */*.o
 */*/*.o
+*/*\~
 .kdev4/tylyos.kdev4
 Makefile.in
 tylyos
 tylyos.iso
 tylyos.kdev4
 version
-
