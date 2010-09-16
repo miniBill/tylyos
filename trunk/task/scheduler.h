@@ -16,6 +16,7 @@
 * along with TylyOS.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+
 #ifndef SCHEDULER_H
 #define SCHEDULER_H
 
@@ -44,5 +45,6 @@ funzioneche viene richimata quando nessun task ha niente da fare
 dovra' mandare in esecuzione un task dedicato alla gestione dei tempi morti
 */
 void idle();
+
 
 #endif

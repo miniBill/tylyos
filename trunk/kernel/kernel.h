@@ -24,6 +24,7 @@ void do_life(void);
 void do_sierpinski(void);
 void do_grid(void);
 
+
 File outputPipe;
 
 #endif

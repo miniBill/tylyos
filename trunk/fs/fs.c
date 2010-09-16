@@ -28,6 +28,7 @@ file contenente tutte le funzioni base per accedere al file system indipendentem
 #include <lib/string.h>
 #include <fs/pipe.h>
 #include <task/dispatcher.h>
+#include <kernel/kernel.h>
 
 void initDeviceFsManager()
 {
