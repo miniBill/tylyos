@@ -15,9 +15,9 @@
 # You should have received a copy of the GNU General Public License
 # along with TylyOS.  If not, see <http://www.gnu.org/licenses/>.
 
-CFLAGS:= -march=i386 -ffreestanding -Wall -pedantic -Wextra -I ../trunk -fno-stack-protector -std=gnu99 -nostdlib
+CFLAGS:= -m32 -ffreestanding -Wall -pedantic -Wextra -I ../trunk -fno-stack-protector -std=gnu99 -nostdlib
 LDFLAGS:= -nostdlib -melf_i386 -T linker.ld
-ASFLAGS:= -march=i386
+ASFLAGS:= --32
 
 .PHONY:all
 all: ottanta hello idle init shell

@@ -1,6 +1,6 @@
 #include "syscalls.h"
 
-int main()
+int main(int argc, char ** argv)
 {
     char test[101];
     File pp[2];
