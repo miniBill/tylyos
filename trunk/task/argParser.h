@@ -21,4 +21,6 @@
 
 void parseAndLoadArgs(unsigned int procID,char *string);
 
+unsigned int parseArgsNum(char *string);
+
 #endif

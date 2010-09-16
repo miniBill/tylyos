@@ -113,11 +113,13 @@ void loader_checkHeader(char *path)
 }
 
 /*funzione che carica nella memoria di un task i relativi dati leggendoli da un file elf*/
-loader_returnCode loader_loadElf(char *path,int procId)
+loader_returnCode loader_loadElf(char *_path,int procId)
 {
     struct taskStruct *t=getTask(procId);
     char dataF=0;
-    
+    char *path=kmalloc(strlen(_path)+1); 
+    memcpy(_path,strlen(_path)+1,path);
+    split(path,path,strlen(path)+1,' ',0);
     /*setta i selettori di segmento nel TSS*/
     t->TSS.cs=segmentoCodiceUser;/*selettori default per i task, vengono modificati i descrittori prima di ogni switch*/
     t->TSS.ds=segmentoDatiUser; 
@@ -131,7 +133,10 @@ loader_returnCode loader_loadElf(char *path,int procId)
     File file=openFile(0,path,'r');
     
     if(file==0)
+    {
+        kfree(path);
         return LOADER_NOT_FOUND;
+    }
     
     dimensione=fileSize(0,file);
     
@@ -217,6 +222,7 @@ loader_returnCode loader_loadElf(char *path,int procId)
     }
     else
     {
+        kfree(path);
         return LOADER_BAD_FORMAT;
     }
  
@@ -231,5 +237,6 @@ loader_returnCode loader_loadElf(char *path,int procId)
         t->TSS.ebp= t->dataSegmentBase+t->dataSegmentSize;
     }
 
+    kfree(path);
     return LOADER_OK;
 }

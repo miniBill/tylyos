@@ -181,4 +181,4 @@ typedef char loader_returnCode;
 
 void loader_checkHeader(char *path);
 /*funzione che carica nella memoria di un task i relativi dati leggendoli da un file elf*/
-loader_returnCode loader_loadElf(char *path,int procId);
+loader_returnCode loader_loadElf(char *_path,int procId);

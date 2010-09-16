@@ -2,8 +2,10 @@
 
 int main(int argc, char *argv[])
 {
-    printf("(%d) %s\n",argc,argv[0]);
-
+    if(argc>0)
+        printf("(%d) %s\n",argc,argv[0]);
+    else
+        printf("(0)\n");
 while(1);
 
   return 0;
