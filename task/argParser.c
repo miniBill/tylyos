@@ -26,7 +26,6 @@ void parseAndLoadArgs(unsigned int procID,char *string)
     t=getTask(procID);
     if(t==0)
         return;
-    t->argc=1;
     t->argv=t->dataSegmentBase+t->dataSegmentSize;
 /*
     unsigned int tmp=t->dataSegmentBase+t->dataSegmentSize+4;
@@ -36,6 +35,7 @@ void parseAndLoadArgs(unsigned int procID,char *string)
     t->dataSegmentSize+=4+5;
 */
     int n=parseArgsNum(string);
+    t->argc=n;
     unsigned int *array=kmalloc(4*n);
     char *buffer=kmalloc(strlen(string)+1);
     int c,i=0;
@@ -55,8 +55,8 @@ void parseAndLoadArgs(unsigned int procID,char *string)
     {
         if(string[c]==' ')
         {
-            c++;
-            array[i]=t->dataSegmentBase+t->dataSegmentSize+(4*n)+c;
+            //c++;
+            array[i]=t->dataSegmentBase+t->dataSegmentSize+(4*n)+c+1;
             i++;
         }
         else
@@ -80,5 +80,6 @@ unsigned int parseArgsNum(char *string)
     for(int c=0;c<strlen(string);c++)
         if(string[c]==' ')
             n++;
+
     return n;
 }
