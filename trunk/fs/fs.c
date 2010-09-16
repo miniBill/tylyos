@@ -110,6 +110,8 @@ File openFile (unsigned int procID, char *path,char mode )/*TODO: inserire un co
     nuovoNodo->device=getDeviceFromPath ( path );/*cerca nei mount points quale device gestisce il path*/
     
     nuovoNodo->device->getNodeDescriptor(nuovoNodo->device,nuovoNodo,path);/*carica in nuovoNodo il puntatore alle informazioni dell inode*/
+    if(nuovoNodo->inodeInfo==0)
+        return -1;
     struct fs_node_info info;
     nuovoNodo->device->getNodeInfo(nuovoNodo,&info);
     /*TODO: ATTENZIONEEEE, RICORDARSI DI SPLITTARE IL PATH IN QUALCHE MODO IN BASE AL MOUNT POINT!!!!!!*/

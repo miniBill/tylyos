@@ -149,7 +149,7 @@ void ramFs_getNodeDescriptor(struct deviceFs *device,struct fs_node_descriptor *
     descriptor->device=device;
     descriptor->inodeInfo=0;//TODO: cercare il path, allocare la struttura e passarne il puntatore
     
-    //printf(1,"\nGET NODE DESCRIPTOR: %s\n",path);
+    //printf(0,"\nGET NODE DESCRIPTOR: %s\n",path);
     
     ret=split(path,nodeName,RAMFS_FILENAME_MAX_LENGTH,'/',depth);
     depth++;
@@ -158,11 +158,11 @@ void ramFs_getNodeDescriptor(struct deviceFs *device,struct fs_node_descriptor *
     {
         struct ramFs_node tmp=ramFs_private_getNodeFromName(directory,nodeName);/*cerca nella cartella il nodo*/
         
-        //printf(1,"ricerca:%d %s\n",depth-1,nodeName);
+        //printf(0,"ricerca:%d %s\n",depth-1,nodeName);
         
         if(tmp.cluster!=0)/*controlla se e' stato trovato*/
         {
-            //printf(1,"    trovato>: %s %d\n",tmp.name,tmp.size);
+            //printf(0,"    trovato>: %s %d\n",tmp.name,tmp.size);
         }
         else
             return;

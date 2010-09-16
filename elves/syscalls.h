@@ -3,7 +3,7 @@
 #define STANDARD_INPUT 1
 #define STANDARD_OUTPUT 2
 
-typedef unsigned int File;
+typedef int File;
 
 #define MAXN 32 /*lunghezza massima in cifre di un numero*/
 
@@ -64,7 +64,7 @@ int strcmp(const char *a, const char *b)
 
 
 
-int openFile(char *path,char mode)
+File openFile(char *path,char mode)
 {
     int ret;
     syscalltwo(252,path,mode);
@@ -74,7 +74,7 @@ int openFile(char *path,char mode)
     return ret;
 }
 
-void closeFile(int file)
+void closeFile(File file)
 {
     syscallone(253,file);
 }
@@ -325,9 +325,29 @@ unsigned int readLine(char *buffer,unsigned int bufferSize)
     }
 }
 
-
-void forkExec(char *path,File _p[2])
+char exist(char *path)
 {
+    int i=findchar(path,' ', 0);
+
+    if(i>=0)
+        path[i]=0;
+
+    File r=openFile(path,5);
+    closeFile(r);
+
+    if(i>=0)
+        path[i]=' ';
+
+    if(r==-1)
+        return 0;
+    else
+        return 1;
+}
+
+unsigned int forkExec(char *path,File _p[2])
+{
+    if(!exist(path))
+        return 0; 
     File pipein[2];/*read 0,write 1*/
     File pipeout[2];/*read 0,write 1*/
     pipe(pipein);
@@ -340,9 +360,12 @@ void forkExec(char *path,File _p[2])
         mov2(pipein[0],STANDARD_INPUT);
         mov2(pipeout[1],STANDARD_OUTPUT);
         exec(path);
+        exit(0);
     }
     closeFile(pipein[0]);
     closeFile(pipeout[1]);
     _p[0]=pipeout[0];
     _p[1]=pipein[1];
+
+    return r;
 }

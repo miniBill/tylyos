@@ -131,8 +131,7 @@ loader_returnCode loader_loadElf(char *_path,int procId)
     unsigned int dimensione;
     Elf32_Ehdr *header1;
     File file=openFile(0,path,'r');
-    
-    if(file==0)
+    if(file==-1)
     {
         kfree(path);
         return LOADER_NOT_FOUND;

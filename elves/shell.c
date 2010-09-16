@@ -21,8 +21,10 @@ int main(int argc, char *argv[])
                   return 0;
               }
               
-              forkExec(test,pp);
-              task=1;
+              if(forkExec(test,pp))
+                  task=1;
+              else
+                  printf("FILE NOT FOUND\n");
           }
       }
       if(task)
