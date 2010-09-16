@@ -2,11 +2,9 @@
 
 int main(int argc, char *argv[])
 {
-    if(argc>0)
-        printf("(%d) %s\n",argc,argv[0]);
-    else
-        printf("(0)\n");
-while(1);
+  for(int c=0;c<argc;c++)
+      printf("%s\n",argv[c]);
 
+  syssleep(200);
   return 0;
 }
