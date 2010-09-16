@@ -19,6 +19,7 @@
 #include <task/task.h>
 #include <memory/memory.h>
 #include <task/argParser.h>
+#include <lib/string.h>
 
 void parseAndLoadArgs(unsigned int procID,char *string)
 {
@@ -26,7 +27,7 @@ void parseAndLoadArgs(unsigned int procID,char *string)
     t=getTask(procID);
     if(t==0)
         return;
-    t->argv=t->dataSegmentBase+t->dataSegmentSize;
+    t->argv=(char **)(t->dataSegmentBase+t->dataSegmentSize);
 /*
     unsigned int tmp=t->dataSegmentBase+t->dataSegmentSize+4;
  allocMemory(procID,t->argv+user_start,5+4+1000);
@@ -38,7 +39,7 @@ void parseAndLoadArgs(unsigned int procID,char *string)
     t->argc=n;
     unsigned int *array=kmalloc(4*n);
     char *buffer=kmalloc(strlen(string)+1);
-    int c,i=0;
+    unsigned int c,i=0;
     for(c=0;c<strlen(string);c++)
     {
         if(string[c]==' ')
@@ -66,8 +67,8 @@ void parseAndLoadArgs(unsigned int procID,char *string)
         }
     }
 
-    memcpyToTask( array, 4*n,user_start+t->dataSegmentBase+t->dataSegmentSize,procID );
-    memcpyToTask( buffer, strlen(string)+1,user_start+t->dataSegmentBase+t->dataSegmentSize+(4*n),procID );
+    memcpyToTask( (char*)array, 4*n,(char*)(user_start+t->dataSegmentBase+t->dataSegmentSize),procID );
+    memcpyToTask( buffer, strlen(string)+1,(char*)(user_start+t->dataSegmentBase+t->dataSegmentSize+(4*n)),procID );
     t->dataSegmentSize+=(4*n)+strlen(string)+1;
 
     kfree(array);
@@ -77,7 +78,7 @@ void parseAndLoadArgs(unsigned int procID,char *string)
 unsigned int parseArgsNum(char *string)
 {
     unsigned int n=0;
-    for(int c=0;c<strlen(string);c++)
+    for(unsigned int c=0;c<strlen(string);c++)
         if(string[c]==' ')
             n++;
 
