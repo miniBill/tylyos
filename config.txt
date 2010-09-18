@@ -25,7 +25,8 @@
 // |Speed-safety tradeoffs|
 // *----------------------*
 
-//#define FAST_TESTS //skip tests on "safe" functions
+//#define TESTS // activate tests
+#define FAST_TESTS //skip tests on "safe" functions
 
 // *----------------*
 // |Debug facilities|

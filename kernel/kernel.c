@@ -200,10 +200,6 @@ void _kmain(multiboot_info_t* mbd, unsigned int magicN) {
   OK(t++);
   write("\n",0);
 
-  NO(t);
-  write("Prova writeline.\n",0);
-  OK(t++);
-
   //logo();
   t = row(0);
 
@@ -243,11 +239,18 @@ void _kmain(multiboot_info_t* mbd, unsigned int magicN) {
   OK(t++);
 
   /*here start the true tests*/
+<<<<<<< HEAD
 
   doTests(); //from now on printf is ok
 
   magic();
 
+=======
+#ifdef TESTS
+  doTests(); //from now on printf is ok
+  magic();
+#endif
+>>>>>>> git-svn
   t = row(0);
 
   NO(t);

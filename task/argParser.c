@@ -67,6 +67,7 @@ void parseAndLoadArgs(unsigned int procID,char *string)
         }
     }
 
+ allocMemory(procID,user_start+t->dataSegmentBase+t->dataSegmentSize,(4*n)+strlen(string)+1);
     memcpyToTask( (char*)array, 4*n,(char*)(user_start+t->dataSegmentBase+t->dataSegmentSize),procID );
     memcpyToTask( buffer, strlen(string)+1,(char*)(user_start+t->dataSegmentBase+t->dataSegmentSize+(4*n)),procID );
     t->dataSegmentSize+=(4*n)+strlen(string)+1;

@@ -485,7 +485,7 @@ void memcpyToTask( char * source, unsigned int count, char * dest, unsigned int 
     unsigned int pointer=offset;/*indice usato per la destinazione, la prima volta pointer vale offset mentre i cicli successivi viene settato a zero*/
     unsigned int sourcePointer=0;/*indice usato per l'origine, non viene mai azzerato*/
     /*passa tutte le pagine da scrivere*/
-    while(startMem<=(unsigned int)dest+count)/*finche' non si sono passate tutte le pagine sotto l' area da scrivere*/
+    while(startMem<(unsigned int)dest+count)/*finche' non si sono passate tutte le pagine sotto l' area da scrivere*/
     {
 
         /*recupera l'indirizzo fisico della pagina logica*/
@@ -573,6 +573,7 @@ void exec(unsigned int procID,char *path)
     else
     {  
         printf(1,"errore nel caricamento dell elf\n");
+        kill(procID);
     }
     parseAndLoadArgs(procID,path);
    /*TODO: cambiare il nome al task*/ 
