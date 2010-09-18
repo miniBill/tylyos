@@ -19,4 +19,4 @@ out.img : main $(BINS)
 
 .PHONY: clean
 clean:
-	rm -fR main $(BINS)
+	rm -f main $(BINS)
