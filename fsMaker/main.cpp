@@ -92,7 +92,7 @@ unsigned int getFreeCluster()
     }
     else
     {
-        cout<<"file system pieno";
+        cerr<<"file system pieno";
         exit(1);
     }
 }
@@ -124,7 +124,7 @@ void addNodeToDirectory(unsigned int cluster,struct ramFs_node nodeStruct)
     }
     else
     {
-        cout<<"cluster directory pieno, implementare questo caso";
+        cerr<<"cluster directory pieno, implementare questo caso";
         exit(1);
     }
 }

@@ -1,14 +1,15 @@
-all:../kernel/c.img
+IMG = ../kernel/c.img
+BINS = root/idle root/ottanta root/hello root/init root/shell
 
-../kernel/c.img : out.img
+all: $(IMG)
+
+$(IMG) : out.img
 	mv $^ $@
 
-.PHONY: out.img
-
-out.img : main
-	@echo -e "1024\n1024\n" | ./main
+out.img : main $(BINS)
+	@cd ../elves && make && cd ../fsMaker
+	@echo -e "1024\n1024\n" | ./main > /dev/null
 
 .PHONY: clean
-
 clean:
-	rm main out.img
+	rm -fR main $(BINS)

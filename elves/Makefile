@@ -15,13 +15,14 @@
 # You should have received a copy of the GNU General Public License
 # along with TylyOS.  If not, see <http://www.gnu.org/licenses/>.
 
-CFLAGS:= -m32 -ffreestanding -Wall -pedantic -Wextra -I .. -fno-stack-protector -std=gnu99 -nostdlib
+CFLAGS:= -m32 -ffreestanding -Wall -pedantic -Wextra -I ../kernel -fno-stack-protector -std=gnu99 -nostdlib
 LDFLAGS:= -nostdlib -melf_i386 -T linker.ld
 ASFLAGS:= --32
 PROGS:=ottanta hello idle init shell
 
 .PHONY:all
-all:$(PROGS) 
+all:$(PROGS)
+	cp $(PROGS) ../fsMaker/root/
 
 shell:shell.o
 	$(LD) $(LDFLAGS) -o $@ $^
@@ -42,10 +43,6 @@ hello:hello.o
 idle:idle.o
 	$(LD) $(LDFLAGS) -o $@ $^
 	strip $@
-
-Makefile.in:
-	@echo "Configuring..."
-	@./configure
 
 .PHONY: clean
 clean:

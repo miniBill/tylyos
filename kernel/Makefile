@@ -54,7 +54,7 @@ kernel/kernel.o:version
 	@$(CC) $(CFLAGS) -c -o $@ kernel/kernel.c
 	
 
-tylyos.iso: tylyos Makefile.in
+tylyos.iso: tylyos Makefile.in c.img
 	@echo "Preparing iso..."
 	@mkdir iso && \
 	mkdir -p iso/boot/grub && \
@@ -69,6 +69,10 @@ tylyos.iso: tylyos Makefile.in
 	-boot-load-size 4 -boot-info-table -o $@ iso && \
 	echo "Iso created" && \
 	rm -R iso
+
+.PHONY: c.img
+c.img:
+	@cd ../fsMaker && make && cd ../kernel
 
 Makefile.in:
 	@echo "Configuring..."
@@ -92,9 +96,9 @@ tylyos: $(OBJ)
 
 .PHONY: clean
 clean:
-	rm -f *\~ */*\~ */*.o */*/*\~ */*/*.o log tylyos tylyos.iso tylyos.iso.sig
+	rm -f *\~ */*\~ */*.o */*/*\~ */*/*.o log tylyos tylyos.iso tylyos.iso.sig c.img
 
 .PHONY: smallclean
 smallclean:
-	rm -f *\~ */*\~ */*.o */*/*\~ */*/*.o log tylyos tylyos.iso.sig
+	rm -f *\~ */*\~ */*.o */*/*\~ */*/*.o log tylyos tylyos.iso.sig c.img
 
