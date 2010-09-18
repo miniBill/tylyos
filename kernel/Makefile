@@ -47,7 +47,7 @@ all:tylyos.iso
 version:
 	@echo "REV" $@
 	@echo -n "#define REVISION " > version
-	@svn info 2> /dev/null | grep Revision|head -1| grep -o "[0-9]*" >>  version || git svn info 2> /dev/null | grep Revision |head -1|grep -o "[0-9]*" >> version
+	@git show|head -1|egrep -o " ......" |sed 's/ /0x/' >> version
 
 kernel/kernel.o:version
 	@echo "GCC" $@

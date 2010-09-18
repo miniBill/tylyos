@@ -1,7 +1,7 @@
 all:../kernel/c.img
 
 ../kernel/c.img : out.img
-	cp $^ $@
+	mv $^ $@
 
 .PHONY: out.img
 

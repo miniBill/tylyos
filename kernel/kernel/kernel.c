@@ -239,18 +239,10 @@ void _kmain(multiboot_info_t* mbd, unsigned int magicN) {
   OK(t++);
 
   /*here start the true tests*/
-<<<<<<< HEAD
-
-  doTests(); //from now on printf is ok
-
-  magic();
-
-=======
 #ifdef TESTS
   doTests(); //from now on printf is ok
   magic();
 #endif
->>>>>>> git-svn
   t = row(0);
 
   NO(t);
@@ -261,7 +253,7 @@ void _kmain(multiboot_info_t* mbd, unsigned int magicN) {
 
   NO(t);
   greendot();
-  printf(0,"Kernel pronto!!! [Rev: %d]\n",REVISION);
+  printf(0,"Kernel pronto!!! [Rev: %x]\n",REVISION);
   OK(t++);
 
   goto_xy(0, 1, t);
