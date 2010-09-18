@@ -1,6 +1,6 @@
-all:../c.img
+all:../kernel/c.img
 
-../c.img : out.img
+../kernel/c.img : out.img
 	cp $^ $@
 
 .PHONY: out.img

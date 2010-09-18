@@ -1,6 +1,6 @@
 Compiling TylyOS
 ================
-Run "make" to compile TylyOS.
+Run "make" in the kernel directory to compile TylyOS.
 
 Running TylyOS
 ==============
@@ -13,5 +13,5 @@ Run "make clean" to clean up all the object and intermediate files.
 
 Notes
 =====
-make clean *does* delete tylyos.iso and Makefile.in
-make smallclean is the same as make clean, but it does *not* delete tylyos.iso, nor Makefile.in
+make clean *does* delete tylyos.iso
+make smallclean is the same as make clean, but it does *not* delete tylyos.iso
