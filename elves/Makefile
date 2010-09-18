@@ -20,34 +20,40 @@ LDFLAGS:= -nostdlib -melf_i386 -T linker.ld
 ASFLAGS:= --32
 PROGS:=ottanta hello idle init shell
 
-.PHONY:all
+.PHONY: all
 all:$(PROGS)
-	cp $(PROGS) ../fsMaker/root/
+	@echo "elves -> fsMaker"
+	@cp $(PROGS) ../fsMaker/root/
 
 shell:shell.o
-	$(LD) $(LDFLAGS) -o $@ $^
-	strip $@
+	@echo "LD" $@
+	@$(LD) $(LDFLAGS) -o $@ $^
+	@strip $@
 
 init:init.o
-	$(LD) $(LDFLAGS) -o $@ $^
-	strip $@
+	@echo "LD" $@
+	@$(LD) $(LDFLAGS) -o $@ $^
+	@strip $@
 
 ottanta:ottanta.o
-	$(LD) $(LDFLAGS) -o $@ $^
-	strip $@
+	@echo "LD" $@
+	@$(LD) $(LDFLAGS) -o $@ $^
+	@strip $@
 
 hello:hello.o
-	$(LD) $(LDFLAGS) -o $@ $^
-	strip $@
+	@echo "LD" $@
+	@$(LD) $(LDFLAGS) -o $@ $^
+	@strip $@
 
 idle:idle.o
-	$(LD) $(LDFLAGS) -o $@ $^
-	strip $@
+	@echo "LD" $@
+	@$(LD) $(LDFLAGS) -o $@ $^
+	@strip $@
+
+%.o: %.c
+	@echo "GCC" $@
+	@$(CC) $(CFLAGS) -c -o $@ $^
 
 .PHONY: clean
 clean:
 	rm -f *\~ *.o ottanta hello idle init shell
-
-.PHONY: copy
-copy:
-	cp $(PROGS) ../fsMaker/root
