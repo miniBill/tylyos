@@ -111,30 +111,10 @@ int modifier(char c, int released) {
 #define cur current_console()
 
 void input(char ch, int released) {
-#ifdef FREEROAMING
-  if (ch == '\b') {
-      goto_x(cur, col(cur) - 1);
-      put_x(' ', cur, col(cur));
-      return;
-    }
-  if (ch == '\n') {
-      nl(cur);
-      return;
-    }
-#endif
 
   if (!released) {
-/*
-  if (((inpointer[cur] + 1) % KEYBUFSIZE) == outpointer[cur])
-        return;//no space left for moar
-      buffer[cur][inpointer[cur]] = ch;
-      inpointer[cur] = (inpointer[cur] + 1) % KEYBUFSIZE;
-*/
         writeFile(0,keyboardPipe,&ch,1);
     }
-#ifdef FREEROAMING
-  put(ch,cur);
-#endif
 }
 
 static inline int freeroaming(char ch) {
@@ -258,7 +238,7 @@ void keypress(void) {
             case 0x23: /* H for halt */
               ch = 0;
               write_physical_xy("Halting", (COLUMNS - 7) / 2, 0);
-              halt();//TODO: implement halt
+              reboot();//TODO: implement halt
               break;
             case 0x1F: /* S for sierpinski */
               ch = 0;
@@ -307,7 +287,20 @@ void keypress(void) {
     }
   if (!released) {
       if (ch != 0)
+      {
+        if(ctrl)
+        {
+            switch(ch)
+            {
+            case 'c':
+            case 'C':
+                ch=3;
+                break;
+            }
+        }
+
         input(ch, released);
+      }
       else {
           if (c >= 59 && c <= 68)
             switch_console(c - 59);

@@ -3,7 +3,7 @@
 int main(int argc, char *argv[])
 {
     char test[100];
-    char task=0;
+    unsigned int task=0;
     File pp[2];
     int n;
     while(1)
@@ -21,9 +21,8 @@ int main(int argc, char *argv[])
                   return 0;
               }
               
-              if(forkExec(test,pp))
-                  task=1;
-              else
+              task=forkExec(test,pp);
+              if(task==0) 
                   printf("FILE NOT FOUND\n");
           }
       }
@@ -43,6 +42,8 @@ int main(int argc, char *argv[])
           n=get(test,100);
           if(n>0)
           {
+              if(findchar(test,3,0)>=0)
+                  kill(task);
               writeFile(pp[1],test,n);
           }
       }

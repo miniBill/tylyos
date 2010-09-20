@@ -29,7 +29,7 @@ void handleSyscall()
           int *desc;
           unsigned int id;
     switch(runningTask->TSS.eax&0xFF){
-        case 1:/*kill*/
+        case 1:/*exit*/
           kill(runningTask->procID);
           runningTask=0;
           //printf(0,"KILLED!!!\n");
@@ -54,6 +54,10 @@ void handleSyscall()
         case 5:/*get arg*/
           runningTask->TSS.eax=(unsigned int)runningTask->argc;
           runningTask->TSS.ebx=(unsigned int)runningTask->argv;
+          break;
+        case 6:/*kill*/
+          kill(runningTask->TSS.ebx);
+          forceSchedule();
           break;
         case 88:
           asm("cli");

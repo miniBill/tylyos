@@ -14,6 +14,11 @@ void exit(int status)
     syscallone(1,status);
 }
 
+void kill(unsigned int procID)
+{
+    syscallone(6,procID);
+}
+
 void _start()
 {
     int argc;

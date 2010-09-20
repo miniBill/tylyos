@@ -39,7 +39,8 @@ void parseAndLoadArgs(unsigned int procID,char *string)
     t->argc=n;
     unsigned int *array=kmalloc(4*n);
     char *buffer=kmalloc(strlen(string)+1);
-    unsigned int c,i=0;
+    unsigned int c,i=0,d=0;
+    char apice=0;
     for(c=0;c<strlen(string);c++)
     {
         if(string[c]==' ')
@@ -54,23 +55,28 @@ void parseAndLoadArgs(unsigned int procID,char *string)
     }
     for(;c<strlen(string);c++)
     {
-        if(string[c]==' ')
+        if(string[c]=='\'')
         {
-            //c++;
-            array[i]=t->dataSegmentBase+t->dataSegmentSize+(4*n)+c+1;
+            apice=!apice;
+            continue;
+        }
+        if(string[c]==' ' && !apice)
+        {
+            array[i]=t->dataSegmentBase+t->dataSegmentSize+(4*n)+d+1;
             i++;
         }
         else
         {
-            buffer[c]=string[c];
-            buffer[c+1]=0;
+            buffer[d]=string[c];
+            buffer[d+1]=0;
         }
+        d++;
     }
 
- allocMemory(procID,user_start+t->dataSegmentBase+t->dataSegmentSize,(4*n)+strlen(string)+1);
+ allocMemory(procID,user_start+t->dataSegmentBase+t->dataSegmentSize,(4*n)+d+1);
     memcpyToTask( (char*)array, 4*n,(char*)(user_start+t->dataSegmentBase+t->dataSegmentSize),procID );
-    memcpyToTask( buffer, strlen(string)+1,(char*)(user_start+t->dataSegmentBase+t->dataSegmentSize+(4*n)),procID );
-    t->dataSegmentSize+=(4*n)+strlen(string)+1;
+    memcpyToTask( buffer, d+1,(char*)(user_start+t->dataSegmentBase+t->dataSegmentSize+(4*n)),procID );
+    t->dataSegmentSize+=(4*n)+d+1;
 
     kfree(array);
     kfree(buffer);
@@ -79,9 +85,14 @@ void parseAndLoadArgs(unsigned int procID,char *string)
 unsigned int parseArgsNum(char *string)
 {
     unsigned int n=0;
+    char apice=0;
     for(unsigned int c=0;c<strlen(string);c++)
-        if(string[c]==' ')
+    {
+        if(string[c]=='\'')
+            apice=!apice;
+        if(string[c]==' ' && !apice)
             n++;
+    }
 
     return n;
 }
