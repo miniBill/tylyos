@@ -8,7 +8,7 @@
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * TylyOS is distributed in the hope that it will be useful,
+e* TylyOS is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
@@ -238,7 +238,7 @@ void keypress(void) {
             case 0x23: /* H for halt */
               ch = 0;
               write_physical_xy("Halting", (COLUMNS - 7) / 2, 0);
-              reboot();//TODO: implement halt
+              halt();//TODO: implement halt
               break;
             case 0x1F: /* S for sierpinski */
               ch = 0;
