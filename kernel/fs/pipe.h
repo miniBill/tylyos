@@ -20,7 +20,7 @@
 #ifndef PIPE_H
 #define PIPE_H
 
-#define PIPE_BUFFER_SIZE 100
+#define PIPE_BUFFER_SIZE 0x1000
 
 struct pipe
 {
