@@ -14,7 +14,7 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with TylyOS.  If not, see <http://www.gnu.org/licenses/>.
-
+MAKEFLAGS = --no-print-directory
 
 CFLAGS:= -m32 -ffreestanding -Wall -pedantic -Wextra -I. -fno-stack-protector -std=gnu99 -g
 ASFLAGS:= --32

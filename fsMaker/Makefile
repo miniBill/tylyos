@@ -1,3 +1,5 @@
+MAKEFLAGS = --no-print-directory
+
 IMG = ../kernel/c.img
 BINS = root/idle root/ottanta root/hello root/init root/shell
 
